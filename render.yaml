@@ -1,11 +1,10 @@
 services:
   - type: web
     name: bizflow-backend
-    runtime: java
-    rootDir: backend
+    runtime: docker
     plan: free
-    buildCommand: chmod +x ./mvnw && ./mvnw clean package -DskipTests
-    startCommand: java -jar target/bizflow-backend-1.0.0-SNAPSHOT.jar
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     envVars:
       - key: JAVA_VERSION
         value: 17

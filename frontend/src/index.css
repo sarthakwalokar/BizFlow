@@ -1,0 +1,326 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base Typography & Color Reset */
+@layer base {
+  body {
+    font-feature-settings: "rlig" 1, "calt" 1, "tnum" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #0f172a;
+    background-color: #f8fafc;
+  }
+}
+
+/* ==========================================================================
+   Universal Form Inputs, Textareas, Selects & Search Boxes (High-Contrast)
+   ========================================================================== */
+
+/* 1. Base input typography and visibility for standard (light) backgrounds */
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]),
+textarea,
+select {
+  color: #0f172a;
+  background-color: #ffffff;
+  -webkit-text-fill-color: #0f172a;
+}
+
+/* 2. Transparent background inputs (e.g. inside pill containers, AI chat prompt bar, custom input groups) */
+input.bg-transparent,
+textarea.bg-transparent,
+select.bg-transparent {
+  background-color: transparent !important;
+  color: #0f172a;
+  -webkit-text-fill-color: #0f172a;
+}
+
+/* 3. Clearly visible placeholder text with distinct styling */
+input::placeholder,
+textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #64748b !important;
+}
+
+input:focus::placeholder,
+textarea:focus::placeholder {
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
+}
+
+/* 4. Focus, hover and active states keep text sharp and dark */
+input:focus,
+textarea:focus,
+select:focus {
+  color: #0f172a;
+  -webkit-text-fill-color: #0f172a;
+}
+
+/* 5. Disabled input state */
+input:disabled,
+textarea:disabled,
+select:disabled {
+  color: #64748b;
+  -webkit-text-fill-color: #64748b;
+  background-color: #f8fafc;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+/* 6. Dropdown / Select Option styling */
+select option {
+  background-color: #ffffff;
+  color: #0f172a;
+  padding: 8px 12px;
+}
+
+select option:checked {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+/* 7. Specifically Dark Inputs (Login, Signup, Admin Dark Containers) */
+input.bg-slate-900,
+input.bg-slate-800,
+input.bg-slate-950,
+textarea.bg-slate-900,
+textarea.bg-slate-800,
+textarea.bg-slate-950,
+select.bg-slate-900,
+select.bg-slate-800,
+select.bg-slate-950,
+.dark-input {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+input.bg-slate-900::placeholder,
+input.bg-slate-800::placeholder,
+input.bg-slate-950::placeholder,
+textarea.bg-slate-900::placeholder,
+textarea.bg-slate-800::placeholder,
+textarea.bg-slate-950::placeholder,
+.dark-input::placeholder {
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
+}
+
+select.bg-slate-900 option,
+select.bg-slate-800 option,
+select.bg-slate-950 option,
+.dark-input option {
+  background-color: #0f172a;
+  color: #ffffff;
+}
+
+/* 8. Autofill Fix (Preserves text readability and prevents ugly browser yellow/blue backgrounds) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0f172a !important;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+input.bg-slate-900:-webkit-autofill,
+input.bg-slate-900:-webkit-autofill:hover,
+input.bg-slate-900:-webkit-autofill:focus,
+input.bg-slate-800:-webkit-autofill,
+input.bg-slate-800:-webkit-autofill:hover,
+input.bg-slate-800:-webkit-autofill:focus,
+input.bg-slate-950:-webkit-autofill,
+input.bg-slate-950:-webkit-autofill:hover,
+input.bg-slate-950:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+  box-shadow: 0 0 0px 1000px #0f172a inset !important;
+}
+
+/* 9. Specialized input types (Date, Time, Search, Number) */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="number"],
+input[type="search"] {
+  color: #0f172a;
+  -webkit-text-fill-color: #0f172a;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: opacity(0.65);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  filter: opacity(1);
+}
+
+/* ==========================================================================
+   BizFlow Minimalist Design Tokens (Ultra-Clean, High-Contrast & Sleek)
+   ========================================================================== */
+
+/* Clean Minimal Card (Replaces heavy glassmorphism with crisp modern borders & subtle elevation) */
+.minimal-card,
+.glass-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode / dark section cards */
+.dark-minimal-card {
+  background-color: #0f172a;
+  border: 1px solid #1e293b;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+/* Minimal Card Hover State */
+.minimal-card-hover,
+.glass-card-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.minimal-card-hover:hover,
+.glass-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+}
+
+/* Clean Input Class Utility */
+.clean-input {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  color: #0f172a;
+  -webkit-text-fill-color: #0f172a;
+  transition: all 0.15s ease-in-out;
+}
+
+.clean-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+/* Subtle Minimalist Gradients (Clean accents without noisy blurs) */
+.radial-glow {
+  background: transparent;
+}
+
+.subtle-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(226, 232, 240, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(226, 232, 240, 0.4) 1px, transparent 1px);
+}
+
+/* Custom Scrollbars for dense tables & POS panels */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ==========================================================================
+   Print Optimization & Single-Page A4 Receipt Layout (Strict 1-Page Rules)
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Hide app navigation, headers, sidebars, buttons and background during print */
+  header,
+  aside,
+  nav,
+  button,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Receipt modal backdrop reset for clean print stream */
+  .receipt-modal-backdrop {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    display: block !important;
+  }
+
+  /* Modal card container reset to flat document */
+  .receipt-modal-container {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 90mm !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Receipt body styling */
+  .receipt-printable-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 10.5px !important;
+    line-height: 1.35 !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Prevent page breaks across receipt sections */
+  table,
+  tr,
+  td,
+  th,
+  .receipt-section {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}

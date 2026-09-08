@@ -31,6 +31,7 @@ import { InventoryPage } from './pages/inventory/InventoryPage';
 import { AnalyticsDashboardPage } from './pages/analytics/AnalyticsDashboardPage';
 import { ReportsCenterPage } from './pages/reports/ReportsCenterPage';
 import { AiAssistantPage } from './pages/ai/AiAssistantPage';
+import { SWAGGER_DOCS_URL } from './api/axios';
 import { 
   Store, 
   Utensils, 
@@ -176,7 +177,7 @@ const LandingPage: React.FC = () => {
             </Link>
 
             <a
-              href="http://localhost:8080/swagger-ui/index.html"
+              href={SWAGGER_DOCS_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center space-x-2 px-4 py-3 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-slate-800 font-medium text-sm transition-all"

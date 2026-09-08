@@ -1,6 +1,29 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+/**
+ * Resolves the backend API base URL.
+ * Automatically ensures the '/api/v1' suffix is present regardless of whether
+ * VITE_API_BASE_URL is passed with or without '/api/v1'.
+ */
+export const getApiBaseUrl = (): string => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+    const cleaned = envUrl.trim().replace(/\/+$/, '');
+    return cleaned.endsWith('/api/v1') ? cleaned : `${cleaned}/api/v1`;
+  }
+
+  // Production fallback when VITE_API_BASE_URL is not set at build time
+  if (import.meta.env.PROD) {
+    return 'https://bizflow-backend-8uow.onrender.com/api/v1';
+  }
+
+  // Local development default
+  return 'http://localhost:8080/api/v1';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
+
+export const SWAGGER_DOCS_URL = `${API_BASE_URL.replace(/\/api\/v1\/?$/, '')}/swagger-ui/index.html`;
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

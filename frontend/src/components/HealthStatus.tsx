@@ -25,7 +25,7 @@ export const HealthStatus: React.FC = () => {
       setError(
         err.response?.data?.message ||
         err.message ||
-        'Unable to connect to backend service. Please check if Spring Boot is running on port 8080.'
+        'Unable to connect to backend service. Please check backend connectivity.'
       );
     } finally {
       setLoading(false);

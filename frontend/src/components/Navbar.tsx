@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Layers, BookOpen, LogIn, UserPlus, LogOut, Shield } from 'lucide-react';
+import { SWAGGER_DOCS_URL } from '../api/axios';
 
 export const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -36,7 +37,7 @@ export const Navbar: React.FC = () => {
         {/* Navigation / Actions */}
         <nav className="flex items-center space-x-2 sm:space-x-3">
           <a
-            href="http://localhost:8080/swagger-ui/index.html"
+            href={SWAGGER_DOCS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:flex items-center space-x-2 px-3 py-1.5 text-xs font-medium rounded-lg text-slate-300 hover:text-white bg-slate-900 border border-slate-700/60 hover:border-slate-600 transition-all"

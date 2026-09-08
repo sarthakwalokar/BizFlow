@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: bizflow-backend
+    runtime: java
+    rootDir: backend
+    plan: free
+    buildCommand: chmod +x ./mvnw && ./mvnw clean package -DskipTests
+    startCommand: java -jar target/bizflow-backend-1.0.0-SNAPSHOT.jar
+    envVars:
+      - key: JAVA_VERSION
+        value: 17

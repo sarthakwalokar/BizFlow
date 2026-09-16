@@ -32,7 +32,7 @@ export const OrdersHistoryPage: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const currency = business?.currency || 'INR';
+  const currency = business?.currency || 'USD';
 
   const fetchOrders = async () => {
     try {
@@ -78,130 +78,105 @@ export const OrdersHistoryPage: React.FC = () => {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to cancel order.'
+        'Failed to void order.'
       );
     } finally {
       setCancelling(false);
     }
   };
 
-  // Stats
-  const totalCompletedAmount = orders
-    .filter((o) => o.orderStatus === 'COMPLETED' && o.paymentStatus === 'COMPLETED')
-    .reduce((sum, o) => sum + o.total, 0);
-
-  const totalCancelledCount = orders.filter((o) => o.orderStatus === 'CANCELLED').length;
-
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Top Title & Quick Stats */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Sales &amp; Invoice History
-          </h1>
-          <p className="text-slate-500 text-xs mt-0.5">
-            Review past transactions, inspect tax invoices, print receipts, and manage sales records
+          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">Sales &amp; Invoices</h1>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            View history of all customer transactions, payment receipts, and audit trail.
           </p>
         </div>
       </div>
 
-      {/* Notifications */}
+      {/* Alerts */}
       {successMessage && (
-        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center space-x-2.5 text-emerald-800 text-xs font-semibold">
-          <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-          <span>{successMessage}</span>
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <CheckCircle2 size={15} className="text-emerald-600" />
+            <span>{successMessage}</span>
+          </div>
+          <button onClick={() => setSuccessMessage(null)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
+            &times;
+          </button>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-center space-x-2.5 text-rose-800 text-xs font-semibold">
-          <AlertCircle size={16} className="text-rose-600 shrink-0" />
-          <span>{errorMessage}</span>
+        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <AlertCircle size={15} className="text-red-600" />
+            <span>{errorMessage}</span>
+          </div>
+          <button onClick={() => setErrorMessage(null)} className="text-red-700 hover:text-red-900 cursor-pointer">
+            &times;
+          </button>
         </div>
       )}
 
-      {/* Metric Cards Banner */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-            Total Invoices Loaded
-          </span>
-          <span className="text-2xl font-black text-slate-900 mt-1 block">
-            {orders.length}
-          </span>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-            Paid Sales Volume
-          </span>
-          <span className="text-2xl font-black text-emerald-600 mt-1 block">
-            {formatCurrency(totalCompletedAmount, currency)}
-          </span>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-            Voided / Cancelled Bills
-          </span>
-          <span className="text-2xl font-black text-rose-600 mt-1 block">
-            {totalCancelledCount}
-          </span>
-        </div>
-      </div>
-
-      {/* Filters Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
+      {/* Filter Controls Card */}
+      <div className="bg-white rounded-2xl border border-zinc-200 p-4 sm:p-5 shadow-card space-y-4">
         <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search size={15} className="absolute left-3.5 top-2.5 text-slate-400" />
+            <Search size={15} className="absolute left-3.5 top-3 text-zinc-400" />
             <input
               type="text"
-              placeholder="Search invoice number, customer name, notes..."
+              placeholder="Search by invoice number or customer phone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
             />
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            {/* Payment Status Filter */}
             <select
               value={paymentStatus}
               onChange={(e) => setPaymentStatus(e.target.value)}
-              className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-white focus:outline-none"
+              className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
             >
-              <option value="ALL">Payment: All</option>
-              <option value="COMPLETED">Paid</option>
+              <option value="ALL">All Payment Statuses</option>
+              <option value="COMPLETED">Paid (Completed)</option>
               <option value="PENDING">Pending</option>
-              <option value="CANCELLED">Cancelled</option>
+              <option value="CANCELLED">Cancelled / Void</option>
             </select>
 
-            <select
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-white focus:outline-none"
-            >
-              <option value="ALL">Method: All</option>
-              <option value="UPI">UPI / QR</option>
-              <option value="CASH">Cash</option>
-              <option value="CARD">Card</option>
-              <option value="CREDIT">Credit</option>
-            </select>
-
+            {/* Order Status Filter */}
             <select
               value={orderStatus}
               onChange={(e) => setOrderStatus(e.target.value)}
-              className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-white focus:outline-none"
+              className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
             >
-              <option value="ALL">Order Status: All</option>
+              <option value="ALL">All Order States</option>
               <option value="COMPLETED">Completed</option>
               <option value="CANCELLED">Cancelled</option>
             </select>
 
+            {/* Payment Method Filter */}
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
+            >
+              <option value="ALL">All Payment Modes</option>
+              <option value="UPI">UPI</option>
+              <option value="CASH">Cash</option>
+              <option value="CARD">Card</option>
+              <option value="CREDIT">Credit</option>
+              <option value="OTHER">Other</option>
+            </select>
+
             <button
               type="submit"
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer"
             >
               Filter
             </button>
@@ -209,32 +184,36 @@ export const OrdersHistoryPage: React.FC = () => {
         </form>
       </div>
 
-      {/* Orders Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      {/* Orders Table Card */}
+      <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                <th className="px-5 py-3">Invoice &amp; Date</th>
-                <th className="px-5 py-3">Customer</th>
-                <th className="px-5 py-3">Billed By</th>
-                <th className="px-5 py-3">Payment Method</th>
-                <th className="px-5 py-3">Grand Total</th>
-                <th className="px-5 py-3">Status</th>
-                <th className="px-5 py-3 text-right">Actions</th>
+              <tr className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                <th className="py-3 px-4">Invoice #</th>
+                <th className="py-3 px-4">Date &amp; Time</th>
+                <th className="py-3 px-4">Customer</th>
+                <th className="py-3 px-4">Cashier</th>
+                <th className="py-3 px-4">Items</th>
+                <th className="py-3 px-4">Payment</th>
+                <th className="py-3 px-4">Total</th>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-zinc-100 text-xs">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-12 text-center text-slate-400 text-xs font-medium">
+                  <td colSpan={9} className="py-12 text-center text-zinc-400">
                     Loading invoices...
                   </td>
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-12 text-center text-slate-400 text-xs">
-                    No transactions found matching your criteria.
+                  <td colSpan={9} className="py-12 text-center text-zinc-500 space-y-1">
+                    <Receipt size={32} className="mx-auto text-zinc-300" />
+                    <p className="font-bold text-zinc-700">No invoices match criteria</p>
+                    <p className="text-[11px] text-zinc-400">Try adjusting your filters or search keyword.</p>
                   </td>
                 </tr>
               ) : (
@@ -243,58 +222,54 @@ export const OrdersHistoryPage: React.FC = () => {
                     dateStyle: 'short',
                     timeStyle: 'short',
                   });
-                  const isCancelled = order.orderStatus === 'CANCELLED';
 
                   return (
-                    <tr
-                      key={order.id}
-                      className={`hover:bg-slate-50/70 transition-colors ${
-                        isCancelled ? 'opacity-60 bg-slate-50/30' : ''
-                      }`}
-                    >
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center space-x-2.5">
-                          <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs">
-                            <Receipt size={15} />
-                          </div>
-                          <div>
-                            <div className="font-mono font-bold text-slate-900 text-xs">
-                              {order.invoiceNumber}
-                            </div>
-                            <div className="text-[10px] text-slate-400">{dateStr}</div>
-                          </div>
-                        </div>
+                    <tr key={order.id} className="hover:bg-zinc-50/70 transition-colors">
+                      <td className="py-3 px-4 font-mono font-bold text-zinc-900">
+                        {order.invoiceNumber}
                       </td>
 
-                      <td className="px-5 py-3.5">
-                        <span className="font-semibold text-slate-800 text-xs block">
+                      <td className="py-3 px-4 text-zinc-500 whitespace-nowrap">
+                        {dateStr}
+                      </td>
+
+                      <td className="py-3 px-4">
+                        <span className="font-semibold text-zinc-900 block">
                           {order.customer ? order.customer.name : 'Walk-in Customer'}
                         </span>
                         {order.customer?.phone && (
-                          <span className="text-[10px] text-slate-400">{order.customer.phone}</span>
+                          <span className="text-[10px] text-zinc-400 font-mono">
+                            {order.customer.phone}
+                          </span>
                         )}
                       </td>
 
-                      <td className="px-5 py-3.5 text-xs text-slate-600">{order.createdBy}</td>
+                      <td className="py-3 px-4 text-zinc-600">{order.createdBy || 'Counter'}</td>
 
-                      <td className="px-5 py-3.5">
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                      <td className="py-3 px-4 text-zinc-600">
+                        <span className="px-2 py-0.5 rounded-full bg-zinc-100 text-[10px] font-bold">
+                          {order.items?.length || 0} items
+                        </span>
+                      </td>
+
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-zinc-100 text-zinc-700 border border-zinc-200">
                           {order.paymentMethod}
                         </span>
                       </td>
 
-                      <td className="px-5 py-3.5 font-black text-slate-900 text-xs">
+                      <td className="py-3 px-4 font-black text-zinc-950">
                         {formatCurrency(order.total, currency)}
                       </td>
 
-                      <td className="px-5 py-3.5">
+                      <td className="py-3 px-4">
                         <span
-                          className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                             order.paymentStatus === 'COMPLETED'
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                               : order.paymentStatus === 'CANCELLED'
-                              ? 'bg-rose-50 text-rose-700 border-rose-200'
-                              : 'bg-amber-50 text-amber-700 border-amber-200'
+                              ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                              : 'bg-amber-50 text-amber-700 border border-amber-200'
                           }`}
                         >
                           {order.paymentStatus === 'COMPLETED' ? (
@@ -316,26 +291,24 @@ export const OrdersHistoryPage: React.FC = () => {
                         </span>
                       </td>
 
-                      <td className="px-5 py-3.5 text-right">
-                        <div className="flex items-center justify-end space-x-1">
-                          <button
-                            onClick={() => setSelectedOrderForView(order)}
-                            title="View / Print Invoice"
-                            className="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-indigo-600 transition-colors cursor-pointer"
-                          >
-                            <Eye size={15} />
-                          </button>
+                      <td className="py-3 px-4 text-right space-x-1.5">
+                        <button
+                          onClick={() => setSelectedOrderForView(order)}
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                          title="View Tax Receipt"
+                        >
+                          <Eye size={15} />
+                        </button>
 
-                          {!isCancelled && (
-                            <button
-                              onClick={() => setOrderToCancel(order)}
-                              title="Void / Cancel Invoice"
-                              className="p-1.5 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
-                            >
-                              <Ban size={15} />
-                            </button>
-                          )}
-                        </div>
+                        {order.paymentStatus !== 'CANCELLED' && (
+                          <button
+                            onClick={() => setOrderToCancel(order)}
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                            title="Void / Cancel Order"
+                          >
+                            <Ban size={15} />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
@@ -354,57 +327,48 @@ export const OrdersHistoryPage: React.FC = () => {
         />
       )}
 
-      {/* Cancel Order Modal */}
+      {/* Cancel / Void Order Modal */}
       {orderToCancel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 border border-slate-200">
-            <div className="flex items-center space-x-3 text-rose-600">
-              <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center">
-                <Ban size={20} />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Void &amp; Cancel Invoice</h3>
-                <p className="text-xs text-slate-500">Invoice: {orderToCancel.invoiceNumber}</p>
-              </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+            <div className="flex items-center space-x-2.5 text-rose-600">
+              <Ban size={20} />
+              <h3 className="text-base font-bold text-zinc-900">Void / Cancel Order</h3>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Are you sure you want to void this invoice for{' '}
-              <span className="font-bold text-slate-900">
-                {formatCurrency(orderToCancel.total, currency)}
-              </span>
-              ? This action is recorded in the ledger and cannot be undone.
+            <p className="text-xs text-zinc-600 leading-relaxed">
+              Are you sure you want to void invoice{' '}
+              <strong className="text-zinc-900">{orderToCancel.invoiceNumber}</strong> for{' '}
+              <strong className="text-zinc-900">{formatCurrency(orderToCancel.total, currency)}</strong>?
+              This action marks the order as cancelled and reverses stock if applicable.
             </p>
 
             <form onSubmit={handleConfirmCancel} className="space-y-3">
-              <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">
-                  Reason for Cancellation
-                </label>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-zinc-700">Cancellation Reason (Optional)</label>
                 <input
                   type="text"
-                  required
-                  placeholder="e.g. Customer returned items, incorrect billing..."
+                  placeholder="e.g. Customer returned goods / duplicate bill"
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-rose-500"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-600"
                 />
               </div>
 
-              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+              <div className="flex justify-end space-x-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setOrderToCancel(null)}
-                  className="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 rounded-xl text-xs font-semibold hover:bg-zinc-50 cursor-pointer"
                 >
-                  Keep Invoice
+                  Go Back
                 </button>
                 <button
                   type="submit"
                   disabled={cancelling}
-                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {cancelling ? 'Voiding...' : 'Void Invoice'}
+                  {cancelling ? 'Voiding...' : 'Confirm Void Order'}
                 </button>
               </div>
             </form>

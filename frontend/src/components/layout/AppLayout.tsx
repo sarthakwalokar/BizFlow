@@ -4,10 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard,
   Package,
-  FolderTree,
   Users,
   Settings,
-  UserCheck,
   LogOut,
   Menu,
   X,
@@ -24,7 +22,22 @@ import {
   BarChart3,
   FileText,
   Sparkles,
+  Layers,
+  FolderTree,
+  LucideIcon
 } from 'lucide-react';
+
+interface NavGroup {
+  groupTitle?: string;
+  items: {
+    label: string;
+    path: string;
+    icon: LucideIcon;
+    roles: ('OWNER' | 'STAFF' | 'ADMIN')[];
+    requiresInventory?: boolean;
+    ownerOnly?: boolean;
+  }[];
+}
 
 export const AppLayout: React.FC = () => {
   const { user, business, logout } = useAuth();
@@ -40,107 +53,107 @@ export const AppLayout: React.FC = () => {
     navigate('/login');
   };
 
-  const navItems = [
+  const navGroups: NavGroup[] = [
     {
-      label: 'Dashboard',
-      path: '/dashboard',
-      icon: LayoutDashboard,
-      roles: ['OWNER', 'STAFF'],
+      items: [
+        {
+          label: 'Overview',
+          path: '/dashboard',
+          icon: LayoutDashboard,
+          roles: ['OWNER', 'STAFF'],
+        },
+      ],
     },
     {
-      label: 'Analytics',
-      path: '/dashboard/analytics',
-      icon: BarChart3,
-      roles: ['OWNER', 'STAFF'],
+      groupTitle: 'Business',
+      items: [
+        {
+          label: 'Products & Services',
+          path: '/dashboard/products',
+          icon: Package,
+          roles: ['OWNER', 'STAFF'],
+        },
+        {
+          label: 'Categories',
+          path: '/dashboard/categories',
+          icon: FolderTree,
+          roles: ['OWNER', 'STAFF'],
+        },
+        {
+          label: 'Customers',
+          path: '/dashboard/customers',
+          icon: Contact,
+          roles: ['OWNER', 'STAFF'],
+        },
+      ],
     },
     {
-      label: 'AI Assistant',
-      path: '/dashboard/ai-assistant',
-      icon: Sparkles,
-      roles: ['OWNER', 'STAFF'],
+      groupTitle: 'Operations',
+      items: [
+        {
+          label: 'POS Billing',
+          path: '/dashboard/pos',
+          icon: Receipt,
+          roles: ['OWNER', 'STAFF'],
+        },
+        {
+          label: 'Invoices & Orders',
+          path: '/dashboard/bills',
+          icon: CircleDollarSign,
+          roles: ['OWNER', 'STAFF'],
+        },
+        {
+          label: 'Expenses',
+          path: '/dashboard/expenses',
+          icon: TrendingDown,
+          roles: ['OWNER', 'STAFF'],
+        },
+        {
+          label: 'Inventory',
+          path: '/dashboard/inventory',
+          icon: Boxes,
+          roles: ['OWNER', 'STAFF'],
+          requiresInventory: true,
+        },
+      ],
     },
     {
-      label: 'POS Billing Terminal',
-      path: '/dashboard/pos',
-      icon: Receipt,
-      roles: ['OWNER', 'STAFF'],
+      groupTitle: 'Insights',
+      items: [
+        {
+          label: 'Analytics',
+          path: '/dashboard/analytics',
+          icon: BarChart3,
+          roles: ['OWNER', 'STAFF'],
+        },
+        {
+          label: 'Review Boost',
+          path: '/dashboard/reviews',
+          icon: Star,
+          roles: ['OWNER', 'STAFF'],
+        },
+      ],
     },
     {
-      label: 'Sales & Invoices',
-      path: '/dashboard/bills',
-      icon: CircleDollarSign,
-      roles: ['OWNER', 'STAFF'],
-    },
-    {
-      label: 'Inventory & Stock',
-      path: '/dashboard/inventory',
-      icon: Boxes,
-      roles: ['OWNER', 'STAFF'],
-      requiresInventory: true,
-    },
-    {
-      label: 'Operating Expenses',
-      path: '/dashboard/expenses',
-      icon: TrendingDown,
-      roles: ['OWNER', 'STAFF'],
-    },
-    {
-      label: 'Reports & Exports',
-      path: '/dashboard/reports',
-      icon: FileText,
-      roles: ['OWNER', 'STAFF'],
-    },
-    {
-      label: 'Customers & CRM',
-      path: '/dashboard/customers',
-      icon: Contact,
-      roles: ['OWNER', 'STAFF'],
-    },
-    {
-      label: 'Review Boost',
-      path: '/dashboard/reviews',
-      icon: Star,
-      roles: ['OWNER', 'STAFF'],
-    },
-    {
-      label: 'Products Catalog',
-      path: '/dashboard/products',
-      icon: Package,
-      roles: ['OWNER', 'STAFF'],
-    },
-    {
-      label: 'Categories',
-      path: '/dashboard/categories',
-      icon: FolderTree,
-      roles: ['OWNER', 'STAFF'],
-    },
-    {
-      label: 'Staff Management',
-      path: '/dashboard/staff',
-      icon: Users,
-      roles: ['OWNER'],
-    },
-    {
-      label: 'Business Settings',
-      path: '/dashboard/settings',
-      icon: Settings,
-      roles: ['OWNER'],
-    },
-    {
-      label: 'My Profile',
-      path: '/dashboard/profile',
-      icon: UserCheck,
-      roles: ['OWNER', 'STAFF', 'ADMIN'],
+      groupTitle: 'Tools',
+      items: [
+        {
+          label: 'AI Assistant',
+          path: '/dashboard/ai-assistant',
+          icon: Sparkles,
+          roles: ['OWNER', 'STAFF'],
+        },
+        {
+          label: 'Reports',
+          path: '/dashboard/reports',
+          icon: FileText,
+          roles: ['OWNER', 'STAFF'],
+        },
+      ],
     },
   ];
 
-  const filteredNavItems = navItems.filter((item) => {
-    if (!user || !item.roles.includes(user.role)) return false;
-    if (item.requiresInventory && business?.inventoryEnabled === false) return false;
-    return true;
-  });
-
-  const getBusinessTypeColor = (type?: string) => {
+  const getBusinessTypeBadgeColor = (type?: string) => {
     switch (type) {
       case 'RETAIL':
         return 'bg-blue-50 text-blue-700 border-blue-200';
@@ -155,34 +168,41 @@ export const AppLayout: React.FC = () => {
       case 'SERVICE':
         return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       default:
-        return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+        return 'bg-zinc-100 text-zinc-700 border-zinc-200';
     }
   };
 
+  const isItemActive = (path: string) => {
+    if (path === '/dashboard') {
+      return location.pathname === '/dashboard';
+    }
+    return location.pathname.startsWith(path);
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans">
-      {/* Mobile Header */}
-      <header className="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <div className="min-h-screen bg-[#F7F7F5] flex flex-col md:flex-row font-sans text-zinc-900">
+      {/* Mobile Top Header */}
+      <header className="md:hidden bg-white border-b border-zinc-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none cursor-pointer"
+            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-100 focus:outline-none cursor-pointer"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
-              B
+            <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm shadow-xs">
+              <Layers size={14} />
             </div>
-            <span className="font-extrabold text-slate-900 tracking-tight text-lg">BizFlow</span>
+            <span className="font-extrabold text-zinc-950 tracking-tight text-base">BizFlow</span>
           </div>
         </div>
 
         <div className="flex items-center space-x-2">
           {business && (
             <span
-              className={`px-2.5 py-0.5 text-xs font-bold rounded-full border ${getBusinessTypeColor(
+              className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full border ${getBusinessTypeBadgeColor(
                 business.businessType
               )}`}
             >
@@ -194,36 +214,36 @@ export const AppLayout: React.FC = () => {
 
       {/* Sidebar Navigation */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-300 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 md:static md:inset-auto md:min-h-screen shadow-xl md:shadow-none border-r border-slate-800 ${
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white text-zinc-700 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 md:static md:inset-auto md:min-h-screen shadow-xl md:shadow-none border-r border-zinc-200 ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo & Tenant Header */}
-          <div className="p-4 border-b border-slate-800">
-            <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-sm">
-                B
+          <div className="p-4 border-b border-zinc-100">
+            <div className="flex items-center space-x-2.5">
+              <div className="w-8 h-8 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-xs">
+                <Layers className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-lg font-black text-white tracking-tight block">BizFlow</span>
-                <span className="text-[10px] text-indigo-400 font-bold tracking-wider uppercase">
+                <span className="text-base font-extrabold text-zinc-950 tracking-tight block">BizFlow</span>
+                <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
                   SaaS Business Suite
                 </span>
               </div>
             </div>
 
             {business && (
-              <div className="mt-3.5 p-3 rounded-xl bg-slate-800/90 border border-slate-700/80 flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-sm flex-shrink-0">
-                  <Store size={16} />
+              <div className="mt-3 p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80 flex items-center space-x-2.5">
+                <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                  <Store size={14} />
                 </div>
                 <div className="overflow-hidden flex-1">
-                  <h4 className="text-xs font-bold text-white truncate">{business.name}</h4>
+                  <h4 className="text-xs font-bold text-zinc-900 truncate">{business.name}</h4>
                   <div className="flex items-center space-x-1.5 mt-0.5">
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                    <span className="text-[10px] text-slate-400 font-medium tracking-wide truncate">
-                      {business.businessType} • ₹ {business.currency || 'INR'}
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                    <span className="text-[10px] text-zinc-500 font-medium truncate">
+                      {business.businessType || 'Active Store'}
                     </span>
                   </div>
                 </div>
@@ -232,47 +252,98 @@ export const AppLayout: React.FC = () => {
           </div>
 
           {/* Nav Links */}
-          <nav className="p-2.5 space-y-1 flex-1 overflow-y-auto">
-            <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Core Modules
-            </div>
+          <nav className="p-3 space-y-4 flex-1 overflow-y-auto">
+            {navGroups.map((group, gIdx) => {
+              const visibleItems = group.items.filter((item) => {
+                if (!user || !item.roles.includes(user.role)) return false;
+                if (item.requiresInventory && business?.inventoryEnabled === false) return false;
+                return true;
+              });
 
-            {filteredNavItems.map((item) => {
-              const isActive =
-                item.path === '/dashboard'
-                  ? location.pathname === '/dashboard'
-                  : location.pathname.startsWith(item.path);
-              const Icon = item.icon;
+              if (visibleItems.length === 0) return null;
 
               return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 ${
-                    isActive
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                  }`}
-                >
-                  <div className="flex items-center space-x-2.5">
-                    <Icon size={16} className={isActive ? 'text-white' : 'text-slate-400'} />
-                    <span>{item.label}</span>
-                  </div>
-                  {isActive && <ChevronRight size={13} className="text-indigo-200" />}
-                </Link>
+                <div key={gIdx} className="space-y-1">
+                  {group.groupTitle && (
+                    <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                      {group.groupTitle}
+                    </div>
+                  )}
+
+                  {visibleItems.map((item) => {
+                    const active = isItemActive(item.path);
+                    const Icon = item.icon;
+
+                    return (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                          active
+                            ? 'bg-emerald-50 text-emerald-700 font-bold'
+                            : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2.5">
+                          <Icon size={16} className={active ? 'text-emerald-600' : 'text-zinc-400'} />
+                          <span>{item.label}</span>
+                        </div>
+                        {active && <ChevronRight size={13} className="text-emerald-600" />}
+                      </Link>
+                    );
+                  })}
+                </div>
               );
             })}
 
+            {/* Owner Section: Settings & Staff */}
+            {isOwner && (
+              <div className="space-y-1 pt-2 border-t border-zinc-100">
+                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  Administration
+                </div>
+                <Link
+                  to="/dashboard/staff"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                    location.pathname.startsWith('/dashboard/staff')
+                      ? 'bg-emerald-50 text-emerald-700 font-bold'
+                      : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2.5">
+                    <Users size={16} className={location.pathname.startsWith('/dashboard/staff') ? 'text-emerald-600' : 'text-zinc-400'} />
+                    <span>Staff Team</span>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/dashboard/settings"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                    location.pathname.startsWith('/dashboard/settings')
+                      ? 'bg-emerald-50 text-emerald-700 font-bold'
+                      : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2.5">
+                    <Settings size={16} className={location.pathname.startsWith('/dashboard/settings') ? 'text-emerald-600' : 'text-zinc-400'} />
+                    <span>Settings</span>
+                  </div>
+                </Link>
+              </div>
+            )}
+
             {isAdmin && (
-              <div className="pt-2">
-                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-500/80">
+              <div className="pt-2 border-t border-zinc-100">
+                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-700">
                   Platform Admin
                 </div>
                 <Link
                   to="/admin/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-amber-400 hover:bg-amber-500/10 transition-all mt-1"
+                  className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-purple-700 hover:bg-purple-50 transition-colors mt-1"
                 >
                   <ShieldAlert size={16} />
                   <span>Admin Portal</span>
@@ -282,31 +353,29 @@ export const AppLayout: React.FC = () => {
           </nav>
 
           {/* User Profile & Logout Bottom Bar */}
-          <div className="p-3 border-t border-slate-800 bg-slate-900">
-            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-800/80 border border-slate-700/60">
-              <div className="flex items-center space-x-2.5 overflow-hidden">
-                <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
+          <div className="p-3 border-t border-zinc-200 bg-white">
+            <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-50 border border-zinc-200/80">
+              <Link
+                to="/dashboard/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center space-x-2.5 overflow-hidden flex-1 group"
+              >
+                <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
                   {user?.fullName ? user.fullName.charAt(0) : 'U'}
                 </div>
                 <div className="overflow-hidden">
-                  <p className="text-xs font-semibold text-white truncate">{user?.fullName}</p>
-                  <span
-                    className={`inline-block text-[9px] font-bold px-1.5 py-0.2 rounded ${
-                      isOwner
-                        ? 'bg-indigo-950 text-indigo-300 border border-indigo-800'
-                        : isAdmin
-                        ? 'bg-amber-950 text-amber-300 border border-amber-800'
-                        : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
-                    }`}
-                  >
+                  <p className="text-xs font-semibold text-zinc-900 truncate group-hover:text-emerald-600 transition-colors">
+                    {user?.fullName}
+                  </p>
+                  <span className="inline-block text-[9px] font-bold px-1.5 py-0.2 rounded bg-zinc-200 text-zinc-700">
                     {user?.role}
                   </span>
                 </div>
-              </div>
+              </Link>
               <button
                 onClick={handleLogout}
                 title="Logout"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
               >
                 <LogOut size={15} />
               </button>
@@ -319,21 +388,21 @@ export const AppLayout: React.FC = () => {
       {mobileMenuOpen && (
         <div
           onClick={() => setMobileMenuOpen(false)}
-          className="fixed inset-0 z-30 bg-black/60 md:hidden"
+          className="fixed inset-0 z-30 bg-black/40 md:hidden"
         />
       )}
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Navbar */}
-        <header className="hidden md:flex h-15 bg-white border-b border-slate-200 px-8 items-center justify-between sticky top-0 z-20 shadow-xs">
+        <header className="hidden md:flex h-16 bg-white border-b border-zinc-200 px-8 items-center justify-between sticky top-0 z-20 shadow-xs">
           <div className="flex items-center space-x-3">
-            <h1 className="text-base font-bold text-slate-900">
+            <h1 className="text-base font-bold text-zinc-900">
               {business ? business.name : 'BizFlow Platform'}
             </h1>
             {business && (
               <span
-                className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full border ${getBusinessTypeColor(
+                className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full border ${getBusinessTypeBadgeColor(
                   business.businessType
                 )}`}
               >
@@ -344,8 +413,8 @@ export const AppLayout: React.FC = () => {
 
           <div className="flex items-center space-x-4">
             {business && business.taxRate !== undefined && business.taxRate > 0 && (
-              <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold">
-                <Percent size={12} className="text-indigo-600" />
+              <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-semibold">
+                <Percent size={12} className="text-emerald-600" />
                 <span>
                   {business.taxName || 'GST'}: {business.taxRate}%
                   {business.taxInclusive ? ' (Incl.)' : ''}
@@ -353,22 +422,25 @@ export const AppLayout: React.FC = () => {
               </div>
             )}
 
-            <div className="h-5 w-px bg-slate-200"></div>
+            <div className="h-5 w-px bg-zinc-200"></div>
 
-            <div className="flex items-center space-x-2.5">
+            <Link
+              to="/dashboard/profile"
+              className="flex items-center space-x-2.5 hover:opacity-80 transition-opacity"
+            >
               <div className="text-right">
-                <p className="text-xs font-bold text-slate-900">{user?.fullName}</p>
-                <p className="text-[10px] text-slate-500">{user?.email}</p>
+                <p className="text-xs font-bold text-zinc-900">{user?.fullName}</p>
+                <p className="text-[10px] text-zinc-500">{user?.email}</p>
               </div>
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
                 {user?.fullName ? user.fullName.charAt(0) : 'U'}
               </div>
-            </div>
+            </Link>
           </div>
         </header>
 
         {/* Page Body */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#F7F7F5]">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>

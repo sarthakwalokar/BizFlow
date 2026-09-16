@@ -20,7 +20,7 @@ export const AdminSystemConfigPage: React.FC = () => {
   // Form editable states
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [allowSelfRegistration, setAllowSelfRegistration] = useState(true);
-  const [defaultCurrency, setDefaultCurrency] = useState('INR');
+  const [defaultCurrency, setDefaultCurrency] = useState('USD');
   const [defaultTimezone, setDefaultTimezone] = useState('Asia/Kolkata');
   const [sessionTimeoutMinutes, setSessionTimeoutMinutes] = useState(1440);
 
@@ -72,170 +72,170 @@ export const AdminSystemConfigPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-4xl">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-black text-white tracking-tight">System Configuration</h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold border border-purple-500/30">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">System Configuration</h1>
+            <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 text-xs font-medium border border-purple-200">
               Platform Controls
             </span>
           </div>
-          <p className="text-slate-400 text-xs mt-1">
-            Global environment parameters, self-registration controls, and AI gateway runtime monitoring.
+          <p className="text-xs text-zinc-500 mt-0.5">
+            Global environment parameters, self-registration controls, and AI gateway runtime telemetry.
           </p>
         </div>
 
         <button
           onClick={loadConfig}
           disabled={loading}
-          className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-bold transition-all cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-medium shadow-xs transition-colors cursor-pointer self-start sm:self-auto disabled:opacity-50"
         >
-          <RefreshCw size={14} className={loading ? 'animate-spin text-purple-400' : ''} />
+          <RefreshCw size={13} className={loading ? 'animate-spin text-purple-600' : 'text-zinc-400'} />
           <span>Reload Config</span>
         </button>
       </div>
 
       {savedSuccess && (
-        <div className="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs font-bold flex items-center space-x-2 animate-in fade-in">
-          <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2">
+          <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
           <span>Platform configuration updated successfully.</span>
         </div>
       )}
 
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-bold flex items-center space-x-2">
-          <AlertTriangle size={16} className="text-rose-400 shrink-0" />
+        <div className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
+          <AlertTriangle size={16} className="text-red-500 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
-      <form onSubmit={handleSave} className="space-y-6">
+      <form onSubmit={handleSave} className="space-y-5">
         {/* Operational Toggles Card */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-6">
-          <div className="flex items-center space-x-2 border-b border-slate-800 pb-4">
-            <Sliders size={18} className="text-purple-400" />
-            <h3 className="text-sm font-bold text-white">Platform Operation Switches</h3>
+        <div className="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs space-y-4">
+          <div className="flex items-center gap-2.5 border-b border-zinc-100 pb-3">
+            <Sliders size={16} className="text-purple-600" />
+            <h3 className="text-sm font-semibold text-zinc-900">Platform Operation Switches</h3>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Self Registration Toggle */}
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-950 border border-slate-800">
+            <div className="flex items-center justify-between p-3.5 rounded-lg bg-zinc-50 border border-zinc-200">
               <div>
-                <span className="text-xs font-bold text-white block">Tenant Self-Registration</span>
-                <p className="text-[11px] text-slate-400">
-                  Allow new business owners to register accounts directly via the landing page
+                <span className="text-xs font-semibold text-zinc-900 block">Tenant Self-Registration</span>
+                <p className="text-[11px] text-zinc-500">
+                  Allow new business owners to register accounts directly via the public website
                 </p>
               </div>
 
-              <label className="relative inline-flex items-center cursor-pointer">
+              <label className="relative inline-flex items-center cursor-pointer shrink-0">
                 <input
                   type="checkbox"
                   checked={allowSelfRegistration}
                   onChange={(e) => setAllowSelfRegistration(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600" />
+                <div className="w-10 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600" />
               </label>
             </div>
 
             {/* Maintenance Mode Toggle */}
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-950 border border-slate-800">
+            <div className="flex items-center justify-between p-3.5 rounded-lg bg-zinc-50 border border-zinc-200">
               <div>
-                <span className="text-xs font-bold text-white block">Platform Maintenance Mode</span>
-                <p className="text-[11px] text-slate-400">
-                  Pause customer transactions and restrict non-admin access during database maintenance
+                <span className="text-xs font-semibold text-zinc-900 block">Platform Maintenance Mode</span>
+                <p className="text-[11px] text-zinc-500">
+                  Pause non-admin transactions and restrict access during backend updates
                 </p>
               </div>
 
-              <label className="relative inline-flex items-center cursor-pointer">
+              <label className="relative inline-flex items-center cursor-pointer shrink-0">
                 <input
                   type="checkbox"
                   checked={maintenanceMode}
                   onChange={(e) => setMaintenanceMode(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600" />
+                <div className="w-10 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600" />
               </label>
             </div>
           </div>
         </div>
 
         {/* Global Defaults Card */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-6">
-          <div className="flex items-center space-x-2 border-b border-slate-800 pb-4">
-            <Globe size={18} className="text-indigo-400" />
-            <h3 className="text-sm font-bold text-white">Default Regional & Security Presets</h3>
+        <div className="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs space-y-4">
+          <div className="flex items-center gap-2.5 border-b border-zinc-100 pb-3">
+            <Globe size={16} className="text-zinc-600" />
+            <h3 className="text-sm font-semibold text-zinc-900">Default Regional & Security Presets</h3>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1.5">Default Currency</label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div className="space-y-1">
+              <label className="block text-xs font-medium text-zinc-700">Default Currency</label>
               <input
                 type="text"
                 value={defaultCurrency}
                 onChange={(e) => setDefaultCurrency(e.target.value)}
-                placeholder="INR"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-white focus:outline-none focus:border-purple-500 uppercase"
+                placeholder="USD"
+                className="w-full px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white uppercase"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1.5">Default Timezone</label>
+            <div className="space-y-1">
+              <label className="block text-xs font-medium text-zinc-700">Default Timezone</label>
               <input
                 type="text"
                 value={defaultTimezone}
                 onChange={(e) => setDefaultTimezone(e.target.value)}
-                placeholder="UTC"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-white focus:outline-none focus:border-purple-500"
+                placeholder="Asia/Kolkata"
+                className="w-full px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1.5">Session Expiry (Minutes)</label>
+            <div className="space-y-1">
+              <label className="block text-xs font-medium text-zinc-700">Session Expiry (Minutes)</label>
               <input
                 type="number"
                 value={sessionTimeoutMinutes}
                 onChange={(e) => setSessionTimeoutMinutes(Number(e.target.value))}
                 min={15}
                 max={10080}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-white focus:outline-none focus:border-purple-500"
+                className="w-full px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white"
               />
             </div>
           </div>
         </div>
 
-        {/* AI Gateway & Runtime Health (Read-Only Telemetry) */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
-          <div className="flex items-center space-x-2 border-b border-slate-800 pb-4">
-            <Zap size={18} className="text-amber-400" />
-            <h3 className="text-sm font-bold text-white">Platform Runtime & AI Providers</h3>
+        {/* AI Gateway & Runtime Health */}
+        <div className="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs space-y-3">
+          <div className="flex items-center gap-2.5 border-b border-zinc-100 pb-3">
+            <Zap size={16} className="text-amber-500" />
+            <h3 className="text-sm font-semibold text-zinc-900">Platform Runtime & AI Providers</h3>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
-              <span className="text-slate-500 text-[10px] block">Active AI Provider</span>
-              <span className="font-extrabold text-purple-300">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1">
+              <span className="text-zinc-400 text-[10px] block">Active AI Provider</span>
+              <span className="font-semibold text-purple-700">
                 {config?.activeAiProvider || 'BizFlow Intelligent Advisor'}
               </span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
-              <span className="text-slate-500 text-[10px] block">Runtime Environment</span>
-              <span className="font-extrabold text-white">{config?.environment || 'Spring Boot 3.3.4 (Dev)'}</span>
+            <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1">
+              <span className="text-zinc-400 text-[10px] block">Runtime Environment</span>
+              <span className="font-semibold text-zinc-900">{config?.environment || 'Spring Boot 3.3.4 (Dev)'}</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
-              <span className="text-slate-500 text-[10px] block">Available Fallback Chains</span>
-              <span className="font-semibold text-slate-300">
+            <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1">
+              <span className="text-zinc-400 text-[10px] block">Available Fallback Chains</span>
+              <span className="text-zinc-700">
                 {config?.availableAiProviders?.join(' → ') || 'Gemini → Groq → OpenRouter → Rule Engine'}
               </span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
-              <span className="text-slate-500 text-[10px] block">Server Synchronized Time</span>
-              <span className="font-mono text-slate-300">
+            <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1">
+              <span className="text-zinc-400 text-[10px] block">Server Synchronized Time</span>
+              <span className="font-mono text-zinc-700">
                 {config?.serverTime ? new Date(config.serverTime).toUTCString() : 'Syncing...'}
               </span>
             </div>
@@ -243,17 +243,18 @@ export const AdminSystemConfigPage: React.FC = () => {
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end">
+        <div className="flex justify-end pt-2">
           <button
             type="submit"
             disabled={saving || loading}
-            className="inline-flex items-center space-x-2 px-6 py-3 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-lg shadow-purple-600/30 transition-all cursor-pointer disabled:opacity-50 active:scale-95"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
           >
-            <Save size={16} />
-            <span>{saving ? 'Applying System Config...' : 'Save Configuration'}</span>
+            <Save size={14} />
+            <span>{saving ? 'Applying...' : 'Save Configuration'}</span>
           </button>
         </div>
       </form>
     </div>
   );
 };
+

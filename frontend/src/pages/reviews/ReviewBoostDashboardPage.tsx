@@ -4,26 +4,21 @@ import {
   reviewsApi,
   Review,
   ReviewAnalytics,
-  ReviewSettings,
   ReviewSettingsRequest,
   QrCodeResponse,
 } from '../../api/reviews';
 import {
   Star,
-  Sparkles,
   QrCode,
   Printer,
   Download,
   Copy,
   Check,
   Settings,
-  Search,
   CheckCircle2,
   AlertCircle,
   X,
   ExternalLink,
-  Eye,
-  EyeOff,
 } from 'lucide-react';
 
 export const ReviewBoostDashboardPage: React.FC = () => {
@@ -33,21 +28,17 @@ export const ReviewBoostDashboardPage: React.FC = () => {
   // Data States
   const [reviews, setReviews] = useState<Review[]>([]);
   const [analytics, setAnalytics] = useState<ReviewAnalytics | null>(null);
-  const [settings, setSettings] = useState<ReviewSettings | null>(null);
   const [qrCodeData, setQrCodeData] = useState<QrCodeResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [totalElements, setTotalElements] = useState<number>(0);
 
   // Filters State
-  const [search, setSearch] = useState<string>('');
   const [selectedRatingFilter, setSelectedRatingFilter] = useState<string>('ALL');
   const [positiveOnlyFilter, setPositiveOnlyFilter] = useState<string>('ALL');
 
   // Modals
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [moderatingReview, setModeratingReview] = useState<Review | null>(null);
   const [moderationNotes, setModerationNotes] = useState('');
 
@@ -70,7 +61,6 @@ export const ReviewBoostDashboardPage: React.FC = () => {
       setLoading(true);
       const [revRes, anaRes, setRes, qrRes] = await Promise.all([
         reviewsApi.getReviews({
-          search: search.trim() || undefined,
           rating: selectedRatingFilter !== 'ALL' ? parseInt(selectedRatingFilter) : undefined,
           isPositive: positiveOnlyFilter === 'POSITIVE' ? true : positiveOnlyFilter === 'PRIVATE' ? false : undefined,
           page: pageNumber,
@@ -84,9 +74,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
       setReviews(revRes.content);
       setPage(revRes.pageNumber);
       setTotalPages(revRes.totalPages);
-      setTotalElements(revRes.totalElements);
       setAnalytics(anaRes);
-      setSettings(setRes);
       setQrCodeData(qrRes);
 
       setSettingsForm({
@@ -106,42 +94,24 @@ export const ReviewBoostDashboardPage: React.FC = () => {
     fetchDashboardData(0);
   }, [selectedRatingFilter, positiveOnlyFilter]);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    fetchDashboardData(0);
-  };
-
-  const handleCopyReviewLink = () => {
-    if (!settings?.directReviewPageUrl) return;
-    navigator.clipboard.writeText(settings.directReviewPageUrl);
+  const handleCopyPublicLink = () => {
+    if (!qrCodeData?.reviewUrl) return;
+    navigator.clipboard.writeText(qrCodeData.reviewUrl);
     setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2500);
-  };
-
-  const handleDownloadQrPng = () => {
-    if (!qrCodeData?.qrCodeDataUrl) return;
-    const link = document.createElement('a');
-    link.href = qrCodeData.qrCodeDataUrl;
-    link.download = `${settings?.reviewSlug || 'bizflow'}-review-qr.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setSettingsSubmitting(true);
-    setSuccessMessage(null);
     setErrorMessage(null);
+    setSuccessMessage(null);
 
     try {
-      const updated = await reviewsApi.updateSettings(settingsForm);
-      setSettings(updated);
-      setIsSettingsModalOpen(false);
+      await reviewsApi.updateSettings(settingsForm);
       setSuccessMessage('Review Boost configuration updated.');
-      // Refresh QR code
-      const updatedQr = await reviewsApi.getQrCode();
-      setQrCodeData(updatedQr);
+      setIsSettingsModalOpen(false);
+      fetchDashboardData(page);
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
@@ -153,17 +123,11 @@ export const ReviewBoostDashboardPage: React.FC = () => {
     }
   };
 
-  const handleToggleModerate = async () => {
+  const handleModerateReview = async (isPublic: boolean) => {
     if (!moderatingReview) return;
     try {
-      await reviewsApi.moderateReview(
-        moderatingReview.id,
-        !moderatingReview.hidden,
-        moderationNotes.trim() || undefined
-      );
-      setSuccessMessage(
-        `Review #${moderatingReview.id} is now ${!moderatingReview.hidden ? 'hidden' : 'visible'}.`
-      );
+      await reviewsApi.moderateReview(moderatingReview.id, isPublic, moderationNotes);
+      setSuccessMessage(`Review visibility updated.`);
       setModeratingReview(null);
       setModerationNotes('');
       fetchDashboardData(page);
@@ -172,271 +136,219 @@ export const ReviewBoostDashboardPage: React.FC = () => {
     }
   };
 
-  const handlePrintStandee = () => {
-    window.print();
+  const avgRating = analytics?.averageRating ?? 5.0;
+  const totalRevCount = analytics?.totalReviews ?? 0;
+
+  const getRatingCount = (star: number) => {
+    if (Array.isArray(analytics?.ratingDistribution)) {
+      const found = analytics?.ratingDistribution.find((item) => item.stars === star);
+      return found?.count ?? 0;
+    }
+    return 0;
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2">
-            <span className="px-3 py-0.5 rounded-full bg-amber-500/10 text-amber-700 text-xs font-bold border border-amber-500/20 flex items-center gap-1.5">
-              <Sparkles size={13} className="text-amber-500" />
-              <span>Reputation Engine</span>
-            </span>
-          </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight mt-1">Review Boost</h1>
-          <p className="text-slate-500 text-sm">
-            Collect real customer reviews, generate counter QR standees, route 5-star praise to Google, and protect reputation with private feedback.
+          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">Review Boost</h1>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            Collect customer feedback at counter, boost 5-star ratings, and protect online reputation.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Copy Review Link */}
+        {isOwner && (
           <button
-            onClick={handleCopyReviewLink}
-            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs shadow-xs transition-all cursor-pointer"
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-white hover:bg-zinc-50 text-zinc-700 font-bold text-xs border border-zinc-200 shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
           >
-            {copiedLink ? (
-              <>
-                <Check size={14} className="text-emerald-600" />
-                <span className="text-emerald-600">Link Copied!</span>
-              </>
-            ) : (
-              <>
-                <Copy size={14} className="text-slate-500" />
-                <span>Copy Review Link</span>
-              </>
-            )}
+            <Settings size={15} />
+            <span>Configure Boost</span>
           </button>
-
-          {/* Standee Print */}
-          <button
-            onClick={() => setIsPrintModalOpen(true)}
-            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs shadow-xs transition-all cursor-pointer"
-          >
-            <Printer size={14} className="text-indigo-600" />
-            <span>Print Counter Standee</span>
-          </button>
-
-          {/* Settings (Owner only) */}
-          {isOwner && (
-            <button
-              onClick={() => setIsSettingsModalOpen(true)}
-              className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
-            >
-              <Settings size={14} />
-              <span>Configure Settings</span>
-            </button>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* Notifications */}
+      {/* Alerts */}
       {successMessage && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center space-x-3 text-emerald-800 text-sm font-semibold">
-          <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
-          <span>{successMessage}</span>
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <CheckCircle2 size={15} className="text-emerald-600" />
+            <span>{successMessage}</span>
+          </div>
+          <button onClick={() => setSuccessMessage(null)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
+            &times;
+          </button>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 flex items-center space-x-3 text-rose-800 text-sm font-semibold">
-          <AlertCircle size={18} className="text-rose-600 shrink-0" />
-          <span>{errorMessage}</span>
+        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <AlertCircle size={15} className="text-red-600" />
+            <span>{errorMessage}</span>
+          </div>
+          <button onClick={() => setErrorMessage(null)} className="text-red-700 hover:text-red-900 cursor-pointer">
+            &times;
+          </button>
         </div>
       )}
 
-      {/* Hero Analytics & QR Code Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: KPI Cards (2 Columns on large) */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Average Rating Card */}
-            <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Average Rating</span>
-              <div className="flex items-baseline space-x-2">
-                <span className="text-3xl font-black text-slate-900">
-                  {loading ? '...' : (analytics?.averageRating ?? 0).toFixed(1)}
+      {/* TOP SECTION: Rating Score + Distribution + QR Code Showcase */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Rating Score & Star Distribution */}
+        <div className="lg:col-span-2 p-6 rounded-2xl bg-white border border-zinc-200 shadow-card flex flex-col justify-between space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-zinc-100">
+            {/* Average Rating Big Card */}
+            <div className="space-y-1.5">
+              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Average Customer Rating</span>
+              <div className="flex items-baseline space-x-3">
+                <span className="text-4xl sm:text-5xl font-black text-zinc-950">
+                  {loading ? '...' : Number(avgRating).toFixed(1)}
                 </span>
-                <span className="text-xs text-slate-400 font-semibold">/ 5.0</span>
+                <div className="flex items-center space-x-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={20}
+                      className={
+                        star <= Math.round(avgRating)
+                          ? 'fill-amber-500 text-amber-500'
+                          : 'text-zinc-200'
+                      }
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center space-x-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={14}
-                    className={`${
-                      star <= Math.round(analytics?.averageRating ?? 0)
-                        ? 'text-amber-400 fill-amber-400'
-                        : 'text-slate-200 fill-slate-100'
-                    }`}
+              <p className="text-xs text-zinc-500">Based on {totalRevCount} verified reviews</p>
+            </div>
+
+            {/* Quick Public URL Preview */}
+            {qrCodeData?.reviewUrl && (
+              <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 space-y-2 max-w-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Public Review Link</span>
+                  <a
+                    href={qrCodeData.reviewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold flex items-center gap-0.5"
+                  >
+                    <span>Open</span>
+                    <ExternalLink size={12} />
+                  </a>
+                </div>
+                <div className="flex items-center space-x-1.5">
+                  <input
+                    type="text"
+                    readOnly
+                    value={qrCodeData.reviewUrl}
+                    className="w-full text-[11px] font-mono bg-white px-2.5 py-1 rounded border border-zinc-200 text-zinc-600 truncate"
                   />
-                ))}
+                  <button
+                    onClick={handleCopyPublicLink}
+                    className="p-1.5 rounded bg-white hover:bg-zinc-100 border border-zinc-200 text-zinc-700 cursor-pointer"
+                    title="Copy Review URL"
+                  >
+                    {copiedLink ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+                  </button>
+                </div>
               </div>
-            </div>
-
-            {/* Total Reviews Card */}
-            <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Reviews</span>
-              <div className="text-3xl font-black text-slate-900 mt-2">
-                {loading ? '...' : analytics?.totalReviews ?? 0}
-              </div>
-              <span className="text-[11px] text-slate-400 font-medium">Customer responses</span>
-            </div>
-
-            {/* Positive Feedback % Card */}
-            <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
-              <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Positive (4-5★)</span>
-              <div className="text-3xl font-black text-emerald-700 mt-2">
-                {loading ? '...' : `${(analytics?.positivePercentage ?? 0).toFixed(1)}%`}
-              </div>
-              <span className="text-[11px] text-emerald-600 font-medium">
-                {analytics?.positiveReviewsCount ?? 0} happy clients
-              </span>
-            </div>
-
-            {/* Public Platform Redirects Card */}
-            <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
-              <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Google Boosts</span>
-              <div className="text-3xl font-black text-indigo-700 mt-2">
-                {loading ? '...' : analytics?.publicPlatformRedirectsCount ?? 0}
-              </div>
-              <span className="text-[11px] text-indigo-600 font-medium">Routed to public site</span>
-            </div>
+            )}
           </div>
 
-          {/* Rating Distribution Breakdown */}
-          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Star size={16} className="text-amber-500 fill-amber-500" />
-                <span>Rating Distribution Breakdown</span>
-              </h3>
-              <span className="text-xs font-semibold text-slate-400">
-                {analytics?.totalReviews ?? 0} total verified reviews
-              </span>
-            </div>
+          {/* Rating Distribution Bars */}
+          <div className="space-y-2">
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block mb-2">
+              Rating Breakdown
+            </span>
+            {[5, 4, 3, 2, 1].map((stars) => {
+              const count = getRatingCount(stars);
+              const percent = totalRevCount > 0 ? (count / totalRevCount) * 100 : 0;
 
-            <div className="space-y-2.5">
-              {(analytics?.ratingDistribution ?? []).map((item) => (
-                <div key={item.stars} className="flex items-center space-x-3 text-xs">
-                  <div className="flex items-center space-x-1 w-12 shrink-0">
-                    <span className="font-bold text-slate-700">{item.stars}</span>
-                    <Star size={12} className="text-amber-400 fill-amber-400" />
+              return (
+                <div key={stars} className="flex items-center space-x-3 text-xs">
+                  <div className="flex items-center space-x-1 w-12 font-bold text-zinc-700">
+                    <span>{stars}</span>
+                    <Star size={12} className="fill-amber-500 text-amber-500" />
                   </div>
 
-                  {/* Progress bar */}
-                  <div className="flex-1 h-3 rounded-full bg-slate-100 overflow-hidden relative">
+                  <div className="flex-1 h-2 rounded-full bg-zinc-100 overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        item.stars >= 4
-                          ? 'bg-amber-400'
-                          : item.stars === 3
-                          ? 'bg-indigo-400'
-                          : 'bg-rose-400'
-                      }`}
-                      style={{ width: `${item.percentage}%` }}
+                      className="h-full bg-amber-500 rounded-full transition-all duration-300"
+                      style={{ width: `${percent}%` }}
                     />
                   </div>
 
-                  <div className="w-20 text-right text-[11px] font-semibold text-slate-500">
-                    <span>{item.count}</span>
-                    <span className="text-slate-400 ml-1">({item.percentage.toFixed(0)}%)</span>
-                  </div>
+                  <span className="w-10 text-right font-medium text-zinc-500 text-[11px]">
+                    {count}
+                  </span>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Right Column: QR Code & Review Hub Card */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between space-y-6">
-          <div className="space-y-4 text-center">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
-              <QrCode size={13} />
-              <span>Counter Review QR</span>
-            </div>
-
-            <h3 className="text-base font-black text-slate-900">
-              Scan to Review {business?.name}
-            </h3>
-
-            {/* QR Code Frame */}
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 inline-block shadow-inner">
-              {qrCodeData?.qrCodeDataUrl ? (
-                <img
-                  src={qrCodeData.qrCodeDataUrl}
-                  alt="Review QR Code"
-                  className="w-44 h-44 mx-auto rounded-xl shadow-xs"
-                />
-              ) : (
-                <div className="w-44 h-44 flex items-center justify-center text-slate-400 text-xs">
-                  Loading QR Code...
-                </div>
-              )}
-            </div>
-
-            <p className="text-xs text-slate-500 max-w-xs mx-auto">
-              Place this QR code on checkout counters, restaurant tables, salon mirrors, or delivery bags.
-            </p>
+        {/* QR Code Counter Stand Display */}
+        <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card flex flex-col justify-between items-center text-center space-y-4">
+          <div className="space-y-1">
+            <h3 className="text-sm font-bold text-zinc-900">Counter QR Code</h3>
+            <p className="text-xs text-zinc-500">Let customers scan at billing counter</p>
           </div>
 
-          <div className="space-y-2 pt-2 border-t border-slate-100">
-            <button
-              onClick={handleDownloadQrPng}
-              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
-            >
-              <Download size={14} />
-              <span>Download QR Code (PNG)</span>
-            </button>
+          {/* QR Code Preview Box */}
+          <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-200 shadow-xs flex flex-col items-center space-y-2">
+            {qrCodeData?.qrCodeDataUrl ? (
+              <img
+                src={qrCodeData.qrCodeDataUrl}
+                alt="Review QR Code"
+                className="w-36 h-36 rounded-lg bg-white p-2 border border-zinc-200"
+              />
+            ) : (
+              <div className="w-36 h-36 rounded-lg bg-white border border-zinc-200 flex items-center justify-center">
+                <QrCode size={48} className="text-zinc-300" />
+              </div>
+            )}
+            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider">
+              {business?.name || 'Review Us'}
+            </span>
+          </div>
 
-            <button
-              onClick={() => setIsPrintModalOpen(true)}
-              className="w-full py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
-            >
-              <Printer size={14} />
-              <span>Print Table Standee</span>
-            </button>
-
-            {settings?.directReviewPageUrl && (
+          {/* Download / Print Actions */}
+          <div className="grid grid-cols-2 gap-2 w-full pt-1">
+            {qrCodeData?.qrCodeDataUrl && (
               <a
-                href={settings.directReviewPageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-center gap-1 pt-1"
+                href={qrCodeData.qrCodeDataUrl}
+                download={`review-qr-${business?.name || 'bizflow'}.png`}
+                className="py-2 px-3 rounded-xl bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
               >
-                <span>Test Public Review Page</span>
-                <ExternalLink size={12} />
+                <Download size={14} />
+                <span>Download</span>
               </a>
             )}
+
+            <button
+              onClick={() => window.print()}
+              className="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+            >
+              <Printer size={14} />
+              <span>Print Stand</span>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Reviews Register & Filter Section */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-xs space-y-6">
-        {/* Filter and Search Toolbar */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <form onSubmit={handleSearchSubmit} className="relative w-full md:w-80">
-            <Search size={16} className="absolute left-3.5 top-3 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search reviewer, text, phone..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium"
-            />
-          </form>
+      {/* RECENT FEEDBACK & REVIEWS LIST */}
+      <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden space-y-4">
+        {/* Table Header Controls */}
+        <div className="p-4 sm:p-5 border-b border-zinc-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h3 className="text-sm font-bold text-zinc-900">Customer Feedback &amp; Ratings</h3>
 
-          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
-            {/* Rating Filter Dropdown */}
+          <div className="flex flex-wrap items-center gap-2">
             <select
               value={selectedRatingFilter}
               onChange={(e) => setSelectedRatingFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              className="px-3 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
             >
               <option value="ALL">All Star Ratings</option>
               <option value="5">5 Stars Only</option>
@@ -446,123 +358,89 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               <option value="1">1 Star Only</option>
             </select>
 
-            {/* Positive vs Private feedback filter */}
             <select
               value={positiveOnlyFilter}
               onChange={(e) => setPositiveOnlyFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              className="px-3 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
             >
-              <option value="ALL">All Feedback Types</option>
-              <option value="POSITIVE">Positive Praise (4-5★)</option>
-              <option value="PRIVATE">Private Constructive (1-3★)</option>
+              <option value="ALL">All Feedback</option>
+              <option value="POSITIVE">High Ratings (4-5★)</option>
+              <option value="PRIVATE">Private Concerns (&lt;4★)</option>
             </select>
           </div>
         </div>
 
-        {/* Reviews List Cards */}
-        <div className="space-y-3">
+        {/* Reviews List */}
+        <div className="divide-y divide-zinc-100">
           {loading ? (
-            <div className="p-12 text-center text-slate-400 text-xs font-medium">
-              Loading reviews...
-            </div>
+            <div className="py-12 text-center text-zinc-400 text-xs">Loading customer reviews...</div>
           ) : reviews.length === 0 ? (
-            <div className="p-12 text-center text-slate-500 space-y-2">
-              <Star size={32} className="mx-auto text-slate-300" />
-              <p className="font-bold text-slate-700">No customer reviews yet</p>
-              <p className="text-[11px] text-slate-400">
-                Share your review link or print the QR code counter standee to begin receiving customer reviews.
-              </p>
+            <div className="py-12 text-center text-zinc-500 space-y-1">
+              <Star size={32} className="mx-auto text-zinc-300" />
+              <p className="font-bold text-zinc-700">No customer reviews yet</p>
+              <p className="text-xs text-zinc-400">Share your QR code to start collecting ratings.</p>
             </div>
           ) : (
             reviews.map((rev) => (
-              <div
-                key={rev.id}
-                className={`p-5 rounded-2xl border transition-all ${
-                  rev.hidden
-                    ? 'bg-slate-50/60 border-slate-200 opacity-60'
-                    : 'bg-white border-slate-200 hover:border-slate-300'
-                }`}
-              >
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                  <div className="space-y-1.5 flex-1">
-                    <div className="flex items-center space-x-3">
-                      {/* Star Rating Badge */}
-                      <div className="flex items-center space-x-1">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <Star
-                            key={s}
-                            size={14}
-                            className={`${
-                              s <= rev.rating
-                                ? 'text-amber-400 fill-amber-400'
-                                : 'text-slate-200 fill-slate-100'
-                            }`}
-                          />
-                        ))}
-                      </div>
-
-                      <span className="text-xs font-extrabold text-slate-900">
-                        {rev.customerName || 'Anonymous Customer'}
-                      </span>
-
-                      {/* Tag: Positive vs Private Feedback */}
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                          rev.positive
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : 'bg-amber-50 text-amber-700 border-amber-200'
-                        }`}
-                      >
-                        {rev.positive ? 'Public Praise' : 'Private Improvement'}
-                      </span>
-
-                      {rev.redirectedToPublicPlatform && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center gap-1">
-                          <ExternalLink size={10} />
-                          <span>Google Shared</span>
-                        </span>
-                      )}
-
-                      {rev.hidden && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                          Hidden
-                        </span>
-                      )}
+              <div key={rev.id} className="p-4 sm:p-5 hover:bg-zinc-50/70 transition-colors flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                <div className="space-y-2 flex-1">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="flex items-center space-x-0.5">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star
+                          key={s}
+                          size={15}
+                          className={
+                            s <= rev.rating
+                              ? 'fill-amber-500 text-amber-500'
+                              : 'text-zinc-200'
+                          }
+                        />
+                      ))}
                     </div>
 
-                    {/* Feedback Content */}
-                    <p className="text-xs text-slate-700 leading-relaxed font-medium">
-                      {rev.feedbackText || <span className="text-slate-400 italic">No written comment provided.</span>}
-                    </p>
-
-                    {/* Contact information if submitted */}
-                    {rev.customerContact && (
-                      <div className="text-[11px] text-slate-500 font-medium">
-                        Contact: <span className="text-slate-800">{rev.customerContact}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center space-x-2 shrink-0 sm:self-start">
-                    <span className="text-[11px] text-slate-400">
-                      {new Date(rev.createdAt).toLocaleDateString()}
+                    <span className="text-xs font-bold text-zinc-900">
+                      {rev.customerName || 'Anonymous Customer'}
                     </span>
 
-                    {/* Moderate / Hide action */}
-                    {isOwner && (
-                      <button
-                        onClick={() => {
-                          setModeratingReview(rev);
-                          setModerationNotes(rev.moderationNotes || '');
-                        }}
-                        title={rev.hidden ? 'Restore Review' : 'Hide from Public'}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-                      >
-                        {rev.hidden ? <Eye size={15} /> : <EyeOff size={15} />}
-                      </button>
-                    )}
+                    <span className="text-[11px] text-zinc-400">
+                      • {new Date(rev.createdAt).toLocaleDateString('en-IN', { dateStyle: 'medium' })}
+                    </span>
+
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                        rev.positive
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-amber-50 text-amber-800 border border-amber-200'
+                      }`}
+                    >
+                      {rev.positive ? '5-Star Boosted' : 'Private Feedback'}
+                    </span>
                   </div>
+
+                  {rev.feedbackText && (
+                    <p className="text-xs text-zinc-700 leading-relaxed font-medium bg-zinc-50 p-3 rounded-xl border border-zinc-100">
+                      "{rev.feedbackText}"
+                    </p>
+                  )}
+
+                  {rev.customerContact && (
+                    <span className="text-[10px] text-zinc-500 font-mono block">
+                      Contact: {rev.customerContact}
+                    </span>
+                  )}
                 </div>
+
+                {isOwner && (
+                  <div className="flex items-center space-x-2 shrink-0">
+                    <button
+                      onClick={() => setModeratingReview(rev)}
+                      className="px-3 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 text-zinc-700 text-xs font-semibold cursor-pointer"
+                    >
+                      Moderate
+                    </button>
+                  </div>
+                )}
               </div>
             ))
           )}
@@ -570,22 +448,22 @@ export const ReviewBoostDashboardPage: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-4 border-t border-slate-100 text-xs">
-            <span className="text-slate-400">
-              Page {page + 1} of {totalPages} ({totalElements} total reviews)
+          <div className="p-3.5 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
+            <span>
+              Showing page {page + 1} of {totalPages}
             </span>
-            <div className="flex space-x-2">
+            <div className="flex items-center space-x-1.5">
               <button
-                disabled={page === 0}
+                disabled={page <= 0}
                 onClick={() => fetchDashboardData(page - 1)}
-                className="px-3 py-1 rounded-lg border border-slate-200 font-semibold disabled:opacity-40 hover:bg-slate-50"
+                className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold disabled:opacity-50 cursor-pointer"
               >
                 Previous
               </button>
               <button
                 disabled={page >= totalPages - 1}
                 onClick={() => fetchDashboardData(page + 1)}
-                className="px-3 py-1 rounded-lg border border-slate-200 font-semibold disabled:opacity-40 hover:bg-slate-50"
+                className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold disabled:opacity-50 cursor-pointer"
               >
                 Next
               </button>
@@ -594,101 +472,87 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         )}
       </div>
 
-      {/* Review Settings Modal (Owner Only) */}
+      {/* Configure Settings Modal */}
       {isSettingsModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-100 p-6 md:p-8 space-y-6 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <h2 className="text-lg font-black text-slate-900">Review Boost Configuration</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+                  <Settings size={16} />
+                </div>
+                <h3 className="text-sm font-bold text-zinc-900">Review Boost Settings</h3>
+              </div>
               <button
                 onClick={() => setIsSettingsModalOpen(false)}
-                className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-600"
+                className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 cursor-pointer"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveSettings} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Custom Review Slug <span className="text-rose-500">*</span>
-                </label>
-                <div className="flex items-center rounded-xl border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500">
-                  <span className="px-3 py-2 bg-slate-50 text-slate-400 text-xs font-mono border-r border-slate-200">
-                    /review/
-                  </span>
-                  <input
-                    type="text"
-                    required
-                    placeholder="my-business-slug"
-                    value={settingsForm.reviewSlug || ''}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, reviewSlug: e.target.value })}
-                    className="w-full px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none"
-                  />
-                </div>
-                <p className="text-[10px] text-slate-400 mt-1">
-                  Unique public web address for your review portal.
-                </p>
+            <form onSubmit={handleSaveSettings} className="space-y-3.5">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-700">Custom Review URL Slug</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. apex-retail"
+                  value={settingsForm.reviewSlug}
+                  onChange={(e) => setSettingsForm({ ...settingsForm, reviewSlug: e.target.value })}
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-mono focus:ring-1 focus:ring-emerald-600"
+                />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Public Review Platform URL (Google, Yelp, TripAdvisor)
-                </label>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-700">Google / Social 5-Star Review Redirect URL</label>
                 <input
                   type="url"
-                  placeholder="https://g.page/r/your-google-review-link/review"
+                  placeholder="https://g.page/r/your-business/review"
                   value={settingsForm.publicReviewUrl || ''}
                   onChange={(e) => setSettingsForm({ ...settingsForm, publicReviewUrl: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
                 />
-                <p className="text-[10px] text-slate-400 mt-1">
-                  When customers rate 4 or 5 stars, they will be given a button to post directly on this public link.
+                <p className="text-[10px] text-zinc-400">
+                  Happy customers giving 5-stars will be redirected here to post on Google.
                 </p>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Review Prompt Message
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="Thank you for choosing us! How was your experience today?"
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-700">Welcome Prompt Message</label>
+                <input
+                  type="text"
+                  placeholder="How was your experience with us today?"
                   value={settingsForm.reviewPromptMessage || ''}
                   onChange={(e) => setSettingsForm({ ...settingsForm, reviewPromptMessage: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
                 />
               </div>
 
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-                <div>
-                  <span className="text-xs font-bold text-slate-900 block">Enable Public Review Page</span>
-                  <span className="text-[10px] text-slate-400">
-                    Allow customers to access review page and submit feedback
-                  </span>
-                </div>
+              <label className="flex items-center space-x-2 cursor-pointer pt-1">
                 <input
                   type="checkbox"
-                  checked={settingsForm.reviewEnabled ?? true}
+                  checked={settingsForm.reviewEnabled}
                   onChange={(e) => setSettingsForm({ ...settingsForm, reviewEnabled: e.target.checked })}
-                  className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                  className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-600"
                 />
-              </div>
+                <span className="text-xs font-bold text-zinc-800">Enable Review Boost Landing Page</span>
+              </label>
 
-              <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setIsSettingsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50"
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={settingsSubmitting}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-100 disabled:opacity-50"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {settingsSubmitting ? 'Saving...' : 'Save Configuration'}
+                  {settingsSubmitting ? 'Saving...' : 'Save Settings'}
                 </button>
               </div>
             </form>
@@ -696,127 +560,50 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* Moderation Confirmation Modal */}
+      {/* Moderation Modal */}
       {moderatingReview && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-100 p-6 space-y-4">
-            <h3 className="text-base font-black text-slate-900">
-              {moderatingReview.hidden ? 'Restore Review to Public' : 'Hide Review Entry'}
-            </h3>
-            <p className="text-xs text-slate-500">
-              {moderatingReview.hidden
-                ? 'This review will be restored and factored back into average rating statistics.'
-                : 'Hidden reviews will not appear in public rating calculations. You can attach an internal note below.'}
-            </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+              <h3 className="text-sm font-bold text-zinc-900">Moderate Customer Review</h3>
+              <button
+                onClick={() => setModeratingReview(null)}
+                className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
 
-            <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                Moderation Note (Optional)
-              </label>
+            <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 text-xs space-y-1">
+              <div className="font-bold text-zinc-900">{moderatingReview.customerName || 'Anonymous'}</div>
+              <p className="text-zinc-600 italic">"{moderatingReview.feedbackText}"</p>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-zinc-700">Internal Manager Notes</label>
               <input
                 type="text"
-                placeholder="Reason for hiding/moderating..."
+                placeholder="e.g. Addressed customer request with discount coupon"
                 value={moderationNotes}
                 onChange={(e) => setModerationNotes(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
               />
             </div>
 
-            <div className="flex justify-end space-x-3 pt-2">
+            <div className="flex justify-between pt-2">
               <button
-                onClick={() => setModeratingReview(null)}
-                className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs"
+                type="button"
+                onClick={() => handleModerateReview(false)}
+                className="px-3.5 py-2 border border-zinc-200 text-zinc-700 hover:bg-zinc-50 rounded-xl text-xs font-semibold cursor-pointer"
               >
-                Cancel
+                Keep Private
               </button>
               <button
-                onClick={handleToggleModerate}
-                className={`px-5 py-2 rounded-xl font-bold text-xs text-white ${
-                  moderatingReview.hidden ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-rose-600 hover:bg-rose-700'
-                }`}
+                type="button"
+                onClick={() => handleModerateReview(true)}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer"
               >
-                {moderatingReview.hidden ? 'Restore Review' : 'Hide Review'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Printable Counter Standee Modal */}
-      {isPrintModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-100 p-8 space-y-6 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 print:hidden">
-              <div>
-                <h2 className="text-base font-black text-slate-900">Print Counter Standee / Card</h2>
-                <p className="text-xs text-slate-400">Ready for table tents, counters, and packaging</p>
-              </div>
-              <button
-                onClick={() => setIsPrintModalOpen(false)}
-                className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-600"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Standee Preview Card (Printable) */}
-            <div
-              id="printable-standee"
-              className="border-2 border-dashed border-slate-300 rounded-3xl p-8 text-center space-y-4 bg-gradient-to-b from-slate-50 to-white print:border-none print:shadow-none"
-            >
-              <div className="space-y-1">
-                <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                  {business?.businessType || 'BUSINESS'}
-                </span>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-                  {business?.name}
-                </h2>
-              </div>
-
-              <div className="flex items-center justify-center space-x-1 py-1">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <Star key={s} size={18} className="text-amber-400 fill-amber-400" />
-                ))}
-              </div>
-
-              <p className="text-xs font-medium text-slate-600 max-w-xs mx-auto">
-                {settings?.reviewPromptMessage || 'How was your experience today? Scan the QR code to leave us a review!'}
-              </p>
-
-              {/* QR Image */}
-              <div className="p-4 bg-white rounded-2xl border border-slate-200 inline-block shadow-md">
-                {qrCodeData?.qrCodeDataUrl ? (
-                  <img
-                    src={qrCodeData.qrCodeDataUrl}
-                    alt="Scan to Review"
-                    className="w-48 h-48 mx-auto"
-                  />
-                ) : null}
-              </div>
-
-              <div className="space-y-1 pt-2">
-                <span className="text-xs font-black text-slate-800 tracking-tight block">
-                  Scan with your Phone Camera
-                </span>
-                <span className="text-[10px] font-mono text-slate-400 block">
-                  {settings?.directReviewPageUrl}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-3 pt-2 print:hidden">
-              <button
-                onClick={() => setIsPrintModalOpen(false)}
-                className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs"
-              >
-                Close
-              </button>
-              <button
-                onClick={handlePrintStandee}
-                className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center space-x-1.5 shadow-md"
-              >
-                <Printer size={14} />
-                <span>Print Standee Now</span>
+                Make Public
               </button>
             </div>
           </div>

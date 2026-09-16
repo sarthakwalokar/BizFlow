@@ -1,29 +1,48 @@
 /**
  * Centralized Currency Formatting Utility for BizFlow
- * Defaults to Indian Rupee (INR / ₹)
+ * Handles dynamic business-configured currencies (USD, INR, EUR, GBP, CAD, AUD, etc.)
  */
 
-export const DEFAULT_CURRENCY = 'INR';
-export const DEFAULT_CURRENCY_SYMBOL = '₹';
+export const DEFAULT_CURRENCY = 'USD';
+export const DEFAULT_CURRENCY_SYMBOL = '$';
+
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  USD: '$',
+  INR: '₹',
+  RS: '₹',
+  RUPEE: '₹',
+  EUR: '€',
+  GBP: '£',
+  CAD: 'CA$',
+  AUD: 'AU$',
+  JPY: '¥',
+  AED: 'AED ',
+  SAR: 'SAR ',
+  SGD: 'S$',
+  NZD: 'NZ$',
+  CHF: 'CHF ',
+  CNY: '¥',
+};
 
 /**
  * Returns the standard display symbol for a given currency code.
  */
 export function getCurrencySymbol(currency: string = DEFAULT_CURRENCY): string {
   if (!currency) return DEFAULT_CURRENCY_SYMBOL;
-  const upper = currency.toUpperCase();
-  if (upper === 'INR' || upper === 'RS' || upper === 'RUPEE' || upper === 'RUPEES') {
-    return '₹';
+  const upper = currency.trim().toUpperCase();
+  if (CURRENCY_SYMBOLS[upper]) {
+    return CURRENCY_SYMBOLS[upper];
   }
-  if (upper === 'USD') return '$';
-  if (upper === 'EUR') return '€';
-  if (upper === 'GBP') return '£';
-  return upper;
+  return `${upper} `;
 }
 
 /**
- * Formats a numeric amount with standard Indian Rupee notation (or specified currency)
- * Example: formatCurrency(1250.5) -> "₹1,250.50"
+ * Formats a numeric amount according to the configured business currency.
+ * Examples:
+ *   formatCurrency(24850, 'INR') -> "₹24,850.00"
+ *   formatCurrency(24850, 'USD') -> "$24,850.00"
+ *   formatCurrency(24850, 'EUR') -> "€24,850.00"
+ *   formatCurrency(24850, 'GBP') -> "£24,850.00"
  */
 export function formatCurrency(
   amount: number | string | null | undefined,
@@ -35,21 +54,30 @@ export function formatCurrency(
   }
 ): string {
   const num = typeof amount === 'string' ? parseFloat(amount) : (amount ?? 0);
-  if (isNaN(num)) return `${options?.showSymbol !== false ? getCurrencySymbol(currency) : ''}0.00`;
-
   const decimals = options?.decimals ?? 2;
   const showSymbol = options?.showSymbol !== false;
   const symbol = getCurrencySymbol(currency);
 
+  if (isNaN(num)) {
+    return `${showSymbol ? symbol : ''}0.00`;
+  }
+
   try {
-    const isINR = !currency || currency.toUpperCase() === 'INR';
-    
-    // For INR, use en-IN locale for correct lakh/crore commas (e.g. 1,00,000)
-    const locale = isINR ? 'en-IN' : 'en-US';
-    
+    const upper = (currency || DEFAULT_CURRENCY).trim().toUpperCase();
+    let locale = 'en-US';
+    if (upper === 'INR' || upper === 'RS') {
+      locale = 'en-IN';
+    } else if (upper === 'EUR') {
+      locale = 'de-DE';
+    } else if (upper === 'GBP') {
+      locale = 'en-GB';
+    } else if (upper === 'JPY') {
+      locale = 'ja-JP';
+    }
+
     const formatted = new Intl.NumberFormat(locale, {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
+      minimumFractionDigits: upper === 'JPY' ? 0 : decimals,
+      maximumFractionDigits: upper === 'JPY' ? 0 : decimals,
       notation: options?.compact ? 'compact' : 'standard',
     }).format(num);
 
@@ -58,11 +86,4 @@ export function formatCurrency(
     const fixed = num.toFixed(decimals);
     return showSymbol ? `${symbol}${fixed}` : fixed;
   }
-}
-
-/**
- * Convenience helper specifically for standard INR formatting
- */
-export function formatINR(amount: number | string | null | undefined, decimals: number = 2): string {
-  return formatCurrency(amount, 'INR', { decimals, showSymbol: true });
 }

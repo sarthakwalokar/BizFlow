@@ -13,6 +13,8 @@ import {
   UserCheck,
   Building2,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 export const AdminUsersPage: React.FC = () => {
@@ -87,128 +89,114 @@ export const AdminUsersPage: React.FC = () => {
     switch (role) {
       case 'ADMIN':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/30">
-            <ShieldAlert size={10} />
-            <span>PLATFORM ADMIN</span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+            <ShieldAlert size={11} />
+            <span>ADMIN</span>
           </span>
         );
       case 'OWNER':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">
-            <Briefcase size={10} />
-            <span>BUSINESS OWNER</span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+            <Briefcase size={11} />
+            <span>OWNER</span>
           </span>
         );
       case 'STAFF':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-            <UserCheck size={10} />
-            <span>STAFF MEMBER</span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-zinc-100 text-zinc-700 border border-zinc-200">
+            <UserCheck size={11} />
+            <span>STAFF</span>
           </span>
         );
     }
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-black text-white tracking-tight">Platform Users Directory</h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold border border-purple-500/30">
-              {totalElements} Total Accounts
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Platform Users Directory</h1>
+            <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 text-xs font-medium border border-purple-200">
+              {totalElements} Accounts
             </span>
           </div>
-          <p className="text-slate-400 text-xs mt-1">
-            Oversee all registered user accounts, role allocations, and access privileges.
+          <p className="text-xs text-zinc-500 mt-0.5">
+            Oversee all registered user accounts, role allocations, and access privileges across tenants.
           </p>
         </div>
 
         <button
           onClick={fetchUsers}
           disabled={loading}
-          className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-bold transition-all cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-medium shadow-xs transition-colors cursor-pointer self-start sm:self-auto disabled:opacity-50"
         >
-          <RefreshCw size={14} className={loading ? 'animate-spin text-purple-400' : ''} />
-          <span>Refresh Users</span>
+          <RefreshCw size={13} className={loading ? 'animate-spin text-purple-600' : 'text-zinc-400'} />
+          <span>Refresh</span>
         </button>
       </div>
 
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-bold flex items-center space-x-2">
-          <AlertCircle size={16} className="text-rose-400 shrink-0" />
+        <div className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
+          <AlertCircle size={15} className="text-red-500 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Filter Toolbar Card */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-4">
-        <form onSubmit={handleSearchSubmit} className="flex flex-wrap items-center gap-3">
+      <div className="bg-white border border-zinc-200 rounded-xl p-4 shadow-xs">
+        <form onSubmit={handleSearchSubmit} className="flex flex-wrap items-center gap-2.5">
           {/* Search Input */}
-          <div className="relative flex-1 min-w-[240px]">
-            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+          <div className="relative flex-1 min-w-[220px]">
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by full name, email, or phone..."
-              className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-purple-500 font-medium"
+              placeholder="Search by name, email, or phone..."
+              className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-zinc-50 border border-zinc-200 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white"
             />
           </div>
 
           {/* Role Filter */}
-          <div className="flex items-center space-x-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5">
-            <span className="text-[11px] font-bold text-slate-400">Role:</span>
+          <div className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1.5">
+            <span className="text-[11px] font-medium text-zinc-500">Role:</span>
             <select
               value={selectedRole}
               onChange={(e) => {
                 setSelectedRole(e.target.value);
                 setPage(0);
               }}
-              className="bg-transparent text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
+              className="bg-transparent text-xs font-medium text-zinc-700 focus:outline-none cursor-pointer"
             >
-              <option value="ALL" className="bg-slate-900 text-slate-200">
-                All Roles
-              </option>
-              <option value="OWNER" className="bg-slate-900 text-slate-200">
-                Owners
-              </option>
-              <option value="STAFF" className="bg-slate-900 text-slate-200">
-                Staff
-              </option>
-              <option value="ADMIN" className="bg-slate-900 text-slate-200">
-                Platform Admins
-              </option>
+              <option value="ALL">All Roles</option>
+              <option value="OWNER">Owners</option>
+              <option value="STAFF">Staff</option>
+              <option value="ADMIN">Platform Admins</option>
             </select>
           </div>
 
           {/* Status Filter */}
-          <div className="flex items-center space-x-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5">
-            <span className="text-[11px] font-bold text-slate-400">Status:</span>
+          <div className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1.5">
+            <span className="text-[11px] font-medium text-zinc-500">Status:</span>
             <select
               value={selectedStatus}
               onChange={(e) => {
                 setSelectedStatus(e.target.value);
                 setPage(0);
               }}
-              className="bg-transparent text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
+              className="bg-transparent text-xs font-medium text-zinc-700 focus:outline-none cursor-pointer"
             >
-              <option value="ALL" className="bg-slate-900 text-slate-200">
-                All
-              </option>
-              <option value="ENABLED" className="bg-slate-900 text-slate-200">
-                Enabled Only
-              </option>
-              <option value="DISABLED" className="bg-slate-900 text-slate-200">
-                Disabled Only
-              </option>
+              <option value="ALL">All</option>
+              <option value="ENABLED">Active Only</option>
+              <option value="DISABLED">Disabled Only</option>
             </select>
           </div>
 
           <button
             type="submit"
-            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md shadow-purple-600/20 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium transition-colors shadow-xs cursor-pointer"
           >
             Apply Filters
           </button>
@@ -216,31 +204,32 @@ export const AdminUsersPage: React.FC = () => {
       </div>
 
       {/* Users Table Grid */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl overflow-hidden shadow-xs">
+      <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider text-[10px]">
-                <th className="px-5 py-4">User</th>
-                <th className="px-5 py-4">Role</th>
-                <th className="px-5 py-4">Assigned Tenant</th>
-                <th className="px-5 py-4">Contact</th>
-                <th className="px-5 py-4 text-center">Account Access</th>
+              <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-medium uppercase tracking-wider text-[10px]">
+                <th className="px-4 py-3">User</th>
+                <th className="px-4 py-3">Role</th>
+                <th className="px-4 py-3">Assigned Tenant</th>
+                <th className="px-4 py-3">Contact</th>
+                <th className="px-4 py-3 text-center">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-zinc-100">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
-                    Loading users directory...
+                  <td colSpan={5} className="px-4 py-12 text-center text-zinc-400">
+                    <RefreshCw size={18} className="mx-auto text-zinc-300 animate-spin mb-2" />
+                    <p className="text-xs">Loading users directory...</p>
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400 space-y-1">
-                    <Users size={32} className="mx-auto text-slate-600" />
-                    <p className="font-semibold text-slate-300">No users found</p>
-                    <p className="text-[11px] text-slate-500">Try adjusting your search criteria.</p>
+                  <td colSpan={5} className="px-4 py-12 text-center text-zinc-400 space-y-1">
+                    <Users size={28} className="mx-auto text-zinc-300 mb-2" />
+                    <p className="font-medium text-zinc-700">No users found</p>
+                    <p className="text-[11px] text-zinc-400">Try adjusting your search criteria.</p>
                   </td>
                 </tr>
               ) : (
@@ -250,52 +239,52 @@ export const AdminUsersPage: React.FC = () => {
                   const isAdmin = usr.role === 'ADMIN';
 
                   return (
-                    <tr key={usr.id} className="hover:bg-slate-800/40 transition-colors">
+                    <tr key={usr.id} className="hover:bg-zinc-50/70 transition-colors">
                       {/* Name & Initials */}
-                      <td className="px-5 py-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-9 h-9 rounded-2xl bg-indigo-950/60 border border-indigo-800/40 flex items-center justify-center text-indigo-300 font-black text-xs shrink-0">
-                            {usr.fullName?.charAt(0) || 'U'}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-700 font-bold text-xs shrink-0">
+                            {usr.fullName?.charAt(0).toUpperCase() || 'U'}
                           </div>
                           <div>
-                            <div className="flex items-center space-x-2">
-                              <span className="font-bold text-white text-xs">{usr.fullName}</span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-medium text-zinc-900 text-xs">{usr.fullName}</span>
                               {isSelf && (
-                                <span className="px-1.5 py-0.5 rounded bg-purple-900/60 text-purple-300 text-[9px] font-bold">
+                                <span className="px-1.5 py-0.2 rounded bg-purple-50 text-purple-700 text-[9px] font-semibold border border-purple-200">
                                   You
                                 </span>
                               )}
                             </div>
-                            <span className="text-[10px] text-slate-500 font-mono">User ID #{usr.id}</span>
+                            <span className="text-[11px] text-zinc-400 font-mono">ID #{usr.id}</span>
                           </div>
                         </div>
                       </td>
 
                       {/* Role */}
-                      <td className="px-5 py-4">{getRoleBadge(usr.role)}</td>
+                      <td className="px-4 py-3">{getRoleBadge(usr.role)}</td>
 
                       {/* Tenant Attribution */}
-                      <td className="px-5 py-4">
+                      <td className="px-4 py-3">
                         {usr.businessId ? (
-                          <div className="flex items-center space-x-1.5 text-slate-300">
-                            <Building2 size={13} className="text-slate-500" />
+                          <div className="flex items-center gap-1.5 text-zinc-700">
+                            <Building2 size={13} className="text-zinc-400" />
                             <span className="font-mono text-xs">Tenant #{usr.businessId}</span>
                           </div>
                         ) : (
-                          <span className="text-slate-500 italic text-[11px]">Platform Wide (No Tenant)</span>
+                          <span className="text-zinc-400 italic text-[11px]">Platform Wide</span>
                         )}
                       </td>
 
                       {/* Contact */}
-                      <td className="px-5 py-4">
+                      <td className="px-4 py-3">
                         <div className="space-y-0.5 text-[11px]">
-                          <div className="text-slate-300 font-medium">{usr.email}</div>
-                          <div className="text-slate-500 font-mono">{usr.phone || '—'}</div>
+                          <div className="text-zinc-700 font-medium">{usr.email}</div>
+                          <div className="text-zinc-400 font-mono">{usr.phone || '—'}</div>
                         </div>
                       </td>
 
                       {/* Enable/Disable Toggle */}
-                      <td className="px-5 py-4 text-center">
+                      <td className="px-4 py-3 text-center">
                         <button
                           onClick={() => handleToggleUserStatus(usr)}
                           disabled={isUpdating || isSelf || (isAdmin && usr.enabled)}
@@ -306,20 +295,20 @@ export const AdminUsersPage: React.FC = () => {
                               ? 'Platform Admin accounts cannot be disabled'
                               : 'Toggle user access'
                           }
-                          className={`inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium border transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
                             usr.enabled
-                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20'
-                              : 'bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                              : 'bg-zinc-100 text-zinc-600 border-zinc-200 hover:bg-zinc-200'
                           }`}
                         >
                           {isUpdating ? (
                             <RefreshCw size={11} className="animate-spin" />
                           ) : usr.enabled ? (
-                            <CheckCircle2 size={12} />
+                            <CheckCircle2 size={11} />
                           ) : (
-                            <XCircle size={12} />
+                            <XCircle size={11} />
                           )}
-                          <span>{usr.enabled ? 'Enabled' : 'Disabled'}</span>
+                          <span>{usr.enabled ? 'Active' : 'Disabled'}</span>
                         </button>
                       </td>
                     </tr>
@@ -332,25 +321,27 @@ export const AdminUsersPage: React.FC = () => {
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="p-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+          <div className="px-4 py-3 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
             <span>
               Showing Page {page + 1} of {totalPages} ({totalElements} users)
             </span>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setPage((p) => Math.max(p - 1, 0))}
                 disabled={page === 0}
-                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 font-bold cursor-pointer"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-600 disabled:opacity-40 font-medium cursor-pointer"
               >
-                Previous
+                <ChevronLeft size={13} />
+                <span>Previous</span>
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
                 disabled={page >= totalPages - 1}
-                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 font-bold cursor-pointer"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-600 disabled:opacity-40 font-medium cursor-pointer"
               >
-                Next
+                <span>Next</span>
+                <ChevronRight size={13} />
               </button>
             </div>
           </div>
@@ -359,3 +350,4 @@ export const AdminUsersPage: React.FC = () => {
     </div>
   );
 };
+

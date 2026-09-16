@@ -93,27 +93,27 @@ export const UserProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-6 max-w-4xl">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Account & Security</h1>
-        <p className="text-slate-500 text-sm mt-1">
-          Update your personal contact information, credentials, and check assigned privileges.
+        <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Account & Security</h1>
+        <p className="text-xs text-zinc-500 mt-0.5">
+          Update your personal contact information, authentication credentials, and view system role.
         </p>
       </div>
 
       {/* Account Overview Badge */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center space-x-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white font-black text-xl flex items-center justify-center shadow-md">
-            {user?.fullName ? user.fullName.charAt(0) : 'U'}
+      <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-xl bg-zinc-900 text-white font-bold text-lg flex items-center justify-center">
+            {user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-900">{user?.fullName}</h2>
-            <div className="flex items-center space-x-2 mt-1">
-              <span className="text-xs text-slate-500">{user?.email}</span>
-              <span className="text-slate-300">•</span>
-              <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold border border-indigo-200">
+            <h2 className="text-base font-semibold text-zinc-900">{user?.fullName}</h2>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-xs text-zinc-500">{user?.email}</span>
+              <span className="text-zinc-300">•</span>
+              <span className="px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-700 text-[10px] font-medium border border-zinc-200">
                 {user?.role}
               </span>
             </div>
@@ -121,137 +121,137 @@ export const UserProfilePage: React.FC = () => {
         </div>
 
         {business && (
-          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-slate-200/60 text-slate-700 flex items-center justify-center font-bold">
-              <Building size={16} />
+          <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-200 flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-md bg-zinc-200 text-zinc-700 flex items-center justify-center font-bold">
+              <Building size={14} />
             </div>
             <div className="text-xs">
-              <span className="text-slate-400 block text-[10px]">Associated Business</span>
-              <span className="font-bold text-slate-800">{business.name}</span>
+              <span className="text-zinc-400 block text-[10px]">Business</span>
+              <span className="font-semibold text-zinc-800">{business.name}</span>
             </div>
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Profile Information Form */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-xs space-y-6 flex flex-col justify-between">
-          <div className="space-y-6">
-            <div className="flex items-center space-x-3 pb-4 border-b border-slate-100">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                <User size={20} />
+        <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs space-y-5 flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-100">
+              <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center font-bold">
+                <User size={16} />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-900">Personal Information</h3>
-                <p className="text-xs text-slate-500">Your profile name and direct phone</p>
+                <h3 className="text-sm font-semibold text-zinc-900">Personal Details</h3>
+                <p className="text-xs text-zinc-500">Your profile name and direct phone</p>
               </div>
             </div>
 
             {profileSuccess && (
-              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center space-x-2 text-emerald-800 text-xs font-semibold">
-                <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+              <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-emerald-800 text-xs font-medium">
+                <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
                 <span>{profileSuccess}</span>
               </div>
             )}
 
             {profileError && (
-              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 flex items-center space-x-2 text-rose-800 text-xs font-semibold">
-                <AlertCircle size={16} className="text-rose-600 shrink-0" />
+              <div className="p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-800 text-xs font-medium">
+                <AlertCircle size={15} className="text-red-600 shrink-0" />
                 <span>{profileError}</span>
               </div>
             )}
 
-            <form id="profileForm" onSubmit={handleUpdateProfile} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Full Name <span className="text-rose-500">*</span>
+            <form id="profileForm" onSubmit={handleUpdateProfile} className="space-y-3.5">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-zinc-700">
+                  Full Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-zinc-700">
                   Primary Email (Read-only)
                 </label>
                 <div className="relative">
-                  <Mail size={16} className="absolute left-3.5 top-3 text-slate-400" />
+                  <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
                   <input
                     type="email"
                     disabled
                     value={user?.email || ''}
-                    className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 text-sm cursor-not-allowed"
+                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-500 text-xs cursor-not-allowed"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-zinc-700">
                   Direct Phone
                 </label>
                 <div className="relative">
-                  <Phone size={16} className="absolute left-3.5 top-3 text-slate-400" />
+                  <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
                   <input
                     type="text"
-                    placeholder="+1 (555) 000-0000"
+                    placeholder="+91 98765 43210"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"
+                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
                   />
                 </div>
               </div>
             </form>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 flex justify-end">
+          <div className="pt-3 border-t border-zinc-100 flex justify-end">
             <button
               type="submit"
               form="profileForm"
               disabled={savingProfile}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50"
             >
-              <Save size={16} />
+              <Save size={14} />
               <span>{savingProfile ? 'Saving...' : 'Update Details'}</span>
             </button>
           </div>
         </div>
 
         {/* Change Password Security Form */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-xs space-y-6 flex flex-col justify-between">
-          <div className="space-y-6">
-            <div className="flex items-center space-x-3 pb-4 border-b border-slate-100">
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-                <Lock size={20} />
+        <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs space-y-5 flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-100">
+              <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center font-bold">
+                <Lock size={16} />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-900">Change Password</h3>
-                <p className="text-xs text-slate-500">Maintain strong account security</p>
+                <h3 className="text-sm font-semibold text-zinc-900">Change Password</h3>
+                <p className="text-xs text-zinc-500">Maintain strong account security</p>
               </div>
             </div>
 
             {passwordSuccess && (
-              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center space-x-2 text-emerald-800 text-xs font-semibold">
-                <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+              <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-emerald-800 text-xs font-medium">
+                <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
                 <span>{passwordSuccess}</span>
               </div>
             )}
 
             {passwordError && (
-              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 flex items-center space-x-2 text-rose-800 text-xs font-semibold">
-                <AlertCircle size={16} className="text-rose-600 shrink-0" />
+              <div className="p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-800 text-xs font-medium">
+                <AlertCircle size={15} className="text-red-600 shrink-0" />
                 <span>{passwordError}</span>
               </div>
             )}
 
-            <form id="passwordForm" onSubmit={handleChangePassword} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Current Password <span className="text-rose-500">*</span>
+            <form id="passwordForm" onSubmit={handleChangePassword} className="space-y-3.5">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-zinc-700">
+                  Current Password <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -259,13 +259,13 @@ export const UserProfilePage: React.FC = () => {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  New Password <span className="text-rose-500">*</span>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-zinc-700">
+                  New Password <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -274,13 +274,13 @@ export const UserProfilePage: React.FC = () => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Min 8 characters"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Confirm New Password <span className="text-rose-500">*</span>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-zinc-700">
+                  Confirm New Password <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -289,20 +289,20 @@ export const UserProfilePage: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-type new password"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
                 />
               </div>
             </form>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 flex justify-end">
+          <div className="pt-3 border-t border-zinc-100 flex justify-end">
             <button
               type="submit"
               form="passwordForm"
               disabled={savingPassword}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md shadow-purple-600/30 transition-all cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50"
             >
-              <ShieldCheck size={16} />
+              <ShieldCheck size={14} />
               <span>{savingPassword ? 'Updating...' : 'Change Password'}</span>
             </button>
           </div>
@@ -311,3 +311,4 @@ export const UserProfilePage: React.FC = () => {
     </div>
   );
 };
+

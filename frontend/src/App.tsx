@@ -31,300 +31,271 @@ import { InventoryPage } from './pages/inventory/InventoryPage';
 import { AnalyticsDashboardPage } from './pages/analytics/AnalyticsDashboardPage';
 import { ReportsCenterPage } from './pages/reports/ReportsCenterPage';
 import { AiAssistantPage } from './pages/ai/AiAssistantPage';
-import { SWAGGER_DOCS_URL } from './api/axios';
 import { 
-  Store, 
-  Utensils, 
-  Coffee, 
-  Cake, 
-  Scissors, 
-  Wrench, 
-  Building2, 
-  UserCheck, 
-  ShieldAlert, 
-  Briefcase, 
-  CheckCircle,
-  ExternalLink,
-  ArrowRight,
   Receipt,
-  Boxes,
-  Sparkles,
-  TrendingDown,
+  Package,
   Users,
+  TrendingDown,
+  BarChart3,
   Star,
-  Laptop
+  Sparkles,
+  FileText,
+  ArrowRight,
+  CheckCircle,
+  QrCode,
+  Download,
+  Printer,
+  Building2,
+  Coffee,
+  Bot
 } from 'lucide-react';
 
-const coreCapabilities = [
+const coreFeatures = [
   {
-    title: 'Lightning POS Billing',
-    category: 'Billing & Checkout',
+    title: 'Billing',
+    desc: 'Create and manage bills quickly.',
     icon: Receipt,
-    desc: 'Instant barcode/SKU lookups, customizable GST/tax calculations, multi-mode payment capture (UPI, Cash, Cards), and thermal receipts.',
-    badge: 'Sub-100ms',
-    color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+    color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
   },
   {
-    title: 'Adaptive Inventory Engine',
-    category: 'Stock & Warehousing',
-    icon: Boxes,
-    desc: 'Lean single-counter stock control for small cafes, or full multi-location warehouses, inward POs, and supplier directories for enterprise retail.',
-    badge: 'Multi-Location',
-    color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+    title: 'Products & Services',
+    desc: 'Keep your products and services organized.',
+    icon: Package,
+    color: 'text-blue-600 bg-blue-50 border-blue-200',
   },
   {
-    title: 'AI Business Advisor',
-    category: 'Intelligence & Audit',
-    icon: Sparkles,
-    desc: 'Context-aware AI analyzing sales velocity, gross margins, low stock alerts, and providing actionable profit growth recommendations.',
-    badge: 'Real-Time Insights',
-    color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-  },
-  {
-    title: 'Expense & Margin Tracking',
-    category: 'Financial Control',
-    icon: TrendingDown,
-    desc: 'Record operational expenditures, supplier payouts, and utility bills. Track real-time net operating profits vs gross revenue.',
-    badge: 'Automated P&L',
-    color: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
-  },
-  {
-    title: 'Customer CRM & Loyalty',
-    category: 'Growth & Retention',
+    title: 'Customers',
+    desc: 'Understand customer activity and purchase history.',
     icon: Users,
-    desc: 'Centralized customer phone directory, transaction histories, loyalty balance tracking, and customer lifetime value metrics.',
-    badge: '360° Profile',
-    color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
+    color: 'text-purple-600 bg-purple-50 border-purple-200',
   },
   {
-    title: 'Review Boost Reputation',
-    category: 'Customer Feedback',
-    icon: Star,
-    desc: 'Turn happy customers into 5-star Google & social reviews via smart rating links, while capturing feedback privately.',
-    badge: 'Reputation',
-    color: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20',
+    title: 'Expenses',
+    desc: 'Track where your money goes.',
+    icon: TrendingDown,
+    color: 'text-rose-600 bg-rose-50 border-rose-200',
   },
-];
-
-const businessTypes = [
-  { type: 'RETAIL', title: 'Retail & Supermarkets', icon: Store, desc: 'POS checkout, barcode scanner, multi-location stock, inward POs, supplier ledger' },
-  { type: 'CAFE', title: 'Cafés & Quick Service', icon: Coffee, desc: 'Rapid counter billing, drink customizations, single-counter inventory tracking' },
-  { type: 'RESTAURANT', title: 'Dine-In Restaurants', icon: Utensils, desc: 'Table management, kitchen order tickets (KOT), tax inclusive billing, split checks' },
-  { type: 'BAKERY', title: 'Artisan Bakeries', icon: Cake, desc: 'Daily batch tracking, shelf-life alerts, ingredient cost controls, custom orders' },
-  { type: 'SALON', title: 'Salons & Wellness', icon: Scissors, desc: 'Appointment booking, stylist commissions, service packages, product upselling' },
-  { type: 'SERVICE', title: 'Service & Maintenance', icon: Wrench, desc: 'Work order invoicing, technician tracking, hourly billing, itemized quotes' },
-  { type: 'OTHER', title: 'Commercial Enterprises', icon: Building2, desc: 'Adaptable multi-category invoicing, custom tax rules, dynamic workflow schemas' },
-];
-
-const backendModules = [
-  { name: 'config', desc: 'WebMvc, Cors, OpenApi & Security configuration' },
-  { name: 'security', desc: 'Stateless JWT validation & UserPrincipal provider' },
-  { name: 'auth', desc: 'Multi-tenant signup, login & profile management' },
-  { name: 'user', desc: 'Role-based access control (OWNER, STAFF, ADMIN)' },
-  { name: 'business', desc: 'Tenant isolation, tax settings & staff team management' },
-  { name: 'product', desc: 'Catalog, physical products, services & categories' },
-  { name: 'customer', desc: 'CRM directory, loyalty balances & purchase ledger' },
-  { name: 'billing', desc: 'POS checkout engine, invoices & receipt generation' },
-  { name: 'payment', desc: 'Cash, Card, UPI, Net Banking & payment records' },
-  { name: 'expense', desc: 'Operating expenses, supplier payouts & categorizations' },
-  { name: 'inventory', desc: 'Stock movements, multi-locations, suppliers & POs' },
-  { name: 'review', desc: 'Customer review boosting & rating feedback capture' },
-  { name: 'analytics', desc: 'Real-time sales velocity, revenue trends & margins' },
-  { name: 'ai', desc: 'AI Business Assistant & contextual profit audit' },
-  { name: 'report', desc: 'Exportable CSV/Excel/PDF tax summaries & statements' },
-  { name: 'admin', desc: 'Platform tenant oversight, health & global controls' },
+  {
+    title: 'Analytics',
+    desc: 'Understand your sales and business performance.',
+    icon: BarChart3,
+    color: 'text-indigo-600 bg-indigo-50 border-indigo-200',
+  },
+  {
+    title: 'Review Boost',
+    desc: 'Collect feedback and build your online reputation.',
+    icon: Star,
+    color: 'text-amber-600 bg-amber-50 border-amber-200',
+  },
+  {
+    title: 'AI Assistant',
+    desc: 'Get useful answers from your business data.',
+    icon: Sparkles,
+    color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+  },
+  {
+    title: 'Reports',
+    desc: 'Generate clear business reports.',
+    icon: FileText,
+    color: 'text-slate-600 bg-slate-50 border-slate-200',
+  },
 ];
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 selection:bg-indigo-600 selection:text-white text-slate-100">
+    <div className="min-h-screen flex flex-col bg-[#F7F7F5] text-zinc-900 font-sans">
       <Navbar />
 
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-20">
+      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-24">
         
-        {/* Minimalist Hero Section */}
-        <section className="relative text-center space-y-6 pt-6 sm:pt-14 max-w-4xl mx-auto">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Enterprise Multi-Tenant SaaS Platform</span>
+        {/* =========================================================================
+            SECTION 1: HERO SECTION
+           ========================================================================= */}
+        <section className="text-center space-y-6 pt-6 sm:pt-12 max-w-4xl mx-auto">
+          {/* Small Label */}
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white border border-zinc-200 text-zinc-700 text-xs font-semibold shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-600" />
+            <span className="tracking-wide uppercase text-[11px] font-bold text-zinc-600">
+              BUSINESS MANAGEMENT PLATFORM
+            </span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-tight">
-            The Complete Operating System for <span className="bg-gradient-to-r from-indigo-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">Modern Business</span>
+          {/* Headline */}
+          <h1 className="text-4xl sm:text-6xl font-extrabold text-zinc-950 tracking-tight leading-tight">
+            Run your business. <span className="text-emerald-600">Simply.</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Unified POS billing, adaptive inventory management, AI-powered profit analytics, operational expense tracking, and customer loyalty built on a robust Spring Boot 3 &amp; React stack.
+          {/* Supporting Text */}
+          <p className="text-base sm:text-lg text-zinc-600 max-w-2xl mx-auto leading-relaxed">
+            Manage billing, products, customers, expenses, reviews and business insights from one place.
           </p>
 
-          {/* Action CTAs */}
+          {/* Primary & Secondary CTAs */}
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <Link
               to="/signup"
               id="hero-register-btn"
-              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/25 transition-all cursor-pointer"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-xs transition-colors cursor-pointer"
             >
-              <span>Get Started Free</span>
+              <span>Get Started</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
-            <Link
-              to="/login"
-              id="hero-login-btn"
-              className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 font-semibold text-sm transition-all cursor-pointer"
-            >
-              <span>Sign In / Demo</span>
-            </Link>
-
             <a
-              href={SWAGGER_DOCS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center space-x-2 px-4 py-3 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-slate-800 font-medium text-sm transition-all"
+              href="#core-features"
+              id="hero-features-btn"
+              className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-200 font-semibold text-sm shadow-xs transition-colors cursor-pointer"
             >
-              <span>REST API Swagger</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Explore Features</span>
             </a>
           </div>
 
-          {/* Quick Stats Strip */}
-          <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto text-left">
-            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800/80">
-              <div className="text-xs font-semibold text-slate-400">Architecture</div>
-              <div className="text-sm font-bold text-white mt-0.5">Multi-Tenant</div>
-            </div>
-            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800/80">
-              <div className="text-xs font-semibold text-slate-400">Inventory Mode</div>
-              <div className="text-sm font-bold text-emerald-400 mt-0.5">Adaptive Scale</div>
-            </div>
-            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800/80">
-              <div className="text-xs font-semibold text-slate-400">POS Checkout</div>
-              <div className="text-sm font-bold text-indigo-400 mt-0.5">Sub-100ms</div>
-            </div>
-            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800/80">
-              <div className="text-xs font-semibold text-slate-400">AI Intelligence</div>
-              <div className="text-sm font-bold text-amber-400 mt-0.5">Context-Aware</div>
+          {/* Hero Visual: Realistic BizFlow Dashboard Preview Mockup */}
+          <div className="pt-8">
+            <div className="rounded-2xl border border-zinc-200 bg-white p-3 sm:p-5 shadow-card max-w-5xl mx-auto text-left overflow-hidden">
+              {/* Window Header */}
+              <div className="flex items-center justify-between pb-3 mb-4 border-b border-zinc-100 text-xs text-zinc-500">
+                <div className="flex items-center space-x-2">
+                  <div className="flex space-x-1.5">
+                    <div className="w-3 h-3 rounded-full bg-zinc-200" />
+                    <div className="w-3 h-3 rounded-full bg-zinc-200" />
+                    <div className="w-3 h-3 rounded-full bg-zinc-200" />
+                  </div>
+                  <span className="font-semibold text-zinc-700 pl-2">BizFlow Workspace</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold text-[11px]">
+                    Live Store
+                  </span>
+                </div>
+              </div>
+
+              {/* Mockup Dashboard Content */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* Mockup KPI 1 */}
+                <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200/80">
+                  <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Today's Sales</div>
+                  <div className="text-2xl font-bold text-zinc-900 mt-1">$24,850.00</div>
+                  <div className="text-[11px] text-emerald-600 font-medium mt-1">+8.4% vs yesterday</div>
+                </div>
+
+                {/* Mockup KPI 2 */}
+                <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200/80">
+                  <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Orders</div>
+                  <div className="text-2xl font-bold text-zinc-900 mt-1">42</div>
+                  <div className="text-[11px] text-zinc-500 mt-1">Completed bills</div>
+                </div>
+
+                {/* Mockup KPI 3 */}
+                <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200/80">
+                  <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Expenses</div>
+                  <div className="text-2xl font-bold text-zinc-900 mt-1">$3,400.00</div>
+                  <div className="text-[11px] text-zinc-500 mt-1">Daily overhead</div>
+                </div>
+
+                {/* Mockup KPI 4 */}
+                <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200/80">
+                  <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Review Rating</div>
+                  <div className="text-2xl font-bold text-zinc-900 mt-1 flex items-center gap-1">
+                    4.9 <Star className="w-5 h-5 fill-amber-500 text-amber-500 inline" />
+                  </div>
+                  <div className="text-[11px] text-zinc-500 mt-1">128 verified reviews</div>
+                </div>
+              </div>
+
+              {/* Mini Table Preview */}
+              <div className="mt-4 pt-3 border-t border-zinc-100">
+                <div className="flex items-center justify-between text-xs font-bold text-zinc-700 mb-2">
+                  <span>Recent Transactions</span>
+                  <span className="text-emerald-600 font-semibold text-[11px]">POS Terminal Connected</span>
+                </div>
+                <div className="space-y-1.5 text-xs">
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-50">
+                    <span className="font-mono font-semibold text-zinc-800">INV-2026-089</span>
+                    <span className="text-zinc-600">Walk-in Customer</span>
+                    <span className="px-2 py-0.5 rounded bg-zinc-200 text-zinc-700 text-[10px] font-bold">CARD</span>
+                    <span className="font-bold text-zinc-900">$1,240.00</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-50">
+                    <span className="font-mono font-semibold text-zinc-800">INV-2026-088</span>
+                    <span className="text-zinc-600">Online Order</span>
+                    <span className="px-2 py-0.5 rounded bg-zinc-200 text-zinc-700 text-[10px] font-bold">CASH</span>
+                    <span className="font-bold text-zinc-900">$850.00</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* 1-Click Interactive Demo Profiles Section */}
-        <section className="space-y-4">
-          <div className="text-center space-y-1">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Try It Out</span>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Interactive Sandbox Demos</h2>
-            <p className="text-xs text-slate-400">Jump directly into ready-to-test business accounts with 1 click</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            {/* Small Business Demo */}
-            <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 flex flex-col justify-between hover:border-slate-700 transition-all">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
-                    <Coffee className="w-5 h-5" />
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 uppercase">
-                    Small Biz
-                  </span>
-                </div>
-                <h3 className="text-sm font-bold text-white">Chai &amp; Bites Café</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Single-counter fast food &amp; cafe with lean stock tracking, quick POS, and real-time sales.
-                </p>
-              </div>
-              <Link
-                to="/login"
-                className="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold text-center block transition-colors cursor-pointer"
-              >
-                Log In as Owner &rarr;
-              </Link>
-            </div>
-
-            {/* Large Business Demo */}
-            <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 flex flex-col justify-between hover:border-slate-700 transition-all">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-                    <Laptop className="w-5 h-5" />
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 uppercase">
-                    Large Enterprise
-                  </span>
-                </div>
-                <h3 className="text-sm font-bold text-white">Apex Electronics Hub</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Multi-location retail chain with central warehouse, inward PO shipments, and suppliers.
-                </p>
-              </div>
-              <Link
-                to="/login"
-                className="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold text-center block transition-colors cursor-pointer"
-              >
-                Log In as Enterprise Owner &rarr;
-              </Link>
-            </div>
-
-            {/* Platform Admin Demo */}
-            <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 flex flex-col justify-between hover:border-slate-700 transition-all">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
-                    <ShieldAlert className="w-5 h-5" />
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 uppercase">
-                    Platform Super Admin
-                  </span>
-                </div>
-                <h3 className="text-sm font-bold text-white">Platform Governance</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Global tenant directory, business activation toggles, user directory, and platform metrics.
-                </p>
-              </div>
-              <Link
-                to="/admin/login"
-                className="w-full py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold text-center block transition-colors cursor-pointer"
-              >
-                Access Admin Portal &rarr;
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Live Diagnostics Card */}
-        <section>
-          <HealthStatus />
-        </section>
-
-        {/* Core Capabilities Grid */}
-        <section className="space-y-8">
-          <div className="text-center space-y-2">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Features &amp; Modules</span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Everything You Need to Run Your Operations</h2>
-            <p className="text-sm text-slate-400 max-w-xl mx-auto">
-              Engineered with clean domain boundaries, automated calculations, and complete audit trails.
+        {/* =========================================================================
+            SECTION 2: TRUSTED / SIMPLE BUSINESS MANAGEMENT MESSAGE
+           ========================================================================= */}
+        <section className="bg-white rounded-2xl border border-zinc-200 p-8 sm:p-12 shadow-card text-center space-y-6">
+          <div className="max-w-3xl mx-auto space-y-3">
+            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
+              Built for Modern Commerce
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+              A serious, trustworthy operating system for everyday operations
+            </h2>
+            <p className="text-sm sm:text-base text-zinc-600 leading-relaxed">
+              Designed without complexity. BizFlow eliminates bloated software, offering fast point-of-sale checkout, clean accounting, CRM, and customer reviews in a clean, unified workspace.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {coreCapabilities.map((cap) => {
-              const Icon = cap.icon;
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 max-w-4xl mx-auto text-left">
+            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200">
+              <div className="text-xs font-semibold text-zinc-500">Speed</div>
+              <div className="text-base font-bold text-zinc-900 mt-1">Instant Checkout</div>
+              <div className="text-xs text-zinc-500 mt-0.5">Quick barcode &amp; SKU lookup</div>
+            </div>
+            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200">
+              <div className="text-xs font-semibold text-zinc-500">Security</div>
+              <div className="text-base font-bold text-zinc-900 mt-1">Isolated Data</div>
+              <div className="text-xs text-zinc-500 mt-0.5">Multi-tenant protection</div>
+            </div>
+            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200">
+              <div className="text-xs font-semibold text-zinc-500">Flexibility</div>
+              <div className="text-base font-bold text-zinc-900 mt-1">Adaptable Scale</div>
+              <div className="text-xs text-zinc-500 mt-0.5">Small shops to enterprises</div>
+            </div>
+            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200">
+              <div className="text-xs font-semibold text-zinc-500">Simplicity</div>
+              <div className="text-base font-bold text-zinc-900 mt-1">Zero Clutter</div>
+              <div className="text-xs text-zinc-500 mt-0.5">No complex learning curve</div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 3: CORE FEATURES (8 Clean Cards)
+           ========================================================================= */}
+        <section id="core-features" className="space-y-8">
+          <div className="text-center space-y-2">
+            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Features</span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+              Essential Tools for Every Business
+            </h2>
+            <p className="text-sm text-zinc-500 max-w-xl mx-auto">
+              Everything your staff and management need to run operations smoothly.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {coreFeatures.map((feat) => {
+              const Icon = feat.icon;
               return (
-                <div key={cap.title} className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4 hover:border-slate-700 transition-all flex flex-col justify-between">
+                <div
+                  key={feat.title}
+                  className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card flex flex-col justify-between space-y-4 hover:border-zinc-300 transition-colors"
+                >
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className={`p-2.5 rounded-xl border ${cap.color}`}>
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                        {cap.badge}
-                      </span>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${feat.color}`}>
+                      <Icon className="w-5 h-5" />
                     </div>
-                    <h3 className="text-base font-bold text-white">{cap.title}</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">{cap.desc}</p>
-                  </div>
-                  <div className="pt-2 border-t border-slate-800/80 text-[11px] text-slate-500 font-medium">
-                    {cap.category}
+                    <h3 className="text-base font-bold text-zinc-900">{feat.title}</h3>
+                    <p className="text-xs text-zinc-600 leading-relaxed">{feat.desc}</p>
                   </div>
                 </div>
               );
@@ -332,157 +303,345 @@ const LandingPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Role Architecture & Multi-Tenancy */}
-        <section className="space-y-6">
-          <div className="text-center space-y-2">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Security &amp; Permissions</span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Role-Based Access &amp; Multi-Tenancy</h2>
-            <p className="text-sm text-slate-400 max-w-xl mx-auto">
-              Unified authentication architecture with strict tenant isolation and platform-level administration.
+        {/* =========================================================================
+            SECTION 4: EVERYTHING YOUR BUSINESS NEEDS
+           ========================================================================= */}
+        <section className="bg-white rounded-2xl border border-zinc-200 p-8 sm:p-12 shadow-card space-y-8">
+          <div className="max-w-2xl space-y-2">
+            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">All-in-One Workflow</span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+              Everything your business needs
+            </h2>
+            <p className="text-sm text-zinc-600">
+              One central hub connects your front-desk checkout with back-office inventory, accounts, and reports.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* OWNER */}
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                <Briefcase className="w-6 h-6" />
+            <div className="p-5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2">
+              <div className="w-8 h-8 rounded-lg bg-white border border-zinc-200 text-emerald-600 flex items-center justify-center font-bold text-sm">
+                1
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-base font-bold text-white">OWNER Role</h3>
-                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">Business Bound</span>
-                </div>
-                <p className="text-xs text-slate-400">Proprietors and company executives managing full operational and financial control.</p>
-              </div>
-              <ul className="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3">
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Onboard new business &amp; configure tax rules</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-amber-400" />
-                  <span>AI Business Assistant &amp; financial reports</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Manage products, suppliers &amp; staff roster</span>
-                </li>
-              </ul>
+              <h4 className="text-sm font-bold text-zinc-900">Fast Front-Desk Billing</h4>
+              <p className="text-xs text-zinc-600 leading-relaxed">
+                Scan products, add discounts, select payment modes (Cash, UPI, Card), and print thermal or standard receipts in seconds.
+              </p>
             </div>
 
-            {/* STAFF */}
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                <UserCheck className="w-6 h-6" />
+            <div className="p-5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2">
+              <div className="w-8 h-8 rounded-lg bg-white border border-zinc-200 text-emerald-600 flex items-center justify-center font-bold text-sm">
+                2
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-base font-bold text-white">STAFF Role</h3>
-                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20">Business Bound</span>
-                </div>
-                <p className="text-xs text-slate-400">Employees, cashiers, store managers, and billing specialists.</p>
-              </div>
-              <ul className="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3">
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Execute POS billing &amp; customer lookup</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Access catalog, products &amp; stock items</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Self-service profile and password update</span>
-                </li>
-              </ul>
+              <h4 className="text-sm font-bold text-zinc-900">Adaptive Stock Tracking</h4>
+              <p className="text-xs text-zinc-600 leading-relaxed">
+                Automated stock deduction on billing with low-stock alerts. Expands to multi-location warehouses and inward supplier purchase orders.
+              </p>
             </div>
 
-            {/* ADMIN */}
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
-                <ShieldAlert className="w-6 h-6" />
+            <div className="p-5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2">
+              <div className="w-8 h-8 rounded-lg bg-white border border-zinc-200 text-emerald-600 flex items-center justify-center font-bold text-sm">
+                3
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-base font-bold text-white">ADMIN Role</h3>
-                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">Platform Level</span>
-                </div>
-                <p className="text-xs text-slate-400">Global SaaS administrators not tied to any individual tenant business.</p>
-              </div>
-              <ul className="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3">
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-purple-400" />
-                  <span>View &amp; manage all platform businesses</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-purple-400" />
-                  <span>Activate / deactivate tenant businesses</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-purple-400" />
-                  <span>Platform user directory &amp; system metrics</span>
-                </li>
-              </ul>
+              <h4 className="text-sm font-bold text-zinc-900">Real Financial Overview</h4>
+              <p className="text-xs text-zinc-600 leading-relaxed">
+                Monitor real revenues, log daily operating expenses, track net margins, and download consolidated tax and sales reports.
+              </p>
             </div>
           </div>
         </section>
 
-        {/* Business Types Grid */}
-        <section className="space-y-6">
-          <div className="text-center space-y-2">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Industries</span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Tailored Across 7 Business Verticals</h2>
-            <p className="text-sm text-slate-400 max-w-xl mx-auto">
-              Dynamic workflow adaptations engineered specifically for your commercial industry.
-            </p>
-          </div>
+        {/* =========================================================================
+            SECTION 5: REVIEW BOOST
+           ========================================================================= */}
+        <section className="bg-white rounded-2xl border border-zinc-200 p-8 sm:p-12 shadow-card">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div className="space-y-4">
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold">
+                <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                <span>Review Boost</span>
+              </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {businessTypes.map((biz) => {
-              const Icon = biz.icon;
-              return (
-                <div key={biz.type} className="p-5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col justify-between space-y-3 hover:border-slate-700 transition-all">
-                  <div className="flex items-center justify-between">
-                    <div className="p-2.5 rounded-xl bg-slate-800 text-indigo-400">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
-                      {biz.type}
-                    </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+                Let customers share their experience.
+              </h2>
+
+              <p className="text-sm text-zinc-600 leading-relaxed">
+                Generate a custom QR code for your counter. Customers can quickly rate your service, submit direct private feedback, and share 5-star ratings online.
+              </p>
+
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center space-x-3 text-xs text-zinc-700">
+                  <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <span>Instant counter QR code download and print</span>
+                </div>
+                <div className="flex items-center space-x-3 text-xs text-zinc-700">
+                  <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <span>Capture private customer suggestions &amp; resolve issues early</span>
+                </div>
+                <div className="flex items-center space-x-3 text-xs text-zinc-700">
+                  <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <span>Track rating trends, star distributions, and review growth</span>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  to="/signup"
+                  className="inline-flex items-center space-x-2 text-xs font-bold text-emerald-600 hover:text-emerald-700"
+                >
+                  <span>Start collecting reviews</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Clean QR Visual Card */}
+            <div className="bg-zinc-50 rounded-2xl border border-zinc-200 p-6 flex flex-col items-center text-center space-y-4 max-w-sm mx-auto w-full">
+              <div className="p-4 bg-white rounded-xl border border-zinc-200 shadow-xs">
+                <QrCode className="w-32 h-32 text-zinc-900" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-zinc-900">Scan &amp; Review Our Store</div>
+                <div className="text-[11px] text-zinc-500 mt-0.5">Quick rating &amp; customer feedback</div>
+              </div>
+
+              <div className="flex items-center space-x-1">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star key={s} className="w-4 h-4 fill-amber-500 text-amber-500" />
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 w-full pt-1">
+                <div className="flex-1 py-1.5 px-3 rounded-lg bg-white border border-zinc-200 text-[11px] font-semibold text-zinc-700 flex items-center justify-center gap-1">
+                  <Download className="w-3 h-3" />
+                  <span>Download</span>
+                </div>
+                <div className="flex-1 py-1.5 px-3 rounded-lg bg-white border border-zinc-200 text-[11px] font-semibold text-zinc-700 flex items-center justify-center gap-1">
+                  <Printer className="w-3 h-3" />
+                  <span>Print</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 6: AI BUSINESS ASSISTANT (Realistic Subtle Chat)
+           ========================================================================= */}
+        <section className="bg-white rounded-2xl border border-zinc-200 p-8 sm:p-12 shadow-card">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div className="space-y-4">
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                <span>AI Business Assistant</span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+                Ask questions about your business.
+              </h2>
+
+              <p className="text-sm text-zinc-600 leading-relaxed">
+                Connect your business numbers with an intelligent conversational assistant. Get fast answers regarding sales, top products, expenses, and inventory needs.
+              </p>
+
+              <div className="space-y-2 pt-2 text-xs">
+                <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80 text-zinc-700 font-medium">
+                  "How were my sales this month?"
+                </div>
+                <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80 text-zinc-700 font-medium">
+                  "What are my best-selling products?"
+                </div>
+                <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80 text-zinc-700 font-medium">
+                  "Which products need restocking?"
+                </div>
+              </div>
+            </div>
+
+            {/* Realistic Chat Interface Mockup */}
+            <div className="bg-zinc-50 rounded-2xl border border-zinc-200 p-5 space-y-4 max-w-md mx-auto w-full">
+              <div className="flex items-center justify-between pb-3 border-b border-zinc-200">
+                <div className="flex items-center space-x-2">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
+                    <Bot className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white">{biz.title}</h3>
-                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">{biz.desc}</p>
+                    <div className="text-xs font-bold text-zinc-900">AI Business Assistant</div>
+                    <div className="text-[10px] text-zinc-500">Connected to Store Data</div>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+
+              {/* Chat Messages */}
+              <div className="space-y-3 text-xs">
+                {/* User Bubble */}
+                <div className="flex justify-end">
+                  <div className="bg-emerald-600 text-white p-3 rounded-2xl rounded-tr-xs max-w-[85%] leading-relaxed font-medium">
+                    How were my sales this month?
+                  </div>
+                </div>
+
+                {/* AI Bubble */}
+                <div className="flex justify-start">
+                  <div className="bg-white border border-zinc-200 text-zinc-800 p-3.5 rounded-2xl rounded-tl-xs max-w-[90%] shadow-xs space-y-1.5 leading-relaxed">
+                    <p className="font-semibold text-zinc-900">
+                      Your sales increased 12% compared with last month.
+                    </p>
+                    <p className="text-zinc-600 text-[11px]">
+                      Total revenue reached $184,200 across 312 orders. Your top-performing category was Beverages.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mock Chat Input Bar */}
+              <div className="pt-2">
+                <div className="flex items-center p-2 rounded-xl bg-white border border-zinc-200 text-xs text-zinc-400 justify-between">
+                  <span>Ask a question about sales or inventory...</span>
+                  <div className="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Backend Modular Packages Architecture */}
-        <section id="backend-modules" className="space-y-6">
+        {/* =========================================================================
+            SECTION 7: SMALL VS LARGE BUSINESS COMPARISON
+           ========================================================================= */}
+        <section className="space-y-8">
           <div className="text-center space-y-2">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Engineering</span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Modular Backend Architecture</h2>
-            <p className="text-sm text-slate-400 max-w-xl mx-auto">
-              Clean separation of concerns with 16 domain packages in <code className="text-indigo-300 font-mono">com.bizflow.*</code>
+            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Scalability</span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+              Adapts Seamlessly to Your Business Size
+            </h2>
+            <p className="text-sm text-zinc-500 max-w-xl mx-auto">
+              Whether running a single neighborhood café or a multi-location enterprise retail chain.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {backendModules.map((mod) => (
-              <div key={mod.name} className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-1.5 hover:border-slate-700 transition-all">
-                <div className="flex items-center space-x-2">
-                  <span className="w-2 h-2 rounded-full bg-indigo-400" />
-                  <span className="text-sm font-bold text-slate-100 font-mono">{mod.name}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Small Business Tier */}
+            <div className="p-6 sm:p-8 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-5">
+              <div className="flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700">
+                  <Coffee className="w-5 h-5" />
                 </div>
-                <p className="text-[11px] text-slate-400 leading-snug">{mod.desc}</p>
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-700">
+                  Small Business
+                </span>
               </div>
-            ))}
+
+              <div>
+                <h3 className="text-lg font-bold text-zinc-900">Lean &amp; Fast Setup</h3>
+                <p className="text-xs text-zinc-600 mt-1">
+                  Ideal for cafes, bakeries, salons, and retail counters wanting fast point of sale without clutter.
+                </p>
+              </div>
+
+              <ul className="space-y-2.5 text-xs text-zinc-700 border-t border-zinc-100 pt-4">
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Simple lightning POS billing</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Products and service catalog</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Customer directory and history</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Daily operating expense tracking</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Basic revenue analytics</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Review Boost customer reputation</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Large Business Tier */}
+            <div className="p-6 sm:p-8 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-5">
+              <div className="flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-700">
+                  Large Business
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-zinc-900">Enterprise Operations</h3>
+                <p className="text-xs text-zinc-600 mt-1">
+                  Built for growing establishments managing warehouses, multiple staff, and advanced supply chains.
+                </p>
+              </div>
+
+              <ul className="space-y-2.5 text-xs text-zinc-700 border-t border-zinc-100 pt-4">
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Advanced multi-location inventory &amp; transfers</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Supplier ledgers &amp; inward purchase orders</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Multi-branch performance breakdown</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Comprehensive PDF &amp; Excel tax reports</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>AI Business Assistant &amp; deep insights</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Review Boost customer reputation</span>
+                </li>
+              </ul>
+            </div>
           </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 8: FINAL CTA
+           ========================================================================= */}
+        <section className="bg-zinc-900 text-white rounded-3xl p-8 sm:p-14 text-center space-y-6">
+          <div className="max-w-xl mx-auto space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              Your business, organized.
+            </h2>
+            <p className="text-zinc-400 text-sm sm:text-base leading-relaxed">
+              Get started with BizFlow in minutes. No credit card required.
+            </p>
+          </div>
+
+          <div>
+            <Link
+              to="/signup"
+              className="inline-flex items-center space-x-2 px-7 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xs transition-colors cursor-pointer"
+            >
+              <span>Get Started</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </section>
+
+        {/* Live System Diagnostic */}
+        <section>
+          <HealthStatus />
         </section>
 
       </main>

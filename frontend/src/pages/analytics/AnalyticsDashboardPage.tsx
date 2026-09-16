@@ -5,31 +5,19 @@ import { inventoryApi, Location } from '../../api/inventory';
 import {
   TrendingUp,
   TrendingDown,
-  DollarSign,
-  Receipt,
   ShoppingCart,
   Percent,
-  Calendar,
   Building2,
-  Users,
   RefreshCw,
   Award,
   CreditCard,
-  PieChart,
-  ArrowUpRight,
-  BarChart3,
-  Layers,
 } from 'lucide-react';
+import { formatCurrency } from '../../utils/currency';
 
 export const AnalyticsDashboardPage: React.FC = () => {
   const { business } = useAuth();
 
   const [timeRange, setTimeRange] = useState<TimeRange>('THIS_MONTH');
-  const [customStart, setCustomStart] = useState<string>(
-    new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0]
-  );
-  const [customEnd, setCustomEnd] = useState<string>(new Date().toISOString().split('T')[0]);
-
   const [selectedLocationId, setSelectedLocationId] = useState<string>('ALL');
   const [locations, setLocations] = useState<Location[]>([]);
 
@@ -58,8 +46,6 @@ export const AnalyticsDashboardPage: React.FC = () => {
       setError(null);
       const data = await analyticsApi.getOverview({
         timeRange,
-        startDate: timeRange === 'CUSTOM' ? customStart : undefined,
-        endDate: timeRange === 'CUSTOM' ? customEnd : undefined,
         locationId: selectedLocationId !== 'ALL' ? Number(selectedLocationId) : undefined,
       });
       setOverview(data);
@@ -78,7 +64,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
     fetchAnalytics();
   }, [timeRange, selectedLocationId]);
 
-  const currency = overview?.currency || business?.currency || 'INR';
+  const currency = overview?.currency || business?.currency || 'USD';
 
   // Compute SVG Area / Line Chart Points for Sales Trend
   const renderSalesAreaChart = () => {
@@ -100,145 +86,130 @@ export const AnalyticsDashboardPage: React.FC = () => {
       return { x, y, data: d };
     });
 
-    const pathD = points.reduce(
-      (acc, pt, i) => (i === 0 ? `M ${pt.x},${pt.y}` : `${acc} L ${pt.x},${pt.y}`),
-      ''
-    );
+    const pathD = points.reduce((acc, p, i) => {
+      return `${acc} ${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`;
+    }, '');
 
-    const areaD = `${pathD} L ${points[points.length - 1].x},${height - paddingY} L ${points[0].x},${height - paddingY} Z`;
+    const areaD = `${pathD} L ${points[points.length - 1].x} ${height - paddingY} L ${points[0].x} ${height - paddingY} Z`;
 
     return (
-      <div className="w-full overflow-hidden">
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-48 select-none">
+      <div className="w-full overflow-x-auto">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-48 overflow-visible">
           <defs>
-            <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#6366f1" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="#6366f1" stopOpacity="0.0" />
+            <linearGradient id="greenAreaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#16A34A" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="#16A34A" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
           {/* Grid lines */}
-          <line x1={paddingX} y1={paddingY} x2={width - paddingX} y2={paddingY} stroke="#f1f5f9" strokeWidth="1" />
-          <line x1={paddingX} y1={paddingY + chartHeight / 2} x2={width - paddingX} y2={paddingY + chartHeight / 2} stroke="#f1f5f9" strokeWidth="1" />
-          <line x1={paddingX} y1={height - paddingY} x2={width - paddingX} y2={height - paddingY} stroke="#e2e8f0" strokeWidth="1" />
+          {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+            const y = height - paddingY - ratio * chartHeight;
+            return (
+              <g key={idx}>
+                <line
+                  x1={paddingX}
+                  y1={y}
+                  x2={width - paddingX}
+                  y2={y}
+                  stroke="#E4E4E7"
+                  strokeDasharray="3 3"
+                />
+                <text
+                  x={paddingX - 6}
+                  y={y + 3}
+                  textAnchor="end"
+                  className="text-[9px] fill-zinc-400 font-mono font-medium"
+                >
+                  {formatCurrency(maxRev * ratio, currency).split('.')[0]}
+                </text>
+              </g>
+            );
+          })}
 
-          {/* Area */}
-          <path d={areaD} fill="url(#salesGradient)" />
+          {/* Fill Area */}
+          <path d={areaD} fill="url(#greenAreaGrad)" />
 
-          {/* Line */}
-          <path d={pathD} fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Stroke Line */}
+          <path d={pathD} fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" />
 
-          {/* Points */}
-          {points.map((pt, i) => (
-            <g key={i} className="group cursor-pointer">
-              <circle cx={pt.x} cy={pt.y} r="3.5" className="fill-indigo-600 stroke-white stroke-2 group-hover:r-5 transition-all" />
-              <title>{`${pt.data.label}: ${pt.data.revenue.toFixed(2)} ${currency} (${pt.data.orderCount} orders)`}</title>
+          {/* Data Points */}
+          {points.map((p, idx) => (
+            <g key={idx} className="group">
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r="3.5"
+                fill="#FFFFFF"
+                stroke="#16A34A"
+                strokeWidth="2"
+                className="transition-all hover:r-5 cursor-pointer"
+              />
+              <text
+                x={p.x}
+                y={height - paddingY + 14}
+                textAnchor="middle"
+                className="text-[9px] fill-zinc-500 font-mono"
+              >
+                {new Date(p.data.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+              </text>
             </g>
           ))}
         </svg>
-
-        {/* X Axis Labels */}
-        <div className="flex justify-between px-2 text-[10px] font-bold text-slate-400 mt-1">
-          <span>{data[0]?.label}</span>
-          {data.length > 2 && <span>{data[Math.floor(data.length / 2)]?.label}</span>}
-          <span>{data[data.length - 1]?.label}</span>
-        </div>
-      </div>
-    );
-  };
-
-  // Compute SVG Bar Chart for Expenses Trend
-  const renderExpensesBarChart = () => {
-    if (!overview || !overview.expenseTrend || overview.expenseTrend.length === 0) return null;
-
-    const data = overview.expenseTrend;
-    const maxExp = Math.max(...data.map((d) => d.amount), 10);
-
-    return (
-      <div className="space-y-2">
-        <div className="h-44 flex items-end justify-between gap-1 pt-4 px-2 border-b border-slate-100">
-          {data.map((d, i) => {
-            const pct = (d.amount / maxExp) * 100;
-            return (
-              <div key={i} className="flex-1 flex flex-col items-center group relative h-full justify-end">
-                <div
-                  style={{ height: `${Math.max(pct, 4)}%` }}
-                  className="w-full max-w-[24px] rounded-t-md bg-rose-500 hover:bg-rose-600 transition-all cursor-pointer relative"
-                >
-                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[9px] font-bold py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20 shadow-md">
-                    {d.amount.toFixed(2)} {currency}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="flex justify-between px-2 text-[10px] font-bold text-slate-400">
-          <span>{data[0]?.label}</span>
-          {data.length > 2 && <span>{data[Math.floor(data.length / 2)]?.label}</span>}
-          <span>{data[data.length - 1]?.label}</span>
-        </div>
       </div>
     );
   };
 
   return (
-    <div className="space-y-8 max-w-7xl">
-      {/* Top Header & Range Controls */}
+    <div className="space-y-6">
+      {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Business Analytics</h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-200/60">
-              Live Insights
-            </span>
-          </div>
-          <p className="text-slate-500 text-sm mt-1">
-            Real-time financial velocity, net margins, top products, payment mix, and branch comparisons.
+          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">Financial &amp; Sales Analytics</h1>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            Real-time profit margins, order velocity, top performing products, and payment mode breakdowns.
           </p>
         </div>
 
-        {/* Controls Toolbar */}
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Branch filter if Large Business */}
+        {/* Time Range & Location Selectors */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Multi-Location Filter for Large Businesses */}
           {business?.businessSize === 'LARGE' && locations.length > 0 && (
-            <div className="flex items-center space-x-1.5 bg-white border border-slate-200 rounded-2xl px-3 py-1.5 shadow-xs">
-              <Building2 size={15} className="text-slate-400" />
+            <div className="flex items-center space-x-1 bg-white border border-zinc-200 rounded-xl p-1 text-xs">
+              <Building2 size={14} className="text-zinc-400 ml-1.5" />
               <select
                 value={selectedLocationId}
                 onChange={(e) => setSelectedLocationId(e.target.value)}
-                className="text-xs font-bold text-slate-700 bg-transparent focus:outline-none cursor-pointer"
+                className="bg-transparent border-none text-xs font-semibold text-zinc-800 pr-2 focus:ring-0"
               >
-                <option value="ALL">All Branches & Locations</option>
+                <option value="ALL">All Branches &amp; Stores</option>
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.id}>
-                    {loc.name} {loc.code ? `(${loc.code})` : ''}
+                    {loc.name}
                   </option>
                 ))}
               </select>
             </div>
           )}
 
-          {/* Time Range Selector */}
-          <div className="inline-flex rounded-2xl bg-white border border-slate-200 p-1 shadow-xs">
-            {(['TODAY', 'THIS_WEEK', 'THIS_MONTH', 'CUSTOM'] as TimeRange[]).map((r) => (
+          {/* Time Preset Selector */}
+          <div className="flex items-center space-x-1 bg-white border border-zinc-200 rounded-xl p-1 text-xs font-semibold">
+            {[
+              { id: 'TODAY', label: 'Today' },
+              { id: 'THIS_WEEK', label: '7 Days' },
+              { id: 'THIS_MONTH', label: 'Month' },
+              { id: 'THIS_YEAR', label: 'Year' },
+            ].map((preset) => (
               <button
-                key={r}
-                onClick={() => setTimeRange(r)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  timeRange === r
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                key={preset.id}
+                onClick={() => setTimeRange(preset.id as TimeRange)}
+                className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                  timeRange === preset.id
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-zinc-600 hover:text-zinc-900'
                 }`}
               >
-                {r === 'TODAY'
-                  ? 'Today'
-                  : r === 'THIS_WEEK'
-                  ? 'This Week'
-                  : r === 'THIS_MONTH'
-                  ? 'This Month'
-                  : 'Custom'}
+                {preset.label}
               </button>
             ))}
           </div>
@@ -246,387 +217,190 @@ export const AnalyticsDashboardPage: React.FC = () => {
           <button
             onClick={fetchAnalytics}
             disabled={loading}
-            className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition-all cursor-pointer shadow-xs disabled:opacity-50"
-            title="Refresh Metrics"
+            className="p-2 rounded-xl bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-600 transition-colors cursor-pointer"
+            title="Refresh Analytics"
           >
-            <RefreshCw size={16} className={loading ? 'animate-spin text-indigo-600' : ''} />
+            <RefreshCw size={14} className={loading ? 'animate-spin text-emerald-600' : ''} />
           </button>
         </div>
       </div>
 
-      {/* Custom Date Range Picker Bar (if CUSTOM) */}
-      {timeRange === 'CUSTOM' && (
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-wrap items-center gap-4">
-          <div className="flex items-center space-x-2 text-xs font-bold text-slate-600">
-            <Calendar size={15} className="text-indigo-600" />
-            <span>Select Date Range:</span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <label className="text-xs font-semibold text-slate-500">From:</label>
-            <input
-              type="date"
-              value={customStart}
-              onChange={(e) => setCustomStart(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-            />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <label className="text-xs font-semibold text-slate-500">To:</label>
-            <input
-              type="date"
-              value={customEnd}
-              onChange={(e) => setCustomEnd(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-            />
-          </div>
-
-          <button
-            onClick={fetchAnalytics}
-            className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all cursor-pointer ml-auto"
-          >
-            Apply Dates
-          </button>
-        </div>
-      )}
-
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold">
+        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
           {error}
         </div>
       )}
 
-      {/* 1. Headline Financial KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Gross Sales */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs space-y-2 hover:shadow-md transition-shadow">
+      {/* KPI Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Gross Revenue */}
+        <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Gross Revenue</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-              <DollarSign size={16} />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-slate-900 tracking-tight">
-            {overview ? overview.revenue.toFixed(2) : '0.00'} <span className="text-xs font-bold text-slate-400">{currency}</span>
-          </div>
-          <div className="flex items-center space-x-1 text-emerald-600 text-xs font-bold">
-            <ArrowUpRight size={14} />
-            <span>{overview?.orderCount || 0} bills completed</span>
-          </div>
-        </div>
-
-        {/* Total Orders */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs space-y-2 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Bills</span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-              <Receipt size={16} />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-slate-900 tracking-tight">
-            {overview?.orderCount ?? 0}
-          </div>
-          <div className="text-xs text-slate-400 font-medium">Customer checkouts</div>
-        </div>
-
-        {/* Average Order Value */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs space-y-2 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Avg Order Value</span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-              <ShoppingCart size={16} />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-slate-900 tracking-tight">
-            {overview ? overview.averageOrderValue.toFixed(2) : '0.00'} <span className="text-xs font-bold text-slate-400">{currency}</span>
-          </div>
-          <div className="text-xs text-slate-400 font-medium">Per ticket average</div>
-        </div>
-
-        {/* Operating Expenses */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs space-y-2 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Expenses</span>
-            <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
-              <TrendingDown size={16} />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-rose-700 tracking-tight">
-            {overview ? overview.expenseTotal.toFixed(2) : '0.00'} <span className="text-xs font-bold text-slate-400">{currency}</span>
-          </div>
-          <div className="text-xs text-slate-400 font-medium">Outflow recorded</div>
-        </div>
-
-        {/* Net Profit & Margin */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs space-y-2 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Net Profit</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Gross Revenue</span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
               <TrendingUp size={16} />
             </div>
           </div>
-          <div
-            className={`text-2xl font-black tracking-tight ${
-              overview && overview.netRevenue < 0 ? 'text-rose-600' : 'text-emerald-700'
-            }`}
-          >
-            {overview ? overview.netRevenue.toFixed(2) : '0.00'} <span className="text-xs font-bold text-slate-400">{currency}</span>
+          <div className="text-2xl font-black text-zinc-950">
+            {loading ? '...' : formatCurrency(overview?.revenue ?? 0, currency)}
           </div>
-          <div className="flex items-center space-x-1 text-xs font-bold text-slate-600">
-            <Percent size={13} className="text-indigo-600" />
-            <span>{overview?.profitMarginPercentage ?? 0}% margin</span>
+          <p className="text-[11px] text-zinc-500">Total processed sales volume</p>
+        </div>
+
+        {/* Operating Expenses */}
+        <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Operating Expenses</span>
+            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+              <TrendingDown size={16} />
+            </div>
           </div>
+          <div className="text-2xl font-black text-rose-600">
+            {loading ? '...' : formatCurrency(overview?.expenseTotal ?? 0, currency)}
+          </div>
+          <p className="text-[11px] text-zinc-500">Logged business expenditures</p>
+        </div>
+
+        {/* Net Profit Margin */}
+        <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Net Operating Profit</span>
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+              <Percent size={16} />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-zinc-950">
+            {loading ? '...' : formatCurrency(overview?.netRevenue ?? 0, currency)}
+          </div>
+          <p className="text-[11px] text-emerald-600 font-semibold">
+            {loading ? '...' : `${Number(overview?.profitMarginPercentage ?? 0).toFixed(1)}% net margin`}
+          </p>
+        </div>
+
+        {/* Total Orders & AOV */}
+        <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Average Order Value</span>
+            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+              <ShoppingCart size={16} />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-zinc-950">
+            {loading ? '...' : formatCurrency(overview?.averageOrderValue ?? 0, currency)}
+          </div>
+          <p className="text-[11px] text-zinc-500">
+            {loading ? '...' : `Across ${overview?.orderCount ?? 0} paid bills`}
+          </p>
         </div>
       </div>
 
-      {/* 2. Visual Charts Row 1: Sales Velocity & Expense Outflow */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Sales Trend Card */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-7 shadow-xs space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                <BarChart3 size={18} />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Sales & Revenue Velocity</h3>
-                <p className="text-xs text-slate-400">Daily gross turnover curve across period</p>
-              </div>
-            </div>
-            <span className="px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 font-extrabold text-xs">
-              {overview?.salesTrend?.length ?? 0} data points
-            </span>
-          </div>
-
-          {loading ? (
-            <div className="h-48 flex items-center justify-center text-slate-400 text-xs">Loading chart data...</div>
-          ) : (
-            renderSalesAreaChart()
-          )}
-        </div>
-
-        {/* Expense Trend Card */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-7 shadow-xs space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
-                <TrendingDown size={18} />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Daily Operating Expenses</h3>
-                <p className="text-xs text-slate-400">Outflow distribution across period</p>
-              </div>
-            </div>
-            <span className="px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 font-extrabold text-xs">
-              {overview?.expenseTotal.toFixed(2)} {currency} total
-            </span>
-          </div>
-
-          {loading ? (
-            <div className="h-48 flex items-center justify-center text-slate-400 text-xs">Loading chart data...</div>
-          ) : (
-            renderExpensesBarChart()
-          )}
-        </div>
-      </div>
-
-      {/* 3. Products Leaderboard & Payment Methods Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Top 5 Products Leaderboard (2 cols) */}
-        <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-200 p-6 md:p-7 shadow-xs space-y-5">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-                <Award size={18} />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Top Products & Services Leaderboard</h3>
-                <p className="text-xs text-slate-400">Ranked by gross sales volume and revenue generated</p>
-              </div>
-            </div>
-          </div>
-
-          {overview?.topProducts && overview.topProducts.length > 0 ? (
-            <div className="space-y-3.5">
-              {overview.topProducts.map((p, index) => (
-                <div key={index} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
-                          index === 0
-                            ? 'bg-amber-400 text-slate-900'
-                            : index === 1
-                            ? 'bg-slate-300 text-slate-800'
-                            : index === 2
-                            ? 'bg-amber-700 text-white'
-                            : 'bg-slate-100 text-slate-600'
-                        }`}
-                      >
-                        {index + 1}
-                      </span>
-                      <span className="font-bold text-slate-900">{p.productName}</span>
-                      <span
-                        className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
-                          p.productType === 'PHYSICAL'
-                            ? 'bg-blue-50 text-blue-700'
-                            : 'bg-pink-50 text-pink-700'
-                        }`}
-                      >
-                        {p.productType}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center space-x-4 font-mono">
-                      <span className="text-slate-400">{p.quantitySold} units sold</span>
-                      <span className="font-black text-slate-900">
-                        {p.totalRevenue.toFixed(2)} {currency} ({p.revenuePercentage}%)
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      style={{ width: `${Math.min(p.revenuePercentage, 100)}%` }}
-                      className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-12 text-center text-slate-400 text-xs">No sales recorded for the selected timeframe.</div>
-          )}
-        </div>
-
-        {/* Payment Methods Distribution (1 col) */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-7 shadow-xs space-y-5 flex flex-col justify-between">
+      {/* Sales Velocity Trend Area Chart */}
+      <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-4">
+        <div className="flex items-center justify-between">
           <div>
-            <div className="flex items-center space-x-3 pb-3 border-b border-slate-100">
-              <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-                <PieChart size={18} />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Payment Breakdown</h3>
-                <p className="text-xs text-slate-400">Tender type settlement mix</p>
-              </div>
-            </div>
+            <h3 className="text-sm font-bold text-zinc-900">Revenue Velocity Trend</h3>
+            <p className="text-xs text-zinc-500">Daily sales performance trajectory</p>
+          </div>
+          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+            Automated Calculations
+          </span>
+        </div>
 
-            {overview?.paymentDistribution && overview.paymentDistribution.length > 0 ? (
-              <div className="space-y-4 pt-4">
-                {overview.paymentDistribution.map((pay, i) => (
-                  <div key={i} className="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                    <div className="flex items-center space-x-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-700">
-                        <CreditCard size={14} />
+        {loading ? (
+          <div className="h-48 flex items-center justify-center text-zinc-400 text-xs">
+            Rendering trend data...
+          </div>
+        ) : (
+          renderSalesAreaChart()
+        )}
+      </div>
+
+      {/* Dual Breakdown Columns: Top Products & Payment Modes */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Top Best-Selling Products */}
+        <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+            <div className="flex items-center space-x-2">
+              <Award className="w-4 h-4 text-emerald-600" />
+              <h3 className="text-sm font-bold text-zinc-900">Top Selling Products &amp; Services</h3>
+            </div>
+            <span className="text-xs text-zinc-400">By Revenue</span>
+          </div>
+
+          <div className="space-y-3">
+            {!overview || overview.topProducts.length === 0 ? (
+              <div className="py-8 text-center text-zinc-400 text-xs">No sales recorded in this period.</div>
+            ) : (
+              overview.topProducts.map((p, idx) => {
+                const maxProdRev = Math.max(...overview.topProducts.map((t) => t.totalRevenue), 1);
+                const percent = (p.totalRevenue / maxProdRev) * 100;
+
+                return (
+                  <div key={p.productId || idx} className="space-y-1 text-xs">
+                    <div className="flex items-center justify-between font-medium">
+                      <div className="flex items-center space-x-2">
+                        <span className="w-4 text-zinc-400 font-bold">{idx + 1}.</span>
+                        <span className="font-bold text-zinc-900">{p.productName}</span>
+                        <span className="text-[10px] text-zinc-400">({p.quantitySold} units)</span>
                       </div>
-                      <div>
-                        <div className="text-xs font-bold text-slate-900">{pay.paymentMethod}</div>
-                        <div className="text-[10px] text-slate-400">{pay.transactionCount} transactions</div>
-                      </div>
+                      <span className="font-black text-zinc-950">{formatCurrency(p.totalRevenue, currency)}</span>
                     </div>
-                    <div className="text-right">
-                      <div className="text-xs font-black text-slate-900">
-                        {pay.totalAmount.toFixed(2)} {currency}
-                      </div>
-                      <div className="text-[10px] font-bold text-indigo-600">{pay.percentage}%</div>
+
+                    <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-emerald-600 rounded-full" style={{ width: `${percent}%` }} />
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-12 text-center text-slate-400 text-xs">No payment data in this period.</div>
+                );
+              })
             )}
           </div>
+        </div>
 
-          {/* Customer Retention Card */}
-          {overview?.customerFrequency && (
-            <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 space-y-2 mt-4">
-              <div className="flex items-center justify-between text-xs font-bold text-indigo-950">
-                <div className="flex items-center space-x-1.5">
-                  <Users size={14} className="text-indigo-600" />
-                  <span>Repeat Customer Rate</span>
-                </div>
-                <span className="text-sm font-black text-indigo-700">
-                  {overview.customerFrequency.repeatCustomerRate}%
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-600 leading-snug">
-                {overview.customerFrequency.activeCustomersInPeriod} active buyers in period with{' '}
-                <span className="font-bold text-slate-900">{overview.customerFrequency.averageOrdersPerCustomer} orders/customer</span> on average.
-              </p>
+        {/* Payment Methods Breakdown */}
+        <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+            <div className="flex items-center space-x-2">
+              <CreditCard className="w-4 h-4 text-emerald-600" />
+              <h3 className="text-sm font-bold text-zinc-900">Payment Capture Distribution</h3>
             </div>
-          )}
+            <span className="text-xs text-zinc-400">Multi-Mode</span>
+          </div>
+
+          <div className="space-y-3">
+            {!overview || overview.paymentDistribution.length === 0 ? (
+              <div className="py-8 text-center text-zinc-400 text-xs">No transactions recorded.</div>
+            ) : (
+              overview.paymentDistribution.map((pm, idx) => {
+                const totalAll = overview.paymentDistribution.reduce((acc: number, x: any) => acc + x.totalAmount, 0) || 1;
+                const percent = (pm.totalAmount / totalAll) * 100;
+
+                return (
+                  <div key={idx} className="space-y-1 text-xs">
+                    <div className="flex items-center justify-between font-medium">
+                      <div className="flex items-center space-x-2">
+                        <span className="px-2 py-0.5 rounded-md bg-zinc-100 font-bold text-[10px] text-zinc-700">
+                          {pm.paymentMethod}
+                        </span>
+                        <span className="text-zinc-500 text-[11px]">{pm.transactionCount} bills</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-black text-zinc-950">{formatCurrency(pm.totalAmount, currency)}</span>
+                        <span className="text-[10px] text-zinc-400 ml-1.5 font-semibold">
+                          ({percent.toFixed(1)}%)
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-emerald-600 rounded-full" style={{ width: `${percent}%` }} />
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
-
-      {/* 4. Large Enterprise Multi-Branch Comparative Analytics */}
-      {overview?.largeBusiness && overview.branchPerformance && overview.branchPerformance.length > 0 && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-                <Layers size={20} />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Comparative Branch & Warehouse Performance</h3>
-                <p className="text-xs text-slate-500">Cross-location sales volume, operating margin, and revenue contribution</p>
-              </div>
-            </div>
-            <span className="px-3 py-1 rounded-full bg-purple-50 text-purple-700 font-extrabold text-xs border border-purple-200">
-              Enterprise Feature
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {overview.branchPerformance.map((branch) => (
-              <div
-                key={branch.locationId}
-                className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-indigo-200 hover:shadow-md transition-all space-y-4"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-bold text-slate-900 text-sm">{branch.locationName}</h4>
-                    {branch.locationCode && (
-                      <span className="text-[10px] font-mono text-slate-400">{branch.locationCode}</span>
-                    )}
-                  </div>
-                  <span className="px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 text-[10px] font-black">
-                    {branch.revenueSharePercentage}% Share
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200/60 text-xs">
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">Branch Revenue</span>
-                    <span className="font-black text-slate-900">
-                      {branch.revenue.toFixed(2)} {currency}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">Orders Count</span>
-                    <span className="font-bold text-slate-700">{branch.orderCount}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">Avg Ticket</span>
-                    <span className="font-bold text-slate-700">
-                      {branch.averageOrderValue.toFixed(2)} {currency}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">Net Profit</span>
-                    <span className={`font-black ${branch.netRevenue >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
-                      {branch.netRevenue.toFixed(2)} {currency}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -36,7 +36,7 @@ export const OwnerDashboard: React.FC = () => {
   const [bizAddress, setBizAddress] = useState(business?.address || '');
   const [bizPhone, setBizPhone] = useState(business?.phone || '');
   const [bizEmail, setBizEmail] = useState(business?.email || '');
-  const [bizCurrency, setBizCurrency] = useState(business?.currency || 'INR');
+  const [bizCurrency, setBizCurrency] = useState(business?.currency || 'USD');
   const [bizTimezone, setBizTimezone] = useState(business?.timezone || 'Asia/Kolkata');
   const [bizLogo, setBizLogo] = useState(business?.logo || '');
   const [savingSettings, setSavingSettings] = useState(false);
@@ -60,7 +60,7 @@ export const OwnerDashboard: React.FC = () => {
       setBizAddress(business.address || '');
       setBizPhone(business.phone || '');
       setBizEmail(business.email || '');
-      setBizCurrency(business.currency || 'INR');
+      setBizCurrency(business.currency || 'USD');
       setBizTimezone(business.timezone || 'Asia/Kolkata');
       setBizLogo(business.logo || '');
     }
@@ -251,7 +251,7 @@ export const OwnerDashboard: React.FC = () => {
                   <span>Currency &amp; Region</span>
                   <DollarSign className="w-4 h-4 text-emerald-400" />
                 </div>
-                <div className="text-xl font-bold text-white tracking-tight">₹ {business?.currency || 'INR'} / {business?.timezone || 'Asia/Kolkata'}</div>
+                <div className="text-xl font-bold text-white tracking-tight">{business?.currency || 'USD'} / {business?.timezone || 'Asia/Kolkata'}</div>
                 <p className="text-[11px] text-slate-500">Invoicing standard</p>
               </div>
 
@@ -483,7 +483,7 @@ export const OwnerDashboard: React.FC = () => {
                     type="text"
                     value={bizCurrency}
                     onChange={(e) => setBizCurrency(e.target.value)}
-                    placeholder="INR"
+                    placeholder="USD"
                     className="w-full px-3.5 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-brand-500"
                   />
                 </div>

@@ -1,121 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Base Typography & Color Reset */
+/* Base Typography & Background Reset */
 @layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
   body {
     font-feature-settings: "rlig" 1, "calt" 1, "tnum" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    color: #0f172a;
-    background-color: #f8fafc;
+    color: #18181B;
+    background-color: #F7F7F5;
   }
 }
 
 /* ==========================================================================
-   Universal Form Inputs, Textareas, Selects & Search Boxes (High-Contrast)
+   Universal Form Controls (Clean, High-Contrast & Accessible)
    ========================================================================== */
 
-/* 1. Base input typography and visibility for standard (light) backgrounds */
+/* 1. Base input styling */
 input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]),
 textarea,
 select {
-  color: #0f172a;
-  background-color: #ffffff;
-  -webkit-text-fill-color: #0f172a;
+  color: #18181B;
+  background-color: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 10px;
+  -webkit-text-fill-color: #18181B;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* 2. Transparent background inputs (e.g. inside pill containers, AI chat prompt bar, custom input groups) */
-input.bg-transparent,
-textarea.bg-transparent,
-select.bg-transparent {
-  background-color: transparent !important;
-  color: #0f172a;
-  -webkit-text-fill-color: #0f172a;
-}
-
-/* 3. Clearly visible placeholder text with distinct styling */
-input::placeholder,
-textarea::placeholder {
-  color: #64748b !important;
-  opacity: 1 !important;
-  -webkit-text-fill-color: #64748b !important;
-}
-
-input:focus::placeholder,
-textarea:focus::placeholder {
-  color: #94a3b8 !important;
-  -webkit-text-fill-color: #94a3b8 !important;
-}
-
-/* 4. Focus, hover and active states keep text sharp and dark */
-input:focus,
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]):focus,
 textarea:focus,
 select:focus {
-  color: #0f172a;
-  -webkit-text-fill-color: #0f172a;
+  outline: none;
+  border-color: #16A34A;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
 }
 
-/* 5. Disabled input state */
+/* 2. Clear placeholder styling */
+input::placeholder,
+textarea::placeholder {
+  color: #71717A !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #71717A !important;
+}
+
+/* 3. Disabled input state */
 input:disabled,
 textarea:disabled,
 select:disabled {
-  color: #64748b;
-  -webkit-text-fill-color: #64748b;
-  background-color: #f8fafc;
+  color: #71717A;
+  background-color: #F4F4F5;
+  border-color: #E4E4E7;
   cursor: not-allowed;
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
-/* 6. Dropdown / Select Option styling */
+/* 4. Dropdown options styling */
 select option {
-  background-color: #ffffff;
-  color: #0f172a;
+  background-color: #FFFFFF;
+  color: #18181B;
   padding: 8px 12px;
 }
 
 select option:checked {
-  background-color: #e0e7ff;
-  color: #4338ca;
+  background-color: #DCFCE7;
+  color: #15803D;
 }
 
-/* 7. Specifically Dark Inputs (Login, Signup, Admin Dark Containers) */
-input.bg-slate-900,
-input.bg-slate-800,
-input.bg-slate-950,
-textarea.bg-slate-900,
-textarea.bg-slate-800,
-textarea.bg-slate-950,
-select.bg-slate-900,
-select.bg-slate-800,
-select.bg-slate-950,
-.dark-input {
-  background-color: #0f172a !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-input.bg-slate-900::placeholder,
-input.bg-slate-800::placeholder,
-input.bg-slate-950::placeholder,
-textarea.bg-slate-900::placeholder,
-textarea.bg-slate-800::placeholder,
-textarea.bg-slate-950::placeholder,
-.dark-input::placeholder {
-  color: #94a3b8 !important;
-  -webkit-text-fill-color: #94a3b8 !important;
-}
-
-select.bg-slate-900 option,
-select.bg-slate-800 option,
-select.bg-slate-950 option,
-.dark-input option {
-  background-color: #0f172a;
-  color: #ffffff;
-}
-
-/* 8. Autofill Fix (Preserves text readability and prevents ugly browser yellow/blue backgrounds) */
+/* 5. Autofill fix */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus,
@@ -125,108 +84,69 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  -webkit-text-fill-color: #0f172a !important;
-  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
-  box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #18181B !important;
+  -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
+  box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
-input.bg-slate-900:-webkit-autofill,
-input.bg-slate-900:-webkit-autofill:hover,
-input.bg-slate-900:-webkit-autofill:focus,
-input.bg-slate-800:-webkit-autofill,
-input.bg-slate-800:-webkit-autofill:hover,
-input.bg-slate-800:-webkit-autofill:focus,
-input.bg-slate-950:-webkit-autofill,
-input.bg-slate-950:-webkit-autofill:hover,
-input.bg-slate-950:-webkit-autofill:focus {
-  -webkit-text-fill-color: #ffffff !important;
-  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
-  box-shadow: 0 0 0px 1000px #0f172a inset !important;
-}
-
-/* 9. Specialized input types (Date, Time, Search, Number) */
+/* 6. Specialized inputs */
 input[type="date"],
 input[type="time"],
 input[type="datetime-local"],
 input[type="number"],
 input[type="search"] {
-  color: #0f172a;
-  -webkit-text-fill-color: #0f172a;
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="time"]::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  filter: opacity(0.65);
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator:hover,
-input[type="time"]::-webkit-calendar-picker-indicator:hover {
-  filter: opacity(1);
+  color: #18181B;
+  -webkit-text-fill-color: #18181B;
 }
 
 /* ==========================================================================
-   BizFlow Minimalist Design Tokens (Ultra-Clean, High-Contrast & Sleek)
+   BizFlow Modern SaaS Design Tokens (Minimal, Clean & Professional)
    ========================================================================== */
 
-/* Clean Minimal Card (Replaces heavy glassmorphism with crisp modern borders & subtle elevation) */
+/* Standard White SaaS Card */
+.saas-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+}
+
+.saas-card-interactive {
+  background-color: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.saas-card-interactive:hover {
+  border-color: #D4D4D8;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+/* Backward compatibility aliases */
 .minimal-card,
 .glass-card {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  background-color: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
 }
 
-/* Dark mode / dark section cards */
-.dark-minimal-card {
-  background-color: #0f172a;
-  border: 1px solid #1e293b;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-}
-
-/* Minimal Card Hover State */
 .minimal-card-hover,
 .glass-card-hover {
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .minimal-card-hover:hover,
 .glass-card-hover:hover {
-  transform: translateY(-2px);
-  border-color: #cbd5e1;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  border-color: #D4D4D8;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* Clean Input Class Utility */
-.clean-input {
-  background-color: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 0.75rem;
-  color: #0f172a;
-  -webkit-text-fill-color: #0f172a;
-  transition: all 0.15s ease-in-out;
-}
-
-.clean-input:focus {
-  outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
-}
-
-/* Subtle Minimalist Gradients (Clean accents without noisy blurs) */
-.radial-glow {
-  background: transparent;
-}
-
-.subtle-grid {
-  background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(226, 232, 240, 0.4) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(226, 232, 240, 0.4) 1px, transparent 1px);
-}
-
-/* Custom Scrollbars for dense tables & POS panels */
+/* Clean Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -237,16 +157,16 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #D4D4D8;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #A1A1AA;
 }
 
 /* ==========================================================================
-   Print Optimization & Single-Page A4 Receipt Layout (Strict 1-Page Rules)
+   Print Optimization for Thermal & A4 Invoices
    ========================================================================== */
 @media print {
   @page {
@@ -258,14 +178,13 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   body {
     margin: 0 !important;
     padding: 0 !important;
-    background: #ffffff !important;
-    color: #0f172a !important;
+    background: #FFFFFF !important;
+    color: #18181B !important;
     height: auto !important;
     min-height: auto !important;
     overflow: visible !important;
   }
 
-  /* Hide app navigation, headers, sidebars, buttons and background during print */
   header,
   aside,
   nav,
@@ -274,19 +193,15 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
     display: none !important;
   }
 
-  /* Receipt modal backdrop reset for clean print stream */
   .receipt-modal-backdrop {
     position: static !important;
     background: transparent !important;
     padding: 0 !important;
     margin: 0 !important;
     overflow: visible !important;
-    height: auto !important;
-    max-height: none !important;
     display: block !important;
   }
 
-  /* Modal card container reset to flat document */
   .receipt-modal-container {
     box-shadow: none !important;
     border: none !important;
@@ -295,26 +210,20 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
     width: 100% !important;
     max-width: 90mm !important;
     height: auto !important;
-    max-height: none !important;
     overflow: visible !important;
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
 
-  /* Receipt body styling */
   .receipt-printable-content {
     padding: 0 !important;
     margin: 0 !important;
-    font-size: 10.5px !important;
+    font-size: 11px !important;
     line-height: 1.35 !important;
-    overflow: visible !important;
-    height: auto !important;
-    max-height: none !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
 
-  /* Prevent page breaks across receipt sections */
   table,
   tr,
   td,

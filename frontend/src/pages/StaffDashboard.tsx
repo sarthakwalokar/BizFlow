@@ -7,7 +7,7 @@ import {
   MapPin, 
   Phone, 
   Mail, 
-  IndianRupee, 
+  DollarSign, 
   Layers, 
   ShieldAlert 
 } from 'lucide-react';
@@ -110,10 +110,10 @@ export const StaffDashboard: React.FC = () => {
             </div>
 
             <div className="flex items-start space-x-3">
-              <IndianRupee className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
+              <DollarSign className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold text-slate-400 block mb-0.5">Operational Currency</span>
-                <span>₹ {business?.currency || 'INR'}</span>
+                <span>{business?.currency || 'USD'}</span>
               </div>
             </div>
 

@@ -8,15 +8,11 @@ import {
   Location,
   Supplier,
   Purchase,
-  MovementType,
 } from '../../api/inventory';
 import { categoriesApi, Category } from '../../api/categories';
 import { productsApi, Product } from '../../api/products';
-import { businessApi } from '../../api/business';
 import {
   Boxes,
-  Package,
-  AlertTriangle,
   CheckCircle2,
   AlertCircle,
   Plus,
@@ -28,20 +24,12 @@ import {
   History,
   X,
   Edit2,
-  Trash2,
-  DollarSign,
-  CheckCircle,
-  XCircle,
-  RefreshCw,
-  Barcode,
 } from 'lucide-react';
-import { getCurrencySymbol } from '../../utils/currency';
+import { formatCurrency } from '../../utils/currency';
 
 export const InventoryPage: React.FC = () => {
-  const { business, user, updateBusinessState } = useAuth();
-  const isOwner = user?.role === 'OWNER';
+  const { business } = useAuth();
   const isLarge = business?.businessSize === 'LARGE';
-  const isInventoryEnabled = business?.inventoryEnabled ?? true;
 
   // Active Tab for Large Businesses
   const [activeTab, setActiveTab] = useState<'STOCK' | 'MOVEMENTS' | 'SUPPLIERS' | 'PURCHASES' | 'LOCATIONS'>('STOCK');
@@ -61,7 +49,6 @@ export const InventoryPage: React.FC = () => {
   const [stockSearch, setStockSearch] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [lowStockOnly, setLowStockOnly] = useState<boolean>(false);
-  const [movementTypeFilter, setMovementTypeFilter] = useState<string>('ALL');
 
   // Modals State
   const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
@@ -95,55 +82,43 @@ export const InventoryPage: React.FC = () => {
   const [supplierAddress, setSupplierAddress] = useState('');
   const [supplierTaxNumber, setSupplierTaxNumber] = useState('');
 
-  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
-  const [purchaseSupplierId, setPurchaseSupplierId] = useState<string>('');
-  const [purchaseLocationId, setPurchaseLocationId] = useState<string>('');
-  const [purchaseDate, setPurchaseDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [purchaseNotes, setPurchaseNotes] = useState<string>('');
-  const [purchaseLines, setPurchaseLines] = useState<Array<{ productId: string; productName: string; quantity: number; unitCost: number }>>([
-    { productId: '', productName: '', quantity: 1, unitCost: 0 },
-  ]);
-
-  // Notifications
   const [actionLoading, setActionLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const currency = summary?.currency || business?.currency || 'INR';
-  const currencySymbol = getCurrencySymbol(currency);
+  const currency = business?.currency || 'USD';
 
-  // Load Inventory Data
   const loadData = async () => {
     try {
       setLoading(true);
-      const [sumRes, stockRes, catsRes, prodRes] = await Promise.all([
+      const [sumRes, stockRes, catsRes] = await Promise.all([
         inventoryApi.getSummary(),
-        inventoryApi.getStockList({
-          search: stockSearch.trim() || undefined,
-          categoryId: selectedCategory !== 'ALL' ? Number(selectedCategory) : undefined,
-          lowStockOnly: lowStockOnly || undefined,
-          size: 100,
-        }),
+        inventoryApi.getStockList({ size: 500 }),
         categoriesApi.getCategories(),
-        productsApi.getProducts({ size: 200 }),
       ]);
 
       setSummary(sumRes);
-      setStockItems(stockRes.content);
-      setCategories(catsRes);
-      setAllProducts(prodRes.content.filter((p) => p.productType === 'PHYSICAL'));
+      setStockItems(stockRes?.content || []);
+      setCategories(catsRes || []);
 
       if (isLarge) {
-        const [locsRes, suppsRes, movsRes, purchRes] = await Promise.all([
-          inventoryApi.getLocations(),
-          inventoryApi.getActiveSuppliers(),
-          inventoryApi.getMovements({ size: 50, movementType: movementTypeFilter !== 'ALL' ? (movementTypeFilter as MovementType) : undefined }),
-          inventoryApi.searchPurchases({ size: 50 }),
-        ]);
-        setLocations(locsRes);
-        setSuppliers(suppsRes);
-        setMovements(movsRes.content);
-        setPurchases(purchRes.content);
+        try {
+          const [locsRes, suppsRes, movesRes, purchRes, prodsRes] = await Promise.all([
+            inventoryApi.getLocations(),
+            inventoryApi.getActiveSuppliers(),
+            inventoryApi.getMovements({ size: 50 }),
+            inventoryApi.searchPurchases({ size: 50 }),
+            productsApi.getProducts({ active: true, size: 200 }),
+          ]);
+          setLocations(locsRes || []);
+          setSuppliers(suppsRes || []);
+          setMovements(movesRes?.content || []);
+          setPurchases(purchRes?.content || []);
+          const pList = Array.isArray(prodsRes) ? prodsRes : (prodsRes?.content || []);
+          setAllProducts(pList.filter((p: Product) => p.productType === 'PHYSICAL'));
+        } catch {
+          // non-blocking
+        }
       }
     } catch (err: any) {
       setErrorMessage('Failed to load inventory data.');
@@ -154,31 +129,8 @@ export const InventoryPage: React.FC = () => {
 
   useEffect(() => {
     loadData();
-  }, [selectedCategory, lowStockOnly, movementTypeFilter, isLarge]);
+  }, [isLarge]);
 
-  const handleStockSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    loadData();
-  };
-
-  // Toggle Global Inventory Enabled
-  const handleToggleInventoryEnabled = async (enabled: boolean) => {
-    try {
-      setActionLoading(true);
-      const updated = await businessApi.updateMyBusiness({
-        name: business?.name || 'Business',
-        inventoryEnabled: enabled,
-      });
-      updateBusinessState(updated);
-      setSuccessMessage(`Inventory management is now ${enabled ? 'Enabled' : 'Disabled'}.`);
-    } catch (err: any) {
-      setErrorMessage('Failed to update inventory status.');
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  // Quick Stock Adjust Modal Handlers
   const openAdjustModal = (item: StockItem) => {
     setAdjustingItem(item);
     setAdjustDelta('0');
@@ -188,118 +140,84 @@ export const InventoryPage: React.FC = () => {
     setIsAdjustModalOpen(true);
   };
 
-  const handleSaveAdjustment = async (e: React.FormEvent) => {
+  const handleAdjustStock = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!adjustingItem) return;
+
     setActionLoading(true);
-    setSuccessMessage(null);
     setErrorMessage(null);
+    setSuccessMessage(null);
+
+    const delta = parseInt(adjustDelta) || 0;
+    const newQty = parseInt(adjustNewAbsolute);
 
     try {
-      const delta = parseInt(adjustDelta, 10);
-      const newAbs = adjustNewAbsolute.trim() !== '' ? parseInt(adjustNewAbsolute, 10) : undefined;
+      if (!isNaN(newQty) && adjustDelta === '0') {
+        await inventoryApi.adjustStock({
+          productId: adjustingItem.productId,
+          newStockQuantity: newQty,
+          locationId: adjustLocationId ? Number(adjustLocationId) : undefined,
+          notes: adjustNotes || 'Manual stock override',
+        });
+      } else {
+        await inventoryApi.adjustStock({
+          productId: adjustingItem.productId,
+          adjustmentQuantity: delta,
+          locationId: adjustLocationId ? Number(adjustLocationId) : undefined,
+          notes: adjustNotes || `Manual delta adjustment (${delta > 0 ? '+' : ''}${delta})`,
+        });
+      }
 
-      await inventoryApi.adjustStock({
-        productId: adjustingItem.productId,
-        locationId: adjustLocationId ? Number(adjustLocationId) : undefined,
-        adjustmentQuantity: isNaN(delta) || delta === 0 ? undefined : delta,
-        newStockQuantity: newAbs,
-        notes: adjustNotes || undefined,
-      });
-
-      setSuccessMessage(`Stock level for "${adjustingItem.productName}" updated successfully.`);
+      setSuccessMessage(`Stock for "${adjustingItem.productName}" updated.`);
       setIsAdjustModalOpen(false);
       loadData();
     } catch (err: any) {
-      setErrorMessage(err.response?.data?.error?.message || 'Failed to adjust stock.');
+      setErrorMessage(
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        'Failed to adjust stock.'
+      );
     } finally {
       setActionLoading(false);
     }
   };
 
-  // Toggle Stock Tracking for a Product
-  const handleToggleProductTracking = async (item: StockItem) => {
-    try {
-      await productsApi.updateProduct(item.productId, {
-        name: item.productName,
-        productType: item.productType,
-        price: item.price,
-        costPrice: item.costPrice,
-        sku: item.sku,
-        trackStock: !item.trackStock,
-        stockQuantity: item.stockQuantity,
-        lowStockThreshold: item.lowStockThreshold,
-      });
-      setSuccessMessage(`Tracking ${!item.trackStock ? 'enabled' : 'disabled'} for "${item.productName}".`);
-      loadData();
-    } catch (err: any) {
-      setErrorMessage('Failed to toggle tracking.');
-    }
-  };
-
-  // Stock Transfer Handlers (Large Business)
-  const openTransferModal = (defaultProduct?: StockItem) => {
-    setTransferProductId(defaultProduct ? String(defaultProduct.productId) : allProducts.length > 0 ? String(allProducts[0].id) : '');
-    setTransferSourceLocationId(locations.length > 0 ? String(locations[0].id) : '');
-    setTransferTargetLocationId(locations.length > 1 ? String(locations[1].id) : '');
-    setTransferQuantity('1');
-    setTransferNotes('');
-    setIsTransferModalOpen(true);
-  };
-
-  const handleSaveTransfer = async (e: React.FormEvent) => {
+  const handleTransferStock = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!transferProductId || !transferSourceLocationId || !transferTargetLocationId) return;
+
     setActionLoading(true);
-    setSuccessMessage(null);
     setErrorMessage(null);
+    setSuccessMessage(null);
 
     try {
       await inventoryApi.transferStock({
         productId: Number(transferProductId),
         sourceLocationId: Number(transferSourceLocationId),
         targetLocationId: Number(transferTargetLocationId),
-        quantity: parseInt(transferQuantity, 10),
+        quantity: parseInt(transferQuantity) || 1,
         notes: transferNotes || undefined,
       });
 
-      setSuccessMessage('Stock transferred successfully between locations.');
+      setSuccessMessage('Stock transfer executed successfully.');
       setIsTransferModalOpen(false);
       loadData();
     } catch (err: any) {
-      setErrorMessage(err.response?.data?.error?.message || 'Failed to transfer stock.');
+      setErrorMessage(
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        'Failed to transfer stock.'
+      );
     } finally {
       setActionLoading(false);
     }
   };
 
-  // Location Modal Handlers (Large Business)
-  const openAddLocationModal = () => {
-    setEditingLocation(null);
-    setLocationName('');
-    setLocationCode('');
-    setLocationAddress('');
-    setLocationPhone('');
-    setLocationPrimary(false);
-    setIsLocationModalOpen(true);
-  };
-
-  const openEditLocationModal = (loc: Location) => {
-    setEditingLocation(loc);
-    setLocationName(loc.name);
-    setLocationCode(loc.code || '');
-    setLocationAddress(loc.address || '');
-    setLocationPhone(loc.phone || '');
-    setLocationPrimary(loc.primary);
-    setIsLocationModalOpen(true);
-  };
-
   const handleSaveLocation = async (e: React.FormEvent) => {
     e.preventDefault();
-    setActionLoading(true);
-    setSuccessMessage(null);
-    setErrorMessage(null);
+    if (!locationName.trim()) return;
 
+    setActionLoading(true);
     try {
       if (editingLocation) {
         await inventoryApi.updateLocation(editingLocation.id, {
@@ -320,55 +238,22 @@ export const InventoryPage: React.FC = () => {
         });
         setSuccessMessage(`Location "${locationName}" created.`);
       }
+
       setIsLocationModalOpen(false);
+      setEditingLocation(null);
       loadData();
     } catch (err: any) {
-      setErrorMessage(err.response?.data?.error?.message || 'Failed to save location.');
+      setErrorMessage(err.response?.data?.message || 'Failed to save location.');
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleDeleteLocation = async (id: number) => {
-    if (!window.confirm('Are you sure you want to remove this location?')) return;
-    try {
-      await inventoryApi.deleteLocation(id);
-      setSuccessMessage('Location deleted.');
-      loadData();
-    } catch (err: any) {
-      setErrorMessage(err.response?.data?.error?.message || 'Failed to delete location.');
-    }
-  };
-
-  // Supplier Modal Handlers (Large Business)
-  const openAddSupplierModal = () => {
-    setEditingSupplier(null);
-    setSupplierName('');
-    setSupplierContact('');
-    setSupplierEmail('');
-    setSupplierPhone('');
-    setSupplierAddress('');
-    setSupplierTaxNumber('');
-    setIsSupplierModalOpen(true);
-  };
-
-  const openEditSupplierModal = (sup: Supplier) => {
-    setEditingSupplier(sup);
-    setSupplierName(sup.name);
-    setSupplierContact(sup.contactPerson || '');
-    setSupplierEmail(sup.email || '');
-    setSupplierPhone(sup.phone || '');
-    setSupplierAddress(sup.address || '');
-    setSupplierTaxNumber(sup.taxNumber || '');
-    setIsSupplierModalOpen(true);
-  };
-
   const handleSaveSupplier = async (e: React.FormEvent) => {
     e.preventDefault();
-    setActionLoading(true);
-    setSuccessMessage(null);
-    setErrorMessage(null);
+    if (!supplierName.trim()) return;
 
+    setActionLoading(true);
     try {
       if (editingSupplier) {
         await inventoryApi.updateSupplier(editingSupplier.id, {
@@ -389,584 +274,343 @@ export const InventoryPage: React.FC = () => {
           address: supplierAddress.trim() || undefined,
           taxNumber: supplierTaxNumber.trim() || undefined,
         });
-        setSuccessMessage(`Supplier "${supplierName}" created.`);
+        setSuccessMessage(`Supplier "${supplierName}" registered.`);
       }
+
       setIsSupplierModalOpen(false);
+      setEditingSupplier(null);
       loadData();
     } catch (err: any) {
-      setErrorMessage(err.response?.data?.error?.message || 'Failed to save supplier.');
+      setErrorMessage(err.response?.data?.message || 'Failed to save supplier.');
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleDeleteSupplier = async (id: number) => {
-    if (!window.confirm('Are you sure you want to remove this supplier?')) return;
-    try {
-      await inventoryApi.deleteSupplier(id);
-      setSuccessMessage('Supplier removed.');
-      loadData();
-    } catch (err: any) {
-      setErrorMessage('Failed to delete supplier.');
-    }
-  };
-
-  // Purchase Order Handlers (Large Business)
-  const openAddPurchaseModal = () => {
-    setPurchaseSupplierId(suppliers.length > 0 ? String(suppliers[0].id) : '');
-    setPurchaseLocationId(locations.length > 0 ? String(locations[0].id) : '');
-    setPurchaseDate(new Date().toISOString().split('T')[0]);
-    setPurchaseNotes('');
-    setPurchaseLines([{ productId: '', productName: '', quantity: 1, unitCost: 0 }]);
-    setIsPurchaseModalOpen(true);
-  };
-
-  const addPurchaseLine = () => {
-    setPurchaseLines([...purchaseLines, { productId: '', productName: '', quantity: 1, unitCost: 0 }]);
-  };
-
-  const removePurchaseLine = (index: number) => {
-    if (purchaseLines.length > 1) {
-      setPurchaseLines(purchaseLines.filter((_, idx) => idx !== index));
-    }
-  };
-
-  const updatePurchaseLine = (index: number, field: string, value: any) => {
-    const updated = [...purchaseLines];
-    if (field === 'productId') {
-      const selected = allProducts.find((p) => String(p.id) === value);
-      updated[index].productId = value;
-      updated[index].productName = selected ? selected.name : '';
-      updated[index].unitCost = selected?.costPrice || 0;
-    } else {
-      (updated[index] as any)[field] = value;
-    }
-    setPurchaseLines(updated);
-  };
-
-  const handleSavePurchase = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setActionLoading(true);
-    setSuccessMessage(null);
-    setErrorMessage(null);
-
-    try {
-      const items = purchaseLines.map((line) => ({
-        productId: line.productId ? Number(line.productId) : undefined,
-        productName: line.productName.trim() || 'Purchased Item',
-        quantity: line.quantity,
-        unitCost: line.unitCost,
-      }));
-
-      await inventoryApi.createPurchase({
-        supplierId: purchaseSupplierId ? Number(purchaseSupplierId) : undefined,
-        locationId: purchaseLocationId ? Number(purchaseLocationId) : undefined,
-        purchaseDate,
-        notes: purchaseNotes || undefined,
-        items,
-      });
-
-      setSuccessMessage('Purchase order recorded and stock received into inventory.');
-      setIsPurchaseModalOpen(false);
-      loadData();
-    } catch (err: any) {
-      setErrorMessage(err.response?.data?.error?.message || 'Failed to record purchase.');
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  // If inventory is disabled globally
-  if (!isInventoryEnabled) {
-    return (
-      <div className="space-y-6 max-w-4xl mx-auto py-8">
-        <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-4 shadow-xs">
-          <div className="w-16 h-16 rounded-3xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-            <Boxes size={32} />
-          </div>
-          <h2 className="text-xl font-black text-slate-900">Inventory Tracking is Disabled</h2>
-          <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-            Inventory management is currently turned off for {business?.name}. Enable it to start tracking stock quantities, receive low-stock alerts, and auto-reduce stock on checkout.
-          </p>
-          {isOwner && (
-            <button
-              onClick={() => handleToggleInventoryEnabled(true)}
-              disabled={actionLoading}
-              className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all cursor-pointer"
-            >
-              {actionLoading ? 'Enabling...' : 'Enable Inventory Management'}
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
+  // Filtered Stock items
+  const filteredStock = stockItems.filter((item) => {
+    const matchesSearch =
+      item.productName.toLowerCase().includes(stockSearch.toLowerCase()) ||
+      (item.sku && item.sku.toLowerCase().includes(stockSearch.toLowerCase()));
+    const matchesCat =
+      selectedCategory === 'ALL'
+        ? true
+        : item.categoryName && item.categoryName === selectedCategory;
+    const matchesLow = lowStockOnly ? item.lowStock || item.stockQuantity <= 0 : true;
+    return matchesSearch && matchesCat && matchesLow;
+  });
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-              {isLarge ? 'Enterprise Inventory Hub' : 'Stock & Inventory'}
-            </h1>
-            <span
-              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                isLarge ? 'bg-purple-50 text-purple-700 border-purple-200' : 'bg-blue-50 text-blue-700 border-blue-200'
-              }`}
-            >
-              {isLarge ? 'MULTI-LOCATION ENTERPRISE' : 'SINGLE-STORE FAST STOCK'}
+            <h1 className="text-2xl font-black text-zinc-950 tracking-tight">Inventory &amp; Stock</h1>
+            <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+              isLarge
+                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                : 'bg-amber-50 text-amber-700 border-amber-200'
+            }`}>
+              {isLarge ? 'Enterprise Multi-Location' : 'Lean Single-Counter'}
             </span>
           </div>
-          <p className="text-slate-500 text-xs mt-1">
+          <p className="text-xs text-zinc-500 mt-0.5">
             {isLarge
-              ? 'Multi-branch warehouses, purchase orders, suppliers, and transaction-safe stock ledger'
-              : 'Streamlined stock tracking, live thresholds, and instant stock level adjustments'}
+              ? 'Multi-branch warehouse control, stock movements, supplier directory, and purchase orders.'
+              : 'Real-time stock counts, automated sales deductions, and low-stock warning thresholds.'}
           </p>
         </div>
 
-        <div className="flex items-center space-x-3 shrink-0">
-          <button
-            onClick={() => loadData()}
-            title="Refresh Data"
-            className="p-2.5 rounded-2xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all shadow-xs cursor-pointer"
-          >
-            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-          </button>
-
-          {isLarge && isOwner && (
-            <>
-              <button
-                onClick={() => openTransferModal()}
-                className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
-              >
-                <ArrowRightLeft size={15} />
-                <span>Transfer Stock</span>
-              </button>
-
-              <button
-                onClick={openAddPurchaseModal}
-                className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all active:scale-95 cursor-pointer"
-              >
-                <Plus size={15} />
-                <span>Record Inward Goods</span>
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Notifications */}
-      {successMessage && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center space-x-3 text-emerald-800 text-xs">
-          <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-          <span className="font-semibold">{successMessage}</span>
-        </div>
-      )}
-
-      {errorMessage && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 flex items-center space-x-3 text-rose-800 text-xs">
-          <AlertCircle size={16} className="text-rose-600 shrink-0" />
-          <span className="font-semibold">{errorMessage}</span>
-        </div>
-      )}
-
-      {/* Overview KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {/* Tracked Items */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs flex items-center justify-between">
-          <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Tracked Products</span>
-            <span className="text-2xl font-black text-slate-900 mt-1 block">
-              {summary?.totalTrackedProducts ?? 0}
-            </span>
-            <span className="text-[10px] text-slate-400 font-medium">Active in catalog</span>
-          </div>
-          <div className="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-            <Package size={20} />
-          </div>
-        </div>
-
-        {/* Healthy Stock */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs flex items-center justify-between">
-          <div>
-            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider block">In Stock</span>
-            <span className="text-2xl font-black text-emerald-700 mt-1 block">
-              {summary?.inStockProducts ?? 0}
-            </span>
-            <span className="text-[10px] text-slate-400 font-medium">Healthy levels</span>
-          </div>
-          <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-            <CheckCircle size={20} />
-          </div>
-        </div>
-
-        {/* Low Stock Alerts */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs flex items-center justify-between">
-          <div>
-            <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider block">Low Stock</span>
-            <span className="text-2xl font-black text-amber-600 mt-1 block">
-              {summary?.lowStockProducts ?? 0}
-            </span>
-            <span className="text-[10px] text-amber-600/80 font-medium">Reorder suggested</span>
-          </div>
-          <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-            <AlertTriangle size={20} />
-          </div>
-        </div>
-
-        {/* Valuation or Out of Stock */}
-        {isLarge ? (
-          <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs flex items-center justify-between">
-            <div>
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Valuation</span>
-              <span className="text-xl font-black text-slate-900 mt-1 block">
-                {(summary?.totalInventoryValuation ?? 0).toFixed(2)} {currencySymbol}
-              </span>
-              <span className="text-[10px] text-slate-400 font-medium">Cost Asset Value</span>
-            </div>
-            <div className="w-11 h-11 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-              <DollarSign size={20} />
-            </div>
-          </div>
-        ) : (
-          <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs flex items-center justify-between">
-            <div>
-              <span className="text-[11px] font-bold text-rose-600 uppercase tracking-wider block">Out of Stock</span>
-              <span className="text-2xl font-black text-rose-600 mt-1 block">
-                {summary?.outOfStockProducts ?? 0}
-              </span>
-              <span className="text-[10px] text-rose-500 font-medium">Zero quantity</span>
-            </div>
-            <div className="w-11 h-11 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
-              <XCircle size={20} />
-            </div>
+        {isLarge && (
+          <div className="flex items-center space-x-2 self-start sm:self-auto">
+            <button
+              onClick={() => {
+                setTransferProductId(allProducts.length > 0 ? String(allProducts[0].id) : '');
+                setTransferSourceLocationId(locations.length > 0 ? String(locations[0].id) : '');
+                setTransferTargetLocationId(locations.length > 1 ? String(locations[1].id) : '');
+                setIsTransferModalOpen(true);
+              }}
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-zinc-50 text-zinc-700 text-xs font-bold border border-zinc-200 shadow-xs cursor-pointer"
+            >
+              <ArrowRightLeft size={14} />
+              <span>Transfer Stock</span>
+            </button>
           </div>
         )}
       </div>
 
-      {/* Large Business Navigation Tabs */}
-      {isLarge && (
-        <div className="flex items-center space-x-1 p-1 bg-slate-100 rounded-2xl overflow-x-auto">
-          <button
-            onClick={() => setActiveTab('STOCK')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'STOCK' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Boxes size={15} />
-            <span>Stock &amp; Balances</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('MOVEMENTS')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'MOVEMENTS' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <History size={15} />
-            <span>Movements Ledger</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('PURCHASES')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'PURCHASES' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <ShoppingCart size={15} />
-            <span>Purchases &amp; Inward</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('SUPPLIERS')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'SUPPLIERS' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Users size={15} />
-            <span>Suppliers ({suppliers.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('LOCATIONS')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'LOCATIONS' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Building2 size={15} />
-            <span>Branches / Locations ({locations.length})</span>
+      {/* Alerts */}
+      {successMessage && (
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <CheckCircle2 size={15} className="text-emerald-600" />
+            <span>{successMessage}</span>
+          </div>
+          <button onClick={() => setSuccessMessage(null)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
+            &times;
           </button>
         </div>
       )}
 
-      {/* TAB 1: STOCK & BALANCES (For Both Small and Large) */}
+      {errorMessage && (
+        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <AlertCircle size={15} className="text-red-600" />
+            <span>{errorMessage}</span>
+          </div>
+          <button onClick={() => setErrorMessage(null)} className="text-red-700 hover:text-red-900 cursor-pointer">
+            &times;
+          </button>
+        </div>
+      )}
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="p-4 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-1">
+          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Tracked Products</span>
+          <div className="text-2xl font-black text-zinc-950">{summary?.totalTrackedProducts ?? stockItems.length}</div>
+          <span className="text-[10px] text-zinc-400">Physical stock items</span>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-1">
+          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Low Stock Warnings</span>
+          <div className={`text-2xl font-black ${summary?.lowStockProducts && summary.lowStockProducts > 0 ? 'text-amber-600' : 'text-zinc-950'}`}>
+            {summary?.lowStockProducts ?? 0}
+          </div>
+          <span className="text-[10px] text-zinc-400">Below threshold level</span>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-1">
+          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Out of Stock</span>
+          <div className={`text-2xl font-black ${summary?.outOfStockProducts && summary.outOfStockProducts > 0 ? 'text-rose-600' : 'text-zinc-950'}`}>
+            {summary?.outOfStockProducts ?? 0}
+          </div>
+          <span className="text-[10px] text-zinc-400">Zero inventory remaining</span>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-1">
+          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Inventory Value</span>
+          <div className="text-2xl font-black text-zinc-950">
+            {formatCurrency(summary?.totalInventoryValuation ?? 0, currency)}
+          </div>
+          <span className="text-[10px] text-zinc-400">Retail inventory asset value</span>
+        </div>
+      </div>
+
+      {/* Large Business Navigation Tabs */}
+      {isLarge && (
+        <div className="flex items-center space-x-2 border-b border-zinc-200 pb-2 text-xs overflow-x-auto">
+          {[
+            { id: 'STOCK', label: 'Stock Levels', icon: Boxes },
+            { id: 'MOVEMENTS', label: 'Stock Movements', icon: History },
+            { id: 'SUPPLIERS', label: 'Suppliers', icon: Users },
+            { id: 'PURCHASES', label: 'Purchase Inward POs', icon: ShoppingCart },
+            { id: 'LOCATIONS', label: 'Locations & Branches', icon: Building2 },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const active = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                  active
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-white text-zinc-600 hover:bg-zinc-100 border border-zinc-200'
+                }`}
+              >
+                <Icon size={15} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* TAB 1: STOCK LEVELS (Visible to both Small and Large) */}
       {(!isLarge || activeTab === 'STOCK') && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden space-y-4 p-6">
-          {/* Filter Toolbar */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-4 border-b border-slate-100">
-            <form onSubmit={handleStockSearch} className="relative w-full md:w-80">
-              <Search size={16} className="absolute left-3.5 top-3 text-slate-400" />
+        <div className="space-y-4">
+          {/* Filter Bar */}
+          <div className="bg-white rounded-2xl border border-zinc-200 p-4 shadow-card flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="relative w-full sm:w-96">
+              <Search size={15} className="absolute left-3.5 top-3 text-zinc-400" />
               <input
                 type="text"
-                placeholder="Search item, SKU..."
+                placeholder="Search stock by product name or SKU..."
                 value={stockSearch}
                 onChange={(e) => setStockSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium"
+                className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
               />
-            </form>
+            </div>
 
-            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <div className="flex items-center space-x-2 w-full sm:w-auto">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
               >
                 <option value="ALL">All Categories</option>
                 {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
+                  <option key={c.id} value={c.name}>
                     {c.name}
                   </option>
                 ))}
               </select>
 
-              <label className="flex items-center space-x-2 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 bg-slate-50 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={lowStockOnly}
-                  onChange={(e) => setLowStockOnly(e.target.checked)}
-                  className="rounded text-indigo-600 focus:ring-indigo-500 h-3.5 w-3.5"
-                />
-                <span className="text-amber-700">Low Stock Only</span>
-              </label>
+              <button
+                type="button"
+                onClick={() => setLowStockOnly(!lowStockOnly)}
+                className={`px-3 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer whitespace-nowrap ${
+                  lowStockOnly
+                    ? 'bg-amber-50 border-amber-300 text-amber-800'
+                    : 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50'
+                }`}
+              >
+                Low Stock Only
+              </button>
             </div>
           </div>
 
           {/* Stock Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-wider font-bold border-b border-slate-200">
-                  <th className="px-4 py-3">Product / SKU</th>
-                  <th className="px-4 py-3">Tracking</th>
-                  <th className="px-4 py-3">Current Stock</th>
-                  {isLarge && <th className="px-4 py-3">Multi-Branch Stock</th>}
-                  <th className="px-4 py-3">Min Alert Level</th>
-                  <th className="px-4 py-3">Unit Price / Cost</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
-                {loading ? (
-                  <tr>
-                    <td colSpan={isLarge ? 7 : 6} className="px-4 py-12 text-center text-slate-400">
-                      Loading inventory items...
-                    </td>
+          <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                    <th className="py-3 px-4">Product Item</th>
+                    <th className="py-3 px-4">Category</th>
+                    <th className="py-3 px-4">Price</th>
+                    <th className="py-3 px-4">Stock Quantity</th>
+                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4 text-right">Action</th>
                   </tr>
-                ) : stockItems.length === 0 ? (
-                  <tr>
-                    <td colSpan={isLarge ? 7 : 6} className="px-4 py-12 text-center text-slate-500 space-y-2">
-                      <Boxes size={32} className="mx-auto text-slate-300" />
-                      <p className="font-bold text-slate-700">No products found</p>
-                      <p className="text-[11px] text-slate-400">Add physical items in Products catalog to manage stock.</p>
-                    </td>
-                  </tr>
-                ) : (
-                  stockItems.map((item) => (
-                    <tr key={item.productId} className="hover:bg-slate-50/60 transition-colors">
-                      {/* Name & SKU */}
-                      <td className="px-4 py-3.5">
-                        <div className="font-bold text-slate-900">{item.productName}</div>
-                        <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
-                          {item.sku ? (
-                            <span className="flex items-center gap-1 font-mono text-[10px]">
-                              <Barcode size={11} />
-                              {item.sku}
-                            </span>
-                          ) : (
-                            <span>No SKU</span>
-                          )}
-                          {item.categoryName && <span>• {item.categoryName}</span>}
-                        </div>
-                      </td>
-
-                      {/* Track Toggle */}
-                      <td className="px-4 py-3.5">
-                        <button
-                          onClick={() => handleToggleProductTracking(item)}
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors cursor-pointer ${
-                            item.trackStock
-                              ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
-                              : 'bg-slate-100 text-slate-400 border-slate-200'
-                          }`}
-                        >
-                          {item.trackStock ? 'Tracked' : 'Disabled'}
-                        </button>
-                      </td>
-
-                      {/* Current Stock */}
-                      <td className="px-4 py-3.5">
-                        <span
-                          className={`inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl text-xs font-black border ${
-                            !item.trackStock
-                              ? 'bg-slate-50 text-slate-400 border-slate-200'
-                              : item.outOfStock
-                              ? 'bg-rose-50 text-rose-700 border-rose-200'
-                              : item.lowStock
-                              ? 'bg-amber-50 text-amber-800 border-amber-300'
-                              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          }`}
-                        >
-                          <span>{item.trackStock ? item.stockQuantity : '—'}</span>
-                          {item.lowStock && <AlertTriangle size={12} className="text-amber-600" />}
-                        </span>
-                      </td>
-
-                      {/* Multi-Location Stock Breakdown (Large) */}
-                      {isLarge && (
-                        <td className="px-4 py-3.5">
-                          {item.locationStocks && item.locationStocks.length > 0 ? (
-                            <div className="flex flex-wrap gap-1">
-                              {item.locationStocks.map((ls) => (
-                                <span
-                                  key={ls.locationId}
-                                  className="px-2 py-0.5 rounded-lg bg-slate-100 border border-slate-200 text-[10px] text-slate-700 font-medium"
-                                >
-                                  {ls.locationName}: <strong>{ls.quantity}</strong>
-                                </span>
-                              ))}
-                            </div>
-                          ) : (
-                            <span className="text-slate-400 text-[11px]">Primary stock only</span>
-                          )}
-                        </td>
-                      )}
-
-                      {/* Min Alert Level */}
-                      <td className="px-4 py-3.5 font-medium text-slate-600">
-                        {item.trackStock ? item.lowStockThreshold : '—'}
-                      </td>
-
-                      {/* Price & Cost */}
-                      <td className="px-4 py-3.5">
-                        <div className="font-bold text-slate-800">
-                          {item.price.toFixed(2)} {currencySymbol}
-                        </div>
-                        {item.costPrice !== undefined && item.costPrice !== null && (
-                          <div className="text-[10px] text-slate-400">
-                            Cost: {item.costPrice.toFixed(2)} {currencySymbol}
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="px-4 py-3.5 text-right">
-                        <button
-                          onClick={() => openAdjustModal(item)}
-                          className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs transition-colors cursor-pointer"
-                        >
-                          Adjust Stock
-                        </button>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 text-xs">
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="py-12 text-center text-zinc-400">
+                        Loading inventory...
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : filteredStock.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-12 text-center text-zinc-500 space-y-1">
+                        <Boxes size={32} className="mx-auto text-zinc-300" />
+                        <p className="font-bold text-zinc-700">No stock records found</p>
+                        <p className="text-[11px] text-zinc-400">Track stock from Products &amp; Services catalog.</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredStock.map((item) => {
+                      const isOutOfStock = item.stockQuantity <= 0;
+                      const isLow = item.lowStock || (item.stockQuantity > 0 && item.stockQuantity <= (item.lowStockThreshold ?? 5));
+
+                      return (
+                        <tr key={item.productId} className="hover:bg-zinc-50/70 transition-colors">
+                          <td className="py-3 px-4">
+                            <span className="font-bold text-zinc-900 block">{item.productName}</span>
+                            {item.sku && (
+                              <span className="text-[10px] text-zinc-400 font-mono">SKU: {item.sku}</span>
+                            )}
+                          </td>
+
+                          <td className="py-3 px-4 text-zinc-600">{item.categoryName || '—'}</td>
+
+                          <td className="py-3 px-4 font-black text-zinc-950">
+                            {formatCurrency(item.price, currency)}
+                          </td>
+
+                          <td className="py-3 px-4">
+                            <span className="font-bold text-sm text-zinc-900">{item.stockQuantity}</span>
+                            <span className="text-[10px] text-zinc-400 ml-1.5 font-normal">
+                              (Min: {item.lowStockThreshold ?? 5})
+                            </span>
+                          </td>
+
+                          <td className="py-3 px-4">
+                            <span
+                              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                                isOutOfStock
+                                  ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                  : isLow
+                                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                  : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              }`}
+                            >
+                              {isOutOfStock ? 'Out of Stock' : isLow ? 'Low Stock' : 'Optimal'}
+                            </span>
+                          </td>
+
+                          <td className="py-3 px-4 text-right">
+                            <button
+                              onClick={() => openAdjustModal(item)}
+                              className="px-3 py-1 bg-zinc-100 hover:bg-emerald-50 hover:text-emerald-700 text-zinc-700 font-bold text-xs rounded-lg transition-colors cursor-pointer"
+                            >
+                              Adjust Stock
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
 
-      {/* TAB 2: STOCK MOVEMENTS LEDGER (Large Business) */}
+      {/* TAB 2: STOCK MOVEMENTS (Large Business Only) */}
       {isLarge && activeTab === 'MOVEMENTS' && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-4 border-b border-slate-100">
-            <div>
-              <h2 className="text-base font-bold text-slate-900">Stock Movements Audit Ledger</h2>
-              <p className="text-xs text-slate-500">Immutable record of all sales, purchases, transfers, and corrections</p>
-            </div>
-
-            <select
-              value={movementTypeFilter}
-              onChange={(e) => setMovementTypeFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-            >
-              <option value="ALL">All Movement Types</option>
-              <option value="SALE">Sales (Checkout Decrement)</option>
-              <option value="PURCHASE">Purchases (Inward Stock)</option>
-              <option value="ADJUSTMENT">Manual Adjustments</option>
-              <option value="TRANSFER">Inter-Branch Transfers</option>
-              <option value="RETURN">Order Returns / Restocking</option>
-            </select>
+        <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden">
+          <div className="p-4 border-b border-zinc-100 flex items-center justify-between">
+            <h3 className="text-sm font-bold text-zinc-900">Audit Ledger &amp; Stock Movements</h3>
+            <span className="text-xs text-zinc-500">Auto-logged on billing, adjustments &amp; inward POs</span>
           </div>
-
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-wider font-bold border-b border-slate-200">
-                  <th className="px-4 py-3">Date &amp; Time</th>
-                  <th className="px-4 py-3">Product</th>
-                  <th className="px-4 py-3">Type</th>
-                  <th className="px-4 py-3">Quantity</th>
-                  <th className="px-4 py-3">Stock Balance</th>
-                  <th className="px-4 py-3">Reference / Notes</th>
-                  <th className="px-4 py-3">Staff Operator</th>
+            <table className="w-full text-left text-xs">
+              <thead className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase">
+                <tr>
+                  <th className="py-3 px-4">Timestamp</th>
+                  <th className="py-3 px-4">Product</th>
+                  <th className="py-3 px-4">Type</th>
+                  <th className="py-3 px-4">Quantity</th>
+                  <th className="py-3 px-4">Balance After</th>
+                  <th className="py-3 px-4">Reason / Notes</th>
+                  <th className="py-3 px-4">User</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
+              <tbody className="divide-y divide-zinc-100">
                 {movements.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center text-slate-400">
+                    <td colSpan={7} className="py-12 text-center text-zinc-400">
                       No stock movements recorded yet.
                     </td>
                   </tr>
                 ) : (
                   movements.map((m) => (
-                    <tr key={m.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-4 py-3 text-slate-500 font-mono text-[11px]">
-                        {new Date(m.createdAt).toLocaleString()}
+                    <tr key={m.id} className="hover:bg-zinc-50/70">
+                      <td className="py-3 px-4 text-zinc-500 whitespace-nowrap">
+                        {new Date(m.createdAt).toLocaleString('en-IN', {
+                          dateStyle: 'short',
+                          timeStyle: 'short',
+                        })}
                       </td>
-                      <td className="px-4 py-3 font-bold text-slate-900">
-                        {m.productName}
-                        {m.productSku && <span className="text-[10px] text-slate-400 font-mono block">{m.productSku}</span>}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                            m.movementType === 'PURCHASE'
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                              : m.movementType === 'SALE'
-                              ? 'bg-blue-50 text-blue-700 border-blue-200'
-                              : m.movementType === 'TRANSFER'
-                              ? 'bg-purple-50 text-purple-700 border-purple-200'
-                              : m.movementType === 'RETURN'
-                              ? 'bg-amber-50 text-amber-700 border-amber-200'
-                              : 'bg-slate-100 text-slate-700 border-slate-200'
-                          }`}
-                        >
+                      <td className="py-3 px-4 font-bold text-zinc-900">{m.productName}</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded bg-zinc-100 font-bold text-[10px] uppercase">
                           {m.movementType}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-black">
+                      <td className="py-3 px-4 font-mono font-bold">
                         <span className={m.quantity > 0 ? 'text-emerald-600' : 'text-rose-600'}>
                           {m.quantity > 0 ? `+${m.quantity}` : m.quantity}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-slate-600 font-mono">
-                        {m.previousStock} &rarr; <strong className="text-slate-900">{m.newStock}</strong>
-                      </td>
-                      <td className="px-4 py-3">
-                        {m.referenceNumber && (
-                          <span className="font-mono text-[11px] font-bold text-indigo-600 block">
-                            {m.referenceNumber}
-                          </span>
-                        )}
-                        <span className="text-slate-500 text-[11px]">{m.notes || '—'}</span>
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 font-medium">
-                        {m.createdBy || 'System'}
-                      </td>
+                      <td className="py-3 px-4 font-mono text-zinc-700">{m.newStock}</td>
+                      <td className="py-3 px-4 text-zinc-500 truncate max-w-xs">{m.notes || '—'}</td>
+                      <td className="py-3 px-4 text-zinc-600">{m.createdBy || 'System'}</td>
                     </tr>
                   ))
                 )}
@@ -976,68 +620,108 @@ export const InventoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 3: PURCHASES & INWARD GOODS (Large Business) */}
-      {isLarge && activeTab === 'PURCHASES' && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div>
-              <h2 className="text-base font-bold text-slate-900">Purchase Orders &amp; Inward Shipments</h2>
-              <p className="text-xs text-slate-500">Record inventory intake from suppliers into locations</p>
-            </div>
+      {/* TAB 3: SUPPLIERS (Large Business Only) */}
+      {isLarge && activeTab === 'SUPPLIERS' && (
+        <div className="space-y-4">
+          <div className="flex justify-end">
             <button
-              onClick={openAddPurchaseModal}
-              className="px-4 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all cursor-pointer flex items-center space-x-1.5"
+              onClick={() => {
+                setEditingSupplier(null);
+                setSupplierName('');
+                setSupplierContact('');
+                setSupplierEmail('');
+                setSupplierPhone('');
+                setSupplierAddress('');
+                setSupplierTaxNumber('');
+                setIsSupplierModalOpen(true);
+              }}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer flex items-center space-x-1.5"
             >
               <Plus size={15} />
-              <span>Record Purchase</span>
+              <span>Add Supplier</span>
             </button>
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {suppliers.length === 0 ? (
+              <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-2xl border border-zinc-200 p-8 space-y-1">
+                <Users size={32} className="mx-auto text-zinc-300" />
+                <p className="font-bold text-zinc-700">No suppliers registered</p>
+                <p className="text-xs text-zinc-400">Add vendors and procurement partners.</p>
+              </div>
+            ) : (
+              suppliers.map((s) => (
+                <div key={s.id} className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-zinc-900 text-sm">{s.name}</h4>
+                    <button
+                      onClick={() => {
+                        setEditingSupplier(s);
+                        setSupplierName(s.name);
+                        setSupplierContact(s.contactPerson || '');
+                        setSupplierEmail(s.email || '');
+                        setSupplierPhone(s.phone || '');
+                        setSupplierAddress(s.address || '');
+                        setSupplierTaxNumber(s.taxNumber || '');
+                        setIsSupplierModalOpen(true);
+                      }}
+                      className="p-1 text-zinc-400 hover:text-emerald-600 cursor-pointer"
+                    >
+                      <Edit2 size={14} />
+                    </button>
+                  </div>
+                  <div className="space-y-1 text-xs text-zinc-600">
+                    {s.contactPerson && <p>Contact: {s.contactPerson}</p>}
+                    {s.phone && <p className="font-mono">Phone: {s.phone}</p>}
+                    {s.email && <p>Email: {s.email}</p>}
+                    {s.taxNumber && <p className="text-[10px] text-zinc-400">GSTIN: {s.taxNumber}</p>}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: PURCHASES / INWARD POS (Large Business Only) */}
+      {isLarge && activeTab === 'PURCHASES' && (
+        <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden">
+          <div className="p-4 border-b border-zinc-100 flex items-center justify-between">
+            <h3 className="text-sm font-bold text-zinc-900">Inward Purchase Orders &amp; Supplier Invoices</h3>
+          </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-wider font-bold border-b border-slate-200">
-                  <th className="px-4 py-3">PO Number</th>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3">Supplier</th>
-                  <th className="px-4 py-3">Location</th>
-                  <th className="px-4 py-3">Total Amount</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Items Count</th>
+            <table className="w-full text-left text-xs">
+              <thead className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase">
+                <tr>
+                  <th className="py-3 px-4">Date</th>
+                  <th className="py-3 px-4">Invoice #</th>
+                  <th className="py-3 px-4">Supplier</th>
+                  <th className="py-3 px-4">Items</th>
+                  <th className="py-3 px-4">Total Cost</th>
+                  <th className="py-3 px-4">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
+              <tbody className="divide-y divide-zinc-100">
                 {purchases.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center text-slate-400">
+                    <td colSpan={6} className="py-12 text-center text-zinc-400">
                       No purchase orders recorded yet.
                     </td>
                   </tr>
                 ) : (
                   purchases.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-4 py-3 font-mono font-bold text-indigo-600">{p.purchaseNumber}</td>
-                      <td className="px-4 py-3 text-slate-600">{p.purchaseDate}</td>
-                      <td className="px-4 py-3 font-semibold text-slate-900">{p.supplierName || '—'}</td>
-                      <td className="px-4 py-3 text-slate-700">{p.locationName || 'Main Store'}</td>
-                      <td className="px-4 py-3 font-black text-slate-900">
-                        {p.totalAmount.toFixed(2)} {currencySymbol}
+                    <tr key={p.id} className="hover:bg-zinc-50/70">
+                      <td className="py-3 px-4 text-zinc-500">
+                        {new Date(p.purchaseDate).toLocaleDateString('en-IN')}
                       </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                            p.status === 'RECEIVED'
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                              : p.status === 'ORDERED'
-                              ? 'bg-blue-50 text-blue-700 border-blue-200'
-                              : 'bg-rose-50 text-rose-700 border-rose-200'
-                          }`}
-                        >
+                      <td className="py-3 px-4 font-mono font-bold text-zinc-900">{p.purchaseNumber || `PO-${p.id}`}</td>
+                      <td className="py-3 px-4 font-semibold text-zinc-800">{p.supplierName}</td>
+                      <td className="py-3 px-4 text-zinc-600">{p.items?.length || 0} line items</td>
+                      <td className="py-3 px-4 font-bold text-zinc-950">{formatCurrency(p.totalAmount, currency)}</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
                           {p.status}
                         </span>
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 font-medium">
-                        {p.items?.length || 0} items
                       </td>
                     </tr>
                   ))
@@ -1048,131 +732,65 @@ export const InventoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 4: SUPPLIERS (Large Business) */}
-      {isLarge && activeTab === 'SUPPLIERS' && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div>
-              <h2 className="text-base font-bold text-slate-900">Vendors &amp; Supplier Directory</h2>
-              <p className="text-xs text-slate-500">Manage vendor contact info, tax registration, and order history</p>
-            </div>
-            {isOwner && (
-              <button
-                onClick={openAddSupplierModal}
-                className="px-4 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all cursor-pointer flex items-center space-x-1.5"
-              >
-                <Plus size={15} />
-                <span>Add Supplier</span>
-              </button>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {suppliers.length === 0 ? (
-              <div className="col-span-3 text-center py-12 text-slate-400 text-xs">
-                No suppliers configured. Click "Add Supplier" to create your first vendor.
-              </div>
-            ) : (
-              suppliers.map((sup) => (
-                <div key={sup.id} className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-bold text-sm text-slate-900">{sup.name}</h3>
-                      {sup.contactPerson && <p className="text-[11px] text-slate-500">{sup.contactPerson}</p>}
-                    </div>
-                    {isOwner && (
-                      <div className="flex space-x-1">
-                        <button
-                          onClick={() => openEditSupplierModal(sup)}
-                          className="p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-white"
-                        >
-                          <Edit2 size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteSupplier(sup.id)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-white"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-1 text-xs text-slate-600 border-t border-slate-200/60 pt-2 font-medium">
-                    {sup.email && <div>Email: <span className="text-slate-800">{sup.email}</span></div>}
-                    {sup.phone && <div>Phone: <span className="text-slate-800">{sup.phone}</span></div>}
-                    {sup.taxNumber && <div>Tax ID: <span className="text-slate-800 font-mono">{sup.taxNumber}</span></div>}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 5: LOCATIONS & WAREHOUSES (Large Business) */}
+      {/* TAB 5: LOCATIONS & BRANCHES (Large Business Only) */}
       {isLarge && activeTab === 'LOCATIONS' && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div>
-              <h2 className="text-base font-bold text-slate-900">Branches &amp; Warehouse Locations</h2>
-              <p className="text-xs text-slate-500">Multi-location retail branches, storage depots, and primary counters</p>
-            </div>
-            {isOwner && (
-              <button
-                onClick={openAddLocationModal}
-                className="px-4 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all cursor-pointer flex items-center space-x-1.5"
-              >
-                <Plus size={15} />
-                <span>Add Location</span>
-              </button>
-            )}
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <button
+              onClick={() => {
+                setEditingLocation(null);
+                setLocationName('');
+                setLocationCode('');
+                setLocationAddress('');
+                setLocationPhone('');
+                setLocationPrimary(false);
+                setIsLocationModalOpen(true);
+              }}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer flex items-center space-x-1.5"
+            >
+              <Plus size={15} />
+              <span>Add Location</span>
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {locations.length === 0 ? (
-              <div className="col-span-3 text-center py-12 text-slate-400 text-xs">
-                No custom locations added. Defaulting to Main Store.
+              <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-2xl border border-zinc-200 p-8 space-y-1">
+                <Building2 size={32} className="mx-auto text-zinc-300" />
+                <p className="font-bold text-zinc-700">No warehouse locations configured</p>
+                <p className="text-xs text-zinc-400">Add branch stores and central stock facilities.</p>
               </div>
             ) : (
               locations.map((loc) => (
-                <div key={loc.id} className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-bold text-sm text-slate-900">{loc.name}</h3>
-                        {loc.primary && (
-                          <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-indigo-100 text-indigo-700">
-                            PRIMARY
-                          </span>
-                        )}
-                      </div>
-                      {loc.code && <p className="text-[11px] text-slate-400 font-mono uppercase mt-0.5">Code: {loc.code}</p>}
+                <div key={loc.id} className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <h4 className="font-bold text-zinc-900 text-sm">{loc.name}</h4>
+                      {loc.primary && (
+                        <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold border border-blue-200">
+                          Primary
+                        </span>
+                      )}
                     </div>
-
-                    {isOwner && (
-                      <div className="flex space-x-1">
-                        <button
-                          onClick={() => openEditLocationModal(loc)}
-                          className="p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-white"
-                        >
-                          <Edit2 size={14} />
-                        </button>
-                        {!loc.primary && (
-                          <button
-                            onClick={() => handleDeleteLocation(loc.id)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-white"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        )}
-                      </div>
-                    )}
+                    <button
+                      onClick={() => {
+                        setEditingLocation(loc);
+                        setLocationName(loc.name);
+                        setLocationCode(loc.code || '');
+                        setLocationAddress(loc.address || '');
+                        setLocationPhone(loc.phone || '');
+                        setLocationPrimary(loc.primary || false);
+                        setIsLocationModalOpen(true);
+                      }}
+                      className="p-1 text-zinc-400 hover:text-emerald-600 cursor-pointer"
+                    >
+                      <Edit2 size={14} />
+                    </button>
                   </div>
-
-                  <div className="space-y-1 text-xs text-slate-600 border-t border-slate-200/60 pt-2 font-medium">
-                    {loc.phone && <div>Phone: <span className="text-slate-800">{loc.phone}</span></div>}
-                    {loc.address && <div className="text-[11px] text-slate-500">{loc.address}</div>}
+                  <div className="space-y-1 text-xs text-zinc-600">
+                    {loc.code && <p className="font-mono text-[11px]">Code: {loc.code}</p>}
+                    {loc.address && <p>{loc.address}</p>}
+                    {loc.phone && <p>Tel: {loc.phone}</p>}
                   </div>
                 </div>
               ))
@@ -1181,104 +799,74 @@ export const InventoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* QUICK STOCK ADJUST MODAL */}
+      {/* Adjust Stock Modal */}
       {isAdjustModalOpen && adjustingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div>
-                <h3 className="font-bold text-slate-900 text-base">Adjust Stock Level</h3>
-                <p className="text-xs text-slate-400 font-medium">{adjustingItem.productName}</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+                  <Boxes size={16} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-zinc-900">Adjust Stock Count</h3>
+                  <p className="text-[11px] text-zinc-500">{adjustingItem.productName}</p>
+                </div>
               </div>
               <button
                 onClick={() => setIsAdjustModalOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100"
+                className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 cursor-pointer"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveAdjustment} className="space-y-4">
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
-                <span className="text-slate-500 font-medium">Current Stock Count:</span>
-                <span className="font-black text-slate-900 text-sm">{adjustingItem.stockQuantity} units</span>
-              </div>
-
-              {isLarge && locations.length > 0 && (
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Location / Branch</label>
-                  <select
-                    value={adjustLocationId}
-                    onChange={(e) => setAdjustLocationId(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium bg-white"
-                  >
-                    <option value="">All Locations / Primary</option>
-                    {locations.map((l) => (
-                      <option key={l.id} value={l.id}>
-                        {l.name} {l.primary ? '(Primary)' : ''}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Add / Deduct (+/-)</label>
-                  <input
-                    type="number"
-                    value={adjustDelta}
-                    onChange={(e) => {
-                      setAdjustDelta(e.target.value);
-                      const deltaVal = parseInt(e.target.value, 10) || 0;
-                      setAdjustNewAbsolute(String(adjustingItem.stockQuantity + deltaVal));
-                    }}
-                    placeholder="+10 or -5"
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold font-mono"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">New Total Balance</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={adjustNewAbsolute}
-                    onChange={(e) => {
-                      setAdjustNewAbsolute(e.target.value);
-                      const absVal = parseInt(e.target.value, 10) || 0;
-                      setAdjustDelta(String(absVal - adjustingItem.stockQuantity));
-                    }}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold font-mono text-indigo-700"
-                  />
-                </div>
+            <form onSubmit={handleAdjustStock} className="space-y-4">
+              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 flex items-center justify-between text-xs">
+                <span className="text-zinc-500 font-medium">Current Stock in System:</span>
+                <span className="font-black text-zinc-900 text-sm">{adjustingItem.stockQuantity} units</span>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Reason / Audit Notes</label>
+                <label className="text-xs font-bold text-zinc-700">New Total Stock Level</label>
                 <input
-                  type="text"
-                  placeholder="e.g. Physical stock count, damaged item, or return"
-                  value={adjustNotes}
-                  onChange={(e) => setAdjustNotes(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium"
+                  type="number"
+                  min="0"
+                  required
+                  value={adjustNewAbsolute}
+                  onChange={(e) => {
+                    setAdjustNewAbsolute(e.target.value);
+                    setAdjustDelta('0');
+                  }}
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-sm font-bold focus:ring-1 focus:ring-emerald-600"
                 />
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-700">Reason / Audit Notes (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Physical inventory count correction / damaged goods"
+                  value={adjustNotes}
+                  onChange={(e) => setAdjustNotes(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
+                />
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setIsAdjustModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold"
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Saving...' : 'Apply Adjustment'}
+                  {actionLoading ? 'Saving...' : 'Update Stock Count'}
                 </button>
               </div>
             </form>
@@ -1286,31 +874,31 @@ export const InventoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* STOCK TRANSFER MODAL (Large Business) */}
+      {/* Stock Transfer Modal (Large Business) */}
       {isTransferModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-base">Transfer Stock Between Locations</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+              <h3 className="text-sm font-bold text-zinc-900">Transfer Stock Between Locations</h3>
               <button
                 onClick={() => setIsTransferModalOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100"
+                className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 cursor-pointer"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveTransfer} className="space-y-4">
+            <form onSubmit={handleTransferStock} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Product Item</label>
+                <label className="text-xs font-bold text-zinc-700">Product Item *</label>
                 <select
                   value={transferProductId}
                   onChange={(e) => setTransferProductId(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium bg-white"
+                  className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700"
                 >
                   {allProducts.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name} {p.sku ? `(${p.sku})` : ''}
+                      {p.name} ({p.stockQuantity ?? 0} in stock)
                     </option>
                   ))}
                 </select>
@@ -1318,11 +906,11 @@ export const InventoryPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">From (Source)</label>
+                  <label className="text-xs font-bold text-zinc-700">From Location *</label>
                   <select
                     value={transferSourceLocationId}
                     onChange={(e) => setTransferSourceLocationId(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium bg-white"
+                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700"
                   >
                     {locations.map((l) => (
                       <option key={l.id} value={l.id}>
@@ -1333,11 +921,11 @@ export const InventoryPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">To (Destination)</label>
+                  <label className="text-xs font-bold text-zinc-700">To Location *</label>
                   <select
                     value={transferTargetLocationId}
                     onChange={(e) => setTransferTargetLocationId(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium bg-white"
+                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700"
                   >
                     {locations.map((l) => (
                       <option key={l.id} value={l.id}>
@@ -1349,40 +937,40 @@ export const InventoryPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Quantity to Transfer</label>
+                <label className="text-xs font-bold text-zinc-700">Transfer Quantity *</label>
                 <input
                   type="number"
                   min="1"
                   required
                   value={transferQuantity}
                   onChange={(e) => setTransferQuantity(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-bold"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Transfer Notes</label>
+                <label className="text-xs font-bold text-zinc-700">Transfer Notes (Optional)</label>
                 <input
                   type="text"
-                  placeholder="e.g. Restocking retail shelf from warehouse"
+                  placeholder="e.g. Replenishing branch store inventory"
                   value={transferNotes}
                   onChange={(e) => setTransferNotes(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
                 />
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setIsTransferModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold"
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {actionLoading ? 'Transferring...' : 'Execute Transfer'}
                 </button>
@@ -1392,260 +980,69 @@ export const InventoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* RECORD PURCHASE MODAL (Large Business) */}
-      {isPurchaseModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl space-y-5 my-8 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div>
-                <h3 className="font-bold text-slate-900 text-base">Record Inward Goods / Purchase</h3>
-                <p className="text-xs text-slate-400">Increase stock quantities into warehouse upon receipt</p>
-              </div>
-              <button
-                onClick={() => setIsPurchaseModalOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSavePurchase} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Supplier</label>
-                  <select
-                    value={purchaseSupplierId}
-                    onChange={(e) => setPurchaseSupplierId(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium bg-white"
-                  >
-                    <option value="">Direct / Walk-in Vendor</option>
-                    {suppliers.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Receiving Location</label>
-                  <select
-                    value={purchaseLocationId}
-                    onChange={(e) => setPurchaseLocationId(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium bg-white"
-                  >
-                    {locations.map((l) => (
-                      <option key={l.id} value={l.id}>
-                        {l.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Purchase Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={purchaseDate}
-                    onChange={(e) => setPurchaseDate(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium"
-                  />
-                </div>
-              </div>
-
-              {/* Purchase Lines */}
-              <div className="space-y-2 pt-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Line Items</span>
-                  <button
-                    type="button"
-                    onClick={addPurchaseLine}
-                    className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center space-x-1"
-                  >
-                    <Plus size={14} />
-                    <span>Add Item</span>
-                  </button>
-                </div>
-
-                <div className="space-y-2">
-                  {purchaseLines.map((line, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2.5 rounded-2xl bg-slate-50 border border-slate-200">
-                      <select
-                        value={line.productId}
-                        onChange={(e) => updatePurchaseLine(idx, 'productId', e.target.value)}
-                        className="flex-1 px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white font-medium"
-                      >
-                        <option value="">Select Catalog Item or Custom...</option>
-                        {allProducts.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-
-                      <input
-                        type="text"
-                        placeholder="Item Title"
-                        value={line.productName}
-                        onChange={(e) => updatePurchaseLine(idx, 'productName', e.target.value)}
-                        className="w-36 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium"
-                      />
-
-                      <input
-                        type="number"
-                        min="1"
-                        placeholder="Qty"
-                        value={line.quantity}
-                        onChange={(e) => updatePurchaseLine(idx, 'quantity', parseInt(e.target.value, 10) || 1)}
-                        className="w-16 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-center"
-                      />
-
-                      <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder="Unit Cost"
-                        value={line.unitCost}
-                        onChange={(e) => updatePurchaseLine(idx, 'unitCost', parseFloat(e.target.value) || 0)}
-                        className="w-24 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-right"
-                      />
-
-                      {purchaseLines.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removePurchaseLine(idx)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Notes / Invoice Ref</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Vendor Invoice #9482 received in good condition"
-                  value={purchaseNotes}
-                  onChange={(e) => setPurchaseNotes(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium"
-                />
-              </div>
-
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setIsPurchaseModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer"
-                >
-                  {actionLoading ? 'Recording...' : 'Receive Inward Goods'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* LOCATION ADD/EDIT MODAL (Large Business) */}
+      {/* Location Modal */}
       {isLocationModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-base">
-                {editingLocation ? 'Edit Location' : 'Add Location / Branch'}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+              <h3 className="text-sm font-bold text-zinc-900">
+                {editingLocation ? 'Edit Warehouse Location' : 'Add New Location'}
               </h3>
               <button
                 onClick={() => setIsLocationModalOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100"
+                className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 cursor-pointer"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveLocation} className="space-y-3">
+            <form onSubmit={handleSaveLocation} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Location Name *</label>
+                <label className="text-xs font-bold text-zinc-700">Location Name *</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Downtown Flagship or Depot B"
+                  placeholder="e.g. Central Warehouse / Counter A"
                   value={locationName}
                   onChange={(e) => setLocationName(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-semibold"
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Branch Code</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. WH-01"
-                    value={locationCode}
-                    onChange={(e) => setLocationCode(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-mono"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Phone</label>
-                  <input
-                    type="text"
-                    placeholder="+1 555 000 0000"
-                    value={locationPhone}
-                    onChange={(e) => setLocationPhone(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium"
-                  />
-                </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Address</label>
-                <textarea
-                  rows={2}
-                  placeholder="Physical street address..."
+                <label className="text-xs font-bold text-zinc-700">Location Code (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. WH-01"
+                  value={locationCode}
+                  onChange={(e) => setLocationCode(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-mono"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-700">Address (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Industrial Area Phase 1"
                   value={locationAddress}
                   onChange={(e) => setLocationAddress(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
                 />
               </div>
 
-              <div className="flex items-center space-x-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="locPrimary"
-                  checked={locationPrimary}
-                  onChange={(e) => setLocationPrimary(e.target.checked)}
-                  className="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                />
-                <label htmlFor="locPrimary" className="text-xs font-bold text-slate-700 cursor-pointer">
-                  Set as Primary Store Location
-                </label>
-              </div>
-
-              <div className="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setIsLocationModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold"
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {actionLoading ? 'Saving...' : 'Save Location'}
                 </button>
@@ -1655,93 +1052,93 @@ export const InventoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* SUPPLIER ADD/EDIT MODAL (Large Business) */}
+      {/* Supplier Modal */}
       {isSupplierModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-base">
-                {editingSupplier ? 'Edit Supplier' : 'Add Vendor / Supplier'}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+              <h3 className="text-sm font-bold text-zinc-900">
+                {editingSupplier ? 'Edit Supplier' : 'Register Supplier'}
               </h3>
               <button
                 onClick={() => setIsSupplierModalOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100"
+                className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 cursor-pointer"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveSupplier} className="space-y-3">
+            <form onSubmit={handleSaveSupplier} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Supplier Name *</label>
+                <label className="text-xs font-bold text-zinc-700">Supplier / Vendor Name *</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Apex Beans & Dairy Co."
+                  placeholder="e.g. Apex Electronics Wholesale Ltd"
                   value={supplierName}
                   onChange={(e) => setSupplierName(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-semibold"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Contact Person</label>
+                  <label className="text-xs font-bold text-zinc-700">Contact Person</label>
                   <input
                     type="text"
-                    placeholder="e.g. John Miller"
+                    placeholder="e.g. Ramesh"
                     value={supplierContact}
                     onChange={(e) => setSupplierContact(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium"
+                    className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Phone</label>
+                  <label className="text-xs font-bold text-zinc-700">Phone</label>
                   <input
                     type="text"
-                    placeholder="+1 555 123 4567"
+                    placeholder="+91 98765 43210"
                     value={supplierPhone}
                     onChange={(e) => setSupplierPhone(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium"
+                    className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Email</label>
+                <label className="text-xs font-bold text-zinc-700">Email</label>
                 <input
                   type="email"
-                  placeholder="orders@supplier.com"
+                  placeholder="procurement@vendor.in"
                   value={supplierEmail}
                   onChange={(e) => setSupplierEmail(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Tax / VAT ID</label>
+                <label className="text-xs font-bold text-zinc-700">GSTIN / Tax ID</label>
                 <input
                   type="text"
-                  placeholder="e.g. US-84920482"
+                  placeholder="29AAAAA0000A1Z5"
                   value={supplierTaxNumber}
                   onChange={(e) => setSupplierTaxNumber(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-mono"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-mono"
                 />
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setIsSupplierModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold"
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {actionLoading ? 'Saving...' : 'Save Supplier'}
                 </button>

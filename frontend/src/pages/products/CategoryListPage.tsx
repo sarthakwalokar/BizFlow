@@ -63,18 +63,21 @@ export const CategoryListPage: React.FC = () => {
 
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) return;
+
     setActionLoading(true);
-    setSuccessMessage(null);
     setErrorMessage(null);
+    setSuccessMessage(null);
+
+    const payload: CategoryRequest = {
+      name: name.trim(),
+      description: description.trim() || undefined,
+      active,
+    };
 
     try {
-      const data: CategoryRequest = {
-        name,
-        description: description || undefined,
-        active,
-      };
-      await categoriesApi.createCategory(data);
-      setSuccessMessage(`Category "${name}" created successfully!`);
+      await categoriesApi.createCategory(payload);
+      setSuccessMessage(`Category "${payload.name}" created.`);
       setIsAddModalOpen(false);
       fetchCategories();
     } catch (err: any) {
@@ -90,19 +93,21 @@ export const CategoryListPage: React.FC = () => {
 
   const handleUpdateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingCategory) return;
+    if (!editingCategory || !name.trim()) return;
+
     setActionLoading(true);
-    setSuccessMessage(null);
     setErrorMessage(null);
+    setSuccessMessage(null);
+
+    const payload: CategoryRequest = {
+      name: name.trim(),
+      description: description.trim() || undefined,
+      active,
+    };
 
     try {
-      const data: CategoryRequest = {
-        name,
-        description: description || undefined,
-        active,
-      };
-      await categoriesApi.updateCategory(editingCategory.id, data);
-      setSuccessMessage(`Category "${name}" updated successfully!`);
+      await categoriesApi.updateCategory(editingCategory.id, payload);
+      setSuccessMessage(`Category "${payload.name}" updated.`);
       setEditingCategory(null);
       fetchCategories();
     } catch (err: any) {
@@ -119,8 +124,8 @@ export const CategoryListPage: React.FC = () => {
   const handleDeleteCategory = async () => {
     if (!deletingCategory) return;
     setActionLoading(true);
-    setSuccessMessage(null);
     setErrorMessage(null);
+    setSuccessMessage(null);
 
     try {
       await categoriesApi.deleteCategory(deletingCategory.id);
@@ -144,116 +149,117 @@ export const CategoryListPage: React.FC = () => {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Categories & Departments</h1>
-          <p className="text-slate-500 text-sm mt-1">
-            Organize products and services into structured departments for clear reporting and POS navigation.
+          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">Categories</h1>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            Organize catalog products and services into customer-friendly groups.
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-md shadow-indigo-600/30 transition-all active:scale-95 cursor-pointer shrink-0"
+          className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
         >
-          <Plus size={18} />
+          <Plus size={16} />
           <span>New Category</span>
         </button>
       </div>
 
-      {/* Notifications */}
+      {/* Alerts */}
       {successMessage && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center space-x-3 text-emerald-800 text-sm">
-          <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
-          <span className="font-semibold">{successMessage}</span>
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <CheckCircle2 size={15} className="text-emerald-600" />
+            <span>{successMessage}</span>
+          </div>
+          <button onClick={() => setSuccessMessage(null)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
+            &times;
+          </button>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 flex items-center space-x-3 text-rose-800 text-sm">
-          <AlertCircle size={18} className="text-rose-600 shrink-0" />
-          <span className="font-semibold">{errorMessage}</span>
+        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <AlertCircle size={15} className="text-red-600" />
+            <span>{errorMessage}</span>
+          </div>
+          <button onClick={() => setErrorMessage(null)} className="text-red-700 hover:text-red-900 cursor-pointer">
+            &times;
+          </button>
         </div>
       )}
 
-      {/* Search Bar */}
-      <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center justify-between gap-4">
-        <div className="relative w-full sm:w-80">
-          <Search size={16} className="absolute left-3.5 top-3 text-slate-400" />
+      {/* Filter Card */}
+      <div className="bg-white rounded-2xl border border-zinc-200 p-4 shadow-card">
+        <div className="relative">
+          <Search size={15} className="absolute left-3.5 top-3 text-zinc-400" />
           <input
             type="text"
             placeholder="Search categories..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium"
+            className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
           />
         </div>
-        <span className="text-xs font-semibold text-slate-500">
-          {filteredCategories.length} {filteredCategories.length === 1 ? 'category' : 'categories'}
-        </span>
       </div>
 
-      {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Category Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? (
-          <div className="col-span-full py-16 text-center text-slate-400">Loading categories...</div>
+          <div className="col-span-full py-12 text-center text-zinc-400">Loading categories...</div>
         ) : filteredCategories.length === 0 ? (
-          <div className="col-span-full py-16 text-center text-slate-500 space-y-3 bg-white rounded-3xl border border-slate-200 p-8">
-            <FolderTree size={36} className="mx-auto text-slate-300" />
-            <h3 className="font-bold text-slate-700">No categories found</h3>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              Categories help you segment your physical inventory and service menus. Click "New Category" to create one.
-            </p>
+          <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-2xl border border-zinc-200 p-8 space-y-1">
+            <FolderTree size={32} className="mx-auto text-zinc-300" />
+            <p className="font-bold text-zinc-700">No categories found</p>
+            <p className="text-xs text-zinc-400">Create your first category to group catalog items.</p>
           </div>
         ) : (
           filteredCategories.map((cat) => (
             <div
               key={cat.id}
-              className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between space-y-4 group"
+              className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card flex flex-col justify-between space-y-3 hover:border-zinc-300 transition-colors"
             >
-              <div>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                      <Tag size={18} />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-base">{cat.name}</h3>
-                      <span className="text-[10px] text-slate-400">ID #{cat.id}</span>
-                    </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
+                    <Tag size={16} />
                   </div>
                   <span
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                       cat.active
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        : 'bg-slate-100 text-slate-500 border-slate-200'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : 'bg-zinc-100 text-zinc-600'
                     }`}
                   >
-                    {cat.active ? 'Active' : 'Archived'}
+                    {cat.active ? 'Active' : 'Inactive'}
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-500 mt-3 line-clamp-2">
-                  {cat.description || 'No description provided for this category.'}
+                <h3 className="text-base font-bold text-zinc-900">{cat.name}</h3>
+                <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2">
+                  {cat.description || 'No description provided.'}
                 </p>
               </div>
 
-              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
+              <div className="pt-3 border-t border-zinc-100 flex items-center justify-end space-x-1.5">
                 <button
                   onClick={() => openEditModal(cat)}
-                  className="p-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-indigo-600 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
                   title="Edit Category"
                 >
-                  <Edit2 size={16} />
+                  <Edit2 size={14} />
                 </button>
+
                 <button
                   onClick={() => setDeletingCategory(cat)}
-                  className="p-2 rounded-xl text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                   title="Delete Category"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>
@@ -261,165 +267,83 @@ export const CategoryListPage: React.FC = () => {
         )}
       </div>
 
-      {/* Add Category Modal */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                  <FolderTree size={20} />
+      {/* Add / Edit Category Modal */}
+      {(isAddModalOpen || editingCategory) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+                  <Tag size={16} />
                 </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-900">New Category</h3>
-                  <p className="text-xs text-slate-500">Add a product/service classification</p>
-                </div>
+                <h3 className="text-sm font-bold text-zinc-900">
+                  {editingCategory ? 'Edit Category' : 'Create Category'}
+                </h3>
               </div>
               <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                onClick={() => {
+                  setIsAddModalOpen(false);
+                  setEditingCategory(null);
+                }}
+                className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 cursor-pointer"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateCategory} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+            <form onSubmit={editingCategory ? handleUpdateCategory : handleCreateCategory} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-700">
                   Category Name <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Hot Beverages, Hair Styling, Bakery Goods"
+                  placeholder="e.g. Hot Beverages, Desserts, Spa Services"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Description
-                </label>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-700">Description (Optional)</label>
                 <textarea
-                  rows={2}
-                  placeholder="Brief description for internal team guidance..."
+                  rows={3}
+                  placeholder="Brief summary of items in this category..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600 resize-none"
                 />
               </div>
 
-              <div className="flex items-center space-x-2 pt-2">
+              <label className="flex items-center space-x-2 cursor-pointer pt-1">
                 <input
                   type="checkbox"
-                  id="catActive"
                   checked={active}
                   onChange={(e) => setActive(e.target.checked)}
-                  className="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4"
+                  className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-600"
                 />
-                <label htmlFor="catActive" className="text-xs font-bold text-slate-700 cursor-pointer">
-                  Active (Visible on POS and Catalog filters)
-                </label>
-              </div>
+                <span className="text-xs font-semibold text-zinc-800">Active in POS and catalog</span>
+              </label>
 
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-100">
                 <button
                   type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 cursor-pointer"
+                  onClick={() => {
+                    setIsAddModalOpen(false);
+                    setEditingCategory(null);
+                  }}
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Creating...' : 'Create Category'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Category Modal */}
-      {editingCategory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                  <Edit2 size={20} />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-900">Edit Category</h3>
-                  <p className="text-xs text-slate-500">Update classification details</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setEditingCategory(null)}
-                className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateCategory} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Category Name <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Description
-                </label>
-                <textarea
-                  rows={2}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-                />
-              </div>
-
-              <div className="flex items-center space-x-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="catEditActive"
-                  checked={active}
-                  onChange={(e) => setActive(e.target.checked)}
-                  className="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                />
-                <label htmlFor="catEditActive" className="text-xs font-bold text-slate-700 cursor-pointer">
-                  Active (Visible on POS and Catalog filters)
-                </label>
-              </div>
-
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setEditingCategory(null)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all cursor-pointer disabled:opacity-50"
-                >
-                  {actionLoading ? 'Saving...' : 'Save Changes'}
+                  {actionLoading ? 'Saving...' : editingCategory ? 'Update Category' : 'Create Category'}
                 </button>
               </div>
             </form>
@@ -429,34 +353,32 @@ export const CategoryListPage: React.FC = () => {
 
       {/* Delete Category Modal */}
       {deletingCategory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center space-x-3 text-rose-600">
-              <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center font-bold">
-                <Trash2 size={20} />
-              </div>
-              <h3 className="text-base font-bold text-slate-900">Delete Category</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+            <div className="flex items-center space-x-2.5 text-rose-600">
+              <Trash2 size={20} />
+              <h3 className="text-base font-bold text-zinc-900">Delete Category</h3>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Are you sure you want to delete the category{' '}
-              <span className="font-bold text-slate-900">"{deletingCategory.name}"</span>? Any
-              products or services currently assigned to this category will become unassigned.
+            <p className="text-xs text-zinc-600 leading-relaxed">
+              Are you sure you want to delete category{' '}
+              <strong className="text-zinc-900">"{deletingCategory.name}"</strong>?
+              Items assigned to this category will become uncategorized.
             </p>
 
-            <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+            <div className="flex justify-end space-x-2 pt-2">
               <button
                 type="button"
                 onClick={() => setDeletingCategory(null)}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 cursor-pointer"
+                className="px-4 py-2 border border-zinc-200 text-zinc-700 rounded-xl text-xs font-semibold hover:bg-zinc-50 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                disabled={actionLoading}
                 onClick={handleDeleteCategory}
-                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md shadow-rose-600/30 transition-all cursor-pointer disabled:opacity-50"
+                disabled={actionLoading}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
               >
                 {actionLoading ? 'Deleting...' : 'Confirm Delete'}
               </button>

@@ -112,7 +112,7 @@ public class DataInitializer {
             return businessRepository.save(b);
         });
 
-        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+        User owner = userRepository.findByEmailIgnoreCase(ownerEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(biz)
                     .email(ownerEmail)
@@ -200,7 +200,7 @@ public class DataInitializer {
             return businessRepository.save(b);
         });
 
-        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+        User owner = userRepository.findByEmailIgnoreCase(ownerEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(biz)
                     .email(ownerEmail)
@@ -284,7 +284,7 @@ public class DataInitializer {
             return businessRepository.save(b);
         });
 
-        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+        User owner = userRepository.findByEmailIgnoreCase(ownerEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(biz)
                     .email(ownerEmail)
@@ -368,7 +368,7 @@ public class DataInitializer {
             return businessRepository.save(b);
         });
 
-        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+        User owner = userRepository.findByEmailIgnoreCase(ownerEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(biz)
                     .email(ownerEmail)
@@ -453,7 +453,7 @@ public class DataInitializer {
             return businessRepository.save(b);
         });
 
-        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+        User owner = userRepository.findByEmailIgnoreCase(ownerEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(biz)
                     .email(ownerEmail)
@@ -539,7 +539,7 @@ public class DataInitializer {
         });
 
         // Ensure small business owner
-        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+        User owner = userRepository.findByEmailIgnoreCase(ownerEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(smallBiz)
                     .email(ownerEmail)
@@ -558,7 +558,7 @@ public class DataInitializer {
         userRepository.save(owner);
 
         // Ensure small business staff
-        User staff = userRepository.findByEmail(staffEmail).orElseGet(() -> {
+        User staff = userRepository.findByEmailIgnoreCase(staffEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(smallBiz)
                     .email(staffEmail)
@@ -663,7 +663,7 @@ public class DataInitializer {
         });
 
         // Ensure large business owner
-        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+        User owner = userRepository.findByEmailIgnoreCase(ownerEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(largeBiz)
                     .email(ownerEmail)
@@ -682,7 +682,7 @@ public class DataInitializer {
         userRepository.save(owner);
 
         // Ensure large business manager
-        User mgr = userRepository.findByEmail(managerEmail).orElseGet(() -> {
+        User mgr = userRepository.findByEmailIgnoreCase(managerEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(largeBiz)
                     .email(managerEmail)
@@ -701,7 +701,7 @@ public class DataInitializer {
         userRepository.save(mgr);
 
         // Ensure large business cashier
-        User cashier = userRepository.findByEmail(cashierEmail).orElseGet(() -> {
+        User cashier = userRepository.findByEmailIgnoreCase(cashierEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(largeBiz)
                     .email(cashierEmail)
@@ -795,7 +795,7 @@ public class DataInitializer {
             return businessRepository.save(biz);
         });
 
-        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+        User owner = userRepository.findByEmailIgnoreCase(ownerEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(demoBusiness)
                     .email(ownerEmail)
@@ -813,7 +813,7 @@ public class DataInitializer {
         owner.setActive(true);
         userRepository.save(owner);
 
-        User staff = userRepository.findByEmail(staffEmail).orElseGet(() -> {
+        User staff = userRepository.findByEmailIgnoreCase(staffEmail).orElseGet(() -> {
             User u = User.builder()
                     .business(demoBusiness)
                     .email(staffEmail)
@@ -1036,7 +1036,7 @@ public class DataInitializer {
     }
 
     private void seedAdmin(String email, String rawPassword, String fullName) {
-        userRepository.findByEmail(email).ifPresentOrElse(
+        userRepository.findByEmailIgnoreCase(email).ifPresentOrElse(
                 admin -> {
                     admin.setPasswordHash(passwordEncoder.encode(rawPassword));
                     admin.setEnabled(true);

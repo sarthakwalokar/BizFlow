@@ -28,6 +28,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CorsConfigurationSource corsConfigurationSource;
+    private final com.bizflow.security.SmartPasswordEncoder smartPasswordEncoder;
 
     private static final String[] PUBLIC_URLS = {
             "/api/v1/health/**",
@@ -62,7 +63,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return smartPasswordEncoder;
     }
 
     @Bean

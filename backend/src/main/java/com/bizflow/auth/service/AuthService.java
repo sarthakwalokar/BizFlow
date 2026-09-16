@@ -95,15 +95,17 @@ public class AuthService {
         String email = request.getEmail() != null ? request.getEmail().toLowerCase().trim() : "";
         log.info("Authenticating user with email: {}", email);
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, request.getPassword())
-        );
+        // 1. Find user by case-insensitive email
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .or(() -> userRepository.findByEmail(email))
+                .orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
 
-        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        User user = userRepository.findById(principal.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", principal.getId()));
+        // 2. Validate password via SmartPasswordEncoder
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new UnauthorizedException("Invalid email or password");
+        }
 
-        // Self-heal account activation if needed
+        // 3. Self-heal account activation if needed
         try {
             if (!user.isEnabled() || !user.isActive()) {
                 user.setEnabled(true);
@@ -114,7 +116,7 @@ public class AuthService {
             log.warn("Could not self-heal user status: {}", ex.getMessage());
         }
 
-        // Defensively resolve and self-heal business activation
+        // 4. Defensively resolve and self-heal business activation
         Business business = null;
         try {
             business = user.getBusiness();
@@ -127,7 +129,7 @@ public class AuthService {
             business = null;
         }
 
-        // Auto-upgrade password hash to strong BCrypt if not already standard BCrypt format
+        // 5. Auto-upgrade password hash to strong BCrypt if not already standard BCrypt format
         try {
             String currentHash = user.getPasswordHash();
             if (currentHash == null || (!currentHash.startsWith("$2a$") && !currentHash.startsWith("$2b$") && !currentHash.startsWith("$2y$"))) {
@@ -139,7 +141,9 @@ public class AuthService {
             log.warn("Could not auto-upgrade password hash: {}", ex.getMessage());
         }
 
-        String token = tokenProvider.generateToken(authentication);
+        // 6. Generate JWT Token directly from UserPrincipal
+        UserPrincipal userPrincipal = UserPrincipal.create(user);
+        String token = tokenProvider.generateTokenFromUser(userPrincipal);
 
         return AuthResponse.builder()
                 .accessToken(token)

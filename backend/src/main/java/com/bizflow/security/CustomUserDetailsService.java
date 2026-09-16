@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@org.springframework.context.annotation.Primary
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 

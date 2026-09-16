@@ -15,6 +15,7 @@ public class ReviewSettingsResponse {
     private String businessName;
     private String reviewSlug;
     private String publicReviewUrl;
+    private String effectiveReviewUrl;
     private String reviewPromptMessage;
     private boolean reviewEnabled;
     private String directReviewPageUrl;

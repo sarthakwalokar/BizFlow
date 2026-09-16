@@ -219,12 +219,14 @@ public class ReviewService {
         }
 
         String directUrl = buildDirectReviewUrl(business.getReviewSlug());
+        String effectiveUrl = resolveEffectiveReviewUrl(business);
 
         return ReviewSettingsResponse.builder()
                 .businessId(business.getId())
                 .businessName(business.getName())
                 .reviewSlug(business.getReviewSlug())
                 .publicReviewUrl(business.getPublicReviewUrl())
+                .effectiveReviewUrl(effectiveUrl)
                 .reviewPromptMessage(business.getReviewPromptMessage())
                 .reviewEnabled(business.isReviewEnabled())
                 .directReviewPageUrl(directUrl)
@@ -263,12 +265,14 @@ public class ReviewService {
 
         Business saved = businessRepository.save(business);
         String directUrl = buildDirectReviewUrl(saved.getReviewSlug());
+        String effectiveUrl = resolveEffectiveReviewUrl(saved);
 
         return ReviewSettingsResponse.builder()
                 .businessId(saved.getId())
                 .businessName(saved.getName())
                 .reviewSlug(saved.getReviewSlug())
                 .publicReviewUrl(saved.getPublicReviewUrl())
+                .effectiveReviewUrl(effectiveUrl)
                 .reviewPromptMessage(saved.getReviewPromptMessage())
                 .reviewEnabled(saved.isReviewEnabled())
                 .directReviewPageUrl(directUrl)
@@ -282,17 +286,32 @@ public class ReviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("Business", "id", businessId));
 
         String slug = business.getReviewSlug() != null ? business.getReviewSlug() : String.valueOf(business.getId());
-        String reviewUrl = buildDirectReviewUrl(slug);
+        String internalUrl = buildDirectReviewUrl(slug);
+        String effectiveUrl = resolveEffectiveReviewUrl(business);
 
-        String qrCodeDataUrl = generateQrCodeBase64(reviewUrl, 380, 380);
+        String qrCodeDataUrl = generateQrCodeBase64(effectiveUrl, 380, 380);
 
         return QrCodeResponse.builder()
                 .businessId(business.getId())
                 .businessName(business.getName())
                 .reviewSlug(slug)
-                .reviewUrl(reviewUrl)
+                .reviewUrl(effectiveUrl)
+                .googleReviewUrl(business.getPublicReviewUrl())
+                .internalReviewUrl(internalUrl)
                 .qrCodeDataUrl(qrCodeDataUrl)
                 .build();
+    }
+
+    public String resolveEffectiveReviewUrl(Business business) {
+        if (business.getPublicReviewUrl() != null && !business.getPublicReviewUrl().trim().isEmpty()) {
+            return business.getPublicReviewUrl().trim();
+        }
+        String name = business.getName() != null ? business.getName().trim() : "Business";
+        try {
+            return "https://www.google.com/search?q=" + java.net.URLEncoder.encode(name + " google reviews", java.nio.charset.StandardCharsets.UTF_8.toString());
+        } catch (Exception e) {
+            return "https://www.google.com/search?q=" + name.replace(" ", "+") + "+reviews";
+        }
     }
 
     @Transactional

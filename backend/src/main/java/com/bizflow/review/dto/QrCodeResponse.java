@@ -14,6 +14,8 @@ public class QrCodeResponse {
     private Long businessId;
     private String businessName;
     private String reviewSlug;
-    private String reviewUrl;
+    private String reviewUrl; // Resolved review URL (Google review URL when configured)
+    private String googleReviewUrl; // Direct Google review URL if configured
+    private String internalReviewUrl; // Internal bizflow review page URL
     private String qrCodeDataUrl; // "data:image/png;base64,..."
 }

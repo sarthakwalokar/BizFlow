@@ -95,9 +95,12 @@ export const ReviewBoostDashboardPage: React.FC = () => {
     fetchDashboardData(0);
   }, [selectedRatingFilter, positiveOnlyFilter]);
 
+  const effectiveReviewUrl = settingsForm.publicReviewUrl?.trim() || qrCodeData?.reviewUrl || '';
+  const isGoogleConfigured = Boolean(settingsForm.publicReviewUrl?.trim());
+
   const handleCopyPublicLink = () => {
-    if (!qrCodeData?.reviewUrl) return;
-    navigator.clipboard.writeText(qrCodeData.reviewUrl);
+    if (!effectiveReviewUrl) return;
+    navigator.clipboard.writeText(effectiveReviewUrl);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
   };
@@ -233,12 +236,21 @@ export const ReviewBoostDashboardPage: React.FC = () => {
             </div>
 
             {/* Quick Public URL Preview */}
-            {qrCodeData?.reviewUrl && (
+            {effectiveReviewUrl && (
               <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-200 space-y-2 max-w-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Public Review Link</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+                      {isGoogleConfigured ? 'Google Review Link' : 'Public Review Link'}
+                    </span>
+                    {isGoogleConfigured && (
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        Google
+                      </span>
+                    )}
+                  </div>
                   <a
-                    href={qrCodeData.reviewUrl}
+                    href={effectiveReviewUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-brand-600 hover:text-brand-700 text-xs font-semibold flex items-center gap-0.5"
@@ -251,7 +263,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                   <input
                     type="text"
                     readOnly
-                    value={qrCodeData.reviewUrl}
+                    value={effectiveReviewUrl}
                     className="w-full text-[11px] font-mono bg-white px-2.5 py-1 rounded border border-zinc-200 text-zinc-600 truncate"
                   />
                   <button
@@ -262,6 +274,21 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                     {copiedLink ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
                   </button>
                 </div>
+
+                {isGoogleConfigured && qrCodeData?.internalReviewUrl && (
+                  <div className="pt-1 flex items-center justify-between text-[10px] text-zinc-400 border-t border-zinc-100">
+                    <span>Internal review page:</span>
+                    <a
+                      href={qrCodeData.internalReviewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-zinc-500 hover:text-brand-600 truncate max-w-[170px]"
+                      title={qrCodeData.internalReviewUrl}
+                    >
+                      /review/{settingsForm.reviewSlug || business?.id} ↗
+                    </a>
+                  </div>
+                )}
               </div>
             )}
           </div>

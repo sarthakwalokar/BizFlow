@@ -56,6 +56,7 @@ export interface ReviewSettings {
   businessName: string;
   reviewSlug: string;
   publicReviewUrl?: string;
+  effectiveReviewUrl?: string;
   reviewPromptMessage?: string;
   reviewEnabled: boolean;
   directReviewPageUrl: string;
@@ -73,6 +74,8 @@ export interface QrCodeResponse {
   businessName: string;
   reviewSlug: string;
   reviewUrl: string;
+  googleReviewUrl?: string;
+  internalReviewUrl?: string;
   qrCodeDataUrl: string;
 }
 

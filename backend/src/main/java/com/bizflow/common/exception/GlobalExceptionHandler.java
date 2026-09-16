@@ -198,10 +198,14 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
         log.error("Unhandled exception at {}: ", request.getRequestURI(), ex);
 
+        String detailMessage = ex.getMessage() != null && !ex.getMessage().isBlank()
+                ? ex.getMessage()
+                : "An unexpected error occurred. Please contact support.";
+
         ApiError apiError = ApiError.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("An unexpected error occurred. Please contact support.")
+                .message(detailMessage)
                 .path(request.getRequestURI())
                 .timestamp(Instant.now())
                 .build();

@@ -104,24 +104,39 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", principal.getId()));
 
         // Self-heal account activation if needed
-        if (!user.isEnabled() || !user.isActive()) {
-            user.setEnabled(true);
-            user.setActive(true);
-            userRepository.save(user);
+        try {
+            if (!user.isEnabled() || !user.isActive()) {
+                user.setEnabled(true);
+                user.setActive(true);
+                userRepository.save(user);
+            }
+        } catch (Exception ex) {
+            log.warn("Could not self-heal user status: {}", ex.getMessage());
         }
 
-        // If user belongs to a business, verify and self-heal business activation
-        if (user.getBusiness() != null && !user.getBusiness().isActive()) {
-            user.getBusiness().setActive(true);
-            businessRepository.save(user.getBusiness());
+        // Defensively resolve and self-heal business activation
+        Business business = null;
+        try {
+            business = user.getBusiness();
+            if (business != null && !business.isActive()) {
+                business.setActive(true);
+                businessRepository.save(business);
+            }
+        } catch (Exception ex) {
+            log.warn("Could not resolve or activate business for user: {}", ex.getMessage());
+            business = null;
         }
 
         // Auto-upgrade password hash to strong BCrypt if not already standard BCrypt format
-        String currentHash = user.getPasswordHash();
-        if (currentHash == null || (!currentHash.startsWith("$2a$") && !currentHash.startsWith("$2b$") && !currentHash.startsWith("$2y$"))) {
-            user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-            userRepository.save(user);
-            log.info("Auto-upgraded stored password hash to BCrypt for user: {}", email);
+        try {
+            String currentHash = user.getPasswordHash();
+            if (currentHash == null || (!currentHash.startsWith("$2a$") && !currentHash.startsWith("$2b$") && !currentHash.startsWith("$2y$"))) {
+                user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+                userRepository.save(user);
+                log.info("Auto-upgraded stored password hash to BCrypt for user: {}", email);
+            }
+        } catch (Exception ex) {
+            log.warn("Could not auto-upgrade password hash: {}", ex.getMessage());
         }
 
         String token = tokenProvider.generateToken(authentication);
@@ -131,7 +146,7 @@ public class AuthService {
                 .tokenType("Bearer")
                 .expiresIn(jwtExpirationMs / 1000)
                 .user(UserResponse.fromEntity(user))
-                .business(BusinessResponse.fromEntity(user.getBusiness()))
+                .business(BusinessResponse.fromEntity(business))
                 .build();
     }
 
@@ -141,9 +156,14 @@ public class AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
+        Business business = null;
+        try {
+            business = user.getBusiness();
+        } catch (Exception ignored) {}
+
         return AuthResponse.builder()
                 .user(UserResponse.fromEntity(user))
-                .business(BusinessResponse.fromEntity(user.getBusiness()))
+                .business(BusinessResponse.fromEntity(business))
                 .build();
     }
 }

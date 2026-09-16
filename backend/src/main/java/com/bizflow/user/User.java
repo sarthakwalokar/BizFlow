@@ -65,6 +65,10 @@ public class User extends BaseEntity {
     private boolean active = true;
 
     public Long getBusinessId() {
-        return business != null ? business.getId() : null;
+        try {
+            return business != null ? business.getId() : null;
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

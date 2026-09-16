@@ -1,9 +1,7 @@
 package com.bizflow.review.controller;
 
 import com.bizflow.common.api.ApiResponse;
-import com.bizflow.review.dto.PublicBusinessReviewInfo;
-import com.bizflow.review.dto.ReviewResponse;
-import com.bizflow.review.dto.SubmitReviewRequest;
+import com.bizflow.review.dto.*;
 import com.bizflow.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,5 +34,14 @@ public class PublicReviewController {
         ReviewResponse response = reviewService.submitPublicReview(slugOrId, request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.created("Thank you for your feedback!", response));
+    }
+
+    @PostMapping("/{slugOrId}/generate-ai")
+    @Operation(summary = "Generate AI-assisted customer review suggestions based on star rating")
+    public ResponseEntity<ApiResponse<AiReviewSuggestionResponse>> generateAiReview(
+            @PathVariable String slugOrId,
+            @RequestBody(required = false) AiReviewGenerateRequest request) {
+        AiReviewSuggestionResponse response = reviewService.generateAiReview(slugOrId, request);
+        return ResponseEntity.ok(ApiResponse.ok("AI review suggestion generated", response));
     }
 }

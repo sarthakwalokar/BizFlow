@@ -40,6 +40,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final BusinessRepository businessRepository;
+    private final com.bizflow.ai.service.AIGatewayService aiGatewayService;
 
     @Value("${app.frontend.url:http://localhost:5173}")
     private String frontendBaseUrl;
@@ -245,7 +246,11 @@ public class ReviewService {
         }
 
         if (request.getPublicReviewUrl() != null) {
-            business.setPublicReviewUrl(request.getPublicReviewUrl().trim());
+            String url = request.getPublicReviewUrl().trim();
+            if (!url.isEmpty() && !url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")) {
+                url = "https://" + url;
+            }
+            business.setPublicReviewUrl(url.isEmpty() ? null : url);
         }
 
         if (request.getReviewPromptMessage() != null) {
@@ -365,5 +370,73 @@ public class ReviewService {
             log.error("Failed to generate QR code for URL {}", text, e);
             throw new RuntimeException("Failed to generate QR code", e);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public AiReviewSuggestionResponse generateAiReview(String slugOrId, AiReviewGenerateRequest request) {
+        Business business = resolveBusinessBySlugOrId(slugOrId);
+        int rating = request != null && request.getRating() >= 1 && request.getRating() <= 5 ? request.getRating() : 5;
+        String bizName = business.getName();
+        String bizType = business.getBusinessType() != null ? business.getBusinessType().name() : "establishment";
+        String keywords = request != null && request.getKeywords() != null ? request.getKeywords().trim() : "";
+
+        List<String> alternatives = new ArrayList<>();
+        List<String> tags = new ArrayList<>();
+        String generated = null;
+
+        if (rating == 5) {
+            tags = List.of("Fast Service ⚡", "Top Quality ✨", "Friendly Staff 😊", "Great Value 💰", "Clean & Welcoming 🌿");
+            alternatives = List.of(
+                    "Really impressed by " + bizName + "! Exceptional service, great attention to detail, and top quality. Will definitely be coming back.",
+                    "5 stars all the way for " + bizName + "! Smooth experience, friendly staff, and fantastic value.",
+                    "One of the best in town! " + bizName + " consistently delivers high quality and very welcoming service."
+            );
+            generated = "Outstanding experience at " + bizName + "! Top-notch quality, prompt and courteous staff, and very pleasant atmosphere. Highly recommend to everyone!";
+        } else if (rating == 4) {
+            tags = List.of("Good Service 👍", "Pleasant Visit 😊", "Fair Prices 🏷️", "Helpful Team 🤝");
+            alternatives = List.of(
+                    "Great overall service at " + bizName + ". Prompt assistance and well-maintained establishment.",
+                    "Enjoyed my visit to " + bizName + ". Good quality, friendly staff, and reliable experience."
+            );
+            generated = "Very good experience at " + bizName + ". The staff was friendly and the service was quick. Looking forward to visiting again.";
+        } else if (rating == 3) {
+            tags = List.of("Decent Experience 🆗", "Can Be Faster ⏱️", "Average ⚖️");
+            alternatives = List.of(
+                    "Decent visit to " + bizName + ". Good potential, though a few things could be better organized."
+            );
+            generated = "Average experience at " + bizName + ". Service was okay, but there is room for improvement in speed and customer responsiveness.";
+        } else {
+            tags = List.of("Needs Improvement ⚠️", "Slow Service ⏳", "Disappointed 😕");
+            alternatives = List.of(
+                    "The experience at " + bizName + " did not meet expectations. Hoping the management looks into service quality and response times."
+            );
+            generated = "Disappointed with my recent visit to " + bizName + ". Expected better service and prompt support. Hope this feedback helps improve operations.";
+        }
+
+        // Try AI Gateway if available
+        if (aiGatewayService != null) {
+            try {
+                String systemPrompt = "You are a customer writing a concise, authentic, 2-sentence online review for a business. Do NOT use quotation marks. Keep it natural and genuine.";
+                String userPrompt = String.format("Write a %d-star customer review for '%s' (%s). %s",
+                        rating, bizName, bizType,
+                        !keywords.isEmpty() ? "Focus on: " + keywords : "");
+                var aiResult = aiGatewayService.generateResponse(systemPrompt, List.of(), userPrompt);
+                if (aiResult != null && aiResult.reply() != null && !aiResult.reply().trim().isEmpty() && !aiResult.reply().contains("Error")) {
+                    String cleanReply = aiResult.reply().replaceAll("^\"|\"$", "").trim();
+                    if (!cleanReply.isEmpty()) {
+                        generated = cleanReply;
+                    }
+                }
+            } catch (Exception e) {
+                log.debug("AI review generation fallback to template: {}", e.getMessage());
+            }
+        }
+
+        return AiReviewSuggestionResponse.builder()
+                .rating(rating)
+                .generatedReview(generated)
+                .alternativeSuggestions(alternatives)
+                .highlightTags(tags)
+                .build();
     }
 }

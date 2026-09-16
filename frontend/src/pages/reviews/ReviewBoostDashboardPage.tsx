@@ -109,7 +109,15 @@ export const ReviewBoostDashboardPage: React.FC = () => {
     setSuccessMessage(null);
 
     try {
-      await reviewsApi.updateSettings(settingsForm);
+      let cleanedUrl = settingsForm.publicReviewUrl?.trim() || '';
+      if (cleanedUrl && !/^https?:\/\//i.test(cleanedUrl)) {
+        cleanedUrl = `https://${cleanedUrl}`;
+      }
+
+      await reviewsApi.updateSettings({
+        ...settingsForm,
+        publicReviewUrl: cleanedUrl || undefined,
+      });
       setSuccessMessage('Review Boost configuration updated.');
       setIsSettingsModalOpen(false);
       fetchDashboardData(page);
@@ -521,16 +529,29 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Google / Social 5-Star Review Redirect URL</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-zinc-700">Google Review Page URL</label>
+                  {settingsForm.publicReviewUrl && (
+                    <a
+                      href={settingsForm.publicReviewUrl.startsWith('http') ? settingsForm.publicReviewUrl : `https://${settingsForm.publicReviewUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1"
+                    >
+                      <span>Test Link</span>
+                      <ExternalLink size={11} />
+                    </a>
+                  )}
+                </div>
                 <input
-                  type="url"
-                  placeholder="https://g.page/r/your-business/review"
+                  type="text"
+                  placeholder="https://g.page/r/.../review or maps.app.goo.gl/..."
                   value={settingsForm.publicReviewUrl || ''}
                   onChange={(e) => setSettingsForm({ ...settingsForm, publicReviewUrl: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
                 <p className="text-[10px] text-zinc-400">
-                  Happy customers giving 5-stars will be redirected here to post on Google.
+                  Direct Google Maps / Google Review link. If left blank, customers giving 4-5 stars are automatically directed to Google search for your business reviews.
                 </p>
               </div>
 

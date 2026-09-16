@@ -85,6 +85,19 @@ export interface ReviewFilterParams {
   sort?: string;
 }
 
+export interface AiReviewGenerateRequest {
+  rating: number;
+  keywords?: string;
+  aspect?: string;
+}
+
+export interface AiReviewSuggestionResponse {
+  rating: number;
+  generatedReview: string;
+  alternativeSuggestions: string[];
+  highlightTags: string[];
+}
+
 export const reviewsApi = {
   // Public Unauthenticated APIs
   getPublicReviewInfo: async (slugOrId: string): Promise<PublicBusinessReviewInfo> => {
@@ -94,6 +107,11 @@ export const reviewsApi = {
 
   submitPublicReview: async (slugOrId: string, data: SubmitReviewRequest): Promise<Review> => {
     const res = await apiClient.post<ApiResponse<Review>>(`/public/reviews/${slugOrId}`, data);
+    return res.data.data;
+  },
+
+  generateAiReview: async (slugOrId: string, data: AiReviewGenerateRequest): Promise<AiReviewSuggestionResponse> => {
+    const res = await apiClient.post<ApiResponse<AiReviewSuggestionResponse>>(`/public/reviews/${slugOrId}/generate-ai`, data);
     return res.data.data;
   },
 

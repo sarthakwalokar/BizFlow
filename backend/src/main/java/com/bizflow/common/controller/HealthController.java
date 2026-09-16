@@ -20,9 +20,16 @@ public class HealthController {
     private final HealthService healthService;
 
     @GetMapping
-    @Operation(summary = "Check System Health", description = "Returns the status of the BizFlow API service and database connectivity")
+    @Operation(summary = "Check System Health", description = "Fast, lightweight health check returning immediate UP status")
     public ResponseEntity<ApiResponse<HealthResponse>> checkHealth() {
         HealthResponse healthResponse = healthService.getHealthStatus();
         return ResponseEntity.ok(ApiResponse.success("System is operational", healthResponse));
+    }
+
+    @GetMapping("/diagnostics")
+    @Operation(summary = "System Diagnostics", description = "Deep diagnostics including database connectivity check")
+    public ResponseEntity<ApiResponse<HealthResponse>> checkDiagnostics() {
+        HealthResponse healthResponse = healthService.getDetailedHealthStatus();
+        return ResponseEntity.ok(ApiResponse.success("Diagnostics completed", healthResponse));
     }
 }

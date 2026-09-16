@@ -206,7 +206,7 @@ export const StaffManagementPage: React.FC = () => {
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer shrink-0"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer shrink-0"
         >
           <UserPlus size={15} />
           <span>Add Staff Member</span>
@@ -215,8 +215,8 @@ export const StaffManagementPage: React.FC = () => {
 
       {/* Notifications */}
       {successMessage && (
-        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center gap-2.5 text-emerald-800 text-xs">
-          <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+        <div className="p-3.5 rounded-lg bg-brand-50 border border-brand-200 flex items-center gap-2.5 text-brand-800 text-xs">
+          <CheckCircle2 size={16} className="text-brand-600 shrink-0" />
           <span className="font-medium">{successMessage}</span>
         </div>
       )}
@@ -237,9 +237,9 @@ export const StaffManagementPage: React.FC = () => {
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
-          <span className="text-[11px] font-medium text-emerald-600 uppercase tracking-wider">Active Accounts</span>
-          <div className="text-xl font-bold text-emerald-700 mt-1">{activeCount}</div>
-          <span className="text-[11px] text-emerald-600">Can log in and operate</span>
+          <span className="text-[11px] font-medium text-brand-600 uppercase tracking-wider">Active Accounts</span>
+          <div className="text-xl font-bold text-brand-700 mt-1">{activeCount}</div>
+          <span className="text-[11px] text-brand-600">Can log in and operate</span>
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
@@ -258,7 +258,7 @@ export const StaffManagementPage: React.FC = () => {
             placeholder="Search staff by name, email, phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs bg-zinc-50 focus:bg-white"
+            className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs bg-zinc-50 focus:bg-white"
           />
         </div>
 
@@ -277,7 +277,7 @@ export const StaffManagementPage: React.FC = () => {
             onClick={() => setStatusFilter('ACTIVE')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
               statusFilter === 'ACTIVE'
-                ? 'bg-emerald-600 text-white'
+                ? 'bg-brand-600 text-white'
                 : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
             }`}
           >
@@ -379,13 +379,13 @@ export const StaffManagementPage: React.FC = () => {
                         title={`Click to ${staff.enabled ? 'disable' : 'enable'}`}
                         className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium border transition-colors cursor-pointer ${
                           staff.enabled
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                            ? 'bg-brand-50 text-brand-700 border-brand-200 hover:bg-brand-100'
                             : 'bg-zinc-100 text-zinc-600 border-zinc-200 hover:bg-zinc-200'
                         }`}
                       >
                         {staff.enabled ? (
                           <>
-                            <CheckCircle2 size={12} className="text-emerald-600" />
+                            <CheckCircle2 size={12} className="text-brand-600" />
                             <span>Active</span>
                           </>
                         ) : (
@@ -429,7 +429,7 @@ export const StaffManagementPage: React.FC = () => {
           <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
                   <UserPlus size={16} />
                 </div>
                 <div>
@@ -458,7 +458,7 @@ export const StaffManagementPage: React.FC = () => {
                     placeholder="e.g. John Doe"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                   />
                 </div>
               </div>
@@ -475,7 +475,7 @@ export const StaffManagementPage: React.FC = () => {
                     placeholder="john@business.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                   />
                 </div>
               </div>
@@ -493,7 +493,7 @@ export const StaffManagementPage: React.FC = () => {
                     placeholder="Min 8 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                   />
                 </div>
               </div>
@@ -509,7 +509,7 @@ export const StaffManagementPage: React.FC = () => {
                     placeholder="+91 98765 43210"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                   />
                 </div>
               </div>
@@ -534,7 +534,7 @@ export const StaffManagementPage: React.FC = () => {
                         type="checkbox"
                         checked={permissions.includes(perm.id)}
                         onChange={() => handleTogglePermission(perm.id)}
-                        className="rounded text-emerald-600 focus:ring-emerald-500 h-3.5 w-3.5"
+                        className="rounded text-brand-600 focus:ring-brand-500 h-3.5 w-3.5"
                       />
                       <span>{perm.label}</span>
                     </label>
@@ -553,7 +553,7 @@ export const StaffManagementPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {actionLoading ? 'Creating...' : 'Add Staff Member'}
                 </button>
@@ -595,7 +595,7 @@ export const StaffManagementPage: React.FC = () => {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                 />
               </div>
 
@@ -608,7 +608,7 @@ export const StaffManagementPage: React.FC = () => {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+91 98765 43210"
-                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                 />
               </div>
 
@@ -632,7 +632,7 @@ export const StaffManagementPage: React.FC = () => {
                         type="checkbox"
                         checked={permissions.includes(perm.id)}
                         onChange={() => handleTogglePermission(perm.id)}
-                        className="rounded text-emerald-600 focus:ring-emerald-500 h-3.5 w-3.5"
+                        className="rounded text-brand-600 focus:ring-brand-500 h-3.5 w-3.5"
                       />
                       <span>{perm.label}</span>
                     </label>
@@ -651,7 +651,7 @@ export const StaffManagementPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {actionLoading ? 'Saving...' : 'Save Changes'}
                 </button>
@@ -697,7 +697,7 @@ export const StaffManagementPage: React.FC = () => {
                     placeholder="Enter new temporary password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                   />
                 </div>
                 <p className="text-[11px] text-zinc-400">

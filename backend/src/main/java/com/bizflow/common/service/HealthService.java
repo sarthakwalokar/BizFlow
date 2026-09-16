@@ -22,7 +22,29 @@ public class HealthService {
     @Value("${spring.profiles.active:dev}")
     private String activeProfile;
 
+    /**
+     * Fast, lightweight health check.
+     * Does NOT perform database queries, AI calls, external API calls, or heavy I/O.
+     * Returns immediate HTTP 200 / UP for Render and load balancers.
+     */
     public HealthResponse getHealthStatus() {
+        long uptimeSeconds = ManagementFactory.getRuntimeMXBean().getUptime() / 1000;
+
+        return HealthResponse.builder()
+                .status("UP")
+                .service("BizFlow Backend API")
+                .version("1.0.0")
+                .environment(activeProfile)
+                .database(null)
+                .uptimeSeconds(uptimeSeconds)
+                .timestamp(Instant.now())
+                .build();
+    }
+
+    /**
+     * Deep system diagnostics including database connectivity check.
+     */
+    public HealthResponse getDetailedHealthStatus() {
         String dbStatus = checkDatabaseConnection();
         long uptimeSeconds = ManagementFactory.getRuntimeMXBean().getUptime() / 1000;
         String overallStatus = "CONNECTED".equals(dbStatus) ? "UP" : "DEGRADED";

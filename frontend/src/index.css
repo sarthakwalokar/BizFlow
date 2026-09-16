@@ -15,7 +15,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: #18181B;
-    background-color: #F7F7F5;
+    background-color: #FAFAF9;
   }
 }
 
@@ -39,8 +39,8 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type=
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: #16A34A;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+  border-color: #6D28D9;
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.15);
 }
 
 /* 2. Clear placeholder styling */
@@ -70,8 +70,8 @@ select option {
 }
 
 select option:checked {
-  background-color: #DCFCE7;
-  color: #15803D;
+  background-color: #EDE9FE;
+  color: #5B21B6;
 }
 
 /* 5. Autofill fix */

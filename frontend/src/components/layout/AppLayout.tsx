@@ -156,17 +156,21 @@ export const AppLayout: React.FC = () => {
   const getBusinessTypeBadgeColor = (type?: string) => {
     switch (type) {
       case 'RETAIL':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
+        return 'bg-brand-50 text-brand-700 border-brand-200';
       case 'RESTAURANT':
-        return 'bg-amber-50 text-amber-700 border-amber-200';
+        return 'bg-amber-50 text-amber-800 border-amber-200';
       case 'CAFE':
-        return 'bg-amber-50 text-amber-800 border-amber-300';
+        return 'bg-amber-50 text-amber-800 border-amber-200';
       case 'BAKERY':
-        return 'bg-orange-50 text-orange-700 border-orange-200';
+        return 'bg-orange-50 text-orange-800 border-orange-200';
       case 'SALON':
+      case 'BEAUTY_PARLOUR':
         return 'bg-pink-50 text-pink-700 border-pink-200';
+      case 'MOBILE_STORE':
+      case 'ELECTRONICS':
+        return 'bg-indigo-50 text-indigo-700 border-indigo-200';
       case 'SERVICE':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        return 'bg-brand-50 text-brand-700 border-brand-200';
       default:
         return 'bg-zinc-100 text-zinc-700 border-zinc-200';
     }
@@ -180,7 +184,7 @@ export const AppLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] flex flex-col md:flex-row font-sans text-zinc-900">
+    <div className="min-h-screen bg-[#FAFAF9] flex flex-col md:flex-row font-sans text-zinc-900">
       {/* Mobile Top Header */}
       <header className="md:hidden bg-white border-b border-zinc-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
         <div className="flex items-center space-x-3">
@@ -192,7 +196,7 @@ export const AppLayout: React.FC = () => {
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <div className="flex items-center space-x-2">
-            <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm shadow-xs">
+            <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm shadow-xs">
               <Layers size={14} />
             </div>
             <span className="font-extrabold text-zinc-950 tracking-tight text-base">BizFlow</span>
@@ -222,12 +226,12 @@ export const AppLayout: React.FC = () => {
           {/* Logo & Tenant Header */}
           <div className="p-4 border-b border-zinc-100">
             <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-xs">
                 <Layers className="w-4 h-4" />
               </div>
               <div>
                 <span className="text-base font-extrabold text-zinc-950 tracking-tight block">BizFlow</span>
-                <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
+                <span className="text-[10px] text-brand-700 font-bold uppercase tracking-wider">
                   SaaS Business Suite
                 </span>
               </div>
@@ -235,13 +239,13 @@ export const AppLayout: React.FC = () => {
 
             {business && (
               <div className="mt-3 p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80 flex items-center space-x-2.5">
-                <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold text-xs flex-shrink-0">
                   <Store size={14} />
                 </div>
                 <div className="overflow-hidden flex-1">
                   <h4 className="text-xs font-bold text-zinc-900 truncate">{business.name}</h4>
                   <div className="flex items-center space-x-1.5 mt-0.5">
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-brand-600"></span>
                     <span className="text-[10px] text-zinc-500 font-medium truncate">
                       {business.businessType || 'Active Store'}
                     </span>
@@ -281,15 +285,15 @@ export const AppLayout: React.FC = () => {
                         onClick={() => setMobileMenuOpen(false)}
                         className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
                           active
-                            ? 'bg-emerald-50 text-emerald-700 font-bold'
+                            ? 'bg-brand-50 text-brand-700 font-bold'
                             : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
                         }`}
                       >
                         <div className="flex items-center space-x-2.5">
-                          <Icon size={16} className={active ? 'text-emerald-600' : 'text-zinc-400'} />
+                          <Icon size={16} className={active ? 'text-brand-600' : 'text-zinc-400'} />
                           <span>{item.label}</span>
                         </div>
-                        {active && <ChevronRight size={13} className="text-emerald-600" />}
+                        {active && <ChevronRight size={13} className="text-brand-600" />}
                       </Link>
                     );
                   })}
@@ -308,12 +312,12 @@ export const AppLayout: React.FC = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
                     location.pathname.startsWith('/dashboard/staff')
-                      ? 'bg-emerald-50 text-emerald-700 font-bold'
+                      ? 'bg-brand-50 text-brand-700 font-bold'
                       : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
                   }`}
                 >
                   <div className="flex items-center space-x-2.5">
-                    <Users size={16} className={location.pathname.startsWith('/dashboard/staff') ? 'text-emerald-600' : 'text-zinc-400'} />
+                    <Users size={16} className={location.pathname.startsWith('/dashboard/staff') ? 'text-brand-600' : 'text-zinc-400'} />
                     <span>Staff Team</span>
                   </div>
                 </Link>
@@ -323,12 +327,12 @@ export const AppLayout: React.FC = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
                     location.pathname.startsWith('/dashboard/settings')
-                      ? 'bg-emerald-50 text-emerald-700 font-bold'
+                      ? 'bg-brand-50 text-brand-700 font-bold'
                       : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
                   }`}
                 >
                   <div className="flex items-center space-x-2.5">
-                    <Settings size={16} className={location.pathname.startsWith('/dashboard/settings') ? 'text-emerald-600' : 'text-zinc-400'} />
+                    <Settings size={16} className={location.pathname.startsWith('/dashboard/settings') ? 'text-brand-600' : 'text-zinc-400'} />
                     <span>Settings</span>
                   </div>
                 </Link>
@@ -360,11 +364,11 @@ export const AppLayout: React.FC = () => {
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center space-x-2.5 overflow-hidden flex-1 group"
               >
-                <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
+                <div className="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
                   {user?.fullName ? user.fullName.charAt(0) : 'U'}
                 </div>
                 <div className="overflow-hidden">
-                  <p className="text-xs font-semibold text-zinc-900 truncate group-hover:text-emerald-600 transition-colors">
+                  <p className="text-xs font-semibold text-zinc-900 truncate group-hover:text-brand-600 transition-colors">
                     {user?.fullName}
                   </p>
                   <span className="inline-block text-[9px] font-bold px-1.5 py-0.2 rounded bg-zinc-200 text-zinc-700">
@@ -414,7 +418,7 @@ export const AppLayout: React.FC = () => {
           <div className="flex items-center space-x-4">
             {business && business.taxRate !== undefined && business.taxRate > 0 && (
               <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-semibold">
-                <Percent size={12} className="text-emerald-600" />
+                <Percent size={12} className="text-brand-600" />
                 <span>
                   {business.taxName || 'GST'}: {business.taxRate}%
                   {business.taxInclusive ? ' (Incl.)' : ''}
@@ -432,7 +436,7 @@ export const AppLayout: React.FC = () => {
                 <p className="text-xs font-bold text-zinc-900">{user?.fullName}</p>
                 <p className="text-[10px] text-zinc-500">{user?.email}</p>
               </div>
-              <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
                 {user?.fullName ? user.fullName.charAt(0) : 'U'}
               </div>
             </Link>
@@ -440,7 +444,7 @@ export const AppLayout: React.FC = () => {
         </header>
 
         {/* Page Body */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#F7F7F5]">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#FAFAF9]">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>
@@ -449,3 +453,4 @@ export const AppLayout: React.FC = () => {
     </div>
   );
 };
+

@@ -22,12 +22,27 @@ export interface HealthData {
   service: string;
   version: string;
   environment: string;
-  database: 'CONNECTED' | 'DISCONNECTED';
+  database?: 'CONNECTED' | 'DISCONNECTED' | 'NOT_CHECKED' | null;
   uptimeSeconds: number;
   timestamp: string;
 }
 
-export const fetchHealthStatus = async (): Promise<ApiResponse<HealthData>> => {
-  const response = await apiClient.get<ApiResponse<HealthData>>('/health');
+/**
+ * Fast, lightweight API health check (no DB/AI queries).
+ */
+export const fetchHealthStatus = async (timeoutMs = 15000): Promise<ApiResponse<HealthData>> => {
+  const response = await apiClient.get<ApiResponse<HealthData>>('/health', {
+    timeout: timeoutMs,
+  });
+  return response.data;
+};
+
+/**
+ * Deep system diagnostics including database connectivity check.
+ */
+export const fetchDiagnosticsStatus = async (timeoutMs = 20000): Promise<ApiResponse<HealthData>> => {
+  const response = await apiClient.get<ApiResponse<HealthData>>('/health/diagnostics', {
+    timeout: timeoutMs,
+  });
   return response.data;
 };

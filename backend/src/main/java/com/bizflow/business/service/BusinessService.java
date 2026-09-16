@@ -84,6 +84,14 @@ public class BusinessService {
             business.setTaxInclusive(request.getTaxInclusive());
         }
 
+        // Scale & Inventory configuration
+        if (request.getBusinessSize() != null) {
+            business.setBusinessSize(request.getBusinessSize());
+        }
+        if (request.getInventoryEnabled() != null) {
+            business.setInventoryEnabled(request.getInventoryEnabled());
+        }
+
         Business updated = businessRepository.save(business);
         log.info("Business {} updated successfully by owner", businessId);
         return BusinessResponse.fromEntity(updated);

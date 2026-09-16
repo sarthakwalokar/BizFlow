@@ -56,7 +56,6 @@ class HealthControllerTest {
                 .service("BizFlow Backend API")
                 .version("1.0.0")
                 .environment("test")
-                .database("CONNECTED")
                 .uptimeSeconds(120)
                 .timestamp(Instant.now())
                 .build();
@@ -71,6 +70,30 @@ class HealthControllerTest {
                 .andExpect(jsonPath("$.data.status").value("UP"))
                 .andExpect(jsonPath("$.data.service").value("BizFlow Backend API"))
                 .andExpect(jsonPath("$.data.version").value("1.0.0"))
+                .andExpect(jsonPath("$.status").value(200));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/health/diagnostics - should return 200 OK with database connectivity status")
+    void checkDiagnostics_shouldReturnOkWithDetailedStatus() throws Exception {
+        HealthResponse mockHealth = HealthResponse.builder()
+                .status("UP")
+                .service("BizFlow Backend API")
+                .version("1.0.0")
+                .environment("test")
+                .database("CONNECTED")
+                .uptimeSeconds(120)
+                .timestamp(Instant.now())
+                .build();
+
+        given(healthService.getDetailedHealthStatus()).willReturn(mockHealth);
+
+        mockMvc.perform(get("/api/v1/health/diagnostics")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Diagnostics completed"))
+                .andExpect(jsonPath("$.data.status").value("UP"))
                 .andExpect(jsonPath("$.data.database").value("CONNECTED"))
                 .andExpect(jsonPath("$.status").value(200));
     }

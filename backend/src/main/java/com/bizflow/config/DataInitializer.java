@@ -71,17 +71,445 @@ public class DataInitializer {
             seedAdmin("admin@bizflow.com", "Admin@123456", "BizFlow Root Administrator");
             seedAdmin("admin@bizflow.io", "Admin@BizFlow2026!", "Platform Super Admin");
 
-            // 2. Ensure Small Business Demo Accounts, Categories & Products Exist
+            // 2. Seed 5 Required Demo Business Owners
+            seedOmkarRestaurant();
+            seedArpitBakery();
+            seedSanchitMobileStore();
+            seedVedantRetail();
+            seedBhaveshCafe();
+
+            // 3. Ensure Legacy Demo Accounts Exist for Backwards Compatibility
             seedSmallBusiness();
-
-            // 3. Ensure Large Business Demo Accounts, Categories & Products Exist
             seedLargeBusiness();
-
-            // 4. Ensure Fallback Demo Business (owner@example.com) & Products Exist
             seedLegacyDemoBusiness();
 
             log.info("BizFlow seed data initialization completed successfully!");
         };
+    }
+
+    @Transactional
+    public void seedOmkarRestaurant() {
+        String ownerEmail = "omkar.patrikar@bizflow.demo";
+
+        Business biz = businessRepository.findByName("Spice Garden Fine Dine").orElseGet(() -> {
+            Business b = Business.builder()
+                    .name("Spice Garden Fine Dine")
+                    .businessType(BusinessType.RESTAURANT)
+                    .businessSize(BusinessSize.SMALL)
+                    .currency("INR")
+                    .timezone("Asia/Kolkata")
+                    .email("info@spicegarden.demo")
+                    .phone("+91-98230-11221")
+                    .address("45 MG Road, Civil Lines, Nagpur, Maharashtra 440001")
+                    .taxRate(new BigDecimal("5.00"))
+                    .taxName("GST 5%")
+                    .taxNumber("27AAACS1234F1Z1")
+                    .taxInclusive(false)
+                    .reviewSlug("spice-garden-nagpur")
+                    .inventoryEnabled(true)
+                    .active(true)
+                    .build();
+            return businessRepository.save(b);
+        });
+
+        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+            User u = User.builder()
+                    .business(biz)
+                    .email(ownerEmail)
+                    .fullName("Omkar Patrikar")
+                    .passwordHash(passwordEncoder.encode("123456"))
+                    .phone("+91-98230-11221")
+                    .role(Role.OWNER)
+                    .enabled(true)
+                    .active(true)
+                    .build();
+            return userRepository.save(u);
+        });
+        owner.setBusiness(biz);
+        owner.setPasswordHash(passwordEncoder.encode("123456"));
+        owner.setEnabled(true);
+        owner.setActive(true);
+        userRepository.save(owner);
+
+        // Categories & Products
+        Category catStarters = getOrCreateCategory(biz, "Starters & Tandoor", "Smoky kebabs, tikkas, and sizzling appetizers");
+        Category catMains = getOrCreateCategory(biz, "Main Course Gravies", "Rich North Indian gravies and rich curries");
+        Category catBiryani = getOrCreateCategory(biz, "Biryani & Rice", "Fragrant dum biryanis and specialty rice");
+        Category catBreads = getOrCreateCategory(biz, "Artisan Tandoori Breads", "Freshly baked naans, rotis, and parathas");
+        Category catDesserts = getOrCreateCategory(biz, "Desserts & Beverages", "Traditional sweet delicacies and cooling drinks");
+
+        Product p1 = getOrCreateProduct(biz, catStarters, "Paneer Tikka Angara", "Chargrilled spiced cottage cheese with bell peppers.", 280.00, 110.00, "OMK-PAN-01", 60, 10);
+        Product p2 = getOrCreateProduct(biz, catStarters, "Murgh Malai Kebab", "Creamy chicken skewers marinated with cardamom and cream.", 340.00, 140.00, "OMK-CHK-02", 50, 8);
+        Product p3 = getOrCreateProduct(biz, catMains, "Butter Chicken Special", "Tender tandoori chicken simmered in rich makhani gravy.", 380.00, 150.00, "OMK-CHK-03", 75, 10);
+        Product p4 = getOrCreateProduct(biz, catMains, "Dal Makhani Charcoal", "Slow-cooked black lentils simmered overnight with butter.", 240.00, 85.00, "OMK-DAL-04", 90, 15);
+        Product p5 = getOrCreateProduct(biz, catBiryani, "Dum Hyderabadi Mutton Biryani", "Aromatic aged basmati rice cooked with spiced tender goat meat.", 450.00, 200.00, "OMK-MUT-05", 40, 8);
+        Product p6 = getOrCreateProduct(biz, catBreads, "Butter Garlic Naan", "Tandoor baked flatbread glazed with melted garlic butter.", 65.00, 20.00, "OMK-NAN-06", 150, 25);
+        Product p7 = getOrCreateProduct(biz, catDesserts, "Gulab Jamun with Rabdi", "Warm milk dumplings served over thick creamy saffron rabdi.", 120.00, 40.00, "OMK-GUL-07", 55, 10);
+
+        // Customers
+        Customer c1 = getOrCreateCustomer(biz, "Aditya Deshmukh", "+91-98901-11111", "aditya.deshmukh@gmail.com", "Civil Lines, Nagpur", "Regular family diner.");
+        Customer c2 = getOrCreateCustomer(biz, "Neha Kulkarni", "+91-98902-22222", "neha.kulkarni@yahoo.com", "Ramdaspeth, Nagpur", "Prefers mild spice.");
+
+        // Orders & Payments
+        if (orderRepository.findRecentOrders(biz.getId(), PageRequest.of(0, 1)).isEmpty()) {
+            createSampleOrder(biz, c1, "INV-OMK-101", "Omkar Patrikar", owner.getId(), PaymentMethod.UPI,
+                    List.of(new ItemSpec(p3, 2, 380.00), new ItemSpec(p6, 4, 65.00), new ItemSpec(p7, 2, 120.00)));
+            createSampleOrder(biz, c2, "INV-OMK-102", "Omkar Patrikar", owner.getId(), PaymentMethod.CARD,
+                    List.of(new ItemSpec(p1, 1, 280.00), new ItemSpec(p4, 1, 240.00), new ItemSpec(p6, 2, 65.00)));
+            createSampleOrder(biz, c1, "INV-OMK-103", "Omkar Patrikar", owner.getId(), PaymentMethod.UPI,
+                    List.of(new ItemSpec(p5, 2, 450.00), new ItemSpec(p7, 2, 120.00)));
+        }
+
+        // Expenses
+        if (expenseRepository.countByBusinessId(biz.getId()) == 0) {
+            createExpense(biz, ExpenseCategory.SUPPLIES, "Fresh Farm Dairy & Meat Wholesaler", new BigDecimal("7500.00"), PaymentMethod.UPI, LocalDate.now().minusDays(3), owner);
+            createExpense(biz, ExpenseCategory.UTILITIES, "Commercial LPG Gas Cylinder Refills", new BigDecimal("3200.00"), PaymentMethod.CASH, LocalDate.now().minusDays(2), owner);
+            createExpense(biz, ExpenseCategory.RENT, "Restaurant Premises Monthly Lease", new BigDecimal("35000.00"), PaymentMethod.NET_BANKING, LocalDate.now().minusDays(10), owner);
+        }
+
+        // Reviews
+        if (reviewRepository.findRecentReviews(biz.getId(), PageRequest.of(0, 1)).isEmpty()) {
+            createReview(biz, 5, "Phenomenal Butter Chicken and top notch hospitality! Best dining in Civil Lines.", "Aditya Deshmukh", "aditya.deshmukh@gmail.com", true);
+            createReview(biz, 5, "Authentic flavours and speedy billing. Highly recommended!", "Neha Kulkarni", "neha.kulkarni@yahoo.com", true);
+        }
+        log.info("Demo Business #1: Omkar Patrikar (Spice Garden Fine Dine) initialized.");
+    }
+
+    @Transactional
+    public void seedArpitBakery() {
+        String ownerEmail = "arpit.raut@bizflow.demo";
+
+        Business biz = businessRepository.findByName("Golden Crust Artisan Bakery").orElseGet(() -> {
+            Business b = Business.builder()
+                    .name("Golden Crust Artisan Bakery")
+                    .businessType(BusinessType.BAKERY)
+                    .businessSize(BusinessSize.SMALL)
+                    .currency("INR")
+                    .timezone("Asia/Kolkata")
+                    .email("hello@goldencrust.demo")
+                    .phone("+91-98230-22332")
+                    .address("12 Dharampeth Shopping Arcade, Nagpur, Maharashtra 440010")
+                    .taxRate(new BigDecimal("5.00"))
+                    .taxName("GST 5%")
+                    .taxNumber("27BBBCS2345G1Z2")
+                    .taxInclusive(true)
+                    .reviewSlug("golden-crust-nagpur")
+                    .inventoryEnabled(true)
+                    .active(true)
+                    .build();
+            return businessRepository.save(b);
+        });
+
+        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+            User u = User.builder()
+                    .business(biz)
+                    .email(ownerEmail)
+                    .fullName("Arpit Raut")
+                    .passwordHash(passwordEncoder.encode("123456"))
+                    .phone("+91-98230-22332")
+                    .role(Role.OWNER)
+                    .enabled(true)
+                    .active(true)
+                    .build();
+            return userRepository.save(u);
+        });
+        owner.setBusiness(biz);
+        owner.setPasswordHash(passwordEncoder.encode("123456"));
+        owner.setEnabled(true);
+        owner.setActive(true);
+        userRepository.save(owner);
+
+        // Categories & Products
+        Category catSourdough = getOrCreateCategory(biz, "Artisan Breads & Sourdough", "Naturally fermented sourdough loaves and rustic loaves");
+        Category catCakes = getOrCreateCategory(biz, "Celebration Cakes", "Handcrafted designer cakes and truffle celebrations");
+        Category catPastries = getOrCreateCategory(biz, "Croissants & Pastries", "Flaky French viennoiseries and Danishes");
+        Category catCookies = getOrCreateCategory(biz, "Gourmet Cookies & Bakes", "Crunchy butter biscuits, cookies, and tea-time loaves");
+
+        Product p1 = getOrCreateProduct(biz, catSourdough, "Rustic Sourdough Boule", "Traditional 36-hour fermented whole wheat sourdough bread.", 160.00, 60.00, "ARP-SRD-01", 35, 5);
+        Product p2 = getOrCreateProduct(biz, catCakes, "Belgian Dark Truffle Cake 1kg", "Dense Dutch cocoa sponge layered with 70% dark ganache.", 750.00, 320.00, "ARP-CAK-02", 15, 3);
+        Product p3 = getOrCreateProduct(biz, catPastries, "Butter Almond Croissant", "Laminated twice-baked croissant stuffed with almond frangipane.", 140.00, 50.00, "ARP-CRS-03", 30, 6);
+        Product p4 = getOrCreateProduct(biz, catCakes, "Red Velvet Cream Cheese Cupcake", "Velvety sponge topped with imported Philadelphia cream cheese frosting.", 120.00, 45.00, "ARP-CUP-04", 40, 8);
+        Product p5 = getOrCreateProduct(biz, catCookies, "Chocochip Walnut Cookies 250g", "Gooey chocolate chunk cookies with roasted California walnuts.", 180.00, 70.00, "ARP-CKI-05", 50, 10);
+        Product p6 = getOrCreateProduct(biz, catSourdough, "Cheese Garlic Pull-Apart Loaf", "Soft sourdough loaf infused with herb garlic butter and mozzarella.", 150.00, 55.00, "ARP-GAR-06", 25, 5);
+
+        // Customers
+        Customer c1 = getOrCreateCustomer(biz, "Tanvi Joshi", "+91-98904-44444", "tanvi.joshi@gmail.com", "Dharampeth, Nagpur", "Loves sourdough bread.");
+        Customer c2 = getOrCreateCustomer(biz, "Kunal Patil", "+91-98905-55555", "kunal.patil@outlook.com", "Laxmi Nagar, Nagpur", "Orders birthday cakes.");
+
+        // Orders & Payments
+        if (orderRepository.findRecentOrders(biz.getId(), PageRequest.of(0, 1)).isEmpty()) {
+            createSampleOrder(biz, c1, "INV-ARP-101", "Arpit Raut", owner.getId(), PaymentMethod.UPI,
+                    List.of(new ItemSpec(p1, 2, 160.00), new ItemSpec(p3, 2, 140.00)));
+            createSampleOrder(biz, c2, "INV-ARP-102", "Arpit Raut", owner.getId(), PaymentMethod.CARD,
+                    List.of(new ItemSpec(p2, 1, 750.00), new ItemSpec(p5, 1, 180.00)));
+            createSampleOrder(biz, c1, "INV-ARP-103", "Arpit Raut", owner.getId(), PaymentMethod.CASH,
+                    List.of(new ItemSpec(p6, 2, 150.00), new ItemSpec(p4, 2, 120.00)));
+        }
+
+        // Expenses
+        if (expenseRepository.countByBusinessId(biz.getId()) == 0) {
+            createExpense(biz, ExpenseCategory.SUPPLIES, "Organic Unbleached Flour & Dairy Butter 50kg", new BigDecimal("6200.00"), PaymentMethod.UPI, LocalDate.now().minusDays(5), owner);
+            createExpense(biz, ExpenseCategory.UTILITIES, "Bakery Oven Electric Load Tariff", new BigDecimal("4800.00"), PaymentMethod.NET_BANKING, LocalDate.now().minusDays(4), owner);
+        }
+
+        // Reviews
+        if (reviewRepository.findRecentReviews(biz.getId(), PageRequest.of(0, 1)).isEmpty()) {
+            createReview(biz, 5, "The best sourdough in the city! Crusty outside and super soft inside.", "Tanvi Joshi", "tanvi.joshi@gmail.com", true);
+        }
+        log.info("Demo Business #2: Arpit Raut (Golden Crust Artisan Bakery) initialized.");
+    }
+
+    @Transactional
+    public void seedSanchitMobileStore() {
+        String ownerEmail = "sanchit.maske@bizflow.demo";
+
+        Business biz = businessRepository.findByName("NextGen Mobile & Tech Hub").orElseGet(() -> {
+            Business b = Business.builder()
+                    .name("NextGen Mobile & Tech Hub")
+                    .businessType(BusinessType.MOBILE_STORE)
+                    .businessSize(BusinessSize.SMALL)
+                    .currency("INR")
+                    .timezone("Asia/Kolkata")
+                    .email("sales@nextgenmobile.demo")
+                    .phone("+91-98230-33443")
+                    .address("Shop 8, Sitabuldi Main Road, Nagpur, Maharashtra 440012")
+                    .taxRate(new BigDecimal("18.00"))
+                    .taxName("GST 18%")
+                    .taxNumber("27CCCDS3456H1Z3")
+                    .taxInclusive(false)
+                    .reviewSlug("nextgen-mobile-nagpur")
+                    .inventoryEnabled(true)
+                    .active(true)
+                    .build();
+            return businessRepository.save(b);
+        });
+
+        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+            User u = User.builder()
+                    .business(biz)
+                    .email(ownerEmail)
+                    .fullName("Sanchit Maske")
+                    .passwordHash(passwordEncoder.encode("123456"))
+                    .phone("+91-98230-33443")
+                    .role(Role.OWNER)
+                    .enabled(true)
+                    .active(true)
+                    .build();
+            return userRepository.save(u);
+        });
+        owner.setBusiness(biz);
+        owner.setPasswordHash(passwordEncoder.encode("123456"));
+        owner.setEnabled(true);
+        owner.setActive(true);
+        userRepository.save(owner);
+
+        // Categories & Products
+        Category catPhones = getOrCreateCategory(biz, "Smartphones & Tablets", "Latest 5G smartphones, flagship devices, and tablets");
+        Category catPower = getOrCreateCategory(biz, "Chargers & Power Banks", "Fast GaN chargers, wireless pads, and power banks");
+        Category catAudio = getOrCreateCategory(biz, "Audio & Smart Wearables", "ANC Earbuds, neckbands, and smart fitness watches");
+        Category catProtection = getOrCreateCategory(biz, "Cases & Screen Protectors", "Shockproof phone cases and 9H tempered glass guards");
+
+        Product p1 = getOrCreateProduct(biz, catPhones, "ProMax 5G Smartphone 128GB", "Flagship 120Hz AMOLED, 5000mAh battery, 50MP OIS Camera.", 24999.00, 21500.00, "SAN-PHN-01", 18, 4);
+        Product p2 = getOrCreateProduct(biz, catPower, "65W GaN Superfast Dual Charger", "Universal USB-C Power Delivery wall adapter for laptops & phones.", 1499.00, 780.00, "SAN-CHG-02", 45, 8);
+        Product p3 = getOrCreateProduct(biz, catAudio, "ANC True Wireless Earbuds Pro", "Active Noise Cancelling earbuds with 36h playback and low latency.", 2999.00, 1600.00, "SAN-EAR-03", 30, 5);
+        Product p4 = getOrCreateProduct(biz, catPower, "10000mAh Magnetic Power Bank", "Slim MagSafe compatible 20W fast wireless power bank.", 1899.00, 950.00, "SAN-PWR-04", 25, 5);
+        Product p5 = getOrCreateProduct(biz, catProtection, "9H Edge-to-Edge Tempered Glass", "Oleophobic shatterproof curved screen protector.", 299.00, 60.00, "SAN-GLS-05", 120, 20);
+        Product p6 = getOrCreateProduct(biz, catProtection, "Military-Grade Armor Shock Case", "Dual-layer rugged TPU drop protection bumper case.", 499.00, 150.00, "SAN-CSE-06", 80, 15);
+
+        // Customers
+        Customer c1 = getOrCreateCustomer(biz, "Rohan Bajaj", "+91-98906-66666", "rohan.bajaj@gmail.com", "Sitabuldi, Nagpur", "Tech enthusiast.");
+        Customer c2 = getOrCreateCustomer(biz, "Pooja Mehta", "+91-98907-77777", "pooja.mehta@yahoo.com", "Dhantoli, Nagpur", "Accessories buyer.");
+
+        // Orders & Payments
+        if (orderRepository.findRecentOrders(biz.getId(), PageRequest.of(0, 1)).isEmpty()) {
+            createSampleOrder(biz, c1, "INV-SAN-101", "Sanchit Maske", owner.getId(), PaymentMethod.UPI,
+                    List.of(new ItemSpec(p1, 1, 24999.00), new ItemSpec(p5, 1, 299.00), new ItemSpec(p6, 1, 499.00)));
+            createSampleOrder(biz, c2, "INV-SAN-102", "Sanchit Maske", owner.getId(), PaymentMethod.CARD,
+                    List.of(new ItemSpec(p2, 1, 1499.00), new ItemSpec(p3, 1, 2999.00)));
+            createSampleOrder(biz, c1, "INV-SAN-103", "Sanchit Maske", owner.getId(), PaymentMethod.UPI,
+                    List.of(new ItemSpec(p4, 1, 1899.00)));
+        }
+
+        // Expenses
+        if (expenseRepository.countByBusinessId(biz.getId()) == 0) {
+            createExpense(biz, ExpenseCategory.PURCHASE, "Authorized Mobile Distributor Inward Batch", new BigDecimal("48000.00"), PaymentMethod.NET_BANKING, LocalDate.now().minusDays(7), owner);
+            createExpense(biz, ExpenseCategory.RENT, "Sitabuldi Prime Shop Monthly Rent", new BigDecimal("22000.00"), PaymentMethod.NET_BANKING, LocalDate.now().minusDays(5), owner);
+        }
+
+        // Reviews
+        if (reviewRepository.findRecentReviews(biz.getId(), PageRequest.of(0, 1)).isEmpty()) {
+            createReview(biz, 5, "Great deal on the new 5G phone! Sanchit was very helpful with data transfer.", "Rohan Bajaj", "rohan.bajaj@gmail.com", true);
+        }
+        log.info("Demo Business #3: Sanchit Maske (NextGen Mobile & Tech Hub) initialized.");
+    }
+
+    @Transactional
+    public void seedVedantRetail() {
+        String ownerEmail = "vedant.bhoyar@bizflow.demo";
+
+        Business biz = businessRepository.findByName("Urban Style Fashion & Apparel").orElseGet(() -> {
+            Business b = Business.builder()
+                    .name("Urban Style Fashion & Apparel")
+                    .businessType(BusinessType.RETAIL)
+                    .businessSize(BusinessSize.LARGE)
+                    .currency("USD")
+                    .timezone("UTC")
+                    .email("contact@urbanstyle.demo")
+                    .phone("+91-98230-44554")
+                    .address("Plot 104, Wardha Road, Ramdaspeth, Nagpur, Maharashtra 440015")
+                    .taxRate(new BigDecimal("8.50"))
+                    .taxName("Sales Tax 8.5%")
+                    .taxNumber("US-TAX-89211")
+                    .taxInclusive(false)
+                    .reviewSlug("urban-style-nagpur")
+                    .inventoryEnabled(true)
+                    .active(true)
+                    .build();
+            return businessRepository.save(b);
+        });
+
+        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+            User u = User.builder()
+                    .business(biz)
+                    .email(ownerEmail)
+                    .fullName("Vedant Bhoyar")
+                    .passwordHash(passwordEncoder.encode("123456"))
+                    .phone("+91-98230-44554")
+                    .role(Role.OWNER)
+                    .enabled(true)
+                    .active(true)
+                    .build();
+            return userRepository.save(u);
+        });
+        owner.setBusiness(biz);
+        owner.setPasswordHash(passwordEncoder.encode("123456"));
+        owner.setEnabled(true);
+        owner.setActive(true);
+        userRepository.save(owner);
+
+        // Warehouses & Store Locations (Large Business tier)
+        Location locStore = getOrCreateLocation(biz, "Urban Style Flagship Store", "LOC-US-01", "Plot 104, Wardha Road, Ramdaspeth", "+91-98230-44554", true);
+        Location locWarehouse = getOrCreateLocation(biz, "Central Logistics Hub", "LOC-US-02", "MIDC Logistics Park, Wardha Road", "+91-98230-44555", false);
+
+        // Categories & Products
+        Category catMen = getOrCreateCategory(biz, "Men's Casual Wear", "Premium cotton shirts, polos, and casual trousers");
+        Category catWomen = getOrCreateCategory(biz, "Women's Ethnic & Modern", "Contemporary kurtas, dresses, and designer tops");
+        Category catDenim = getOrCreateCategory(biz, "Denims & Jeans", "Selvedge denim, stretch slim jeans, and jackets");
+        Category catFootwear = getOrCreateCategory(biz, "Footwear & Accessories", "Genuine leather belts, sneakers, and wallets");
+
+        Product p1 = getOrCreateProduct(biz, catMen, "Classic Oxford Button-Down Shirt", "100% breathable organic Egyptian cotton tailored fit shirt.", 45.00, 18.00, "VED-SHT-01", 60, 10);
+        Product p2 = getOrCreateProduct(biz, catDenim, "Slim Stretch Selvedge Denim Jeans", "13oz raw denim with comfort stretch and reinforced rivets.", 65.00, 26.00, "VED-DNM-02", 45, 8);
+        Product p3 = getOrCreateProduct(biz, catWomen, "Embroidered Linen Tunic Dress", "Breezy summer linen tunic with subtle artisan embroidery.", 55.00, 22.00, "VED-DRS-03", 35, 6);
+        Product p4 = getOrCreateProduct(biz, catFootwear, "Full Grain Leather Dress Belt", "Hand-stitched brass buckle full grain vegetable tanned leather belt.", 30.00, 11.00, "VED-BLT-04", 50, 10);
+        Product p5 = getOrCreateProduct(biz, catFootwear, "Urban Canvas Low-Top Sneakers", "Vulcanized rubber sole casual street lifestyle sneakers.", 50.00, 20.00, "VED-SNK-05", 40, 8);
+
+        // Customers
+        Customer c1 = getOrCreateCustomer(biz, "Suresh Menon", "+91-98908-88888", "suresh.menon@gmail.com", "Wardha Road, Nagpur", "VIP fashion member.");
+        Customer c2 = getOrCreateCustomer(biz, "Ananya Sen", "+91-98909-99999", "ananya.sen@outlook.com", "Civil Lines, Nagpur", "Frequent shopper.");
+
+        // Orders & Payments
+        if (orderRepository.findRecentOrders(biz.getId(), PageRequest.of(0, 1)).isEmpty()) {
+            createSampleOrder(biz, c1, "INV-VED-101", "Vedant Bhoyar", owner.getId(), PaymentMethod.CARD,
+                    List.of(new ItemSpec(p1, 2, 45.00), new ItemSpec(p2, 1, 65.00), new ItemSpec(p4, 1, 30.00)));
+            createSampleOrder(biz, c2, "INV-VED-102", "Vedant Bhoyar", owner.getId(), PaymentMethod.UPI,
+                    List.of(new ItemSpec(p3, 2, 55.00), new ItemSpec(p5, 1, 50.00)));
+        }
+
+        // Expenses
+        if (expenseRepository.countByBusinessId(biz.getId()) == 0) {
+            createExpense(biz, ExpenseCategory.PURCHASE, "Autumn Apparel Consignment Import", new BigDecimal("3200.00"), PaymentMethod.CARD, LocalDate.now().minusDays(8), owner);
+            createExpense(biz, ExpenseCategory.MARKETING, "Digital Social Media Campaign & Billboards", new BigDecimal("650.00"), PaymentMethod.CARD, LocalDate.now().minusDays(3), owner);
+        }
+
+        // Reviews
+        if (reviewRepository.findRecentReviews(biz.getId(), PageRequest.of(0, 1)).isEmpty()) {
+            createReview(biz, 5, "Exceptional fabric quality and modern styles. Very satisfied!", "Suresh Menon", "suresh.menon@gmail.com", true);
+        }
+        log.info("Demo Business #4: Vedant Bhoyar (Urban Style Fashion & Apparel) initialized.");
+    }
+
+    @Transactional
+    public void seedBhaveshCafe() {
+        String ownerEmail = "bhavesh.gautre@bizflow.demo";
+
+        Business biz = businessRepository.findByName("Roasted Bean Specialty Cafe").orElseGet(() -> {
+            Business b = Business.builder()
+                    .name("Roasted Bean Specialty Cafe")
+                    .businessType(BusinessType.CAFE)
+                    .businessSize(BusinessSize.SMALL)
+                    .currency("INR")
+                    .timezone("Asia/Kolkata")
+                    .email("connect@roastedbean.demo")
+                    .phone("+91-98230-55665")
+                    .address("22 IT Park Road, Gayatri Nagar, Nagpur, Maharashtra 440022")
+                    .taxRate(new BigDecimal("5.00"))
+                    .taxName("GST 5%")
+                    .taxNumber("27EEEDS5678J1Z5")
+                    .taxInclusive(false)
+                    .reviewSlug("roasted-bean-nagpur")
+                    .inventoryEnabled(true)
+                    .active(true)
+                    .build();
+            return businessRepository.save(b);
+        });
+
+        User owner = userRepository.findByEmail(ownerEmail).orElseGet(() -> {
+            User u = User.builder()
+                    .business(biz)
+                    .email(ownerEmail)
+                    .fullName("Bhavesh Gautre")
+                    .passwordHash(passwordEncoder.encode("123456"))
+                    .phone("+91-98230-55665")
+                    .role(Role.OWNER)
+                    .enabled(true)
+                    .active(true)
+                    .build();
+            return userRepository.save(u);
+        });
+        owner.setBusiness(biz);
+        owner.setPasswordHash(passwordEncoder.encode("123456"));
+        owner.setEnabled(true);
+        owner.setActive(true);
+        userRepository.save(owner);
+
+        // Categories & Products
+        Category catCoffee = getOrCreateCategory(biz, "Specialty Coffees & Brews", "Single origin pour-overs, cold brews, and espresso classics");
+        Category catTeas = getOrCreateCategory(biz, "Matcha & Artisanal Teas", "Japanese matcha, herbal infusions, and craft kombucha");
+        Category catFood = getOrCreateCategory(biz, "All-Day Bagels & Gourmet Toasties", "Artisan toasted bagels and grilled sourdough sandwiches");
+        Category catDesserts = getOrCreateCategory(biz, "Handcrafted Desserts", "Warm skillet brownies, cinnamon rolls, and banana bread");
+
+        Product p1 = getOrCreateProduct(biz, catCoffee, "Single-Origin Pour Over (Ethiopia)", "Floral and citrus notes brewed with v60 manual dripper.", 220.00, 75.00, "BHA-POU-01", 50, 10);
+        Product p2 = getOrCreateProduct(biz, catCoffee, "Signature Spanish Vanilla Latte", "Double shot espresso with condensed milk and Madagascar vanilla.", 190.00, 60.00, "BHA-LAT-02", 65, 12);
+        Product p3 = getOrCreateProduct(biz, catTeas, "Ceremonial Grade Iced Matcha Latte", "Organic Uji matcha whisked with oat milk and agave nectar.", 240.00, 85.00, "BHA-MTC-03", 40, 8);
+        Product p4 = getOrCreateProduct(biz, catFood, "Smoked Cottage Cheese Panini", "Grilled sourdough panini with smoked paneer and basil pesto.", 210.00, 70.00, "BHA-PAN-04", 35, 6);
+        Product p5 = getOrCreateProduct(biz, catFood, "Toasted Jalapeno Cream Cheese Bagel", "Freshly baked sesame bagel with herb garlic cream cheese.", 180.00, 55.00, "BHA-BGL-05", 30, 6);
+        Product p6 = getOrCreateProduct(biz, catDesserts, "Gooey Espresso Salted Caramel Brownie", "Fudgy Belgian chocolate brownie with sea salt caramel drizzle.", 160.00, 50.00, "BHA-BRN-06", 45, 10);
+
+        // Customers
+        Customer c1 = getOrCreateCustomer(biz, "Vikram Singhania", "+91-98910-10101", "vikram.singh@itpark.in", "Gayatri Nagar, Nagpur", "Daily remote worker.");
+        Customer c2 = getOrCreateCustomer(biz, "Divya Roy", "+91-98910-20202", "divya.roy@gmail.com", "Pratap Nagar, Nagpur", "Matcha lover.");
+
+        // Orders & Payments
+        if (orderRepository.findRecentOrders(biz.getId(), PageRequest.of(0, 1)).isEmpty()) {
+            createSampleOrder(biz, c1, "INV-BHA-101", "Bhavesh Gautre", owner.getId(), PaymentMethod.UPI,
+                    List.of(new ItemSpec(p1, 1, 220.00), new ItemSpec(p5, 1, 180.00)));
+            createSampleOrder(biz, c2, "INV-BHA-102", "Bhavesh Gautre", owner.getId(), PaymentMethod.CARD,
+                    List.of(new ItemSpec(p3, 2, 240.00), new ItemSpec(p6, 2, 160.00)));
+            createSampleOrder(biz, c1, "INV-BHA-103", "Bhavesh Gautre", owner.getId(), PaymentMethod.UPI,
+                    List.of(new ItemSpec(p2, 2, 190.00), new ItemSpec(p4, 1, 210.00)));
+        }
+
+        // Expenses
+        if (expenseRepository.countByBusinessId(biz.getId()) == 0) {
+            createExpense(biz, ExpenseCategory.SUPPLIES, "Specialty Green Coffee Beans & Organic Whole Milk", new BigDecimal("5600.00"), PaymentMethod.UPI, LocalDate.now().minusDays(3), owner);
+            createExpense(biz, ExpenseCategory.UTILITIES, "High Speed Fiber Internet & Cafe Electricity", new BigDecimal("3100.00"), PaymentMethod.NET_BANKING, LocalDate.now().minusDays(1), owner);
+        }
+
+        // Reviews
+        if (reviewRepository.findRecentReviews(biz.getId(), PageRequest.of(0, 1)).isEmpty()) {
+            createReview(biz, 5, "My favorite work cafe near IT Park! Amazing Spanish latte and peaceful vibe.", "Vikram Singhania", "vikram.singh@itpark.in", true);
+        }
+        log.info("Demo Business #5: Bhavesh Gautre (Roasted Bean Specialty Cafe) initialized.");
     }
 
     @Transactional

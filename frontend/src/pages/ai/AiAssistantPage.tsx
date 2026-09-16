@@ -176,7 +176,7 @@ export const AiAssistantPage: React.FC = () => {
           {/* New Chat Button */}
           <button
             onClick={handleNewChat}
-            className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center space-x-2 cursor-pointer"
+            className="w-full py-2.5 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center space-x-2 cursor-pointer"
           >
             <Plus size={15} />
             <span>New Conversation</span>
@@ -204,7 +204,7 @@ export const AiAssistantPage: React.FC = () => {
                     onClick={() => handleSelectConversation(conv.id)}
                     className={`group p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between cursor-pointer transition-colors ${
                       isActive
-                        ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                        ? 'bg-brand-50 text-brand-900 border border-brand-200'
                         : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900'
                     }`}
                   >
@@ -235,7 +235,7 @@ export const AiAssistantPage: React.FC = () => {
         {/* AI Engine Status Badge */}
         <div className="pt-3 border-t border-zinc-100 text-[11px] text-zinc-500 flex items-center justify-between">
           <div className="flex items-center space-x-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-600" />
+            <span className="w-2 h-2 rounded-full bg-brand-600" />
             <span className="font-medium">Context: Live Business DB</span>
           </div>
         </div>
@@ -246,7 +246,7 @@ export const AiAssistantPage: React.FC = () => {
         {/* Chat Header */}
         <div className="p-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/60">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold">
               <Bot size={16} />
             </div>
             <div>
@@ -260,7 +260,7 @@ export const AiAssistantPage: React.FC = () => {
         <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4">
           {messages.length === 0 ? (
             <div className="py-12 max-w-xl mx-auto text-center space-y-5">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200">
+              <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto border border-brand-200">
                 <Sparkles size={24} />
               </div>
 
@@ -277,9 +277,9 @@ export const AiAssistantPage: React.FC = () => {
                   <button
                     key={idx}
                     onClick={() => handleSendMessage(prompt)}
-                    className="p-3 rounded-xl bg-zinc-50 hover:bg-emerald-50 hover:border-emerald-200 border border-zinc-200 text-xs font-semibold text-zinc-700 hover:text-emerald-900 transition-colors text-left flex items-start space-x-2 cursor-pointer"
+                    className="p-3 rounded-xl bg-zinc-50 hover:bg-brand-50 hover:border-brand-200 border border-zinc-200 text-xs font-semibold text-zinc-700 hover:text-brand-900 transition-colors text-left flex items-start space-x-2 cursor-pointer"
                   >
-                    <span className="text-emerald-600 shrink-0 font-bold">•</span>
+                    <span className="text-brand-600 shrink-0 font-bold">•</span>
                     <span>{prompt}</span>
                   </button>
                 ))}
@@ -294,7 +294,7 @@ export const AiAssistantPage: React.FC = () => {
                   className={`flex items-start space-x-3 ${isUser ? 'justify-end' : 'justify-start'}`}
                 >
                   {!isUser && (
-                    <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-1">
+                    <div className="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center shrink-0 mt-1">
                       <Bot size={14} />
                     </div>
                   )}
@@ -302,7 +302,7 @@ export const AiAssistantPage: React.FC = () => {
                   <div
                     className={`max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed space-y-2 relative group ${
                       isUser
-                        ? 'bg-emerald-600 text-white font-medium rounded-tr-xs'
+                        ? 'bg-brand-600 text-white font-medium rounded-tr-xs'
                         : 'bg-zinc-50 border border-zinc-200 text-zinc-800 rounded-tl-xs shadow-xs'
                     }`}
                   >
@@ -317,8 +317,8 @@ export const AiAssistantPage: React.FC = () => {
                         >
                           {copiedMessageId === msg.id ? (
                             <>
-                              <Check size={11} className="text-emerald-600" />
-                              <span className="text-emerald-600">Copied</span>
+                              <Check size={11} className="text-brand-600" />
+                              <span className="text-brand-600">Copied</span>
                             </>
                           ) : (
                             <>
@@ -343,11 +343,11 @@ export const AiAssistantPage: React.FC = () => {
 
           {loading && (
             <div className="flex items-start space-x-3">
-              <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-1">
+              <div className="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center shrink-0 mt-1">
                 <Bot size={14} />
               </div>
               <div className="bg-zinc-50 border border-zinc-200 p-3.5 rounded-2xl rounded-tl-xs text-xs text-zinc-500 flex items-center space-x-2">
-                <RefreshCw size={13} className="animate-spin text-emerald-600" />
+                <RefreshCw size={13} className="animate-spin text-brand-600" />
                 <span>Analyzing business database...</span>
               </div>
             </div>
@@ -365,7 +365,7 @@ export const AiAssistantPage: React.FC = () => {
 
         {/* Chat Input Bar */}
         <div className="p-3.5 border-t border-zinc-100 bg-white">
-          <div className="flex items-center space-x-2 bg-zinc-50 border border-zinc-200 rounded-2xl p-1.5 focus-within:border-emerald-600 focus-within:ring-1 focus-within:ring-emerald-600">
+          <div className="flex items-center space-x-2 bg-zinc-50 border border-zinc-200 rounded-2xl p-1.5 focus-within:border-brand-600 focus-within:ring-1 focus-within:ring-brand-600">
             <textarea
               ref={textareaRef}
               rows={1}
@@ -379,7 +379,7 @@ export const AiAssistantPage: React.FC = () => {
             <button
               onClick={() => handleSendMessage()}
               disabled={!inputMessage.trim() || loading}
-              className="p-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="p-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               <Send size={15} />
             </button>

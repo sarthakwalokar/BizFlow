@@ -333,7 +333,7 @@ export const POSBillingPage: React.FC = () => {
                 placeholder="Scan barcode, type SKU or product name..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-8 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
+                className="w-full pl-9 pr-8 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
               />
               {search && (
                 <button
@@ -351,7 +351,7 @@ export const POSBillingPage: React.FC = () => {
                 onClick={() => setSelectedType('ALL')}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   selectedType === 'ALL'
-                    ? 'bg-white text-emerald-700 shadow-xs'
+                    ? 'bg-white text-brand-700 shadow-xs'
                     : 'text-zinc-600 hover:text-zinc-900'
                 }`}
               >
@@ -361,7 +361,7 @@ export const POSBillingPage: React.FC = () => {
                 onClick={() => setSelectedType('PHYSICAL')}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
                   selectedType === 'PHYSICAL'
-                    ? 'bg-white text-emerald-700 shadow-xs'
+                    ? 'bg-white text-brand-700 shadow-xs'
                     : 'text-zinc-600 hover:text-zinc-900'
                 }`}
               >
@@ -372,7 +372,7 @@ export const POSBillingPage: React.FC = () => {
                 onClick={() => setSelectedType('SERVICE')}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
                   selectedType === 'SERVICE'
-                    ? 'bg-white text-emerald-700 shadow-xs'
+                    ? 'bg-white text-brand-700 shadow-xs'
                     : 'text-zinc-600 hover:text-zinc-900'
                 }`}
               >
@@ -388,7 +388,7 @@ export const POSBillingPage: React.FC = () => {
               onClick={() => setSelectedCategory('ALL')}
               className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors cursor-pointer ${
                 selectedCategory === 'ALL'
-                  ? 'bg-emerald-600 text-white shadow-xs'
+                  ? 'bg-brand-600 text-white shadow-xs'
                   : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
               }`}
             >
@@ -400,7 +400,7 @@ export const POSBillingPage: React.FC = () => {
                 onClick={() => setSelectedCategory(String(cat.id))}
                 className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-colors cursor-pointer ${
                   selectedCategory === String(cat.id)
-                    ? 'bg-emerald-600 text-white shadow-xs'
+                    ? 'bg-brand-600 text-white shadow-xs'
                     : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
                 }`}
               >
@@ -431,16 +431,16 @@ export const POSBillingPage: React.FC = () => {
                   key={prod.id}
                   onClick={() => addToCart(prod)}
                   disabled={isOutOfStock}
-                  className={`p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-150 relative group cursor-pointer hover:border-emerald-500 active:scale-98 ${
+                  className={`p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-150 relative group cursor-pointer hover:border-brand-500 active:scale-98 ${
                     inCartItem
-                      ? 'bg-emerald-50/60 border-emerald-400 ring-2 ring-emerald-500/20 shadow-xs'
+                      ? 'bg-brand-50/60 border-brand-400 ring-2 ring-brand-500/20 shadow-xs'
                       : isOutOfStock
                       ? 'bg-zinc-100/60 border-zinc-200 opacity-60 cursor-not-allowed'
                       : 'bg-white border-zinc-200 hover:bg-zinc-50/60 shadow-card'
                   }`}
                 >
                   {inCartItem && (
-                    <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center shadow-xs">
+                    <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-black flex items-center justify-center shadow-xs">
                       {inCartItem.quantity}
                     </span>
                   )}
@@ -511,9 +511,9 @@ export const POSBillingPage: React.FC = () => {
         {/* Cart Header */}
         <div className="p-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/60">
           <div className="flex items-center space-x-2">
-            <ShoppingCart size={18} className="text-emerald-600" />
+            <ShoppingCart size={18} className="text-brand-600" />
             <h3 className="font-bold text-sm text-zinc-900">Billing Cart</h3>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+            <span className="px-2 py-0.5 rounded-full bg-brand-100 text-brand-800 text-[10px] font-bold">
               {cart.reduce((a, b) => a + b.quantity, 0)} items
             </span>
           </div>
@@ -532,9 +532,9 @@ export const POSBillingPage: React.FC = () => {
         {/* Customer Attachment Section */}
         <div className="p-3 border-b border-zinc-100 bg-white">
           {selectedCustomer ? (
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-200">
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-brand-50/60 border border-brand-200">
               <div className="flex items-center space-x-2.5 overflow-hidden">
-                <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">
+                <div className="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-xs">
                   {selectedCustomer.name.charAt(0)}
                 </div>
                 <div className="overflow-hidden">
@@ -563,7 +563,7 @@ export const POSBillingPage: React.FC = () => {
                     placeholder="Attach Customer (Phone / Name)..."
                     value={customerSearch}
                     onChange={(e) => setCustomerSearch(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
+                    className="w-full pl-8 pr-3 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
                   />
                 </div>
                 <button
@@ -589,13 +589,13 @@ export const POSBillingPage: React.FC = () => {
                         setIsCustomerDropdownOpen(false);
                         setCustomerSearch('');
                       }}
-                      className="w-full p-2.5 text-left hover:bg-emerald-50 flex items-center justify-between cursor-pointer"
+                      className="w-full p-2.5 text-left hover:bg-brand-50 flex items-center justify-between cursor-pointer"
                     >
                       <div>
                         <div className="text-xs font-bold text-zinc-900">{c.name}</div>
                         <div className="text-[10px] text-zinc-500">{c.phone || c.email}</div>
                       </div>
-                      <span className="text-[10px] text-emerald-600 font-semibold">Select</span>
+                      <span className="text-[10px] text-brand-600 font-semibold">Select</span>
                     </button>
                   ))}
                 </div>
@@ -612,7 +612,7 @@ export const POSBillingPage: React.FC = () => {
           </div>
         )}
         {successToast && (
-          <div className="mx-3 mt-3 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-start space-x-2">
+          <div className="mx-3 mt-3 p-2.5 rounded-xl bg-brand-50 border border-brand-200 text-brand-700 text-xs flex items-start space-x-2">
             <CheckCircle2 size={14} className="shrink-0 mt-0.5" />
             <span>{successToast}</span>
           </div>
@@ -703,7 +703,7 @@ export const POSBillingPage: React.FC = () => {
                   step="0.01"
                   value={discount}
                   onChange={(e) => setDiscount(e.target.value)}
-                  className="w-20 px-2 py-0.5 rounded-lg border border-zinc-200 text-right text-xs font-bold focus:ring-1 focus:ring-emerald-600 bg-white"
+                  className="w-20 px-2 py-0.5 rounded-lg border border-zinc-200 text-right text-xs font-bold focus:ring-1 focus:ring-brand-600 bg-white"
                 />
                 {clampedDiscount > 0 && (
                   <span className="text-rose-600 font-bold">
@@ -757,7 +757,7 @@ export const POSBillingPage: React.FC = () => {
                     onClick={() => setPaymentMethod(m.id as PaymentMethod)}
                     className={`py-1.5 px-1 rounded-xl text-center border flex flex-col items-center justify-center transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                        ? 'bg-brand-600 text-white border-brand-600 shadow-xs'
                         : 'bg-white border-zinc-200 text-zinc-700 hover:bg-zinc-100'
                     }`}
                   >
@@ -801,7 +801,7 @@ export const POSBillingPage: React.FC = () => {
                     key={idx}
                     type="button"
                     onClick={() => handleQuickCash(preset.amount)}
-                    className="px-2 py-1 bg-white hover:bg-emerald-50 border border-zinc-200 text-[10px] font-bold text-zinc-700 rounded-lg cursor-pointer"
+                    className="px-2 py-1 bg-white hover:bg-brand-50 border border-zinc-200 text-[10px] font-bold text-zinc-700 rounded-lg cursor-pointer"
                   >
                     {preset.label}
                   </button>
@@ -809,7 +809,7 @@ export const POSBillingPage: React.FC = () => {
               </div>
 
               {numCashTendered >= grandTotal && grandTotal > 0 && (
-                <div className="flex items-center justify-between pt-1 border-t border-zinc-200 text-xs font-bold text-emerald-700">
+                <div className="flex items-center justify-between pt-1 border-t border-zinc-200 text-xs font-bold text-brand-700">
                   <span>Change Due:</span>
                   <span>{formatCurrency(changeDue, currency)}</span>
                 </div>
@@ -824,7 +824,7 @@ export const POSBillingPage: React.FC = () => {
               placeholder="UPI Txn ID / Card Auth Code (Optional)..."
               value={transactionRef}
               onChange={(e) => setTransactionRef(e.target.value)}
-              className="w-full px-3 py-1.5 rounded-xl border border-zinc-200 text-xs font-mono bg-white focus:outline-none focus:ring-1 focus:ring-emerald-600"
+              className="w-full px-3 py-1.5 rounded-xl border border-zinc-200 text-xs font-mono bg-white focus:outline-none focus:ring-1 focus:ring-brand-600"
             />
           )}
 
@@ -832,7 +832,7 @@ export const POSBillingPage: React.FC = () => {
           <button
             onClick={handleCheckout}
             disabled={cart.length === 0 || processingOrder}
-            className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
+            className="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
           >
             <Receipt size={17} />
             <span>
@@ -864,7 +864,7 @@ export const POSBillingPage: React.FC = () => {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-5 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <div className="flex items-center space-x-2.5">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+                <div className="w-9 h-9 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
                   <UserPlus size={18} />
                 </div>
                 <div>
@@ -891,7 +891,7 @@ export const POSBillingPage: React.FC = () => {
                   placeholder="e.g. Rahul Sharma"
                   value={newCustName}
                   onChange={(e) => setNewCustName(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-xs font-medium"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-brand-600 text-xs font-medium"
                 />
               </div>
 
@@ -904,7 +904,7 @@ export const POSBillingPage: React.FC = () => {
                   placeholder="+91 98765 43210"
                   value={newCustPhone}
                   onChange={(e) => setNewCustPhone(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-xs"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-brand-600 text-xs"
                 />
               </div>
 
@@ -917,7 +917,7 @@ export const POSBillingPage: React.FC = () => {
                   placeholder="rahul@example.com"
                   value={newCustEmail}
                   onChange={(e) => setNewCustEmail(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-xs"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-brand-600 text-xs"
                 />
               </div>
 
@@ -932,7 +932,7 @@ export const POSBillingPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={creatingCustomer}
-                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {creatingCustomer ? 'Saving...' : 'Save & Attach'}
                 </button>

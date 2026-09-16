@@ -2,7 +2,31 @@ import apiClient from './axios';
 import { ApiResponse } from './health';
 
 export type Role = 'OWNER' | 'STAFF' | 'ADMIN';
-export type BusinessType = 'RETAIL' | 'RESTAURANT' | 'CAFE' | 'BAKERY' | 'SALON' | 'SERVICE' | 'OTHER';
+export type BusinessType =
+  | 'RETAIL'
+  | 'GROCERY'
+  | 'SUPERMARKET'
+  | 'RESTAURANT'
+  | 'CAFE'
+  | 'BAKERY'
+  | 'SWEET_SHOP'
+  | 'SALON'
+  | 'BEAUTY_PARLOUR'
+  | 'CLOTHING'
+  | 'ELECTRONICS'
+  | 'PHARMACY'
+  | 'HARDWARE'
+  | 'FURNITURE'
+  | 'STATIONERY'
+  | 'MOBILE_STORE'
+  | 'REPAIR'
+  | 'FITNESS'
+  | 'HOTEL'
+  | 'CATERING'
+  | 'SERVICE'
+  | 'CONSULTANCY'
+  | 'EDUCATION'
+  | 'OTHER';
 
 export interface User {
   id: number;

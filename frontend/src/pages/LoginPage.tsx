@@ -1,83 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Layers, Lock, Mail, ArrowRight, AlertCircle, Shield, Sparkles, Coffee, Laptop, Eye, EyeOff } from 'lucide-react';
-
-interface DemoCredential {
-  label: string;
-  type: 'small' | 'large' | 'admin';
-  role: string;
-  bizName: string;
-  email: string;
-  pass: string;
-  icon: React.FC<{ className?: string }>;
-}
-
-const demoAccounts: DemoCredential[] = [
-  {
-    label: 'Small Biz Owner',
-    type: 'small',
-    role: 'Owner',
-    bizName: 'Chai & Bites Café',
-    email: 'owner@chaiandbites.in',
-    pass: 'Owner@12345',
-    icon: Coffee,
-  },
-  {
-    label: 'Small Biz Staff',
-    type: 'small',
-    role: 'Staff / Counter',
-    bizName: 'Chai & Bites Café',
-    email: 'staff@chaiandbites.in',
-    pass: 'Staff@12345',
-    icon: Coffee,
-  },
-  {
-    label: 'Large Biz Owner',
-    type: 'large',
-    role: 'Enterprise Owner',
-    bizName: 'Apex Electronics Hub',
-    email: 'owner@apexretail.in',
-    pass: 'Owner@12345',
-    icon: Laptop,
-  },
-  {
-    label: 'Large Biz Staff',
-    type: 'large',
-    role: 'Store Manager',
-    bizName: 'Apex Electronics Hub',
-    email: 'manager@apexretail.in',
-    pass: 'Staff@12345',
-    icon: Laptop,
-  },
-  {
-    label: 'Platform Admin',
-    type: 'admin',
-    role: 'Super Admin',
-    bizName: 'BizFlow Platform',
-    email: 'admin@bizflow.com',
-    pass: 'Admin@123456',
-    icon: Shield,
-  },
-];
+import { Layers, Lock, Mail, ArrowRight, AlertCircle, Shield, Eye, EyeOff } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('owner@chaiandbites.in');
-  const [password, setPassword] = useState('Owner@12345');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedDemo, setSelectedDemo] = useState<string>('owner@chaiandbites.in');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const fillDemo = (acc: DemoCredential) => {
-    setEmail(acc.email);
-    setPassword(acc.pass);
-    setSelectedDemo(acc.email);
-    setError(null);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,64 +39,28 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-zinc-900 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-[#FAFAF9] text-zinc-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <Link to="/" className="flex items-center space-x-2.5">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-xs">
               <Layers className="w-5 h-5" />
             </div>
             <span className="text-2xl font-black text-zinc-950 tracking-tight">
-              Biz<span className="text-emerald-600">Flow</span>
+              Biz<span className="text-brand-600">Flow</span>
             </span>
           </Link>
         </div>
 
-        <h2 className="mt-5 text-center text-2xl font-bold tracking-tight text-zinc-950">
+        <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-zinc-950">
           Sign in to your business
         </h2>
         <p className="mt-1 text-center text-xs text-zinc-500">
           Access your POS terminal, analytics, inventory, and management portal
         </p>
-
-        {/* 1-Click Demo Accounts Switcher Bar */}
-        <div className="mt-6 bg-white border border-zinc-200 rounded-2xl p-3.5 shadow-card space-y-2">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              Quick Demo Logins (1-Click Fill)
-            </span>
-            <span className="text-[10px] text-zinc-400 font-medium">Pre-populated accounts</span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {demoAccounts.map((acc) => {
-              const Icon = acc.icon;
-              const isSelected = selectedDemo === acc.email;
-              return (
-                <button
-                  key={acc.email}
-                  type="button"
-                  onClick={() => fillDemo(acc)}
-                  className={`p-2 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
-                    isSelected
-                      ? 'bg-emerald-50 border-emerald-500 text-emerald-900 shadow-xs'
-                      : 'bg-zinc-50 border-zinc-200 text-zinc-700 hover:bg-zinc-100 hover:border-zinc-300'
-                  }`}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-xs font-bold truncate">{acc.label}</span>
-                    <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isSelected ? 'text-emerald-600' : 'text-zinc-400'}`} />
-                  </div>
-                  <span className="text-[10px] text-zinc-500 truncate mt-0.5">{acc.role}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
       </div>
 
-      <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white rounded-2xl border border-zinc-200 p-6 sm:p-8 shadow-card space-y-5">
           
           {error && (
@@ -186,12 +84,9 @@ export const LoginPage: React.FC = () => {
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setSelectedDemo('');
-                  }}
-                  placeholder="owner@chaiandbites.in"
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-colors"
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="owner@example.com"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600 transition-colors"
                 />
               </div>
             </div>
@@ -211,12 +106,9 @@ export const LoginPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setSelectedDemo('');
-                  }}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-colors"
+                  className="w-full pl-10 pr-10 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600 transition-colors"
                 />
                 <button
                   type="button"
@@ -233,7 +125,7 @@ export const LoginPage: React.FC = () => {
               type="submit"
               disabled={loading}
               id="login-submit-btn"
-              className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-sm shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold text-sm shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <span>{loading ? 'Signing in...' : 'Sign In'}</span>
               <ArrowRight className="w-4 h-4" />
@@ -243,7 +135,7 @@ export const LoginPage: React.FC = () => {
           <div className="pt-4 border-t border-zinc-100 flex flex-col space-y-2.5 text-center">
             <p className="text-xs text-zinc-500">
               New business owner?{' '}
-              <Link to="/signup" className="font-semibold text-emerald-600 hover:text-emerald-700 hover:underline">
+              <Link to="/signup" className="font-semibold text-brand-600 hover:text-brand-700 hover:underline">
                 Register your business
               </Link>
             </p>

@@ -1,32 +1,66 @@
 import React, { useState, useEffect } from 'react';
-import { fetchHealthStatus, HealthData } from '../api/health';
-import { Activity, Database, Server, RefreshCw, CheckCircle2, AlertTriangle, XCircle, Clock } from 'lucide-react';
+import { fetchHealthStatus, fetchDiagnosticsStatus, HealthData } from '../api/health';
+import { Activity, Database, Server, RefreshCw, CheckCircle2, AlertTriangle, XCircle, Clock, Loader2 } from 'lucide-react';
 
 export const HealthStatus: React.FC = () => {
   const [health, setHealth] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [diagnosticsLoading, setDiagnosticsLoading] = useState<boolean>(false);
+  const [isColdStarting, setIsColdStarting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [latencyMs, setLatencyMs] = useState<number | null>(null);
   const [lastChecked, setLastChecked] = useState<Date>(new Date());
 
   const checkHealth = async () => {
     setLoading(true);
+    setIsColdStarting(false);
     setError(null);
     const startTime = performance.now();
+
     try {
-      const response = await fetchHealthStatus();
+      // 1. Fast lightweight basic health check (instant UP)
+      const response = await fetchHealthStatus(15000);
       const endTime = performance.now();
       setLatencyMs(Math.round(endTime - startTime));
       setHealth(response.data);
+      setIsColdStarting(false);
       setLastChecked(new Date());
+
+      // 2. Asynchronously check deep database diagnostics without blocking the API card
+      setDiagnosticsLoading(true);
+      fetchDiagnosticsStatus(20000)
+        .then((diagRes) => {
+          if (diagRes?.data?.database) {
+            setHealth((prev) => prev ? { ...prev, database: diagRes.data.database } : diagRes.data);
+          }
+        })
+        .catch(() => {
+          // If DB diagnostics times out or fails, mark as DEGRADED / UNKNOWN without marking whole API down
+          setHealth((prev) => prev ? { ...prev, database: 'DISCONNECTED' } : prev);
+        })
+        .finally(() => {
+          setDiagnosticsLoading(false);
+        });
+
     } catch (err: any) {
       const endTime = performance.now();
       setLatencyMs(Math.round(endTime - startTime));
-      setError(
-        err.response?.data?.message ||
-        err.message ||
-        'Unable to connect to backend service. Please check backend connectivity.'
-      );
+
+      const errMsg = String(err.response?.data?.message || err.message || '');
+      const isTimeout =
+        err.code === 'ECONNABORTED' ||
+        errMsg.toLowerCase().includes('timeout') ||
+        errMsg.toLowerCase().includes('network error') ||
+        err.response?.status === 502 ||
+        err.response?.status === 503;
+
+      if (isTimeout) {
+        setIsColdStarting(true);
+        setError('Render free-tier backend is waking up from idle state (~20–45s). Please allow a moment for the instance to initialize and refresh.');
+      } else {
+        setIsColdStarting(false);
+        setError(errMsg || 'Unable to connect to backend service. Please check backend connectivity.');
+      }
     } finally {
       setLoading(false);
     }
@@ -35,6 +69,8 @@ export const HealthStatus: React.FC = () => {
   useEffect(() => {
     checkHealth();
   }, []);
+
+  const isUp = health?.status === 'UP';
 
   return (
     <div className="w-full bg-white rounded-2xl p-6 sm:p-7 border border-zinc-200 shadow-card">
@@ -49,13 +85,17 @@ export const HealthStatus: React.FC = () => {
               System Health & Diagnostics
               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
                 loading ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                health?.status === 'UP' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                isColdStarting ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                isUp ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
                 'bg-red-50 text-red-700 border border-red-200'
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                  loading ? 'bg-amber-500' : health?.status === 'UP' ? 'bg-emerald-500' : 'bg-red-500'
+                  loading ? 'bg-amber-500 animate-ping' :
+                  isColdStarting ? 'bg-amber-500 animate-pulse' :
+                  isUp ? 'bg-emerald-500' :
+                  'bg-red-500'
                 }`} />
-                {loading ? 'Checking...' : health?.status === 'UP' ? 'Operational' : 'Degraded'}
+                {loading ? 'Checking...' : isColdStarting ? 'Waking Up (Cold Start)' : isUp ? 'Operational' : 'Degraded'}
               </span>
             </h2>
             <p className="text-xs text-zinc-500 mt-0.5">Real-time status of Spring Boot REST backend and PostgreSQL database</p>
@@ -81,17 +121,19 @@ export const HealthStatus: React.FC = () => {
               <Server className="w-3.5 h-3.5 text-zinc-600" />
               API Service
             </span>
-            {health?.status === 'UP' ? (
+            {isUp ? (
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            ) : isColdStarting ? (
+              <Clock className="w-4 h-4 text-amber-600 animate-pulse" />
             ) : (
               <XCircle className="w-4 h-4 text-red-600" />
             )}
           </div>
           <div className="text-sm font-bold text-zinc-900">
-            {health?.status === 'UP' ? 'Spring Boot 3.3.4 (UP)' : 'Service Offline'}
+            {isUp ? 'Spring Boot 3.3.4 (UP)' : isColdStarting ? 'Starting Up / Waking' : 'Service Offline'}
           </div>
           <div className="text-[11px] text-zinc-400">
-            Latency: {latencyMs !== null ? `${latencyMs}ms` : '—'}
+            {isColdStarting ? 'Render instance booting...' : latencyMs !== null ? `Latency: ${latencyMs}ms` : 'Latency: —'}
           </div>
         </div>
 
@@ -102,7 +144,13 @@ export const HealthStatus: React.FC = () => {
               <Database className="w-3.5 h-3.5 text-zinc-600" />
               Database Engine
             </span>
-            {health?.database === 'CONNECTED' ? (
+            {diagnosticsLoading ? (
+              <Loader2 className="w-4 h-4 text-amber-600 animate-spin" />
+            ) : health?.database === 'CONNECTED' ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            ) : isColdStarting ? (
+              <Clock className="w-4 h-4 text-amber-600" />
+            ) : isUp ? (
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             ) : (
               <AlertTriangle className="w-4 h-4 text-amber-600" />
@@ -112,7 +160,12 @@ export const HealthStatus: React.FC = () => {
             PostgreSQL DB
           </div>
           <div className="text-[11px] text-zinc-400">
-            Connection: {health?.database || 'CONNECTED'}
+            {diagnosticsLoading ? 'Inspecting connectivity...' :
+             health?.database === 'CONNECTED' ? 'Connection: CONNECTED' :
+             health?.database === 'DISCONNECTED' ? 'Connection: DISCONNECTED' :
+             isColdStarting ? 'Waking with backend' :
+             isUp ? 'Connection: READY' :
+             'Connection: DISCONNECTED'}
           </div>
         </div>
 
@@ -134,9 +187,20 @@ export const HealthStatus: React.FC = () => {
       </div>
 
       {error && (
-        <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center space-x-2">
-          <AlertTriangle className="w-4 h-4 flex-shrink-0 text-red-600" />
-          <span>{error}</span>
+        <div className={`mt-4 p-3.5 rounded-xl border text-xs flex items-start space-x-2.5 ${
+          isColdStarting
+            ? 'bg-amber-50/90 border-amber-200 text-amber-800'
+            : 'bg-red-50 border-red-200 text-red-700'
+        }`}>
+          {isColdStarting ? (
+            <Clock className="w-4 h-4 flex-shrink-0 text-amber-600 mt-0.5" />
+          ) : (
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-red-600 mt-0.5" />
+          )}
+          <div className="space-y-0.5">
+            <p className="font-semibold">{isColdStarting ? 'Instance Cold Start in Progress' : 'Diagnostics Notice'}</p>
+            <p className="leading-relaxed opacity-90">{error}</p>
+          </div>
         </div>
       )}
     </div>

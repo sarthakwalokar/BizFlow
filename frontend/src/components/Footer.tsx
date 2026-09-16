@@ -8,7 +8,7 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
+            <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white">
               <Layers className="w-4 h-4" />
             </div>
             <div>
@@ -19,15 +19,15 @@ export const Footer: React.FC = () => {
 
           <div className="flex flex-wrap items-center gap-6 text-xs text-zinc-500 font-medium">
             <div className="flex items-center space-x-1.5">
-              <Zap className="w-3.5 h-3.5 text-emerald-600" />
+              <Zap className="w-3.5 h-3.5 text-brand-600" />
               <span>Stateless JWT Auth</span>
             </div>
             <div className="flex items-center space-x-1.5">
-              <Database className="w-3.5 h-3.5 text-blue-600" />
+              <Database className="w-3.5 h-3.5 text-brand-600" />
               <span>PostgreSQL Multi-Tenant</span>
             </div>
             <div className="flex items-center space-x-1.5">
-              <Shield className="w-3.5 h-3.5 text-emerald-600" />
+              <Shield className="w-3.5 h-3.5 text-brand-600" />
               <span>Enterprise Grade Security</span>
             </div>
           </div>

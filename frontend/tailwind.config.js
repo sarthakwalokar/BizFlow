@@ -11,20 +11,20 @@ export default {
       },
       colors: {
         brand: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a', // Primary Accent
-          700: '#15803d', // Accent Hover
-          800: '#166534',
-          900: '#14532d',
-          950: '#052e16',
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#6d28d9', // Deep Violet Primary Accent
+          700: '#5b21b6', // Accent Hover
+          800: '#4c1d95',
+          900: '#3b0764',
+          950: '#2e1065',
         },
         surface: '#FFFFFF',
-        canvas: '#F7F7F5',
+        canvas: '#FAFAF9',
         subtle: '#E4E4E7',
         ink: {
           primary: '#18181B',

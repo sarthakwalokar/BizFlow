@@ -21,15 +21,15 @@ export const Navbar: React.FC = () => {
         {/* Brand Logo */}
         <div className="flex items-center space-x-3">
           <Link to="/" className="flex items-center space-x-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center shadow-xs">
+            <div className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center shadow-xs">
               <Layers className="w-5 h-5 text-white" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-lg font-extrabold tracking-tight text-zinc-900">
-                  Biz<span className="text-emerald-600">Flow</span>
+                  Biz<span className="text-brand-600">Flow</span>
                 </span>
-                <span className="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-brand-50 text-brand-700 border border-brand-200">
                   SaaS
                 </span>
               </div>
@@ -54,7 +54,7 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center space-x-2 sm:space-x-3">
               <Link
                 to={getDashboardPath()}
-                className="flex items-center space-x-2 px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors"
+                className="flex items-center space-x-2 px-3.5 py-2 text-xs font-semibold rounded-xl bg-brand-600 hover:bg-brand-700 text-white shadow-xs transition-colors"
               >
                 <span>Dashboard ({user.role})</span>
               </Link>
@@ -82,7 +82,7 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/signup"
                 id="nav-signup-btn"
-                className="flex items-center space-x-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs transition-colors"
+                className="flex items-center space-x-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl text-white bg-brand-600 hover:bg-brand-700 shadow-xs transition-colors"
               >
                 <UserPlus className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Register Business</span>

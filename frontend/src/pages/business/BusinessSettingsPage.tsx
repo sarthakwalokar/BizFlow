@@ -116,8 +116,8 @@ export const BusinessSettingsPage: React.FC = () => {
       </div>
 
       {successMessage && (
-        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center gap-2.5 text-emerald-800 text-xs">
-          <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+        <div className="p-3.5 rounded-lg bg-brand-50 border border-brand-200 flex items-center gap-2.5 text-brand-800 text-xs">
+          <CheckCircle2 size={16} className="text-brand-600 shrink-0" />
           <span className="font-medium">{successMessage}</span>
         </div>
       )}
@@ -153,7 +153,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Apex Coffee & Bistro"
-                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
 
@@ -164,15 +164,32 @@ export const BusinessSettingsPage: React.FC = () => {
               <select
                 value={businessType}
                 onChange={(e) => setBusinessType(e.target.value as BusinessType)}
-                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs bg-white text-zinc-800"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs bg-white text-zinc-800"
               >
-                <option value="RETAIL">Retail Store (Products & Goods)</option>
-                <option value="RESTAURANT">Restaurant (Menu & Dining)</option>
+                <option value="RETAIL">Retail Store / Shop</option>
+                <option value="GROCERY">Grocery & Kirana Store</option>
+                <option value="SUPERMARKET">Supermarket / Hypermarket</option>
+                <option value="RESTAURANT">Restaurant / Fine Dining</option>
                 <option value="CAFE">Café & Coffee Shop</option>
                 <option value="BAKERY">Bakery & Patisserie</option>
-                <option value="SALON">Salon & Spa (Services & Products)</option>
-                <option value="SERVICE">Service & Consulting Business</option>
-                <option value="OTHER">General Commercial Business</option>
+                <option value="SWEET_SHOP">Sweet Shop / Mithai</option>
+                <option value="SALON">Salon & Hair Studio</option>
+                <option value="BEAUTY_PARLOUR">Beauty Parlour & Spa</option>
+                <option value="CLOTHING">Clothing & Apparel / Boutique</option>
+                <option value="ELECTRONICS">Electronics & Appliances</option>
+                <option value="PHARMACY">Pharmacy & Medical Store</option>
+                <option value="HARDWARE">Hardware & Electrical</option>
+                <option value="FURNITURE">Furniture & Home Decor</option>
+                <option value="STATIONERY">Stationery & Book Store</option>
+                <option value="MOBILE_STORE">Mobile Store & Tech Hub</option>
+                <option value="REPAIR">Repair & Service Center</option>
+                <option value="FITNESS">Gym & Fitness Studio</option>
+                <option value="HOTEL">Hotel & Hospitality</option>
+                <option value="CATERING">Catering & Event Services</option>
+                <option value="SERVICE">Professional & Trade Services</option>
+                <option value="CONSULTANCY">Consultancy & Agency</option>
+                <option value="EDUCATION">Education & Coaching Center</option>
+                <option value="OTHER">Other Commercial Enterprise</option>
               </select>
             </div>
 
@@ -185,7 +202,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="contact@business.com"
-                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
 
@@ -198,7 +215,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+91 98765 43210"
-                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
 
@@ -211,7 +228,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Floor 2, Tech Park, Outer Ring Road, Bengaluru, Karnataka 560103"
-                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
 
@@ -225,7 +242,7 @@ export const BusinessSettingsPage: React.FC = () => {
                   value={logo}
                   onChange={(e) => setLogo(e.target.value)}
                   placeholder="https://example.com/logo.png"
-                  className="flex-1 px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                  className="flex-1 px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                 />
                 {logo ? (
                   <img
@@ -266,7 +283,7 @@ export const BusinessSettingsPage: React.FC = () => {
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs bg-white text-zinc-800"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs bg-white text-zinc-800"
               >
                 <option value="INR">INR (₹) - Indian Rupee</option>
                 <option value="USD">USD ($) - US Dollar</option>
@@ -287,7 +304,7 @@ export const BusinessSettingsPage: React.FC = () => {
               <select
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs bg-white text-zinc-800"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs bg-white text-zinc-800"
               >
                 <option value="UTC">UTC (Coordinated Universal Time)</option>
                 <option value="America/New_York">America/New York (EST/EDT)</option>
@@ -307,7 +324,7 @@ export const BusinessSettingsPage: React.FC = () => {
         {/* Tax Configuration & Simulation */}
         <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs space-y-5">
           <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-100">
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
               <Percent size={16} />
             </div>
             <div>
@@ -328,7 +345,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 value={taxName}
                 onChange={(e) => setTaxName(e.target.value)}
                 placeholder="e.g. GST, VAT, Sales Tax"
-                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
 
@@ -344,7 +361,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 value={taxRate}
                 onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
                 placeholder="e.g. 18.0"
-                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-semibold"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs font-semibold"
               />
             </div>
 
@@ -357,7 +374,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 value={taxNumber}
                 onChange={(e) => setTaxNumber(e.target.value)}
                 placeholder="e.g. 29AAAAA0000A1Z5"
-                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
           </div>
@@ -382,7 +399,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 onChange={(e) => setTaxInclusive(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-10 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+              <div className="w-10 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
             </label>
           </div>
 
@@ -415,7 +432,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
               <div className="p-2.5 rounded-lg bg-white border border-zinc-200">
                 <span className="text-zinc-400 block text-[10px]">Total Billed</span>
-                <span className="font-bold text-emerald-700">
+                <span className="font-bold text-brand-700">
                   {formatCurrency(simulatedTotalPrice, currency)}
                 </span>
               </div>
@@ -443,7 +460,7 @@ export const BusinessSettingsPage: React.FC = () => {
               onClick={() => setBusinessSize('SMALL')}
               className={`p-4 rounded-xl border cursor-pointer transition-colors ${
                 businessSize === 'SMALL'
-                  ? 'border-emerald-600 bg-emerald-50/20'
+                  ? 'border-brand-600 bg-brand-50/30 ring-1 ring-brand-600'
                   : 'border-zinc-200 hover:border-zinc-300 bg-white'
               }`}
             >
@@ -459,7 +476,7 @@ export const BusinessSettingsPage: React.FC = () => {
                   name="businessSize"
                   checked={businessSize === 'SMALL'}
                   onChange={() => setBusinessSize('SMALL')}
-                  className="w-3.5 h-3.5 text-emerald-600 focus:ring-emerald-500"
+                  className="w-3.5 h-3.5 text-brand-600 focus:ring-brand-500"
                 />
               </div>
               <p className="text-[11px] text-zinc-500 leading-relaxed">
@@ -472,14 +489,14 @@ export const BusinessSettingsPage: React.FC = () => {
               onClick={() => setBusinessSize('LARGE')}
               className={`p-4 rounded-xl border cursor-pointer transition-colors ${
                 businessSize === 'LARGE'
-                  ? 'border-emerald-600 bg-emerald-50/20'
+                  ? 'border-brand-600 bg-brand-50/30 ring-1 ring-brand-600'
                   : 'border-zinc-200 hover:border-zinc-300 bg-white'
               }`}
             >
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-zinc-900">Large Enterprise Tier</span>
-                  <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-[10px] font-medium">
+                  <span className="px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 text-[10px] font-medium">
                     Supply Chain
                   </span>
                 </div>
@@ -488,7 +505,7 @@ export const BusinessSettingsPage: React.FC = () => {
                   name="businessSize"
                   checked={businessSize === 'LARGE'}
                   onChange={() => setBusinessSize('LARGE')}
-                  className="w-3.5 h-3.5 text-emerald-600 focus:ring-emerald-500"
+                  className="w-3.5 h-3.5 text-brand-600 focus:ring-brand-500"
                 />
               </div>
               <p className="text-[11px] text-zinc-500 leading-relaxed">
@@ -505,7 +522,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 <span
                   className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
                     inventoryEnabled
-                      ? 'bg-emerald-100 text-emerald-700'
+                      ? 'bg-brand-100 text-brand-700'
                       : 'bg-zinc-200 text-zinc-600'
                   }`}
                 >
@@ -523,7 +540,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 onChange={(e) => setInventoryEnabled(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-10 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+              <div className="w-10 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
             </label>
           </div>
         </div>
@@ -533,7 +550,7 @@ export const BusinessSettingsPage: React.FC = () => {
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
           >
             <Save size={15} />
             <span>{saving ? 'Saving Changes...' : 'Save Settings'}</span>
@@ -543,4 +560,5 @@ export const BusinessSettingsPage: React.FC = () => {
     </div>
   );
 };
+
 

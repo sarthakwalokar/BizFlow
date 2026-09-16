@@ -89,13 +89,16 @@ export const PublicReviewPage: React.FC = () => {
     fetchBusiness();
   }, [slugOrId]);
 
-  // Handle Star Rating Selection + Auto-generate initial AI review
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  // Handle Star Rating Selection
   const handleSelectRating = async (selectedStar: number) => {
     setRating(selectedStar);
     setSelectedTag(null);
     setAvailableTags(DEFAULT_CHIPS_BY_RATING[selectedStar] || []);
+    setAiError(null);
 
-    // Generate AI review suggestions for this star level
+    // Automatically trigger Gemini review generation for the selected star
     await triggerAiGeneration(selectedStar);
   };
 
@@ -103,6 +106,7 @@ export const PublicReviewPage: React.FC = () => {
     if (!slugOrId) return;
     try {
       setGeneratingAi(true);
+      setAiError(null);
       const res: AiReviewSuggestionResponse = await reviewsApi.generateAiReview(slugOrId, {
         rating: starLevel,
         keywords: keyword,
@@ -117,22 +121,12 @@ export const PublicReviewPage: React.FC = () => {
       if (res.highlightTags && res.highlightTags.length > 0) {
         setAvailableTags(res.highlightTags);
       }
-    } catch (e) {
-      // Fallback local templates if network or AI service encounters temporary hiccup
-      const name = businessInfo?.name || 'this business';
-      if (starLevel === 5) {
-        setFeedbackText(`Outstanding experience at ${name}! Top-notch service, courteous staff, and great quality. Highly recommended!`);
-        setAiSuggestions([
-          `5 stars for ${name}! Fantastic experience and wonderful customer service.`,
-          `Consistently great quality at ${name}. Will definitely be returning!`,
-        ]);
-      } else if (starLevel === 4) {
-        setFeedbackText(`Very good experience at ${name}. Friendly staff, quick service, and great value overall.`);
-      } else if (starLevel === 3) {
-        setFeedbackText(`Average visit to ${name}. Decent experience, but could improve on response time.`);
-      } else {
-        setFeedbackText(`Disappointed with my recent visit to ${name}. Hope management addresses service delays.`);
-      }
+    } catch (e: any) {
+      const msg =
+        e.response?.data?.error?.message ||
+        e.response?.data?.message ||
+        'Unable to generate AI review suggestions. Please ensure the Google Gemini API key is configured on the backend.';
+      setAiError(msg);
     } finally {
       setGeneratingAi(false);
     }
@@ -387,31 +381,41 @@ export const PublicReviewPage: React.FC = () => {
                 )}
               </div>
 
-              {/* AI GENERATOR & PROMPT CHIPS (Shows once star is selected) */}
+              {/* AI GENERATOR & SUGGESTION CARDS (Shows once star is selected) */}
               {rating > 0 && (
-                <div className="p-4 rounded-xl bg-purple-50/50 border border-purple-100 space-y-3 animate-fadeIn">
+                <div className="p-4 rounded-xl bg-purple-50/50 border border-purple-100 space-y-3.5 animate-fadeIn">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5 text-brand-800 text-xs font-bold">
                       <Sparkles size={14} className="text-brand-600 animate-pulse" />
-                      <span>AI Review Generator</span>
+                      <span>Gemini AI Review Suggestions</span>
                     </div>
 
                     <button
                       type="button"
                       disabled={generatingAi}
                       onClick={() => triggerAiGeneration(rating, selectedTag || undefined)}
-                      className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-white hover:bg-purple-100/50 border border-brand-200 text-brand-700 text-[11px] font-semibold shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+                      className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                     >
                       <RefreshCw size={11} className={generatingAi ? 'animate-spin' : ''} />
-                      <span>{generatingAi ? 'Generating...' : 'Re-generate'}</span>
+                      <span>{generatingAi ? 'Generating...' : 'Generate Suggestions'}</span>
                     </button>
                   </div>
+
+                  {aiError && (
+                    <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-start space-x-2">
+                      <AlertCircle size={15} className="shrink-0 text-amber-600 mt-0.5" />
+                      <div>
+                        <span className="font-semibold block">AI Generation Notice</span>
+                        <span className="text-[11px]">{aiError}</span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Highlight aspect chips */}
                   {availableTags.length > 0 && (
                     <div className="space-y-1">
                       <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider block">
-                        Quick Aspects (Tap to include in review):
+                        Quick Aspects (Tap to include):
                       </span>
                       <div className="flex flex-wrap gap-1.5">
                         {availableTags.map((tag) => (
@@ -432,23 +436,49 @@ export const PublicReviewPage: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Alternative suggestions quick picker */}
+                  {/* AI Suggestion Cards (3-5 suggestions) */}
                   {aiSuggestions.length > 0 && (
-                    <div className="space-y-1 pt-1 border-t border-purple-100/80">
+                    <div className="space-y-1.5 pt-1">
                       <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider block">
-                        Or pick an AI suggested review:
+                        Pick a suggestion or edit below:
                       </span>
-                      <div className="space-y-1.5">
-                        {aiSuggestions.map((sug, idx) => (
-                          <button
-                            key={idx}
-                            type="button"
-                            onClick={() => setFeedbackText(sug)}
-                            className="w-full text-left p-2 rounded-lg bg-white hover:bg-brand-50/50 border border-zinc-200 text-[11px] text-zinc-700 leading-snug line-clamp-2 transition-colors cursor-pointer hover:border-brand-300"
-                          >
-                            "{sug}"
-                          </button>
-                        ))}
+                      <div className="space-y-2">
+                        {aiSuggestions.map((sug, idx) => {
+                          const isSelected = feedbackText === sug;
+                          return (
+                            <div
+                              key={idx}
+                              onClick={() => setFeedbackText(sug)}
+                              className={`p-3 rounded-xl border text-xs leading-relaxed transition-all cursor-pointer flex items-start justify-between gap-2 ${
+                                isSelected
+                                  ? 'bg-brand-50/80 border-brand-300 text-brand-950 ring-1 ring-brand-400/40 shadow-xs'
+                                  : 'bg-white hover:bg-zinc-50/80 border-zinc-200 text-zinc-700'
+                              }`}
+                            >
+                              <div className="flex items-start space-x-2 flex-1">
+                                <span className="font-bold text-brand-600 shrink-0 text-[11px] mt-0.5">
+                                  #{idx + 1}
+                                </span>
+                                <p className="italic">"{sug}"</p>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigator.clipboard.writeText(sug);
+                                  setFeedbackText(sug);
+                                  setCopiedReview(true);
+                                  setTimeout(() => setCopiedReview(false), 2000);
+                                }}
+                                className="shrink-0 p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-400 hover:text-brand-600 transition-colors"
+                                title="Copy and use this suggestion"
+                              >
+                                <Copy size={13} />
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}

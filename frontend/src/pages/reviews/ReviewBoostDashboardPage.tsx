@@ -95,16 +95,6 @@ export const ReviewBoostDashboardPage: React.FC = () => {
     fetchDashboardData(0);
   }, [selectedRatingFilter, positiveOnlyFilter]);
 
-  const effectiveReviewUrl = settingsForm.publicReviewUrl?.trim() || qrCodeData?.reviewUrl || '';
-  const isGoogleConfigured = Boolean(settingsForm.publicReviewUrl?.trim());
-
-  const handleCopyPublicLink = () => {
-    if (!effectiveReviewUrl) return;
-    navigator.clipboard.writeText(effectiveReviewUrl);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
-  };
-
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setSettingsSubmitting(true);
@@ -235,62 +225,78 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               <p className="text-xs text-zinc-500">Based on {totalRevCount} verified reviews</p>
             </div>
 
-            {/* Quick Public URL Preview */}
-            {effectiveReviewUrl && (
-              <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-200 space-y-2 max-w-xs">
+            {/* Quick URL Cards */}
+            <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200 space-y-2.5 max-w-sm w-full">
+              {/* BizFlow Review Boost Landing Page */}
+              <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-                      {isGoogleConfigured ? 'Google Review Link' : 'Public Review Link'}
-                    </span>
-                    {isGoogleConfigured && (
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        Google
-                      </span>
-                    )}
-                  </div>
-                  <a
-                    href={effectiveReviewUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-brand-600 hover:text-brand-700 text-xs font-semibold flex items-center gap-0.5"
-                  >
-                    <span>Open</span>
-                    <ExternalLink size={12} />
-                  </a>
+                  <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider">
+                    Customer Review URL (QR Code)
+                  </span>
+                  {qrCodeData?.reviewUrl && (
+                    <a
+                      href={qrCodeData.reviewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-600 hover:text-brand-700 text-xs font-semibold flex items-center gap-0.5"
+                    >
+                      <span>Open</span>
+                      <ExternalLink size={12} />
+                    </a>
+                  )}
                 </div>
                 <div className="flex items-center space-x-1.5">
                   <input
                     type="text"
                     readOnly
-                    value={effectiveReviewUrl}
-                    className="w-full text-[11px] font-mono bg-white px-2.5 py-1 rounded border border-zinc-200 text-zinc-600 truncate"
+                    value={qrCodeData?.reviewUrl || ''}
+                    className="w-full text-[11px] font-mono bg-white px-2.5 py-1.5 rounded-lg border border-zinc-200 text-zinc-700 truncate"
                   />
                   <button
-                    onClick={handleCopyPublicLink}
-                    className="p-1.5 rounded bg-white hover:bg-zinc-100 border border-zinc-200 text-zinc-700 cursor-pointer"
-                    title="Copy Review URL"
+                    onClick={() => {
+                      if (qrCodeData?.reviewUrl) {
+                        navigator.clipboard.writeText(qrCodeData.reviewUrl);
+                        setCopiedLink(true);
+                        setTimeout(() => setCopiedLink(false), 2000);
+                      }
+                    }}
+                    className="p-1.5 rounded-lg bg-white hover:bg-zinc-100 border border-zinc-200 text-zinc-700 cursor-pointer"
+                    title="Copy Customer Review Page URL"
                   >
                     {copiedLink ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
                   </button>
                 </div>
+              </div>
 
-                {isGoogleConfigured && qrCodeData?.internalReviewUrl && (
-                  <div className="pt-1 flex items-center justify-between text-[10px] text-zinc-400 border-t border-zinc-100">
-                    <span>Internal review page:</span>
+              {/* Saved Google Review Destination Link */}
+              <div className="pt-1.5 border-t border-zinc-200 flex items-center justify-between text-[11px]">
+                <div className="flex items-center space-x-1.5">
+                  <span className="font-semibold text-zinc-600">Google Redirect:</span>
+                  {settingsForm.publicReviewUrl ? (
                     <a
-                      href={qrCodeData.internalReviewUrl}
+                      href={settingsForm.publicReviewUrl.startsWith('http') ? settingsForm.publicReviewUrl : `https://${settingsForm.publicReviewUrl}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-zinc-500 hover:text-brand-600 truncate max-w-[170px]"
-                      title={qrCodeData.internalReviewUrl}
+                      className="text-emerald-700 hover:underline truncate max-w-[150px] font-mono"
+                      title={settingsForm.publicReviewUrl}
                     >
-                      /review/{settingsForm.reviewSlug || business?.id} ↗
+                      {settingsForm.publicReviewUrl}
                     </a>
-                  </div>
+                  ) : (
+                    <span className="text-amber-600 font-medium">Auto Google Search</span>
+                  )}
+                </div>
+
+                {isOwner && (
+                  <button
+                    onClick={() => setIsSettingsModalOpen(true)}
+                    className="text-brand-600 hover:text-brand-800 font-semibold cursor-pointer text-[10px]"
+                  >
+                    Change
+                  </button>
                 )}
               </div>
-            )}
+            </div>
           </div>
 
           {/* Rating Distribution Bars */}

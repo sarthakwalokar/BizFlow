@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClient;
 
 import java.util.*;
@@ -24,7 +25,8 @@ public class GeminiProvider implements AiProvider {
 
     @Override
     public String getProviderName() {
-        return "Google Gemini (" + aiProperties.getGemini().getModel() + ")";
+        String model = aiProperties.getGemini().getModel();
+        return "Google Gemini (" + (model != null ? model : "gemini-1.5-flash") + ")";
     }
 
     @Override
@@ -36,12 +38,14 @@ public class GeminiProvider implements AiProvider {
     public String generateCompletion(String systemPrompt, List<AiMessageDto> history, String userPrompt) {
         AiProperties.ProviderConfig config = aiProperties.getGemini();
         if (!config.isConfigured()) {
-            throw new IllegalStateException("Gemini API key is not configured.");
+            throw new IllegalStateException("Google Gemini API key is missing or not configured. Please set the GEMINI_API_KEY or BIZFLOW_AI_GEMINI_API_KEY environment variable.");
         }
 
         try {
             RestClient restClient = RestClient.builder()
-                    .baseUrl(config.getBaseUrl())
+                    .baseUrl(config.getBaseUrl() != null && !config.getBaseUrl().isBlank() 
+                            ? config.getBaseUrl() 
+                            : "https://generativelanguage.googleapis.com/v1beta")
                     .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .build();
 
@@ -75,11 +79,19 @@ public class GeminiProvider implements AiProvider {
 
             requestBody.put("contents", contents);
             requestBody.put("generationConfig", Map.of(
-                    "temperature", 0.3,
+                    "temperature", 0.7,
                     "maxOutputTokens", 2048
             ));
 
-            String uri = "/models/" + config.getModel() + ":generateContent?key=" + config.getApiKey();
+            String model = config.getModel();
+            if (model == null || model.isBlank()) {
+                model = "gemini-1.5-flash";
+            }
+            if (model.startsWith("models/")) {
+                model = model.substring(7);
+            }
+
+            String uri = "/models/" + model + ":generateContent?key=" + config.getApiKey().trim();
 
             String responseJson = restClient.post()
                     .uri(uri)
@@ -88,7 +100,7 @@ public class GeminiProvider implements AiProvider {
                     .body(String.class);
 
             if (responseJson == null || responseJson.isBlank()) {
-                throw new RuntimeException("Empty response received from Gemini API.");
+                throw new RuntimeException("Empty response received from Google Gemini API.");
             }
 
             JsonNode root = objectMapper.readTree(responseJson);
@@ -100,10 +112,32 @@ public class GeminiProvider implements AiProvider {
                 }
             }
 
-            throw new RuntimeException("Unexpected response format from Gemini API: " + responseJson);
+            throw new RuntimeException("Unexpected response format from Google Gemini API: " + responseJson);
+        } catch (HttpStatusCodeException e) {
+            String errorBody = e.getResponseBodyAsString();
+            log.warn("Gemini HTTP error {}: {}", e.getStatusCode(), errorBody);
+            String extractedMsg = extractErrorMessage(errorBody);
+            if (e.getStatusCode().value() == 400 && errorBody.contains("API_KEY_INVALID")) {
+                throw new IllegalStateException("The configured Google Gemini API key is invalid. Please verify your GEMINI_API_KEY.");
+            } else if (e.getStatusCode().value() == 429 || errorBody.contains("RESOURCE_EXHAUSTED")) {
+                throw new IllegalStateException("Google Gemini API quota/rate limit reached. Please check your Gemini account limits.");
+            }
+            throw new RuntimeException("Google Gemini API error (" + e.getStatusCode().value() + "): " + (extractedMsg != null ? extractedMsg : e.getMessage()), e);
         } catch (Exception e) {
             log.warn("Gemini AI completion failed: {}", e.getMessage());
-            throw new RuntimeException("Gemini generation error: " + e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
+    }
+
+    private String extractErrorMessage(String json) {
+        if (json == null || json.isBlank()) return null;
+        try {
+            JsonNode root = objectMapper.readTree(json);
+            JsonNode messageNode = root.path("error").path("message");
+            if (!messageNode.isMissingNode()) {
+                return messageNode.asText();
+            }
+        } catch (Exception ignored) {}
+        return null;
     }
 }

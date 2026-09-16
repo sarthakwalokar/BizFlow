@@ -9,6 +9,8 @@ import com.bizflow.review.Review;
 import com.bizflow.review.ReviewRepository;
 import com.bizflow.review.dto.*;
 import com.bizflow.security.SecurityUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -40,7 +42,8 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final BusinessRepository businessRepository;
-    private final com.bizflow.ai.service.AIGatewayService aiGatewayService;
+    private final com.bizflow.ai.provider.GeminiProvider geminiProvider;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     @Value("${app.frontend.url:http://localhost:5173}")
     private String frontendBaseUrl;
@@ -219,14 +222,13 @@ public class ReviewService {
         }
 
         String directUrl = buildDirectReviewUrl(business.getReviewSlug());
-        String effectiveUrl = resolveEffectiveReviewUrl(business);
 
         return ReviewSettingsResponse.builder()
                 .businessId(business.getId())
                 .businessName(business.getName())
                 .reviewSlug(business.getReviewSlug())
                 .publicReviewUrl(business.getPublicReviewUrl())
-                .effectiveReviewUrl(effectiveUrl)
+                .effectiveReviewUrl(business.getPublicReviewUrl())
                 .reviewPromptMessage(business.getReviewPromptMessage())
                 .reviewEnabled(business.isReviewEnabled())
                 .directReviewPageUrl(directUrl)
@@ -265,14 +267,13 @@ public class ReviewService {
 
         Business saved = businessRepository.save(business);
         String directUrl = buildDirectReviewUrl(saved.getReviewSlug());
-        String effectiveUrl = resolveEffectiveReviewUrl(saved);
 
         return ReviewSettingsResponse.builder()
                 .businessId(saved.getId())
                 .businessName(saved.getName())
                 .reviewSlug(saved.getReviewSlug())
                 .publicReviewUrl(saved.getPublicReviewUrl())
-                .effectiveReviewUrl(effectiveUrl)
+                .effectiveReviewUrl(saved.getPublicReviewUrl())
                 .reviewPromptMessage(saved.getReviewPromptMessage())
                 .reviewEnabled(saved.isReviewEnabled())
                 .directReviewPageUrl(directUrl)
@@ -286,32 +287,20 @@ public class ReviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("Business", "id", businessId));
 
         String slug = business.getReviewSlug() != null ? business.getReviewSlug() : String.valueOf(business.getId());
-        String internalUrl = buildDirectReviewUrl(slug);
-        String effectiveUrl = resolveEffectiveReviewUrl(business);
+        String reviewBoostUrl = buildDirectReviewUrl(slug);
 
-        String qrCodeDataUrl = generateQrCodeBase64(effectiveUrl, 380, 380);
+        // QR encodes the BizFlow Review Boost page URL
+        String qrCodeDataUrl = generateQrCodeBase64(reviewBoostUrl, 380, 380);
 
         return QrCodeResponse.builder()
                 .businessId(business.getId())
                 .businessName(business.getName())
                 .reviewSlug(slug)
-                .reviewUrl(effectiveUrl)
+                .reviewUrl(reviewBoostUrl)
                 .googleReviewUrl(business.getPublicReviewUrl())
-                .internalReviewUrl(internalUrl)
+                .internalReviewUrl(reviewBoostUrl)
                 .qrCodeDataUrl(qrCodeDataUrl)
                 .build();
-    }
-
-    public String resolveEffectiveReviewUrl(Business business) {
-        if (business.getPublicReviewUrl() != null && !business.getPublicReviewUrl().trim().isEmpty()) {
-            return business.getPublicReviewUrl().trim();
-        }
-        String name = business.getName() != null ? business.getName().trim() : "Business";
-        try {
-            return "https://www.google.com/search?q=" + java.net.URLEncoder.encode(name + " google reviews", java.nio.charset.StandardCharsets.UTF_8.toString());
-        } catch (Exception e) {
-            return "https://www.google.com/search?q=" + name.replace(" ", "+") + "+reviews";
-        }
     }
 
     @Transactional
@@ -394,68 +383,117 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public AiReviewSuggestionResponse generateAiReview(String slugOrId, AiReviewGenerateRequest request) {
         Business business = resolveBusinessBySlugOrId(slugOrId);
+        
+        if (!geminiProvider.isConfigured()) {
+            throw new IllegalStateException("Google Gemini API key is missing or not configured. Please configure the GEMINI_API_KEY or BIZFLOW_AI_GEMINI_API_KEY environment variable.");
+        }
+
         int rating = request != null && request.getRating() >= 1 && request.getRating() <= 5 ? request.getRating() : 5;
         String bizName = business.getName();
         String bizType = business.getBusinessType() != null ? business.getBusinessType().name() : "establishment";
         String keywords = request != null && request.getKeywords() != null ? request.getKeywords().trim() : "";
 
-        List<String> alternatives = new ArrayList<>();
-        List<String> tags = new ArrayList<>();
-        String generated = null;
+        String systemPrompt = "You are an authentic customer review assistant. "
+                + "Generate 3 to 5 natural, diverse review suggestions for a business based strictly on the selected star rating.\n"
+                + "Rating Guidelines:\n"
+                + "1 Star: Respectful negative feedback and constructive improvement suggestions.\n"
+                + "2 Stars: Mildly negative and honest feedback.\n"
+                + "3 Stars: Balanced feedback acknowledging both positives and areas for growth.\n"
+                + "4 Stars: Positive, natural, and helpful feedback.\n"
+                + "5 Stars: Highly positive, authentic, and enthusiastic feedback.\n"
+                + "CRITICAL CONSTRAINTS:\n"
+                + "- Do NOT sound robotic, repetitive, exaggerated, or obviously AI-generated.\n"
+                + "- Do NOT invent specific names of staff, discounts, prices, products, or fake events unless explicitly provided by the customer.\n"
+                + "- Keep each review concise (1-3 sentences).\n"
+                + "Return ONLY a valid JSON object matching this exact schema:\n"
+                + "{\n"
+                + "  \"suggestions\": [\"Review 1...\", \"Review 2...\", \"Review 3...\", \"Review 4...\"],\n"
+                + "  \"highlightTags\": [\"Aspect 1\", \"Aspect 2\", \"Aspect 3\", \"Aspect 4\"]\n"
+                + "}\n"
+                + "Do NOT wrap in markdown formatting or backticks. Return raw JSON.";
 
-        if (rating == 5) {
-            tags = List.of("Fast Service ⚡", "Top Quality ✨", "Friendly Staff 😊", "Great Value 💰", "Clean & Welcoming 🌿");
-            alternatives = List.of(
-                    "Really impressed by " + bizName + "! Exceptional service, great attention to detail, and top quality. Will definitely be coming back.",
-                    "5 stars all the way for " + bizName + "! Smooth experience, friendly staff, and fantastic value.",
-                    "One of the best in town! " + bizName + " consistently delivers high quality and very welcoming service."
-            );
-            generated = "Outstanding experience at " + bizName + "! Top-notch quality, prompt and courteous staff, and very pleasant atmosphere. Highly recommend to everyone!";
-        } else if (rating == 4) {
-            tags = List.of("Good Service 👍", "Pleasant Visit 😊", "Fair Prices 🏷️", "Helpful Team 🤝");
-            alternatives = List.of(
-                    "Great overall service at " + bizName + ". Prompt assistance and well-maintained establishment.",
-                    "Enjoyed my visit to " + bizName + ". Good quality, friendly staff, and reliable experience."
-            );
-            generated = "Very good experience at " + bizName + ". The staff was friendly and the service was quick. Looking forward to visiting again.";
-        } else if (rating == 3) {
-            tags = List.of("Decent Experience 🆗", "Can Be Faster ⏱️", "Average ⚖️");
-            alternatives = List.of(
-                    "Decent visit to " + bizName + ". Good potential, though a few things could be better organized."
-            );
-            generated = "Average experience at " + bizName + ". Service was okay, but there is room for improvement in speed and customer responsiveness.";
-        } else {
-            tags = List.of("Needs Improvement ⚠️", "Slow Service ⏳", "Disappointed 😕");
-            alternatives = List.of(
-                    "The experience at " + bizName + " did not meet expectations. Hoping the management looks into service quality and response times."
-            );
-            generated = "Disappointed with my recent visit to " + bizName + ". Expected better service and prompt support. Hope this feedback helps improve operations.";
+        String userPrompt = String.format("Generate %d-star reviews for '%s' (%s). %s",
+                rating, bizName, bizType,
+                !keywords.isEmpty() ? "Customer highlighted aspect: " + keywords : "");
+
+        String rawResponse;
+        try {
+            rawResponse = geminiProvider.generateCompletion(systemPrompt, List.of(), userPrompt);
+        } catch (Exception e) {
+            log.error("Google Gemini API review generation failed: {}", e.getMessage());
+            throw new RuntimeException("Google Gemini review generation failed: " + e.getMessage(), e);
         }
 
-        // Try AI Gateway if available
-        if (aiGatewayService != null) {
-            try {
-                String systemPrompt = "You are a customer writing a concise, authentic, 2-sentence online review for a business. Do NOT use quotation marks. Keep it natural and genuine.";
-                String userPrompt = String.format("Write a %d-star customer review for '%s' (%s). %s",
-                        rating, bizName, bizType,
-                        !keywords.isEmpty() ? "Focus on: " + keywords : "");
-                var aiResult = aiGatewayService.generateResponse(systemPrompt, List.of(), userPrompt);
-                if (aiResult != null && aiResult.reply() != null && !aiResult.reply().trim().isEmpty() && !aiResult.reply().contains("Error")) {
-                    String cleanReply = aiResult.reply().replaceAll("^\"|\"$", "").trim();
-                    if (!cleanReply.isEmpty()) {
-                        generated = cleanReply;
+        List<String> suggestions = new ArrayList<>();
+        List<String> tags = new ArrayList<>();
+
+        try {
+            String cleanJson = cleanJsonString(rawResponse);
+            JsonNode root = objectMapper.readTree(cleanJson);
+            if (root.path("suggestions").isArray()) {
+                for (JsonNode n : root.path("suggestions")) {
+                    String text = n.asText().trim();
+                    if (!text.isEmpty()) {
+                        suggestions.add(text);
                     }
                 }
-            } catch (Exception e) {
-                log.debug("AI review generation fallback to template: {}", e.getMessage());
+            }
+            if (root.path("highlightTags").isArray()) {
+                for (JsonNode n : root.path("highlightTags")) {
+                    String tag = n.asText().trim();
+                    if (!tag.isEmpty()) {
+                        tags.add(tag);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to parse JSON response from Gemini, splitting by lines: {}", e.getMessage());
+            String[] lines = rawResponse.split("\n");
+            for (String line : lines) {
+                String cleanLine = line.replaceAll("^[-*0-9.]+\\s*", "").replaceAll("^\"|\"$", "").trim();
+                if (cleanLine.length() > 15 && !cleanLine.startsWith("{") && !cleanLine.startsWith("}")) {
+                    suggestions.add(cleanLine);
+                }
+            }
+        }
+
+        if (suggestions.isEmpty()) {
+            String clean = rawResponse.replaceAll("^\"|\"$", "").trim();
+            if (!clean.isEmpty()) {
+                suggestions.add(clean);
+            }
+        }
+
+        // Default highlight tags based on star rating if empty
+        if (tags.isEmpty()) {
+            if (rating >= 4) {
+                tags = List.of("Fast Service ⚡", "Top Quality ✨", "Friendly Staff 😊", "Great Value 💰", "Clean & Welcoming 🌿");
+            } else if (rating == 3) {
+                tags = List.of("Decent Service 🆗", "Reasonable 🏷️", "Room for Improvement ⏱️");
+            } else {
+                tags = List.of("Needs Attention ⚠️", "Service Speed ⏳", "Disappointed 😕");
             }
         }
 
         return AiReviewSuggestionResponse.builder()
                 .rating(rating)
-                .generatedReview(generated)
-                .alternativeSuggestions(alternatives)
+                .generatedReview(suggestions.isEmpty() ? "" : suggestions.get(0))
+                .alternativeSuggestions(suggestions)
                 .highlightTags(tags)
                 .build();
+    }
+
+    private String cleanJsonString(String text) {
+        if (text == null) return "{}";
+        String trimmed = text.trim();
+        if (trimmed.startsWith("```json")) {
+            trimmed = trimmed.substring(7);
+        } else if (trimmed.startsWith("```")) {
+            trimmed = trimmed.substring(3);
+        }
+        if (trimmed.endsWith("```")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 3);
+        }
+        return trimmed.trim();
     }
 }

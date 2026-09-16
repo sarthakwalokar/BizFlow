@@ -80,7 +80,7 @@ bizflow:
     enabled: ${BIZFLOW_AI_ENABLED:true}
     gemini:
       api-key: ${BIZFLOW_AI_GEMINI_API_KEY:${GEMINI_API_KEY:}}
-      model: ${BIZFLOW_AI_GEMINI_MODEL:gemini-1.5-flash}
+      model: ${BIZFLOW_AI_GEMINI_MODEL:gemini-2.5-flash}
       base-url: ${BIZFLOW_AI_GEMINI_BASE_URL:https://generativelanguage.googleapis.com/v1beta}
       timeout-ms: ${BIZFLOW_AI_GEMINI_TIMEOUT_MS:15000}
     groq:

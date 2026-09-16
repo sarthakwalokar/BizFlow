@@ -1,84 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import {
-  reviewsApi,
-  PublicBusinessReviewInfo,
-  SubmitReviewRequest,
-} from '../../api/reviews';
+import { reviewsApi, PublicBusinessReviewInfo } from '../../api/reviews';
+import { ButtonSpinner } from '../../components/common/LoadingStates';
 import {
   Star,
-  ExternalLink,
   CheckCircle2,
   AlertCircle,
   Store,
+  ExternalLink,
 } from 'lucide-react';
 
-const RATING_LABELS = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent!'];
+const RATING_LABELS: Record<number, string> = {
+  1: 'Very Disappointed',
+  2: 'Needs Improvement',
+  3: 'Average Experience',
+  4: 'Great Service',
+  5: 'Outstanding!',
+};
 
 export const PublicReviewPage: React.FC = () => {
   const { slugOrId } = useParams<{ slugOrId: string }>();
 
   const [businessInfo, setBusinessInfo] = useState<PublicBusinessReviewInfo | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [notFound, setNotFound] = useState<boolean>(false);
-
-  // Form State
+  const [loading, setLoading] = useState(true);
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
-  const [feedbackText, setFeedbackText] = useState<string>('');
-  const [customerName, setCustomerName] = useState<string>('');
-  const [submitting, setSubmitting] = useState<boolean>(false);
-  const [submitted, setSubmitted] = useState<boolean>(false);
-  const [redirectedToExternal, setRedirectedToExternal] = useState<boolean>(false);
+  const [feedbackText, setFeedbackText] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [redirectedToExternal, setRedirectedToExternal] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchInfo = async () => {
+    const fetchBusiness = async () => {
       if (!slugOrId) return;
       try {
         setLoading(true);
         const data = await reviewsApi.getPublicReviewInfo(slugOrId);
         setBusinessInfo(data);
-      } catch (err) {
-        setNotFound(true);
+      } catch (err: any) {
+        setErrorMessage('Unable to load review form for this business.');
       } finally {
         setLoading(false);
       }
     };
-
-    fetchInfo();
+    fetchBusiness();
   }, [slugOrId]);
 
-  const handleSubmitReview = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!slugOrId || rating === 0) return;
-
-    setSubmitting(true);
-    setErrorMessage(null);
-
-    const payload: SubmitReviewRequest = {
-      rating,
-      feedbackText: feedbackText.trim() || undefined,
-      customerName: customerName.trim() || undefined,
-    };
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (rating === 0) {
+      setErrorMessage('Please select a star rating first.');
+      return;
+    }
 
     try {
-      const res = await reviewsApi.submitPublicReview(slugOrId, payload);
+      setSubmitting(true);
+      setErrorMessage(null);
+
+      await reviewsApi.submitPublicReview(slugOrId!, {
+        rating,
+        feedbackText: feedbackText.trim() || undefined,
+        customerName: customerName.trim() || undefined,
+      });
+
       setSubmitted(true);
 
-      if (res.positive && businessInfo?.publicReviewUrl) {
+      if (rating >= 4 && businessInfo?.publicReviewUrl) {
         setRedirectedToExternal(true);
         setTimeout(() => {
-          if (businessInfo?.publicReviewUrl) {
-            window.location.href = businessInfo.publicReviewUrl;
-          }
+          window.location.href = businessInfo.publicReviewUrl!;
         }, 1500);
       }
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to record your feedback. Please try again.'
+        'Failed to submit your feedback. Please try again.'
       );
     } finally {
       setSubmitting(false);
@@ -87,24 +86,27 @@ export const PublicReviewPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F7F5] flex items-center justify-center p-4">
-        <div className="text-zinc-500 text-sm font-medium">Loading review station...</div>
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-medium text-zinc-500">Loading business review page...</span>
+        </div>
       </div>
     );
   }
 
-  if (notFound || !businessInfo || !businessInfo.reviewEnabled) {
+  if (!businessInfo || !businessInfo.reviewEnabled) {
     return (
-      <div className="min-h-screen bg-[#F7F7F5] flex flex-col items-center justify-center p-4 text-center">
-        <div className="bg-white rounded-2xl border border-zinc-200 p-8 max-w-md w-full shadow-card space-y-4">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
+        <div className="max-w-sm w-full bg-white rounded-xl border border-zinc-200 p-6 text-center space-y-3 shadow-xs">
           <Store size={36} className="mx-auto text-zinc-400" />
-          <h2 className="text-lg font-bold text-zinc-900">Review Page Unavailable</h2>
+          <h2 className="text-base font-bold text-zinc-900">Review Page Unavailable</h2>
           <p className="text-xs text-zinc-500 leading-relaxed">
             This business review portal is currently not active or the link has changed.
           </p>
           <Link
             to="/"
-            className="inline-block px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-bold"
+            className="inline-block px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-medium"
           >
             Back to Home
           </Link>
@@ -114,14 +116,14 @@ export const PublicReviewPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] flex flex-col justify-between py-10 px-4 sm:px-6 font-sans">
+    <div className="min-h-screen bg-[#FAFAFA] flex flex-col justify-between py-10 px-4 sm:px-6 font-sans">
       <div className="max-w-md mx-auto w-full space-y-6">
         {/* Business Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center mx-auto shadow-xs font-black text-xl">
+          <div className="w-12 h-12 rounded-xl bg-brand-600 text-white flex items-center justify-center mx-auto shadow-xs font-bold text-xl">
             {businessInfo.name.charAt(0)}
           </div>
-          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">
+          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">
             {businessInfo.name}
           </h1>
           <p className="text-xs text-zinc-500">
@@ -130,10 +132,10 @@ export const PublicReviewPage: React.FC = () => {
         </div>
 
         {/* Main Review Card */}
-        <div className="bg-white rounded-2xl border border-zinc-200 p-6 sm:p-8 shadow-card space-y-6">
+        <div className="bg-white rounded-xl border border-zinc-200 p-6 sm:p-8 shadow-xs space-y-6">
           {submitted ? (
             <div className="text-center py-6 space-y-4">
-              <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center mx-auto">
                 <CheckCircle2 size={28} />
               </div>
 
@@ -145,11 +147,11 @@ export const PublicReviewPage: React.FC = () => {
               </div>
 
               {redirectedToExternal && businessInfo.publicReviewUrl && (
-                <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs space-y-2">
+                <div className="p-3.5 rounded-lg bg-brand-50 border border-brand-200 text-brand-900 text-xs space-y-2">
                   <p className="font-semibold">Taking you to Google Reviews...</p>
                   <a
                     href={businessInfo.publicReviewUrl}
-                    className="inline-flex items-center space-x-1 font-bold text-emerald-700 hover:underline"
+                    className="inline-flex items-center space-x-1 font-semibold text-brand-700 hover:underline"
                   >
                     <span>Click here if not redirected automatically</span>
                     <ExternalLink size={12} />
@@ -160,7 +162,7 @@ export const PublicReviewPage: React.FC = () => {
           ) : (
             <form onSubmit={(e) => handleSubmitReview(e)} className="space-y-5">
               {errorMessage && (
-                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center space-x-2">
+                <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center space-x-2">
                   <AlertCircle size={14} className="shrink-0" />
                   <span>{errorMessage}</span>
                 </div>
@@ -168,7 +170,7 @@ export const PublicReviewPage: React.FC = () => {
 
               {/* Star Rating Selector */}
               <div className="text-center space-y-2">
-                <label className="text-xs font-bold text-zinc-700 uppercase tracking-wider block">
+                <label className="text-xs font-semibold text-zinc-700 uppercase tracking-wider block">
                   Tap a star to rate
                 </label>
 
@@ -185,7 +187,7 @@ export const PublicReviewPage: React.FC = () => {
                         className="p-1.5 transition-transform hover:scale-110 cursor-pointer focus:outline-none"
                       >
                         <Star
-                          size={34}
+                          size={32}
                           className={
                             isFilled
                               ? 'fill-amber-500 text-amber-500'
@@ -198,7 +200,7 @@ export const PublicReviewPage: React.FC = () => {
                 </div>
 
                 {rating > 0 && (
-                  <span className="inline-block px-3 py-0.5 rounded-full bg-amber-50 text-amber-800 text-xs font-bold border border-amber-200">
+                  <span className="inline-block px-3 py-0.5 rounded-full bg-amber-50 text-amber-800 text-xs font-medium border border-amber-200">
                     {RATING_LABELS[rating]}
                   </span>
                 )}
@@ -206,7 +208,7 @@ export const PublicReviewPage: React.FC = () => {
 
               {/* Feedback Textarea */}
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-zinc-700">
+                <label className="text-xs font-medium text-zinc-700">
                   {rating >= 4 ? 'What did you like the most?' : 'How can we improve?'} (Optional)
                 </label>
                 <textarea
@@ -214,19 +216,19 @@ export const PublicReviewPage: React.FC = () => {
                   placeholder="Share details of your experience..."
                   value={feedbackText}
                   onChange={(e) => setFeedbackText(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-600 resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 resize-none"
                 />
               </div>
 
               {/* Customer Name */}
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-zinc-700">Your Name (Optional)</label>
+                <label className="text-xs font-medium text-zinc-700">Your Name (Optional)</label>
                 <input
                   type="text"
                   placeholder="e.g. Priya"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3.5 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
@@ -234,9 +236,13 @@ export const PublicReviewPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={rating === 0 || submitting}
-                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm shadow-xs transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Submitting...' : 'Submit Feedback'}
+                {submitting ? (
+                  <ButtonSpinner text="Submitting..." spinnerColor="text-white" />
+                ) : (
+                  'Submit Feedback'
+                )}
               </button>
             </form>
           )}

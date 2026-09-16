@@ -14,6 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { formatCurrency, getCurrencySymbol } from '../../utils/currency';
+import { TableSkeleton, ButtonSpinner } from '../../components/common/LoadingStates';
 
 export const ProductListPage: React.FC = () => {
   const { business } = useAuth();
@@ -227,7 +228,7 @@ export const ProductListPage: React.FC = () => {
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
         >
           <Plus size={16} />
           <span>Add Item</span>
@@ -236,12 +237,12 @@ export const ProductListPage: React.FC = () => {
 
       {/* Alerts */}
       {successMessage && (
-        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-brand-50 border border-brand-200 text-brand-800 text-xs flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <CheckCircle2 size={15} className="text-emerald-600" />
+            <CheckCircle2 size={15} className="text-brand-600" />
             <span>{successMessage}</span>
           </div>
-          <button onClick={() => setSuccessMessage(null)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
+          <button onClick={() => setSuccessMessage(null)} className="text-brand-700 hover:text-brand-900 cursor-pointer">
             &times;
           </button>
         </div>
@@ -269,7 +270,7 @@ export const ProductListPage: React.FC = () => {
               placeholder="Search by name, barcode or SKU..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
+              className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
             />
           </div>
 
@@ -278,7 +279,7 @@ export const ProductListPage: React.FC = () => {
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value as any)}
-              className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
+              className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-brand-600"
             >
               <option value="ALL">All Types</option>
               <option value="PHYSICAL">Goods (Physical)</option>
@@ -289,7 +290,7 @@ export const ProductListPage: React.FC = () => {
             <select
               value={selectedCategoryId}
               onChange={(e) => setSelectedCategoryId(e.target.value)}
-              className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
+              className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-brand-600"
             >
               <option value="ALL">All Categories</option>
               {categories.map((c) => (
@@ -303,7 +304,7 @@ export const ProductListPage: React.FC = () => {
             <select
               value={selectedActive}
               onChange={(e) => setSelectedActive(e.target.value)}
-              className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
+              className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-brand-600"
             >
               <option value="ALL">All Status</option>
               <option value="ACTIVE">Active Only</option>
@@ -312,7 +313,7 @@ export const ProductListPage: React.FC = () => {
 
             <button
               type="submit"
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer"
+              className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer"
             >
               Filter
             </button>
@@ -321,142 +322,140 @@ export const ProductListPage: React.FC = () => {
       </div>
 
       {/* Catalog Table */}
-      <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
-                <th className="py-3 px-4">Item Details</th>
-                <th className="py-3 px-4">Type</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Price</th>
-                <th className="py-3 px-4">Stock</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100 text-xs">
-              {loading ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-zinc-400">
-                    Loading catalog items...
-                  </td>
+      {loading ? (
+        <TableSkeleton rows={6} columns={6} />
+      ) : (
+        <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                  <th className="py-3 px-4">Item Details</th>
+                  <th className="py-3 px-4">Type</th>
+                  <th className="py-3 px-4">Category</th>
+                  <th className="py-3 px-4">Price</th>
+                  <th className="py-3 px-4">Stock</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
-              ) : products.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-zinc-500 space-y-1">
-                    <Package size={32} className="mx-auto text-zinc-300" />
-                    <p className="font-bold text-zinc-700">No items match your query</p>
-                    <p className="text-[11px] text-zinc-400">Add a product or adjust your filters.</p>
-                  </td>
-                </tr>
-              ) : (
-                products.map((prod) => {
-                  const isOutOfStock = prod.trackStock && (prod.stockQuantity ?? 0) <= 0;
-                  const isLowStock = prod.trackStock && (prod.stockQuantity ?? 0) > 0 && (prod.stockQuantity ?? 0) <= (prod.lowStockThreshold ?? 5);
+              </thead>
+              <tbody className="divide-y divide-zinc-100 text-xs">
+                {products.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-12 text-center text-zinc-500 space-y-1">
+                      <Package size={32} className="mx-auto text-zinc-300" />
+                      <p className="font-bold text-zinc-700">No items match your query</p>
+                      <p className="text-[11px] text-zinc-400">Add a product or adjust your filters.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  products.map((prod) => {
+                    const isOutOfStock = prod.trackStock && (prod.stockQuantity ?? 0) <= 0;
+                    const isLowStock = prod.trackStock && (prod.stockQuantity ?? 0) > 0 && (prod.stockQuantity ?? 0) <= (prod.lowStockThreshold ?? 5);
 
-                  return (
-                    <tr key={prod.id} className="hover:bg-zinc-50/70 transition-colors">
-                      <td className="py-3 px-4">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
+                    return (
+                      <tr key={prod.id} className="hover:bg-zinc-50/70 transition-colors">
+                        <td className="py-3 px-4">
+                          <div className="flex items-center space-x-3">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
+                              prod.productType === 'PHYSICAL'
+                                ? 'bg-zinc-100 text-zinc-700'
+                                : 'bg-purple-50 text-purple-700'
+                            }`}>
+                              {prod.productType === 'PHYSICAL' ? <Package size={16} /> : <Scissors size={16} />}
+                            </div>
+                            <div>
+                              <span className="font-bold text-zinc-900 block">{prod.name}</span>
+                              {prod.sku && (
+                                <span className="text-[10px] text-zinc-400 font-mono">SKU: {prod.sku}</span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="py-3 px-4">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                             prod.productType === 'PHYSICAL'
-                              ? 'bg-blue-50 text-blue-700'
-                              : 'bg-pink-50 text-pink-700'
+                              ? 'bg-zinc-100 text-zinc-700 border border-zinc-200'
+                              : 'bg-purple-50 text-purple-700 border border-purple-200'
                           }`}>
-                            {prod.productType === 'PHYSICAL' ? <Package size={16} /> : <Scissors size={16} />}
-                          </div>
-                          <div>
-                            <span className="font-bold text-zinc-900 block">{prod.name}</span>
-                            {prod.sku && (
-                              <span className="text-[10px] text-zinc-400 font-mono">SKU: {prod.sku}</span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          prod.productType === 'PHYSICAL'
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                            : 'bg-pink-50 text-pink-700 border border-pink-200'
-                        }`}>
-                          {prod.productType}
-                        </span>
-                      </td>
-
-                      <td className="py-3 px-4 text-zinc-600">
-                        {prod.category ? prod.category.name : '—'}
-                      </td>
-
-                      <td className="py-3 px-4 font-black text-zinc-950">
-                        {formatCurrency(prod.price, currency)}
-                        {prod.costPrice !== undefined && prod.costPrice > 0 && (
-                          <span className="block text-[10px] text-zinc-400 font-normal">
-                            Cost: {formatCurrency(prod.costPrice, currency)}
+                            {prod.productType}
                           </span>
-                        )}
-                      </td>
+                        </td>
 
-                      <td className="py-3 px-4">
-                        {prod.trackStock ? (
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 ${
-                              isOutOfStock
-                                ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                        <td className="py-3 px-4 text-zinc-600">
+                          {prod.category ? prod.category.name : '—'}
+                        </td>
+
+                        <td className="py-3 px-4 font-black text-zinc-950">
+                          {formatCurrency(prod.price, currency)}
+                          {prod.costPrice !== undefined && prod.costPrice > 0 && (
+                            <span className="block text-[10px] text-zinc-400 font-normal">
+                              Cost: {formatCurrency(prod.costPrice, currency)}
+                            </span>
+                          )}
+                        </td>
+
+                        <td className="py-3 px-4">
+                          {prod.trackStock ? (
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 ${
+                                isOutOfStock
+                                  ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                  : isLowStock
+                                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                  : 'bg-zinc-100 text-zinc-700'
+                              }`}
+                            >
+                              {isOutOfStock
+                                ? 'Out of Stock'
                                 : isLowStock
-                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                : 'bg-zinc-100 text-zinc-700'
+                                ? `Low: ${prod.stockQuantity}`
+                                : `${prod.stockQuantity} in stock`}
+                            </span>
+                          ) : (
+                            <span className="text-zinc-400 text-[11px]">—</span>
+                          )}
+                        </td>
+
+                        <td className="py-3 px-4">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              prod.active
+                                ? 'bg-brand-50 text-brand-700 border border-brand-200'
+                                : 'bg-zinc-100 text-zinc-600'
                             }`}
                           >
-                            {isOutOfStock
-                              ? 'Out of Stock'
-                              : isLowStock
-                              ? `Low: ${prod.stockQuantity}`
-                              : `${prod.stockQuantity} in stock`}
+                            {prod.active ? 'Active' : 'Inactive'}
                           </span>
-                        ) : (
-                          <span className="text-zinc-400 text-[11px]">—</span>
-                        )}
-                      </td>
+                        </td>
 
-                      <td className="py-3 px-4">
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            prod.active
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              : 'bg-zinc-100 text-zinc-600'
-                          }`}
-                        >
-                          {prod.active ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
+                        <td className="py-3 px-4 text-right space-x-1">
+                          <button
+                            onClick={() => openEditModal(prod)}
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
+                            title="Edit Item"
+                          >
+                            <Edit2 size={14} />
+                          </button>
 
-                      <td className="py-3 px-4 text-right space-x-1">
-                        <button
-                          onClick={() => openEditModal(prod)}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
-                          title="Edit Item"
-                        >
-                          <Edit2 size={14} />
-                        </button>
-
-                        <button
-                          onClick={() => setDeletingProduct(prod)}
-                          className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                          title="Delete Item"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                          <button
+                            onClick={() => setDeletingProduct(prod)}
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                            title="Delete Item"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Add / Edit Product Modal */}
       {(isAddModalOpen || editingProduct) && (
@@ -547,7 +546,7 @@ export const ProductListPage: React.FC = () => {
                     placeholder="0.00"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-bold focus:ring-1 focus:ring-emerald-600"
+                    className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-bold focus:ring-1 focus:ring-brand-600"
                   />
                 </div>
 
@@ -560,7 +559,7 @@ export const ProductListPage: React.FC = () => {
                     placeholder="Optional unit cost"
                     value={costPrice}
                     onChange={(e) => setCostPrice(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
+                    className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600"
                   />
                 </div>
               </div>
@@ -572,7 +571,7 @@ export const ProductListPage: React.FC = () => {
                   placeholder="e.g. PRD-890123"
                   value={sku}
                   onChange={(e) => setSku(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-mono focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-mono focus:ring-1 focus:ring-brand-600"
                 />
               </div>
 
@@ -583,7 +582,7 @@ export const ProductListPage: React.FC = () => {
                       type="checkbox"
                       checked={trackStock}
                       onChange={(e) => setTrackStock(e.target.checked)}
-                      className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-600"
+                      className="w-4 h-4 rounded text-brand-600 focus:ring-brand-600"
                     />
                     <span className="text-xs font-bold text-zinc-800">Track stock inventory for this item</span>
                   </label>
@@ -597,7 +596,7 @@ export const ProductListPage: React.FC = () => {
                           min="0"
                           value={stockQuantity}
                           onChange={(e) => setStockQuantity(e.target.value)}
-                          className="w-full px-3 py-1.5 rounded-lg border border-zinc-200 bg-white text-xs font-bold focus:ring-1 focus:ring-emerald-600"
+                          className="w-full px-3 py-1.5 rounded-lg border border-zinc-200 bg-white text-xs font-bold focus:ring-1 focus:ring-brand-600"
                         />
                       </div>
                       <div className="space-y-1">
@@ -607,7 +606,7 @@ export const ProductListPage: React.FC = () => {
                           min="0"
                           value={lowStockThreshold}
                           onChange={(e) => setLowStockThreshold(e.target.value)}
-                          className="w-full px-3 py-1.5 rounded-lg border border-zinc-200 bg-white text-xs font-bold focus:ring-1 focus:ring-emerald-600"
+                          className="w-full px-3 py-1.5 rounded-lg border border-zinc-200 bg-white text-xs font-bold focus:ring-1 focus:ring-brand-600"
                         />
                       </div>
                     </div>
@@ -629,9 +628,15 @@ export const ProductListPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
                 >
-                  {actionLoading ? 'Saving...' : editingProduct ? 'Update Item' : 'Add to Catalog'}
+                  {actionLoading ? (
+                    <ButtonSpinner text="Saving..." />
+                  ) : editingProduct ? (
+                    'Update Item'
+                  ) : (
+                    'Add to Catalog'
+                  )}
                 </button>
               </div>
             </form>
@@ -666,9 +671,9 @@ export const ProductListPage: React.FC = () => {
                 type="button"
                 onClick={handleDeleteProduct}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
               >
-                {actionLoading ? 'Deleting...' : 'Confirm Delete'}
+                {actionLoading ? <ButtonSpinner text="Deleting..." /> : 'Confirm Delete'}
               </button>
             </div>
           </div>

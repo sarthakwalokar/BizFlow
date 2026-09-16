@@ -184,7 +184,7 @@ export const AppLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAF9] flex flex-col md:flex-row font-sans text-zinc-900">
+    <div className="min-h-screen bg-[#FAFAFA] flex flex-col md:flex-row font-sans text-zinc-900">
       {/* Mobile Top Header */}
       <header className="md:hidden bg-white border-b border-zinc-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
         <div className="flex items-center space-x-3">
@@ -444,7 +444,7 @@ export const AppLayout: React.FC = () => {
         </header>
 
         {/* Page Body */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#FAFAF9]">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#FAFAFA]">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>

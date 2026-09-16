@@ -39,7 +39,7 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
         {/* Top Header Controls (Hidden during print) */}
         <div className="px-5 py-3.5 bg-zinc-900 text-white flex items-center justify-between shrink-0 print:hidden">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm">
               <Receipt size={16} />
             </div>
             <div>
@@ -211,7 +211,7 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
             </button>
             <button
               onClick={handlePrint}
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center space-x-1.5 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center space-x-1.5 cursor-pointer"
             >
               <Printer size={15} />
               <span>Print Receipt</span>

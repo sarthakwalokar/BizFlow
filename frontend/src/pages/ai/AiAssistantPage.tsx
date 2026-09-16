@@ -14,9 +14,9 @@ import {
   Bot,
   Copy,
   Check,
-  RefreshCw,
   MessageSquare,
 } from 'lucide-react';
+import { AiAnalyzingIndicator, SkeletonBlock } from '../../components/common/LoadingStates';
 
 const SUGGESTED_PROMPTS = [
   'How were my sales this month?',
@@ -189,7 +189,11 @@ export const AiAssistantPage: React.FC = () => {
             </span>
 
             {loadingConversations ? (
-              <div className="text-center py-6 text-zinc-400 text-xs">Loading history...</div>
+              <div className="space-y-2 py-1">
+                <SkeletonBlock className="h-11 w-full rounded-xl" />
+                <SkeletonBlock className="h-11 w-full rounded-xl" />
+                <SkeletonBlock className="h-11 w-full rounded-xl" />
+              </div>
             ) : conversations.length === 0 ? (
               <div className="text-center py-8 text-zinc-400 text-xs space-y-1 px-2">
                 <MessageSquare size={20} className="mx-auto text-zinc-300" />
@@ -343,13 +347,7 @@ export const AiAssistantPage: React.FC = () => {
 
           {loading && (
             <div className="flex items-start space-x-3">
-              <div className="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center shrink-0 mt-1">
-                <Bot size={14} />
-              </div>
-              <div className="bg-zinc-50 border border-zinc-200 p-3.5 rounded-2xl rounded-tl-xs text-xs text-zinc-500 flex items-center space-x-2">
-                <RefreshCw size={13} className="animate-spin text-brand-600" />
-                <span>Analyzing business database...</span>
-              </div>
+              <AiAnalyzingIndicator message="Analyzing your business..." />
             </div>
           )}
 

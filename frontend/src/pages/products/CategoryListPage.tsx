@@ -11,6 +11,7 @@ import {
   Search,
   Tag,
 } from 'lucide-react';
+import { ButtonSpinner, SkeletonBlock } from '../../components/common/LoadingStates';
 
 export const CategoryListPage: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -161,7 +162,7 @@ export const CategoryListPage: React.FC = () => {
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
         >
           <Plus size={16} />
           <span>New Category</span>
@@ -170,12 +171,12 @@ export const CategoryListPage: React.FC = () => {
 
       {/* Alerts */}
       {successMessage && (
-        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-brand-50 border border-brand-200 text-brand-800 text-xs flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <CheckCircle2 size={15} className="text-emerald-600" />
+            <CheckCircle2 size={15} className="text-brand-600" />
             <span>{successMessage}</span>
           </div>
-          <button onClick={() => setSuccessMessage(null)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
+          <button onClick={() => setSuccessMessage(null)} className="text-brand-700 hover:text-brand-900 cursor-pointer">
             &times;
           </button>
         </div>
@@ -202,7 +203,7 @@ export const CategoryListPage: React.FC = () => {
             placeholder="Search categories..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
+            className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
           />
         </div>
       </div>
@@ -210,7 +211,20 @@ export const CategoryListPage: React.FC = () => {
       {/* Category Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? (
-          <div className="col-span-full py-12 text-center text-zinc-400">Loading categories...</div>
+          Array.from({ length: 6 }).map((_, idx) => (
+            <div key={idx} className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3 animate-pulse">
+              <div className="flex items-center justify-between">
+                <SkeletonBlock className="w-8 h-8 rounded-lg" />
+                <SkeletonBlock className="w-14 h-4 rounded-full" />
+              </div>
+              <SkeletonBlock className="h-5 w-3/4" />
+              <SkeletonBlock className="h-3 w-full" />
+              <div className="pt-3 border-t border-zinc-100 flex justify-end gap-2">
+                <SkeletonBlock className="w-6 h-6 rounded-lg" />
+                <SkeletonBlock className="w-6 h-6 rounded-lg" />
+              </div>
+            </div>
+          ))
         ) : filteredCategories.length === 0 ? (
           <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-2xl border border-zinc-200 p-8 space-y-1">
             <FolderTree size={32} className="mx-auto text-zinc-300" />
@@ -225,13 +239,13 @@ export const CategoryListPage: React.FC = () => {
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold text-xs">
                     <Tag size={16} />
                   </div>
                   <span
                     className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                       cat.active
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        ? 'bg-brand-50 text-brand-700 border border-brand-200'
                         : 'bg-zinc-100 text-zinc-600'
                     }`}
                   >
@@ -248,7 +262,7 @@ export const CategoryListPage: React.FC = () => {
               <div className="pt-3 border-t border-zinc-100 flex items-center justify-end space-x-1.5">
                 <button
                   onClick={() => openEditModal(cat)}
-                  className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
                   title="Edit Category"
                 >
                   <Edit2 size={14} />
@@ -273,7 +287,7 @@ export const CategoryListPage: React.FC = () => {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
                   <Tag size={16} />
                 </div>
                 <h3 className="text-sm font-bold text-zinc-900">
@@ -302,7 +316,7 @@ export const CategoryListPage: React.FC = () => {
                   placeholder="e.g. Hot Beverages, Desserts, Spa Services"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600"
                 />
               </div>
 
@@ -313,7 +327,7 @@ export const CategoryListPage: React.FC = () => {
                   placeholder="Brief summary of items in this category..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600 resize-none"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600 resize-none"
                 />
               </div>
 
@@ -322,7 +336,7 @@ export const CategoryListPage: React.FC = () => {
                   type="checkbox"
                   checked={active}
                   onChange={(e) => setActive(e.target.checked)}
-                  className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-600"
+                  className="w-4 h-4 rounded text-brand-600 focus:ring-brand-600"
                 />
                 <span className="text-xs font-semibold text-zinc-800">Active in POS and catalog</span>
               </label>
@@ -341,9 +355,15 @@ export const CategoryListPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
                 >
-                  {actionLoading ? 'Saving...' : editingCategory ? 'Update Category' : 'Create Category'}
+                  {actionLoading ? (
+                    <ButtonSpinner text="Saving..." />
+                  ) : editingCategory ? (
+                    'Update Category'
+                  ) : (
+                    'Create Category'
+                  )}
                 </button>
               </div>
             </form>
@@ -378,9 +398,9 @@ export const CategoryListPage: React.FC = () => {
                 type="button"
                 onClick={handleDeleteCategory}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
               >
-                {actionLoading ? 'Deleting...' : 'Confirm Delete'}
+                {actionLoading ? <ButtonSpinner text="Deleting..." /> : 'Confirm Delete'}
               </button>
             </div>
           </div>

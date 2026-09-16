@@ -7,6 +7,7 @@ import { billingApi, BillingSummary, Order } from '../../api/billing';
 import { expensesApi, ExpenseSummaryResponse } from '../../api/expenses';
 import { reviewsApi, ReviewAnalytics } from '../../api/reviews';
 import { InvoiceReceiptModal } from '../../components/billing/InvoiceReceiptModal';
+import { MetricCardsSkeleton } from '../../components/common/LoadingStates';
 import { formatCurrency } from '../../utils/currency';
 import {
   Package,
@@ -134,165 +135,190 @@ export const DashboardHomePage: React.FC = () => {
 
       {/* Summary KPI Cards Grid (Today's Sales, Orders, Expenses, Review Rating) */}
       <section>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* 1. Today's Sales */}
-          <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Today's Sales</span>
-              <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
-                <TrendingUp size={16} />
+        {loading ? (
+          <MetricCardsSkeleton count={4} />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 1. Today's Sales */}
+            <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Today's Sales</span>
+                <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
+                  <TrendingUp size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-black text-zinc-950">
+                {formatCurrency(todaySales, currency)}
+              </div>
+              <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
+                <span className="text-zinc-500 font-medium">
+                  {`${todayOrders} bills recorded`}
+                </span>
+                <Link to="/dashboard/bills" className="text-brand-600 font-semibold hover:underline text-[11px]">
+                  Invoices →
+                </Link>
               </div>
             </div>
-            <div className="text-2xl font-black text-zinc-950">
-              {loading ? '...' : formatCurrency(todaySales, currency)}
-            </div>
-            <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
-              <span className="text-zinc-500 font-medium">
-                {loading ? '...' : `${todayOrders} bills recorded`}
-              </span>
-              <Link to="/dashboard/bills" className="text-brand-600 font-semibold hover:underline text-[11px]">
-                Invoices →
-              </Link>
-            </div>
-          </div>
 
-          {/* 2. Today's Orders */}
-          <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Orders</span>
-              <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
-                <ShoppingBag size={16} />
+            {/* 2. Today's Orders */}
+            <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Orders</span>
+                <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
+                  <ShoppingBag size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-black text-zinc-950">
+                {todayOrders}
+              </div>
+              <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
+                <span className="text-zinc-500 font-medium">Counter transactions</span>
+                <span className="text-[11px] font-semibold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md">
+                  POS Ready
+                </span>
               </div>
             </div>
-            <div className="text-2xl font-black text-zinc-950">
-              {loading ? '...' : todayOrders}
-            </div>
-            <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
-              <span className="text-zinc-500 font-medium">Counter transactions</span>
-              <span className="text-[11px] font-semibold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md">
-                POS Ready
-              </span>
-            </div>
-          </div>
 
-          {/* 3. Expenses */}
-          <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Expenses</span>
-              <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
-                <TrendingDown size={16} />
+            {/* 3. Expenses */}
+            <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Expenses</span>
+                <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+                  <TrendingDown size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-black text-rose-600">
+                {formatCurrency(todayExpenses, currency)}
+              </div>
+              <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
+                <span className="text-zinc-500 font-medium">Daily logged overhead</span>
+                <Link to="/dashboard/expenses" className="text-rose-600 font-semibold hover:underline text-[11px]">
+                  Manage →
+                </Link>
               </div>
             </div>
-            <div className="text-2xl font-black text-rose-600">
-              {loading ? '...' : formatCurrency(todayExpenses, currency)}
-            </div>
-            <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
-              <span className="text-zinc-500 font-medium">Daily logged overhead</span>
-              <Link to="/dashboard/expenses" className="text-rose-600 font-semibold hover:underline text-[11px]">
-                Manage →
-              </Link>
-            </div>
-          </div>
 
-          {/* 4. Review Rating */}
-          <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Review Rating</span>
-              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-                <Star size={16} className="fill-amber-500 text-amber-500" />
+            {/* 4. Review Rating */}
+            <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Review Rating</span>
+                <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <Star size={16} className="fill-amber-500 text-amber-500" />
+                </div>
+              </div>
+              <div className="text-2xl font-black text-zinc-950 flex items-center gap-1.5">
+                <span>{Number(averageRating).toFixed(1)}</span>
+                <Star className="w-5 h-5 fill-amber-500 text-amber-500 inline" />
+              </div>
+              <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
+                <span className="text-zinc-500 font-medium">{totalReviews} verified reviews</span>
+                <Link to="/dashboard/reviews" className="text-amber-700 font-semibold hover:underline text-[11px]">
+                  QR Boost →
+                </Link>
               </div>
             </div>
-            <div className="text-2xl font-black text-zinc-950 flex items-center gap-1.5">
-              <span>{loading ? '...' : Number(averageRating).toFixed(1)}</span>
-              <Star className="w-5 h-5 fill-amber-500 text-amber-500 inline" />
-            </div>
-            <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
-              <span className="text-zinc-500 font-medium">{totalReviews} verified reviews</span>
-              <Link to="/dashboard/reviews" className="text-amber-700 font-semibold hover:underline text-[11px]">
-                QR Boost →
-              </Link>
-            </div>
           </div>
-        </div>
+        )}
       </section>
 
       {/* Financial Health Summary Cards: Today vs This Month */}
       <section>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Today's Financial Overview */}
-          <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Today's Net Margin</span>
-              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
-                todayNet >= 0 ? 'bg-brand-50 text-brand-700 border-brand-200' : 'bg-rose-50 text-rose-700 border-rose-200'
-              }`}>
-                {todayNet >= 0 ? '+ Net Profit' : '- Net Deficit'}
-              </span>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3.5 animate-pulse">
+              <div className="h-4 bg-zinc-200 rounded w-1/3" />
+              <div className="h-8 bg-zinc-200 rounded w-1/2" />
+              <div className="grid grid-cols-2 gap-4 pt-3 border-t border-zinc-100">
+                <div className="h-10 bg-zinc-200 rounded" />
+                <div className="h-10 bg-zinc-200 rounded" />
+              </div>
             </div>
-
-            <div className="text-3xl font-black text-zinc-950">
-              {loading ? '...' : formatCurrency(todayNet, currency)}
+            <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3.5 animate-pulse">
+              <div className="h-4 bg-zinc-200 rounded w-1/3" />
+              <div className="h-8 bg-zinc-200 rounded w-1/2" />
+              <div className="grid grid-cols-2 gap-4 pt-3 border-t border-zinc-100">
+                <div className="h-10 bg-zinc-200 rounded" />
+                <div className="h-10 bg-zinc-200 rounded" />
+              </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-4 pt-3 border-t border-zinc-100 text-xs">
-              <div>
-                <span className="text-[11px] font-semibold text-brand-600 flex items-center gap-1">
-                  <TrendingUp size={13} />
-                  <span>Revenue Today</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Today's Financial Overview */}
+            <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Today's Net Margin</span>
+                <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
+                  todayNet >= 0 ? 'bg-brand-50 text-brand-700 border-brand-200' : 'bg-rose-50 text-rose-700 border-rose-200'
+                }`}>
+                  {todayNet >= 0 ? '+ Net Profit' : '- Net Deficit'}
                 </span>
-                <div className="text-base font-extrabold text-zinc-900 mt-0.5">
-                  {loading ? '...' : formatCurrency(todaySales, currency)}
+              </div>
+
+              <div className="text-3xl font-black text-zinc-950">
+                {formatCurrency(todayNet, currency)}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pt-3 border-t border-zinc-100 text-xs">
+                <div>
+                  <span className="text-[11px] font-semibold text-brand-600 flex items-center gap-1">
+                    <TrendingUp size={13} />
+                    <span>Revenue Today</span>
+                  </span>
+                  <div className="text-base font-extrabold text-zinc-900 mt-0.5">
+                    {formatCurrency(todaySales, currency)}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold text-rose-600 flex items-center gap-1">
+                    <TrendingDown size={13} />
+                    <span>Expenses Today</span>
+                  </span>
+                  <div className="text-base font-extrabold text-zinc-900 mt-0.5">
+                    {formatCurrency(todayExpenses, currency)}
+                  </div>
                 </div>
               </div>
-              <div>
-                <span className="text-[11px] font-semibold text-rose-600 flex items-center gap-1">
-                  <TrendingDown size={13} />
-                  <span>Expenses Today</span>
+            </div>
+
+            {/* This Month's Financial Overview */}
+            <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">This Month's Net Balance</span>
+                <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
+                  monthNet >= 0 ? 'bg-brand-50 text-brand-700 border-brand-200' : 'bg-rose-50 text-rose-700 border-rose-200'
+                }`}>
+                  {monthNet >= 0 ? '+ Monthly Profit' : '- Monthly Deficit'}
                 </span>
-                <div className="text-base font-extrabold text-zinc-900 mt-0.5">
-                  {loading ? '...' : formatCurrency(todayExpenses, currency)}
+              </div>
+
+              <div className="text-3xl font-black text-zinc-950">
+                {formatCurrency(monthNet, currency)}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pt-3 border-t border-zinc-100 text-xs">
+                <div>
+                  <span className="text-[11px] font-semibold text-brand-600 flex items-center gap-1">
+                    <TrendingUp size={13} />
+                    <span>Month's Revenue</span>
+                  </span>
+                  <div className="text-base font-extrabold text-zinc-900 mt-0.5">
+                    {formatCurrency(monthSales, currency)}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold text-rose-600 flex items-center gap-1">
+                    <TrendingDown size={13} />
+                    <span>Month's Expenses</span>
+                  </span>
+                  <div className="text-base font-extrabold text-zinc-900 mt-0.5">
+                    {formatCurrency(monthExpenses, currency)}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* This Month's Financial Overview */}
-          <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">This Month's Net Balance</span>
-              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
-                monthNet >= 0 ? 'bg-brand-50 text-brand-700 border-brand-200' : 'bg-rose-50 text-rose-700 border-rose-200'
-              }`}>
-                {monthNet >= 0 ? '+ Monthly Profit' : '- Monthly Deficit'}
-              </span>
-            </div>
-
-            <div className="text-3xl font-black text-zinc-950">
-              {loading ? '...' : formatCurrency(monthNet, currency)}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 pt-3 border-t border-zinc-100 text-xs">
-              <div>
-                <span className="text-[11px] font-semibold text-brand-600 flex items-center gap-1">
-                  <TrendingUp size={13} />
-                  <span>Month's Revenue</span>
-                </span>
-                <div className="text-base font-extrabold text-zinc-900 mt-0.5">
-                  {loading ? '...' : formatCurrency(monthSales, currency)}
-                </div>
-              </div>
-              <div>
-                <span className="text-[11px] font-semibold text-rose-600 flex items-center gap-1">
-                  <TrendingDown size={13} />
-                  <span>Month's Expenses</span>
-                </span>
-                <div className="text-base font-extrabold text-zinc-900 mt-0.5">
-                  {loading ? '...' : formatCurrency(monthExpenses, currency)}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </section>
 
       {/* Dual Feeds: Recent Invoices & Recent Expenses */}
@@ -347,11 +373,17 @@ export const DashboardHomePage: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-zinc-100 text-xs">
                 {loading ? (
-                  <tr>
-                    <td colSpan={7} className="py-8 text-center text-zinc-400">
-                      Loading recent bills...
-                    </td>
-                  </tr>
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td className="py-3"><div className="h-3.5 bg-zinc-200 rounded w-20" /></td>
+                      <td className="py-3"><div className="h-3.5 bg-zinc-200 rounded w-28" /></td>
+                      <td className="py-3"><div className="h-3.5 bg-zinc-200 rounded w-16" /></td>
+                      <td className="py-3"><div className="h-3.5 bg-zinc-200 rounded w-12" /></td>
+                      <td className="py-3"><div className="h-3.5 bg-zinc-200 rounded w-16" /></td>
+                      <td className="py-3"><div className="h-3.5 bg-zinc-200 rounded w-14" /></td>
+                      <td className="py-3 text-right"><div className="h-3.5 bg-zinc-200 rounded w-6 ml-auto" /></td>
+                    </tr>
+                  ))
                 ) : !summary || summary.recentOrders.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-8 text-center text-zinc-500 space-y-1">
@@ -458,7 +490,18 @@ export const DashboardHomePage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 text-xs">
-                {!expenseSummary || expenseSummary.recentExpenses.length === 0 ? (
+                {loading ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td className="py-3"><div className="h-3.5 bg-zinc-200 rounded w-20" /></td>
+                      <td className="py-3"><div className="h-3.5 bg-zinc-200 rounded w-24" /></td>
+                      <td className="py-3"><div className="h-3.5 bg-zinc-200 rounded w-36" /></td>
+                      <td className="py-3"><div className="h-3.5 bg-zinc-200 rounded w-16" /></td>
+                      <td className="py-3"><div className="h-3.5 bg-zinc-200 rounded w-20" /></td>
+                      <td className="py-3 text-right"><div className="h-3.5 bg-zinc-200 rounded w-16 ml-auto" /></td>
+                    </tr>
+                  ))
+                ) : !expenseSummary || expenseSummary.recentExpenses.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-8 text-center text-zinc-500 space-y-1">
                       <Receipt size={28} className="mx-auto text-zinc-300" />

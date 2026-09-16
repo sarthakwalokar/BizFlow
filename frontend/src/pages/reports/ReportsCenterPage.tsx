@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { reportsApi, ReportType, ReportDataResponse } from '../../api/reports';
 import { inventoryApi, Location } from '../../api/inventory';
 import { formatCurrency } from '../../utils/currency';
+import { ButtonSpinner, TableSkeleton, MetricCardsSkeleton } from '../../components/common/LoadingStates';
 import {
   LucideIcon,
   FileText,
@@ -152,8 +153,8 @@ export const ReportsCenterPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Reports & Statements</h1>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200">
-              Export Ready
+            <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium border border-brand-200">
+              Audit Ready
             </span>
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
@@ -168,24 +169,36 @@ export const ReportsCenterPage: React.FC = () => {
             disabled={exportingPdf || loading}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
           >
-            <Download size={14} className={exportingPdf ? 'animate-pulse text-emerald-600' : 'text-zinc-500'} />
-            <span>{exportingPdf ? 'Generating PDF...' : 'Export PDF'}</span>
+            {exportingPdf ? (
+              <ButtonSpinner text="Generating PDF..." spinnerColor="text-zinc-600" />
+            ) : (
+              <>
+                <Download size={14} className="text-zinc-500" />
+                <span>Export PDF</span>
+              </>
+            )}
           </button>
 
           <button
             onClick={handleExportExcel}
             disabled={exportingExcel || loading}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
           >
-            <FileSpreadsheet size={14} className={exportingExcel ? 'animate-pulse' : ''} />
-            <span>{exportingExcel ? 'Generating Excel...' : 'Export Excel (.xlsx)'}</span>
+            {exportingExcel ? (
+              <ButtonSpinner text="Generating Excel..." spinnerColor="text-white" />
+            ) : (
+              <>
+                <FileSpreadsheet size={14} />
+                <span>Export Excel (.xlsx)</span>
+              </>
+            )}
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
-          <AlertCircle size={15} className="text-red-500 shrink-0" />
+        <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
+          <AlertCircle size={15} className="text-rose-500 shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -201,7 +214,7 @@ export const ReportsCenterPage: React.FC = () => {
               onClick={() => setActiveReport(tab.type)}
               className={`flex-1 min-w-[150px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 isActive
-                  ? 'bg-zinc-900 text-white shadow-xs'
+                  ? 'bg-brand-600 text-white shadow-xs'
                   : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
               }`}
             >
@@ -226,14 +239,14 @@ export const ReportsCenterPage: React.FC = () => {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="px-2.5 py-1.5 rounded-lg border border-zinc-200 text-xs text-zinc-800 bg-zinc-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              className="px-2.5 py-1.5 rounded-lg border border-zinc-200 text-xs text-zinc-800 bg-zinc-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
             />
             <span className="text-zinc-400">to</span>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="px-2.5 py-1.5 rounded-lg border border-zinc-200 text-xs text-zinc-800 bg-zinc-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              className="px-2.5 py-1.5 rounded-lg border border-zinc-200 text-xs text-zinc-800 bg-zinc-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
             />
 
             {/* Quick Presets */}
@@ -291,7 +304,7 @@ export const ReportsCenterPage: React.FC = () => {
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && loadReportPreview()}
                 placeholder="Filter keywords..."
-                className="w-full pl-7 pr-2.5 py-1.5 rounded-lg border border-zinc-200 text-xs bg-zinc-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                className="w-full pl-7 pr-2.5 py-1.5 rounded-lg border border-zinc-200 text-xs bg-zinc-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
               />
             </div>
 
@@ -308,7 +321,9 @@ export const ReportsCenterPage: React.FC = () => {
       </div>
 
       {/* Summary KPI Cards Row */}
-      {reportData?.summaryCards && reportData.summaryCards.length > 0 && (
+      {loading ? (
+        <MetricCardsSkeleton count={4} />
+      ) : reportData?.summaryCards && reportData.summaryCards.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {reportData.summaryCards.map((card, i) => (
             <div
@@ -320,12 +335,12 @@ export const ReportsCenterPage: React.FC = () => {
               </span>
               <div className="text-lg font-bold text-zinc-900 mt-1">{card.value}</div>
               {card.subtitle && (
-                <div className="text-xs text-emerald-600 font-medium mt-0.5">{card.subtitle}</div>
+                <div className="text-xs text-brand-600 font-medium mt-0.5">{card.subtitle}</div>
               )}
             </div>
           ))}
         </div>
-      )}
+      ) : null}
 
       {/* Tabular Preview Table */}
       <div className="bg-white rounded-xl border border-zinc-200 shadow-xs overflow-hidden">
@@ -339,92 +354,88 @@ export const ReportsCenterPage: React.FC = () => {
           </span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-medium uppercase tracking-wider text-[10px]">
-                {reportData?.columns.map((col) => (
-                  <th
-                    key={col.key}
-                    className={`px-4 py-3 ${
-                      col.align === 'RIGHT'
-                        ? 'text-right'
-                        : col.align === 'CENTER'
-                        ? 'text-center'
-                        : 'text-left'
-                    }`}
-                  >
-                    {col.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100">
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan={reportData?.columns.length || 7}
-                    className="px-4 py-12 text-center text-zinc-400"
-                  >
-                    <RefreshCw size={20} className="mx-auto text-zinc-300 animate-spin mb-2" />
-                    <p className="text-xs">Generating report data...</p>
-                  </td>
+        {loading ? (
+          <div className="p-4">
+            <TableSkeleton rows={7} cols={reportData?.columns.length || 6} />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-medium uppercase tracking-wider text-[10px]">
+                  {reportData?.columns.map((col) => (
+                    <th
+                      key={col.key}
+                      className={`px-4 py-3 ${
+                        col.align === 'RIGHT'
+                          ? 'text-right'
+                          : col.align === 'CENTER'
+                          ? 'text-center'
+                          : 'text-left'
+                      }`}
+                    >
+                      {col.label}
+                    </th>
+                  ))}
                 </tr>
-              ) : paginatedRows.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={reportData?.columns.length || 7}
-                    className="px-4 py-12 text-center text-zinc-400 space-y-1"
-                  >
-                    <FileText size={28} className="mx-auto text-zinc-300 mb-2" />
-                    <p className="font-medium text-zinc-700">No records found for selected criteria</p>
-                    <p className="text-[11px] text-zinc-400">Try adjusting your date range or filters.</p>
-                  </td>
-                </tr>
-              ) : (
-                paginatedRows.map((row, rIdx) => (
-                  <tr key={rIdx} className="hover:bg-zinc-50/70 transition-colors">
-                    {reportData?.columns.map((col) => {
-                      const val = row[col.key];
-                      const isBadge = col.type === 'BADGE';
-                      const isCurrency = col.type === 'CURRENCY';
-
-                      return (
-                        <td
-                          key={col.key}
-                          className={`px-4 py-3 ${
-                            col.align === 'RIGHT'
-                              ? 'text-right'
-                              : col.align === 'CENTER'
-                              ? 'text-center'
-                              : 'text-left'
-                          }`}
-                        >
-                          {isBadge ? (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 text-zinc-700 border border-zinc-200">
-                              {val != null ? String(val) : '-'}
-                            </span>
-                          ) : isCurrency ? (
-                            <span className="font-semibold text-zinc-900 font-mono">
-                              {formatCurrency(Number(val) || 0, currency)}
-                            </span>
-                          ) : (
-                            <span className="text-zinc-700">
-                              {val != null ? String(val) : '-'}
-                            </span>
-                          )}
-                        </td>
-                      );
-                    })}
+              </thead>
+              <tbody className="divide-y divide-zinc-100">
+                {paginatedRows.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={reportData?.columns.length || 7}
+                      className="px-4 py-12 text-center text-zinc-400 space-y-1"
+                    >
+                      <FileText size={28} className="mx-auto text-zinc-300 mb-2" />
+                      <p className="font-medium text-zinc-700">No records found for selected criteria</p>
+                      <p className="text-[11px] text-zinc-400">Try adjusting your date range or filters.</p>
+                    </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ) : (
+                  paginatedRows.map((row, rIdx) => (
+                    <tr key={rIdx} className="hover:bg-zinc-50/70 transition-colors">
+                      {reportData?.columns.map((col) => {
+                        const val = row[col.key];
+                        const isBadge = col.type === 'BADGE';
+                        const isCurrency = col.type === 'CURRENCY';
+
+                        return (
+                          <td
+                            key={col.key}
+                            className={`px-4 py-3 ${
+                              col.align === 'RIGHT'
+                                ? 'text-right'
+                                : col.align === 'CENTER'
+                                ? 'text-center'
+                                : 'text-left'
+                            }`}
+                          >
+                            {isBadge ? (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 text-zinc-700 border border-zinc-200">
+                                {val != null ? String(val) : '-'}
+                              </span>
+                            ) : isCurrency ? (
+                              <span className="font-semibold text-zinc-900 font-mono">
+                                {formatCurrency(Number(val) || 0, currency)}
+                              </span>
+                            ) : (
+                              <span className="text-zinc-700">
+                                {val != null ? String(val) : '-'}
+                              </span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Pagination Bar */}
-        {allRows.length > pageSize && (
+        {!loading && allRows.length > pageSize && (
           <div className="px-4 py-3 border-t border-zinc-100 flex items-center justify-between text-xs">
             <span className="text-zinc-500">
               Showing {(currentPage - 1) * pageSize + 1} to{' '}

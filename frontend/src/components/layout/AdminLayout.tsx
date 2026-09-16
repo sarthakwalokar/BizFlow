@@ -61,7 +61,7 @@ export const AdminLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-zinc-900 flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 flex flex-col md:flex-row font-sans">
       {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 bg-white sticky top-0 z-50 shadow-xs">
         <div className="flex items-center space-x-2.5">

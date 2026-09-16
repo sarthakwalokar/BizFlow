@@ -5,6 +5,7 @@ import { categoriesApi, Category } from '../../api/categories';
 import { customersApi, Customer } from '../../api/customers';
 import { billingApi, CreateOrderRequest, OrderItemRequest, Order, PaymentMethod } from '../../api/billing';
 import { InvoiceReceiptModal } from '../../components/billing/InvoiceReceiptModal';
+import { PosGridSkeleton, ButtonSpinner } from '../../components/common/LoadingStates';
 import { formatCurrency, getCurrencySymbol } from '../../utils/currency';
 import {
   Search,
@@ -411,78 +412,78 @@ export const POSBillingPage: React.FC = () => {
         </div>
 
         {/* Product Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[calc(100vh-270px)] overflow-y-auto pr-1">
+        <div className="max-h-[calc(100vh-270px)] overflow-y-auto pr-1">
           {loadingCatalog ? (
-            <div className="col-span-full py-16 text-center text-zinc-400">Loading catalog items...</div>
+            <PosGridSkeleton count={8} />
           ) : filteredProducts.length === 0 ? (
-            <div className="col-span-full py-16 text-center text-zinc-500 bg-white rounded-2xl border border-zinc-200 p-8 space-y-2">
+            <div className="py-16 text-center text-zinc-500 bg-white rounded-2xl border border-zinc-200 p-8 space-y-2">
               <Package size={36} className="mx-auto text-zinc-300" />
               <p className="font-bold text-zinc-700">No matching catalog items found</p>
               <p className="text-xs text-zinc-400">Try adjusting your keyword search or category filter.</p>
             </div>
           ) : (
-            filteredProducts.map((prod) => {
-              const inCartItem = cart.find((i) => i.productId === prod.id);
-              const isOutOfStock = prod.trackStock && (prod.stockQuantity ?? 0) <= 0;
-              const isLowStock = prod.trackStock && (prod.stockQuantity ?? 0) > 0 && (prod.stockQuantity ?? 0) <= (prod.lowStockThreshold ?? 5);
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+              {filteredProducts.map((prod) => {
+                const inCartItem = cart.find((i) => i.productId === prod.id);
+                const isOutOfStock = prod.trackStock && (prod.stockQuantity ?? 0) <= 0;
+                const isLowStock = prod.trackStock && (prod.stockQuantity ?? 0) > 0 && (prod.stockQuantity ?? 0) <= (prod.lowStockThreshold ?? 5);
 
-              return (
-                <button
-                  key={prod.id}
-                  onClick={() => addToCart(prod)}
-                  disabled={isOutOfStock}
-                  className={`p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-150 relative group cursor-pointer hover:border-brand-500 active:scale-98 ${
-                    inCartItem
-                      ? 'bg-brand-50/60 border-brand-400 ring-2 ring-brand-500/20 shadow-xs'
-                      : isOutOfStock
-                      ? 'bg-zinc-100/60 border-zinc-200 opacity-60 cursor-not-allowed'
-                      : 'bg-white border-zinc-200 hover:bg-zinc-50/60 shadow-card'
-                  }`}
-                >
-                  {inCartItem && (
-                    <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-black flex items-center justify-center shadow-xs">
-                      {inCartItem.quantity}
-                    </span>
-                  )}
-
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span
-                        className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                          prod.productType === 'PHYSICAL'
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                            : 'bg-pink-50 text-pink-700 border border-pink-200'
-                        }`}
-                      >
-                        {prod.productType}
+                return (
+                  <button
+                    key={prod.id}
+                    onClick={() => addToCart(prod)}
+                    disabled={isOutOfStock}
+                    className={`p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-150 relative group cursor-pointer hover:border-brand-500 active:scale-98 ${
+                      inCartItem
+                        ? 'bg-brand-50/60 border-brand-400 ring-2 ring-brand-500/20 shadow-xs'
+                        : isOutOfStock
+                        ? 'bg-zinc-100/60 border-zinc-200 opacity-60 cursor-not-allowed'
+                        : 'bg-white border-zinc-200 hover:bg-zinc-50/60 shadow-card'
+                    }`}
+                  >
+                    {inCartItem && (
+                      <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-black flex items-center justify-center shadow-xs">
+                        {inCartItem.quantity}
                       </span>
-                      {prod.category && (
-                        <span className="text-[10px] text-zinc-400 truncate max-w-[80px]">
-                          {prod.category.name}
+                    )}
+
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span
+                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                            prod.productType === 'PHYSICAL'
+                              ? 'bg-zinc-100 text-zinc-700 border border-zinc-200'
+                              : 'bg-purple-50 text-purple-700 border border-purple-200'
+                          }`}
+                        >
+                          {prod.productType}
+                        </span>
+                        {prod.category && (
+                          <span className="text-[10px] text-zinc-400 truncate max-w-[80px]">
+                            {prod.category.name}
+                          </span>
+                        )}
+                      </div>
+
+                      <h4 className="font-bold text-zinc-900 text-xs line-clamp-2 leading-snug">
+                        {prod.name}
+                      </h4>
+
+                      {prod.sku && (
+                        <span className="text-[10px] text-zinc-400 font-mono mt-0.5 block">
+                          {prod.sku}
                         </span>
                       )}
                     </div>
 
-                    <h4 className="font-bold text-zinc-900 text-xs line-clamp-2 leading-snug">
-                      {prod.name}
-                    </h4>
-
-                    {prod.sku && (
-                      <span className="text-[10px] text-zinc-400 font-mono block mt-0.5">
-                        {prod.sku}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="pt-2 mt-2 border-t border-zinc-100 flex items-center justify-between">
-                    <div>
-                      {prod.trackStock && (
+                    <div className="mt-3 pt-2 border-t border-zinc-100 flex items-center justify-between">
+                      {prod.trackStock ? (
                         <span
-                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded inline-block ${
+                          className={`text-[10px] font-bold ${
                             isOutOfStock
-                              ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                              ? 'text-rose-600'
                               : isLowStock
-                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                              ? 'text-amber-600'
                               : 'text-zinc-500'
                           }`}
                         >
@@ -490,18 +491,20 @@ export const POSBillingPage: React.FC = () => {
                             ? 'Out of Stock'
                             : isLowStock
                             ? `Low: ${prod.stockQuantity}`
-                            : `${prod.stockQuantity} in stock`}
+                            : `${prod.stockQuantity} left`}
                         </span>
+                      ) : (
+                        <span className="text-[10px] text-brand-700 font-semibold">Service</span>
                       )}
-                    </div>
 
-                    <span className="text-xs font-black text-zinc-900">
-                      {formatCurrency(prod.price, currency)}
-                    </span>
-                  </div>
-                </button>
-              );
-            })
+                      <span className="font-black text-xs text-zinc-950">
+                        {formatCurrency(prod.price, currency)}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           )}
         </div>
       </div>
@@ -834,12 +837,14 @@ export const POSBillingPage: React.FC = () => {
             disabled={cart.length === 0 || processingOrder}
             className="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
           >
-            <Receipt size={17} />
-            <span>
-              {processingOrder
-                ? 'Processing...'
-                : `Charge ${formatCurrency(grandTotal, currency)}`}
-            </span>
+            {processingOrder ? (
+              <ButtonSpinner text="Processing Order..." />
+            ) : (
+              <>
+                <Receipt size={17} />
+                <span>Charge {formatCurrency(grandTotal, currency)}</span>
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -932,9 +937,9 @@ export const POSBillingPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={creatingCustomer}
-                  className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
                 >
-                  {creatingCustomer ? 'Saving...' : 'Save & Attach'}
+                  {creatingCustomer ? <ButtonSpinner text="Saving..." /> : 'Save & Attach'}
                 </button>
               </div>
             </form>

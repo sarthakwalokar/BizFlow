@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminApi, AdminBusinessDetail } from '../../api/admin';
 import { Business, BusinessType } from '../../api/auth';
+import { ButtonSpinner, TableSkeleton } from '../../components/common/LoadingStates';
 import {
   Building2,
   Search,
@@ -112,7 +113,7 @@ export const AdminBusinessesPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Tenants & Businesses</h1>
-            <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 text-xs font-medium border border-purple-200">
+            <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium border border-brand-200">
               {totalElements} Registered
             </span>
           </div>
@@ -126,7 +127,7 @@ export const AdminBusinessesPage: React.FC = () => {
           disabled={loading}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-medium shadow-xs transition-colors cursor-pointer self-start sm:self-auto disabled:opacity-50"
         >
-          <RefreshCw size={13} className={loading ? 'animate-spin text-purple-600' : 'text-zinc-400'} />
+          <RefreshCw size={13} className={loading ? 'animate-spin text-brand-600' : 'text-zinc-400'} />
           <span>Refresh</span>
         </button>
       </div>
@@ -142,7 +143,7 @@ export const AdminBusinessesPage: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by business name, email, or phone..."
-              className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-zinc-50 border border-zinc-200 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white"
+              className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-zinc-50 border border-zinc-200 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white"
             />
           </div>
 
@@ -185,7 +186,7 @@ export const AdminBusinessesPage: React.FC = () => {
 
           <button
             type="submit"
-            className="px-3.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium transition-colors shadow-xs cursor-pointer"
+            className="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium transition-colors shadow-xs cursor-pointer"
           >
             Apply Filters
           </button>
@@ -209,9 +210,8 @@ export const AdminBusinessesPage: React.FC = () => {
             <tbody className="divide-y divide-zinc-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-zinc-400">
-                    <RefreshCw size={18} className="mx-auto text-zinc-300 animate-spin mb-2" />
-                    <p className="text-xs">Loading tenants directory...</p>
+                  <td colSpan={6} className="p-0">
+                    <TableSkeleton rows={5} cols={6} />
                   </td>
                 </tr>
               ) : businesses.length === 0 ? (
@@ -231,7 +231,7 @@ export const AdminBusinessesPage: React.FC = () => {
                       {/* Name & ID */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-lg bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 font-bold text-xs shrink-0">
+                          <div className="w-8 h-8 rounded-lg bg-brand-50 border border-brand-200 flex items-center justify-center text-brand-700 font-bold text-xs shrink-0">
                             {biz.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
@@ -265,7 +265,7 @@ export const AdminBusinessesPage: React.FC = () => {
                         <span
                           className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${
                             biz.businessSize === 'LARGE'
-                              ? 'bg-purple-50 text-purple-700 border border-purple-200'
+                              ? 'bg-brand-50 text-brand-700 border border-brand-200'
                               : 'bg-zinc-100 text-zinc-700 border border-zinc-200'
                           }`}
                         >
@@ -424,7 +424,7 @@ export const AdminBusinessesPage: React.FC = () => {
                   </div>
                   <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
                     <span className="text-zinc-400 text-[10px] block">Tier Size</span>
-                    <span className="font-medium text-purple-700">{businessDetail.businessSize}</span>
+                    <span className="font-medium text-brand-700">{businessDetail.businessSize}</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
                     <span className="text-zinc-400 text-[10px] block">Tax Config</span>
@@ -461,13 +461,15 @@ export const AdminBusinessesPage: React.FC = () => {
 
                   <button
                     onClick={() => handleToggleStatus(businessDetail.id, businessDetail.active)}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                    disabled={updatingId === businessDetail.id}
+                    className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer disabled:opacity-50 ${
                       businessDetail.active
-                        ? 'bg-zinc-100 border border-zinc-200 text-red-600 hover:bg-red-50 hover:border-red-200'
-                        : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs'
+                        ? 'bg-zinc-100 border border-zinc-200 text-rose-600 hover:bg-rose-50 hover:border-rose-200'
+                        : 'bg-brand-600 text-white hover:bg-brand-700 shadow-xs'
                     }`}
                   >
-                    {businessDetail.active ? 'Deactivate Business' : 'Activate Business'}
+                    {updatingId === businessDetail.id && <ButtonSpinner size="xs" />}
+                    <span>{businessDetail.active ? 'Deactivate Business' : 'Activate Business'}</span>
                   </button>
                 </div>
               </div>

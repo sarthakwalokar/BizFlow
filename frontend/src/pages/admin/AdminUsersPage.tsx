@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { adminApi } from '../../api/admin';
 import { User, Role } from '../../api/auth';
 import { useAuth } from '../../context/AuthContext';
+import { TableSkeleton } from '../../components/common/LoadingStates';
 import {
   Users,
   Search,
@@ -89,7 +90,7 @@ export const AdminUsersPage: React.FC = () => {
     switch (role) {
       case 'ADMIN':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-brand-50 text-brand-700 border border-brand-200">
             <ShieldAlert size={11} />
             <span>ADMIN</span>
           </span>
@@ -118,7 +119,7 @@ export const AdminUsersPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Platform Users Directory</h1>
-            <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 text-xs font-medium border border-purple-200">
+            <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium border border-brand-200">
               {totalElements} Accounts
             </span>
           </div>
@@ -132,14 +133,14 @@ export const AdminUsersPage: React.FC = () => {
           disabled={loading}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-medium shadow-xs transition-colors cursor-pointer self-start sm:self-auto disabled:opacity-50"
         >
-          <RefreshCw size={13} className={loading ? 'animate-spin text-purple-600' : 'text-zinc-400'} />
+          <RefreshCw size={13} className={loading ? 'animate-spin text-brand-600' : 'text-zinc-400'} />
           <span>Refresh</span>
         </button>
       </div>
 
       {error && (
-        <div className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
-          <AlertCircle size={15} className="text-red-500 shrink-0" />
+        <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
+          <AlertCircle size={15} className="text-rose-500 shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -155,7 +156,7 @@ export const AdminUsersPage: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name, email, or phone..."
-              className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-zinc-50 border border-zinc-200 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white"
+              className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-zinc-50 border border-zinc-200 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white"
             />
           </div>
 
@@ -196,7 +197,7 @@ export const AdminUsersPage: React.FC = () => {
 
           <button
             type="submit"
-            className="px-3.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium transition-colors shadow-xs cursor-pointer"
+            className="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium transition-colors shadow-xs cursor-pointer"
           >
             Apply Filters
           </button>
@@ -219,9 +220,8 @@ export const AdminUsersPage: React.FC = () => {
             <tbody className="divide-y divide-zinc-100">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-zinc-400">
-                    <RefreshCw size={18} className="mx-auto text-zinc-300 animate-spin mb-2" />
-                    <p className="text-xs">Loading users directory...</p>
+                  <td colSpan={5} className="p-0">
+                    <TableSkeleton rows={5} cols={5} />
                   </td>
                 </tr>
               ) : users.length === 0 ? (
@@ -250,7 +250,7 @@ export const AdminUsersPage: React.FC = () => {
                             <div className="flex items-center gap-1.5">
                               <span className="font-medium text-zinc-900 text-xs">{usr.fullName}</span>
                               {isSelf && (
-                                <span className="px-1.5 py-0.2 rounded bg-purple-50 text-purple-700 text-[9px] font-semibold border border-purple-200">
+                                <span className="px-1.5 py-0.2 rounded bg-brand-50 text-brand-700 text-[9px] font-semibold border border-brand-200">
                                   You
                                 </span>
                               )}

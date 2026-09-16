@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { adminApi, AdminSystemConfig } from '../../api/admin';
+import { ButtonSpinner } from '../../components/common/LoadingStates';
 import {
   Save,
   RefreshCw,
@@ -78,7 +79,7 @@ export const AdminSystemConfigPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-zinc-900 tracking-tight">System Configuration</h1>
-            <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 text-xs font-medium border border-purple-200">
+            <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium border border-brand-200">
               Platform Controls
             </span>
           </div>
@@ -92,7 +93,7 @@ export const AdminSystemConfigPage: React.FC = () => {
           disabled={loading}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-medium shadow-xs transition-colors cursor-pointer self-start sm:self-auto disabled:opacity-50"
         >
-          <RefreshCw size={13} className={loading ? 'animate-spin text-purple-600' : 'text-zinc-400'} />
+          <RefreshCw size={13} className={loading ? 'animate-spin text-brand-600' : 'text-zinc-400'} />
           <span>Reload Config</span>
         </button>
       </div>
@@ -105,8 +106,8 @@ export const AdminSystemConfigPage: React.FC = () => {
       )}
 
       {error && (
-        <div className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
-          <AlertTriangle size={16} className="text-red-500 shrink-0" />
+        <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
+          <AlertTriangle size={16} className="text-rose-500 shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -115,7 +116,7 @@ export const AdminSystemConfigPage: React.FC = () => {
         {/* Operational Toggles Card */}
         <div className="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs space-y-4">
           <div className="flex items-center gap-2.5 border-b border-zinc-100 pb-3">
-            <Sliders size={16} className="text-purple-600" />
+            <Sliders size={16} className="text-brand-600" />
             <h3 className="text-sm font-semibold text-zinc-900">Platform Operation Switches</h3>
           </div>
 
@@ -136,7 +137,7 @@ export const AdminSystemConfigPage: React.FC = () => {
                   onChange={(e) => setAllowSelfRegistration(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-10 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600" />
+                <div className="w-10 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600" />
               </label>
             </div>
 
@@ -177,7 +178,7 @@ export const AdminSystemConfigPage: React.FC = () => {
                 value={defaultCurrency}
                 onChange={(e) => setDefaultCurrency(e.target.value)}
                 placeholder="USD"
-                className="w-full px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white uppercase"
+                className="w-full px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white uppercase"
               />
             </div>
 
@@ -188,7 +189,7 @@ export const AdminSystemConfigPage: React.FC = () => {
                 value={defaultTimezone}
                 onChange={(e) => setDefaultTimezone(e.target.value)}
                 placeholder="Asia/Kolkata"
-                className="w-full px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white"
+                className="w-full px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white"
               />
             </div>
 
@@ -200,7 +201,7 @@ export const AdminSystemConfigPage: React.FC = () => {
                 onChange={(e) => setSessionTimeoutMinutes(Number(e.target.value))}
                 min={15}
                 max={10080}
-                className="w-full px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white"
+                className="w-full px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white"
               />
             </div>
           </div>
@@ -216,7 +217,7 @@ export const AdminSystemConfigPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1">
               <span className="text-zinc-400 text-[10px] block">Active AI Provider</span>
-              <span className="font-semibold text-purple-700">
+              <span className="font-semibold text-brand-700">
                 {config?.activeAiProvider || 'BizFlow Intelligent Advisor'}
               </span>
             </div>
@@ -247,9 +248,9 @@ export const AdminSystemConfigPage: React.FC = () => {
           <button
             type="submit"
             disabled={saving || loading}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
           >
-            <Save size={14} />
+            {saving ? <ButtonSpinner size="xs" /> : <Save size={14} />}
             <span>{saving ? 'Applying...' : 'Save Configuration'}</span>
           </button>
         </div>

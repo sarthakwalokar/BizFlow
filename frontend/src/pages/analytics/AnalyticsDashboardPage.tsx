@@ -13,6 +13,7 @@ import {
   CreditCard,
 } from 'lucide-react';
 import { formatCurrency } from '../../utils/currency';
+import { MetricCardsSkeleton, ChartSkeleton, SkeletonBlock } from '../../components/common/LoadingStates';
 
 export const AnalyticsDashboardPage: React.FC = () => {
   const { business } = useAuth();
@@ -96,9 +97,9 @@ export const AnalyticsDashboardPage: React.FC = () => {
       <div className="w-full overflow-x-auto">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-48 overflow-visible">
           <defs>
-            <linearGradient id="greenAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#16A34A" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="#16A34A" stopOpacity="0.0" />
+            <linearGradient id="purpleAreaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#6D28D9" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#6D28D9" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
@@ -128,10 +129,10 @@ export const AnalyticsDashboardPage: React.FC = () => {
           })}
 
           {/* Fill Area */}
-          <path d={areaD} fill="url(#greenAreaGrad)" />
+          <path d={areaD} fill="url(#purpleAreaGrad)" />
 
           {/* Stroke Line */}
-          <path d={pathD} fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" />
+          <path d={pathD} fill="none" stroke="#6D28D9" strokeWidth="2.5" strokeLinecap="round" />
 
           {/* Data Points */}
           {points.map((p, idx) => (
@@ -141,7 +142,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
                 cy={p.y}
                 r="3.5"
                 fill="#FFFFFF"
-                stroke="#16A34A"
+                stroke="#6D28D9"
                 strokeWidth="2"
                 className="transition-all hover:r-5 cursor-pointer"
               />
@@ -205,7 +206,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
                 onClick={() => setTimeRange(preset.id as TimeRange)}
                 className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
                   timeRange === preset.id
-                    ? 'bg-emerald-600 text-white shadow-xs'
+                    ? 'bg-brand-600 text-white shadow-xs'
                     : 'text-zinc-600 hover:text-zinc-900'
                 }`}
               >
@@ -220,7 +221,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
             className="p-2 rounded-xl bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-600 transition-colors cursor-pointer"
             title="Refresh Analytics"
           >
-            <RefreshCw size={14} className={loading ? 'animate-spin text-emerald-600' : ''} />
+            <RefreshCw size={14} className={loading ? 'animate-spin text-brand-600' : ''} />
           </button>
         </div>
       </div>
@@ -232,88 +233,90 @@ export const AnalyticsDashboardPage: React.FC = () => {
       )}
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Gross Revenue */}
-        <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Gross Revenue</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-              <TrendingUp size={16} />
+      {loading ? (
+        <MetricCardsSkeleton count={4} />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Gross Revenue */}
+          <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Gross Revenue</span>
+              <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
+                <TrendingUp size={16} />
+              </div>
             </div>
+            <div className="text-2xl font-black text-zinc-950">
+              {formatCurrency(overview?.revenue ?? 0, currency)}
+            </div>
+            <p className="text-[11px] text-zinc-500">Total processed sales volume</p>
           </div>
-          <div className="text-2xl font-black text-zinc-950">
-            {loading ? '...' : formatCurrency(overview?.revenue ?? 0, currency)}
-          </div>
-          <p className="text-[11px] text-zinc-500">Total processed sales volume</p>
-        </div>
 
-        {/* Operating Expenses */}
-        <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Operating Expenses</span>
-            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
-              <TrendingDown size={16} />
+          {/* Operating Expenses */}
+          <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Operating Expenses</span>
+              <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+                <TrendingDown size={16} />
+              </div>
             </div>
+            <div className="text-2xl font-black text-rose-600">
+              {formatCurrency(overview?.expenseTotal ?? 0, currency)}
+            </div>
+            <p className="text-[11px] text-zinc-500">Logged business expenditures</p>
           </div>
-          <div className="text-2xl font-black text-rose-600">
-            {loading ? '...' : formatCurrency(overview?.expenseTotal ?? 0, currency)}
-          </div>
-          <p className="text-[11px] text-zinc-500">Logged business expenditures</p>
-        </div>
 
-        {/* Net Profit Margin */}
-        <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Net Operating Profit</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-              <Percent size={16} />
+          {/* Net Profit Margin */}
+          <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Net Operating Profit</span>
+              <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
+                <Percent size={16} />
+              </div>
             </div>
+            <div className="text-2xl font-black text-zinc-950">
+              {formatCurrency(overview?.netRevenue ?? 0, currency)}
+            </div>
+            <p className="text-[11px] text-brand-700 font-semibold">
+              {`${Number(overview?.profitMarginPercentage ?? 0).toFixed(1)}% net margin`}
+            </p>
           </div>
-          <div className="text-2xl font-black text-zinc-950">
-            {loading ? '...' : formatCurrency(overview?.netRevenue ?? 0, currency)}
-          </div>
-          <p className="text-[11px] text-emerald-600 font-semibold">
-            {loading ? '...' : `${Number(overview?.profitMarginPercentage ?? 0).toFixed(1)}% net margin`}
-          </p>
-        </div>
 
-        {/* Total Orders & AOV */}
-        <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Average Order Value</span>
-            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-              <ShoppingCart size={16} />
+          {/* Total Orders & AOV */}
+          <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Average Order Value</span>
+              <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                <ShoppingCart size={16} />
+              </div>
             </div>
+            <div className="text-2xl font-black text-zinc-950">
+              {formatCurrency(overview?.averageOrderValue ?? 0, currency)}
+            </div>
+            <p className="text-[11px] text-zinc-500">
+              {`Across ${overview?.orderCount ?? 0} paid bills`}
+            </p>
           </div>
-          <div className="text-2xl font-black text-zinc-950">
-            {loading ? '...' : formatCurrency(overview?.averageOrderValue ?? 0, currency)}
-          </div>
-          <p className="text-[11px] text-zinc-500">
-            {loading ? '...' : `Across ${overview?.orderCount ?? 0} paid bills`}
-          </p>
         </div>
-      </div>
+      )}
 
       {/* Sales Velocity Trend Area Chart */}
-      <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-sm font-bold text-zinc-900">Revenue Velocity Trend</h3>
-            <p className="text-xs text-zinc-500">Daily sales performance trajectory</p>
+      {loading ? (
+        <ChartSkeleton title="Revenue Velocity Trend" />
+      ) : (
+        <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-zinc-900">Revenue Velocity Trend</h3>
+              <p className="text-xs text-zinc-500">Daily sales performance trajectory</p>
+            </div>
+            <span className="text-[10px] font-bold text-brand-700 bg-brand-50 px-2.5 py-1 rounded-full border border-brand-200">
+              Automated Calculations
+            </span>
           </div>
-          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-            Automated Calculations
-          </span>
-        </div>
 
-        {loading ? (
-          <div className="h-48 flex items-center justify-center text-zinc-400 text-xs">
-            Rendering trend data...
-          </div>
-        ) : (
-          renderSalesAreaChart()
-        )}
-      </div>
+          {renderSalesAreaChart()}
+        </div>
+      )}
 
       {/* Dual Breakdown Columns: Top Products & Payment Modes */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -321,14 +324,24 @@ export const AnalyticsDashboardPage: React.FC = () => {
         <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
             <div className="flex items-center space-x-2">
-              <Award className="w-4 h-4 text-emerald-600" />
+              <Award className="w-4 h-4 text-brand-600" />
               <h3 className="text-sm font-bold text-zinc-900">Top Selling Products &amp; Services</h3>
             </div>
             <span className="text-xs text-zinc-400">By Revenue</span>
           </div>
 
           <div className="space-y-3">
-            {!overview || overview.topProducts.length === 0 ? (
+            {loading ? (
+              Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="space-y-1.5 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <SkeletonBlock className="h-3 w-32" />
+                    <SkeletonBlock className="h-3 w-16" />
+                  </div>
+                  <SkeletonBlock className="h-1.5 w-full rounded-full" />
+                </div>
+              ))
+            ) : !overview || overview.topProducts.length === 0 ? (
               <div className="py-8 text-center text-zinc-400 text-xs">No sales recorded in this period.</div>
             ) : (
               overview.topProducts.map((p, idx) => {
@@ -347,7 +360,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
                     </div>
 
                     <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-emerald-600 rounded-full" style={{ width: `${percent}%` }} />
+                      <div className="h-full bg-brand-600 rounded-full" style={{ width: `${percent}%` }} />
                     </div>
                   </div>
                 );
@@ -360,14 +373,24 @@ export const AnalyticsDashboardPage: React.FC = () => {
         <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
             <div className="flex items-center space-x-2">
-              <CreditCard className="w-4 h-4 text-emerald-600" />
+              <CreditCard className="w-4 h-4 text-brand-600" />
               <h3 className="text-sm font-bold text-zinc-900">Payment Capture Distribution</h3>
             </div>
             <span className="text-xs text-zinc-400">Multi-Mode</span>
           </div>
 
           <div className="space-y-3">
-            {!overview || overview.paymentDistribution.length === 0 ? (
+            {loading ? (
+              Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="space-y-1.5 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <SkeletonBlock className="h-3 w-28" />
+                    <SkeletonBlock className="h-3 w-20" />
+                  </div>
+                  <SkeletonBlock className="h-1.5 w-full rounded-full" />
+                </div>
+              ))
+            ) : !overview || overview.paymentDistribution.length === 0 ? (
               <div className="py-8 text-center text-zinc-400 text-xs">No transactions recorded.</div>
             ) : (
               overview.paymentDistribution.map((pm, idx) => {
@@ -392,7 +415,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
                     </div>
 
                     <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-emerald-600 rounded-full" style={{ width: `${percent}%` }} />
+                      <div className="h-full bg-brand-600 rounded-full" style={{ width: `${percent}%` }} />
                     </div>
                   </div>
                 );

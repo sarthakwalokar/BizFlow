@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { businessApi, BusinessUpdateRequest } from '../../api/business';
 import { BusinessType } from '../../api/auth';
 import { formatCurrency } from '../../utils/currency';
+import { ButtonSpinner } from '../../components/common/LoadingStates';
 import {
   Building2,
   Percent,
@@ -116,15 +117,15 @@ export const BusinessSettingsPage: React.FC = () => {
       </div>
 
       {successMessage && (
-        <div className="p-3.5 rounded-lg bg-brand-50 border border-brand-200 flex items-center gap-2.5 text-brand-800 text-xs">
-          <CheckCircle2 size={16} className="text-brand-600 shrink-0" />
+        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center gap-2.5 text-emerald-800 text-xs">
+          <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
           <span className="font-medium">{successMessage}</span>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-3.5 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2.5 text-red-800 text-xs">
-          <AlertCircle size={16} className="text-red-600 shrink-0" />
+        <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 flex items-center gap-2.5 text-rose-800 text-xs">
+          <AlertCircle size={16} className="text-rose-600 shrink-0" />
           <span className="font-medium">{errorMessage}</span>
         </div>
       )}
@@ -552,8 +553,14 @@ export const BusinessSettingsPage: React.FC = () => {
             disabled={saving}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
           >
-            <Save size={15} />
-            <span>{saving ? 'Saving Changes...' : 'Save Settings'}</span>
+            {saving ? (
+              <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+            ) : (
+              <>
+                <Save size={15} />
+                <span>Save Settings</span>
+              </>
+            )}
           </button>
         </div>
       </form>

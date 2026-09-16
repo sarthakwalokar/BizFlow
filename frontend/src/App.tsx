@@ -55,19 +55,19 @@ const coreFeatures = [
     title: 'Billing',
     desc: 'Create and manage bills quickly.',
     icon: Receipt,
-    color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+    color: 'text-brand-600 bg-brand-50 border-brand-200',
   },
   {
     title: 'Products & Services',
     desc: 'Keep your products and services organized.',
     icon: Package,
-    color: 'text-blue-600 bg-blue-50 border-blue-200',
+    color: 'text-brand-600 bg-brand-50 border-brand-200',
   },
   {
     title: 'Customers',
     desc: 'Understand customer activity and purchase history.',
     icon: Users,
-    color: 'text-purple-600 bg-purple-50 border-purple-200',
+    color: 'text-brand-600 bg-brand-50 border-brand-200',
   },
   {
     title: 'Expenses',
@@ -79,7 +79,7 @@ const coreFeatures = [
     title: 'Analytics',
     desc: 'Understand your sales and business performance.',
     icon: BarChart3,
-    color: 'text-indigo-600 bg-indigo-50 border-indigo-200',
+    color: 'text-brand-600 bg-brand-50 border-brand-200',
   },
   {
     title: 'Review Boost',
@@ -91,13 +91,13 @@ const coreFeatures = [
     title: 'AI Assistant',
     desc: 'Get useful answers from your business data.',
     icon: Sparkles,
-    color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+    color: 'text-brand-600 bg-brand-50 border-brand-200',
   },
   {
     title: 'Reports',
     desc: 'Generate clear business reports.',
     icon: FileText,
-    color: 'text-slate-600 bg-slate-50 border-slate-200',
+    color: 'text-zinc-600 bg-zinc-50 border-zinc-200',
   },
 ];
 
@@ -114,7 +114,7 @@ const LandingPage: React.FC = () => {
         <section className="text-center space-y-6 pt-6 sm:pt-12 max-w-4xl mx-auto">
           {/* Small Label */}
           <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white border border-zinc-200 text-zinc-700 text-xs font-semibold shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-600" />
+            <span className="w-2 h-2 rounded-full bg-brand-600" />
             <span className="tracking-wide uppercase text-[11px] font-bold text-zinc-600">
               BUSINESS MANAGEMENT PLATFORM
             </span>
@@ -122,7 +122,7 @@ const LandingPage: React.FC = () => {
 
           {/* Headline */}
           <h1 className="text-4xl sm:text-6xl font-extrabold text-zinc-950 tracking-tight leading-tight">
-            Run your business. <span className="text-emerald-600">Simply.</span>
+            Run your business. <span className="text-brand-600">Simply.</span>
           </h1>
 
           {/* Supporting Text */}
@@ -135,7 +135,7 @@ const LandingPage: React.FC = () => {
             <Link
               to="/signup"
               id="hero-register-btn"
-              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-xs transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-xs transition-colors cursor-pointer"
             >
               <span>Get Started</span>
               <ArrowRight className="w-4 h-4" />
@@ -233,7 +233,7 @@ const LandingPage: React.FC = () => {
            ========================================================================= */}
         <section className="bg-white rounded-2xl border border-zinc-200 p-8 sm:p-12 shadow-card text-center space-y-6">
           <div className="max-w-3xl mx-auto space-y-3">
-            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
+            <span className="text-xs font-bold text-brand-600 uppercase tracking-wider">
               Built for Modern Commerce
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
@@ -273,7 +273,7 @@ const LandingPage: React.FC = () => {
            ========================================================================= */}
         <section id="core-features" className="space-y-8">
           <div className="text-center space-y-2">
-            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Features</span>
+            <span className="text-xs font-bold text-brand-600 uppercase tracking-wider">Features</span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
               Essential Tools for Every Business
             </h2>
@@ -308,7 +308,7 @@ const LandingPage: React.FC = () => {
            ========================================================================= */}
         <section className="bg-white rounded-2xl border border-zinc-200 p-8 sm:p-12 shadow-card space-y-8">
           <div className="max-w-2xl space-y-2">
-            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">All-in-One Workflow</span>
+            <span className="text-xs font-bold text-brand-600 uppercase tracking-wider">All-in-One Workflow</span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
               Everything your business needs
             </h2>
@@ -319,7 +319,7 @@ const LandingPage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-white border border-zinc-200 text-emerald-600 flex items-center justify-center font-bold text-sm">
+              <div className="w-8 h-8 rounded-lg bg-white border border-zinc-200 text-brand-600 flex items-center justify-center font-bold text-sm">
                 1
               </div>
               <h4 className="text-sm font-bold text-zinc-900">Fast Front-Desk Billing</h4>
@@ -329,7 +329,7 @@ const LandingPage: React.FC = () => {
             </div>
 
             <div className="p-5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-white border border-zinc-200 text-emerald-600 flex items-center justify-center font-bold text-sm">
+              <div className="w-8 h-8 rounded-lg bg-white border border-zinc-200 text-brand-600 flex items-center justify-center font-bold text-sm">
                 2
               </div>
               <h4 className="text-sm font-bold text-zinc-900">Adaptive Stock Tracking</h4>
@@ -339,7 +339,7 @@ const LandingPage: React.FC = () => {
             </div>
 
             <div className="p-5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-white border border-zinc-200 text-emerald-600 flex items-center justify-center font-bold text-sm">
+              <div className="w-8 h-8 rounded-lg bg-white border border-zinc-200 text-brand-600 flex items-center justify-center font-bold text-sm">
                 3
               </div>
               <h4 className="text-sm font-bold text-zinc-900">Real Financial Overview</h4>
@@ -387,7 +387,7 @@ const LandingPage: React.FC = () => {
               <div className="pt-2">
                 <Link
                   to="/signup"
-                  className="inline-flex items-center space-x-2 text-xs font-bold text-emerald-600 hover:text-emerald-700"
+                  className="inline-flex items-center space-x-2 text-xs font-bold text-brand-600 hover:text-brand-700"
                 >
                   <span>Start collecting reviews</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -431,8 +431,8 @@ const LandingPage: React.FC = () => {
         <section className="bg-white rounded-2xl border border-zinc-200 p-8 sm:p-12 shadow-card">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div className="space-y-4">
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-bold">
+                <Sparkles className="w-3.5 h-3.5 text-brand-600" />
                 <span>AI Business Assistant</span>
               </div>
 
@@ -461,7 +461,7 @@ const LandingPage: React.FC = () => {
             <div className="bg-zinc-50 rounded-2xl border border-zinc-200 p-5 space-y-4 max-w-md mx-auto w-full">
               <div className="flex items-center justify-between pb-3 border-b border-zinc-200">
                 <div className="flex items-center space-x-2">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
+                  <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center text-white">
                     <Bot className="w-4 h-4" />
                   </div>
                   <div>
@@ -475,7 +475,7 @@ const LandingPage: React.FC = () => {
               <div className="space-y-3 text-xs">
                 {/* User Bubble */}
                 <div className="flex justify-end">
-                  <div className="bg-emerald-600 text-white p-3 rounded-2xl rounded-tr-xs max-w-[85%] leading-relaxed font-medium">
+                  <div className="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-xs max-w-[85%] leading-relaxed font-medium">
                     How were my sales this month?
                   </div>
                 </div>
@@ -497,7 +497,7 @@ const LandingPage: React.FC = () => {
               <div className="pt-2">
                 <div className="flex items-center p-2 rounded-xl bg-white border border-zinc-200 text-xs text-zinc-400 justify-between">
                   <span>Ask a question about sales or inventory...</span>
-                  <div className="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-lg bg-brand-600 text-white flex items-center justify-center">
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                 </div>
@@ -511,7 +511,7 @@ const LandingPage: React.FC = () => {
            ========================================================================= */}
         <section className="space-y-8">
           <div className="text-center space-y-2">
-            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Scalability</span>
+            <span className="text-xs font-bold text-brand-600 uppercase tracking-wider">Scalability</span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
               Adapts Seamlessly to Your Business Size
             </h2>
@@ -631,7 +631,7 @@ const LandingPage: React.FC = () => {
           <div>
             <Link
               to="/signup"
-              className="inline-flex items-center space-x-2 px-7 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xs transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-2 px-7 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm shadow-xs transition-colors cursor-pointer"
             >
               <span>Get Started</span>
               <ArrowRight className="w-4 h-4" />

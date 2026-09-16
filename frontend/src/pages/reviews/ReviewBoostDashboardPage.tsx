@@ -7,6 +7,7 @@ import {
   ReviewSettingsRequest,
   QrCodeResponse,
 } from '../../api/reviews';
+import { ButtonSpinner, SkeletonBlock } from '../../components/common/LoadingStates';
 import {
   Star,
   QrCode,
@@ -152,7 +153,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">Review Boost</h1>
+          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Review Boost</h1>
           <p className="text-xs text-zinc-500 mt-0.5">
             Collect customer feedback at counter, boost 5-star ratings, and protect online reputation.
           </p>
@@ -161,9 +162,9 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         {isOwner && (
           <button
             onClick={() => setIsSettingsModalOpen(true)}
-            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-white hover:bg-zinc-50 text-zinc-700 font-bold text-xs border border-zinc-200 shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
+            className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-white hover:bg-zinc-50 text-zinc-700 font-medium text-xs border border-zinc-200 shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
           >
-            <Settings size={15} />
+            <Settings size={14} />
             <span>Configure Boost</span>
           </button>
         )}
@@ -171,10 +172,10 @@ export const ReviewBoostDashboardPage: React.FC = () => {
 
       {/* Alerts */}
       {successMessage && (
-        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <CheckCircle2 size={15} className="text-emerald-600" />
-            <span>{successMessage}</span>
+            <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
+            <span className="font-medium">{successMessage}</span>
           </div>
           <button onClick={() => setSuccessMessage(null)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
             &times;
@@ -183,12 +184,12 @@ export const ReviewBoostDashboardPage: React.FC = () => {
       )}
 
       {errorMessage && (
-        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between">
+        <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <AlertCircle size={15} className="text-red-600" />
-            <span>{errorMessage}</span>
+            <AlertCircle size={15} className="text-rose-600 shrink-0" />
+            <span className="font-medium">{errorMessage}</span>
           </div>
-          <button onClick={() => setErrorMessage(null)} className="text-red-700 hover:text-red-900 cursor-pointer">
+          <button onClick={() => setErrorMessage(null)} className="text-rose-700 hover:text-rose-900 cursor-pointer">
             &times;
           </button>
         </div>
@@ -197,20 +198,20 @@ export const ReviewBoostDashboardPage: React.FC = () => {
       {/* TOP SECTION: Rating Score + Distribution + QR Code Showcase */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Rating Score & Star Distribution */}
-        <div className="lg:col-span-2 p-6 rounded-2xl bg-white border border-zinc-200 shadow-card flex flex-col justify-between space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-zinc-100">
+        <div className="lg:col-span-2 p-5 rounded-xl bg-white border border-zinc-200 shadow-xs flex flex-col justify-between space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 pb-5 border-b border-zinc-100">
             {/* Average Rating Big Card */}
             <div className="space-y-1.5">
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Average Customer Rating</span>
+              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Average Customer Rating</span>
               <div className="flex items-baseline space-x-3">
-                <span className="text-4xl sm:text-5xl font-black text-zinc-950">
+                <span className="text-4xl sm:text-5xl font-bold text-zinc-900">
                   {loading ? '...' : Number(avgRating).toFixed(1)}
                 </span>
                 <div className="flex items-center space-x-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
-                      size={20}
+                      size={18}
                       className={
                         star <= Math.round(avgRating)
                           ? 'fill-amber-500 text-amber-500'
@@ -225,14 +226,14 @@ export const ReviewBoostDashboardPage: React.FC = () => {
 
             {/* Quick Public URL Preview */}
             {qrCodeData?.reviewUrl && (
-              <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 space-y-2 max-w-xs">
+              <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-200 space-y-2 max-w-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Public Review Link</span>
+                  <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Public Review Link</span>
                   <a
                     href={qrCodeData.reviewUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold flex items-center gap-0.5"
+                    className="text-brand-600 hover:text-brand-700 text-xs font-semibold flex items-center gap-0.5"
                   >
                     <span>Open</span>
                     <ExternalLink size={12} />
@@ -259,7 +260,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
 
           {/* Rating Distribution Bars */}
           <div className="space-y-2">
-            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block mb-2">
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block mb-2">
               Rating Breakdown
             </span>
             {[5, 4, 3, 2, 1].map((stars) => {
@@ -268,7 +269,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
 
               return (
                 <div key={stars} className="flex items-center space-x-3 text-xs">
-                  <div className="flex items-center space-x-1 w-12 font-bold text-zinc-700">
+                  <div className="flex items-center space-x-1 w-12 font-medium text-zinc-700">
                     <span>{stars}</span>
                     <Star size={12} className="fill-amber-500 text-amber-500" />
                   </div>
@@ -290,15 +291,17 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         </div>
 
         {/* QR Code Counter Stand Display */}
-        <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card flex flex-col justify-between items-center text-center space-y-4">
+        <div className="p-5 rounded-xl bg-white border border-zinc-200 shadow-xs flex flex-col justify-between items-center text-center space-y-4">
           <div className="space-y-1">
-            <h3 className="text-sm font-bold text-zinc-900">Counter QR Code</h3>
+            <h3 className="text-sm font-semibold text-zinc-900">Counter QR Code</h3>
             <p className="text-xs text-zinc-500">Let customers scan at billing counter</p>
           </div>
 
           {/* QR Code Preview Box */}
-          <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-200 shadow-xs flex flex-col items-center space-y-2">
-            {qrCodeData?.qrCodeDataUrl ? (
+          <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-200 shadow-xs flex flex-col items-center space-y-2">
+            {loading ? (
+              <SkeletonBlock className="w-36 h-36 rounded-lg" />
+            ) : qrCodeData?.qrCodeDataUrl ? (
               <img
                 src={qrCodeData.qrCodeDataUrl}
                 alt="Review QR Code"
@@ -320,7 +323,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               <a
                 href={qrCodeData.qrCodeDataUrl}
                 download={`review-qr-${business?.name || 'bizflow'}.png`}
-                className="py-2 px-3 rounded-xl bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                className="py-2 px-3 rounded-lg bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
               >
                 <Download size={14} />
                 <span>Download</span>
@@ -329,7 +332,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
 
             <button
               onClick={() => window.print()}
-              className="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              className="py-2 px-3 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             >
               <Printer size={14} />
               <span>Print Stand</span>
@@ -339,16 +342,16 @@ export const ReviewBoostDashboardPage: React.FC = () => {
       </div>
 
       {/* RECENT FEEDBACK & REVIEWS LIST */}
-      <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden space-y-4">
+      <div className="bg-white rounded-xl border border-zinc-200 shadow-xs overflow-hidden space-y-4">
         {/* Table Header Controls */}
         <div className="p-4 sm:p-5 border-b border-zinc-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h3 className="text-sm font-bold text-zinc-900">Customer Feedback &amp; Ratings</h3>
+          <h3 className="text-sm font-semibold text-zinc-900">Customer Feedback &amp; Ratings</h3>
 
           <div className="flex flex-wrap items-center gap-2">
             <select
               value={selectedRatingFilter}
               onChange={(e) => setSelectedRatingFilter(e.target.value)}
-              className="px-3 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
+              className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
               <option value="ALL">All Star Ratings</option>
               <option value="5">5 Stars Only</option>
@@ -361,7 +364,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
             <select
               value={positiveOnlyFilter}
               onChange={(e) => setPositiveOnlyFilter(e.target.value)}
-              className="px-3 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
+              className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
               <option value="ALL">All Feedback</option>
               <option value="POSITIVE">High Ratings (4-5★)</option>
@@ -373,11 +376,24 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         {/* Reviews List */}
         <div className="divide-y divide-zinc-100">
           {loading ? (
-            <div className="py-12 text-center text-zinc-400 text-xs">Loading customer reviews...</div>
+            <div className="p-5 space-y-4">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="flex items-start justify-between gap-4">
+                  <div className="space-y-2 flex-1">
+                    <div className="flex items-center gap-2">
+                      <SkeletonBlock className="h-4 w-24" />
+                      <SkeletonBlock className="h-4 w-32" />
+                    </div>
+                    <SkeletonBlock className="h-12 w-full rounded-lg" />
+                  </div>
+                  <SkeletonBlock className="h-8 w-20 rounded-lg" />
+                </div>
+              ))}
+            </div>
           ) : reviews.length === 0 ? (
             <div className="py-12 text-center text-zinc-500 space-y-1">
               <Star size={32} className="mx-auto text-zinc-300" />
-              <p className="font-bold text-zinc-700">No customer reviews yet</p>
+              <p className="font-semibold text-zinc-700 text-xs">No customer reviews yet</p>
               <p className="text-xs text-zinc-400">Share your QR code to start collecting ratings.</p>
             </div>
           ) : (
@@ -389,7 +405,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          size={15}
+                          size={14}
                           className={
                             s <= rev.rating
                               ? 'fill-amber-500 text-amber-500'
@@ -399,7 +415,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                       ))}
                     </div>
 
-                    <span className="text-xs font-bold text-zinc-900">
+                    <span className="text-xs font-semibold text-zinc-900">
                       {rev.customerName || 'Anonymous Customer'}
                     </span>
 
@@ -408,9 +424,9 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                     </span>
 
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                      className={`px-2 py-0.5 rounded-full text-[9px] font-medium ${
                         rev.positive
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          ? 'bg-brand-50 text-brand-700 border border-brand-200'
                           : 'bg-amber-50 text-amber-800 border border-amber-200'
                       }`}
                     >
@@ -419,7 +435,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                   </div>
 
                   {rev.feedbackText && (
-                    <p className="text-xs text-zinc-700 leading-relaxed font-medium bg-zinc-50 p-3 rounded-xl border border-zinc-100">
+                    <p className="text-xs text-zinc-700 leading-relaxed font-normal bg-zinc-50 p-3 rounded-lg border border-zinc-100">
                       "{rev.feedbackText}"
                     </p>
                   )}
@@ -435,7 +451,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                   <div className="flex items-center space-x-2 shrink-0">
                     <button
                       onClick={() => setModeratingReview(rev)}
-                      className="px-3 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 text-zinc-700 text-xs font-semibold cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 text-zinc-700 text-xs font-medium cursor-pointer"
                     >
                       Moderate
                     </button>
@@ -447,7 +463,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
+        {!loading && totalPages > 1 && (
           <div className="p-3.5 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
             <span>
               Showing page {page + 1} of {totalPages}
@@ -456,14 +472,14 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               <button
                 disabled={page <= 0}
                 onClick={() => fetchDashboardData(page - 1)}
-                className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold disabled:opacity-50 cursor-pointer"
+                className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-medium disabled:opacity-50 cursor-pointer"
               >
                 Previous
               </button>
               <button
                 disabled={page >= totalPages - 1}
                 onClick={() => fetchDashboardData(page + 1)}
-                className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold disabled:opacity-50 cursor-pointer"
+                className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-medium disabled:opacity-50 cursor-pointer"
               >
                 Next
               </button>
@@ -475,13 +491,13 @@ export const ReviewBoostDashboardPage: React.FC = () => {
       {/* Configure Settings Modal */}
       {isSettingsModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+          <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
-                  <Settings size={16} />
+                <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
+                  <Settings size={15} />
                 </div>
-                <h3 className="text-sm font-bold text-zinc-900">Review Boost Settings</h3>
+                <h3 className="text-sm font-semibold text-zinc-900">Review Boost Settings</h3>
               </div>
               <button
                 onClick={() => setIsSettingsModalOpen(false)}
@@ -493,25 +509,25 @@ export const ReviewBoostDashboardPage: React.FC = () => {
 
             <form onSubmit={handleSaveSettings} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Custom Review URL Slug</label>
+                <label className="text-xs font-medium text-zinc-700">Custom Review URL Slug</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. apex-retail"
                   value={settingsForm.reviewSlug}
                   onChange={(e) => setSettingsForm({ ...settingsForm, reviewSlug: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-mono focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Google / Social 5-Star Review Redirect URL</label>
+                <label className="text-xs font-medium text-zinc-700">Google / Social 5-Star Review Redirect URL</label>
                 <input
                   type="url"
                   placeholder="https://g.page/r/your-business/review"
                   value={settingsForm.publicReviewUrl || ''}
                   onChange={(e) => setSettingsForm({ ...settingsForm, publicReviewUrl: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
                 <p className="text-[10px] text-zinc-400">
                   Happy customers giving 5-stars will be redirected here to post on Google.
@@ -519,13 +535,13 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Welcome Prompt Message</label>
+                <label className="text-xs font-medium text-zinc-700">Welcome Prompt Message</label>
                 <input
                   type="text"
                   placeholder="How was your experience with us today?"
                   value={settingsForm.reviewPromptMessage || ''}
                   onChange={(e) => setSettingsForm({ ...settingsForm, reviewPromptMessage: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
@@ -534,25 +550,29 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                   type="checkbox"
                   checked={settingsForm.reviewEnabled}
                   onChange={(e) => setSettingsForm({ ...settingsForm, reviewEnabled: e.target.checked })}
-                  className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-600"
+                  className="w-4 h-4 rounded text-brand-600 focus:ring-brand-500"
                 />
-                <span className="text-xs font-bold text-zinc-800">Enable Review Boost Landing Page</span>
+                <span className="text-xs font-medium text-zinc-800">Enable Review Boost Landing Page</span>
               </label>
 
               <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setIsSettingsModalOpen(false)}
-                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-medium rounded-lg hover:bg-zinc-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={settingsSubmitting}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {settingsSubmitting ? 'Saving...' : 'Save Settings'}
+                  {settingsSubmitting ? (
+                    <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+                  ) : (
+                    'Save Settings'
+                  )}
                 </button>
               </div>
             </form>
@@ -563,9 +583,9 @@ export const ReviewBoostDashboardPage: React.FC = () => {
       {/* Moderation Modal */}
       {moderatingReview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+          <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <h3 className="text-sm font-bold text-zinc-900">Moderate Customer Review</h3>
+              <h3 className="text-sm font-semibold text-zinc-900">Moderate Customer Review</h3>
               <button
                 onClick={() => setModeratingReview(null)}
                 className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 cursor-pointer"
@@ -574,19 +594,19 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 text-xs space-y-1">
-              <div className="font-bold text-zinc-900">{moderatingReview.customerName || 'Anonymous'}</div>
+            <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-200 text-xs space-y-1">
+              <div className="font-semibold text-zinc-900">{moderatingReview.customerName || 'Anonymous'}</div>
               <p className="text-zinc-600 italic">"{moderatingReview.feedbackText}"</p>
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-bold text-zinc-700">Internal Manager Notes</label>
+              <label className="text-xs font-medium text-zinc-700">Internal Manager Notes</label>
               <input
                 type="text"
                 placeholder="e.g. Addressed customer request with discount coupon"
                 value={moderationNotes}
                 onChange={(e) => setModerationNotes(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
               />
             </div>
 
@@ -594,14 +614,14 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleModerateReview(false)}
-                className="px-3.5 py-2 border border-zinc-200 text-zinc-700 hover:bg-zinc-50 rounded-xl text-xs font-semibold cursor-pointer"
+                className="px-3.5 py-2 border border-zinc-200 text-zinc-700 hover:bg-zinc-50 rounded-lg text-xs font-medium cursor-pointer"
               >
                 Keep Private
               </button>
               <button
                 type="button"
                 onClick={() => handleModerateReview(true)}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer"
+                className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium shadow-xs cursor-pointer"
               >
                 Make Public
               </button>

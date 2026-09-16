@@ -1,42 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { usersApi } from '../../api/users';
+import { ButtonSpinner } from '../../components/common/LoadingStates';
 import {
   User,
-  Lock,
-  Phone,
   Mail,
+  Phone,
+  Shield,
+  Building2,
+  Lock,
   Save,
   CheckCircle2,
   AlertCircle,
   ShieldCheck,
-  Building,
 } from 'lucide-react';
 
 export const UserProfilePage: React.FC = () => {
-  const { user, business, refreshUser } = useAuth();
+  const { user, business } = useAuth();
 
-  // Profile form state
-  const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [fullName, setFullName] = useState(user?.fullName || '');
+  const [phone, setPhone] = useState(user?.phone || '');
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
 
-  // Password change state
+  // Security / Password state
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [savingPassword, setSavingPassword] = useState(false);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (user) {
-      setFullName(user.fullName || '');
-      setPhone(user.phone || '');
-    }
-  }, [user]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,14 +39,16 @@ export const UserProfilePage: React.FC = () => {
     setProfileError(null);
 
     try {
-      await usersApi.updateMyProfile({ fullName, phone: phone || undefined });
-      await refreshUser();
-      setProfileSuccess('Profile details updated successfully!');
+      await usersApi.updateMyProfile({
+        fullName,
+        phone: phone || undefined,
+      });
+      setProfileSuccess('Profile details successfully updated!');
     } catch (err: any) {
       setProfileError(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to update profile.'
+        'Failed to update profile details.'
       );
     } finally {
       setSavingProfile(false);
@@ -65,19 +61,22 @@ export const UserProfilePage: React.FC = () => {
     setPasswordError(null);
 
     if (newPassword !== confirmPassword) {
-      setPasswordError('New password and confirmation password do not match.');
+      setPasswordError('New password and confirmation do not match.');
       return;
     }
 
     if (newPassword.length < 8) {
-      setPasswordError('New password must be at least 8 characters long.');
+      setPasswordError('New password must be at least 8 characters.');
       return;
     }
 
     setSavingPassword(true);
     try {
-      await usersApi.changePassword({ currentPassword, newPassword });
-      setPasswordSuccess('Password changed successfully! Keep your credentials safe.');
+      await usersApi.changePassword({
+        currentPassword,
+        newPassword,
+      });
+      setPasswordSuccess('Password successfully changed!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -85,7 +84,7 @@ export const UserProfilePage: React.FC = () => {
       setPasswordError(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to update password. Please check your current password.'
+        'Failed to change password. Please verify current password.'
       );
     } finally {
       setSavingPassword(false);
@@ -98,43 +97,52 @@ export const UserProfilePage: React.FC = () => {
       <div>
         <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Account & Security</h1>
         <p className="text-xs text-zinc-500 mt-0.5">
-          Update your personal contact information, authentication credentials, and view system role.
+          Manage your personal credentials, contact details, and security passwords.
         </p>
       </div>
 
-      {/* Account Overview Badge */}
-      <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-xl bg-zinc-900 text-white font-bold text-lg flex items-center justify-center">
-            {user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
-          </div>
-          <div>
-            <h2 className="text-base font-semibold text-zinc-900">{user?.fullName}</h2>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-xs text-zinc-500">{user?.email}</span>
-              <span className="text-zinc-300">•</span>
-              <span className="px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-700 text-[10px] font-medium border border-zinc-200">
-                {user?.role}
-              </span>
+      {/* Account Info Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div className="bg-white rounded-xl border border-zinc-200 p-4 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center font-bold text-xs">
+              <User size={15} />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-zinc-400">User Account</span>
+              <p className="text-xs font-semibold text-zinc-900 truncate">{user?.fullName}</p>
             </div>
           </div>
         </div>
 
-        {business && (
-          <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-200 flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-zinc-200 text-zinc-700 flex items-center justify-center font-bold">
-              <Building size={14} />
+        <div className="bg-white rounded-xl border border-zinc-200 p-4 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center font-bold text-xs">
+              <Shield size={15} />
             </div>
-            <div className="text-xs">
-              <span className="text-zinc-400 block text-[10px]">Business</span>
-              <span className="font-semibold text-zinc-800">{business.name}</span>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-zinc-400">System Role</span>
+              <p className="text-xs font-semibold text-zinc-900">{user?.role}</p>
             </div>
           </div>
-        )}
+        </div>
+
+        <div className="bg-white rounded-xl border border-zinc-200 p-4 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center font-bold text-xs">
+              <Building2 size={15} />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-zinc-400">Business Unit</span>
+              <p className="text-xs font-semibold text-zinc-900 truncate">{business?.name || 'Default'}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
+      {/* 2-Column Grid: Profile info vs Password reset */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Profile Information Form */}
+        {/* Personal Profile Form */}
         <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs space-y-5 flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-100">
@@ -155,8 +163,8 @@ export const UserProfilePage: React.FC = () => {
             )}
 
             {profileError && (
-              <div className="p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-800 text-xs font-medium">
-                <AlertCircle size={15} className="text-red-600 shrink-0" />
+              <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 flex items-center gap-2 text-rose-800 text-xs font-medium">
+                <AlertCircle size={15} className="text-rose-600 shrink-0" />
                 <span>{profileError}</span>
               </div>
             )}
@@ -164,14 +172,14 @@ export const UserProfilePage: React.FC = () => {
             <form id="profileForm" onSubmit={handleUpdateProfile} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Full Name <span className="text-red-500">*</span>
+                  Full Name <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                 />
               </div>
 
@@ -201,7 +209,7 @@ export const UserProfilePage: React.FC = () => {
                     placeholder="+91 98765 43210"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                   />
                 </div>
               </div>
@@ -213,10 +221,16 @@ export const UserProfilePage: React.FC = () => {
               type="submit"
               form="profileForm"
               disabled={savingProfile}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50"
             >
-              <Save size={14} />
-              <span>{savingProfile ? 'Saving...' : 'Update Details'}</span>
+              {savingProfile ? (
+                <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+              ) : (
+                <>
+                  <Save size={14} />
+                  <span>Update Details</span>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -242,8 +256,8 @@ export const UserProfilePage: React.FC = () => {
             )}
 
             {passwordError && (
-              <div className="p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-800 text-xs font-medium">
-                <AlertCircle size={15} className="text-red-600 shrink-0" />
+              <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 flex items-center gap-2 text-rose-800 text-xs font-medium">
+                <AlertCircle size={15} className="text-rose-600 shrink-0" />
                 <span>{passwordError}</span>
               </div>
             )}
@@ -251,7 +265,7 @@ export const UserProfilePage: React.FC = () => {
             <form id="passwordForm" onSubmit={handleChangePassword} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Current Password <span className="text-red-500">*</span>
+                  Current Password <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -259,13 +273,13 @@ export const UserProfilePage: React.FC = () => {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                 />
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  New Password <span className="text-red-500">*</span>
+                  New Password <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -274,13 +288,13 @@ export const UserProfilePage: React.FC = () => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Min 8 characters"
-                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                 />
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Confirm New Password <span className="text-red-500">*</span>
+                  Confirm New Password <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -289,7 +303,7 @@ export const UserProfilePage: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-type new password"
-                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                 />
               </div>
             </form>
@@ -302,8 +316,14 @@ export const UserProfilePage: React.FC = () => {
               disabled={savingPassword}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50"
             >
-              <ShieldCheck size={14} />
-              <span>{savingPassword ? 'Updating...' : 'Change Password'}</span>
+              {savingPassword ? (
+                <ButtonSpinner text="Updating..." spinnerColor="text-white" />
+              ) : (
+                <>
+                  <ShieldCheck size={14} />
+                  <span>Change Password</span>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -311,4 +331,3 @@ export const UserProfilePage: React.FC = () => {
     </div>
   );
 };
-

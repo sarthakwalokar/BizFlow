@@ -11,6 +11,7 @@ import {
 } from '../../api/inventory';
 import { categoriesApi, Category } from '../../api/categories';
 import { productsApi, Product } from '../../api/products';
+import { ButtonSpinner, TableSkeleton, MetricCardsSkeleton } from '../../components/common/LoadingStates';
 import {
   Boxes,
   CheckCircle2,
@@ -342,10 +343,10 @@ export const InventoryPage: React.FC = () => {
 
       {/* Alerts */}
       {successMessage && (
-        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <CheckCircle2 size={15} className="text-emerald-600" />
-            <span>{successMessage}</span>
+            <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
+            <span className="font-medium">{successMessage}</span>
           </div>
           <button onClick={() => setSuccessMessage(null)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
             &times;
@@ -354,49 +355,53 @@ export const InventoryPage: React.FC = () => {
       )}
 
       {errorMessage && (
-        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between">
+        <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <AlertCircle size={15} className="text-red-600" />
-            <span>{errorMessage}</span>
+            <AlertCircle size={15} className="text-rose-600 shrink-0" />
+            <span className="font-medium">{errorMessage}</span>
           </div>
-          <button onClick={() => setErrorMessage(null)} className="text-red-700 hover:text-red-900 cursor-pointer">
+          <button onClick={() => setErrorMessage(null)} className="text-rose-700 hover:text-rose-900 cursor-pointer">
             &times;
           </button>
         </div>
       )}
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-1">
-          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Tracked Products</span>
-          <div className="text-2xl font-black text-zinc-950">{summary?.totalTrackedProducts ?? stockItems.length}</div>
-          <span className="text-[10px] text-zinc-400">Physical stock items</span>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-1">
-          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Low Stock Warnings</span>
-          <div className={`text-2xl font-black ${summary?.lowStockProducts && summary.lowStockProducts > 0 ? 'text-amber-600' : 'text-zinc-950'}`}>
-            {summary?.lowStockProducts ?? 0}
+      {loading ? (
+        <MetricCardsSkeleton count={4} />
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Tracked Products</span>
+            <div className="text-2xl font-bold text-zinc-900">{summary?.totalTrackedProducts ?? stockItems.length}</div>
+            <span className="text-[10px] text-zinc-400">Physical stock items</span>
           </div>
-          <span className="text-[10px] text-zinc-400">Below threshold level</span>
-        </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-1">
-          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Out of Stock</span>
-          <div className={`text-2xl font-black ${summary?.outOfStockProducts && summary.outOfStockProducts > 0 ? 'text-rose-600' : 'text-zinc-950'}`}>
-            {summary?.outOfStockProducts ?? 0}
+          <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Low Stock Warnings</span>
+            <div className={`text-2xl font-bold ${summary?.lowStockProducts && summary.lowStockProducts > 0 ? 'text-amber-600' : 'text-zinc-900'}`}>
+              {summary?.lowStockProducts ?? 0}
+            </div>
+            <span className="text-[10px] text-zinc-400">Below threshold level</span>
           </div>
-          <span className="text-[10px] text-zinc-400">Zero inventory remaining</span>
-        </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-1">
-          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Inventory Value</span>
-          <div className="text-2xl font-black text-zinc-950">
-            {formatCurrency(summary?.totalInventoryValuation ?? 0, currency)}
+          <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Out of Stock</span>
+            <div className={`text-2xl font-bold ${summary?.outOfStockProducts && summary.outOfStockProducts > 0 ? 'text-rose-600' : 'text-zinc-900'}`}>
+              {summary?.outOfStockProducts ?? 0}
+            </div>
+            <span className="text-[10px] text-zinc-400">Zero inventory remaining</span>
           </div>
-          <span className="text-[10px] text-zinc-400">Retail inventory asset value</span>
+
+          <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Inventory Value</span>
+            <div className="text-2xl font-bold text-zinc-900">
+              {formatCurrency(summary?.totalInventoryValuation ?? 0, currency)}
+            </div>
+            <span className="text-[10px] text-zinc-400">Retail inventory asset value</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Large Business Navigation Tabs */}
       {isLarge && (
@@ -414,13 +419,13 @@ export const InventoryPage: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors cursor-pointer text-xs ${
                   active
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'bg-white text-zinc-600 hover:bg-zinc-100 border border-zinc-200'
+                    ? 'bg-brand-600 text-white shadow-xs'
+                    : 'bg-white text-zinc-600 hover:bg-zinc-50 border border-zinc-200'
                 }`}
               >
-                <Icon size={15} />
+                <Icon size={14} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -432,15 +437,15 @@ export const InventoryPage: React.FC = () => {
       {(!isLarge || activeTab === 'STOCK') && (
         <div className="space-y-4">
           {/* Filter Bar */}
-          <div className="bg-white rounded-2xl border border-zinc-200 p-4 shadow-card flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="bg-white rounded-xl border border-zinc-200 p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="relative w-full sm:w-96">
-              <Search size={15} className="absolute left-3.5 top-3 text-zinc-400" />
+              <Search size={14} className="absolute left-3.5 top-2.5 text-zinc-400" />
               <input
                 type="text"
                 placeholder="Search stock by product name or SKU..."
                 value={stockSearch}
                 onChange={(e) => setStockSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
+                className="w-full pl-9 pr-3 py-1.5 bg-zinc-50 focus:bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               />
             </div>
 
@@ -448,7 +453,7 @@ export const InventoryPage: React.FC = () => {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-emerald-600"
+                className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
               >
                 <option value="ALL">All Categories</option>
                 {categories.map((c) => (
@@ -461,7 +466,7 @@ export const InventoryPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setLowStockOnly(!lowStockOnly)}
-                className={`px-3 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer whitespace-nowrap ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer whitespace-nowrap ${
                   lowStockOnly
                     ? 'bg-amber-50 border-amber-300 text-amber-800'
                     : 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50'
@@ -489,8 +494,8 @@ export const InventoryPage: React.FC = () => {
                 <tbody className="divide-y divide-zinc-100 text-xs">
                   {loading ? (
                     <tr>
-                      <td colSpan={6} className="py-12 text-center text-zinc-400">
-                        Loading inventory...
+                      <td colSpan={6} className="p-0">
+                        <TableSkeleton rows={6} cols={6} />
                       </td>
                     </tr>
                   ) : filteredStock.length === 0 ? (
@@ -635,7 +640,7 @@ export const InventoryPage: React.FC = () => {
                 setSupplierTaxNumber('');
                 setIsSupplierModalOpen(true);
               }}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer flex items-center space-x-1.5"
+              className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium shadow-xs cursor-pointer flex items-center space-x-1.5"
             >
               <Plus size={15} />
               <span>Add Supplier</span>
@@ -644,16 +649,16 @@ export const InventoryPage: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {suppliers.length === 0 ? (
-              <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-2xl border border-zinc-200 p-8 space-y-1">
+              <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-xl border border-zinc-200 p-8 space-y-1">
                 <Users size={32} className="mx-auto text-zinc-300" />
-                <p className="font-bold text-zinc-700">No suppliers registered</p>
+                <p className="font-semibold text-zinc-700">No suppliers registered</p>
                 <p className="text-xs text-zinc-400">Add vendors and procurement partners.</p>
               </div>
             ) : (
               suppliers.map((s) => (
-                <div key={s.id} className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3">
+                <div key={s.id} className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-bold text-zinc-900 text-sm">{s.name}</h4>
+                    <h4 className="font-semibold text-zinc-900 text-xs">{s.name}</h4>
                     <button
                       onClick={() => {
                         setEditingSupplier(s);
@@ -665,9 +670,9 @@ export const InventoryPage: React.FC = () => {
                         setSupplierTaxNumber(s.taxNumber || '');
                         setIsSupplierModalOpen(true);
                       }}
-                      className="p-1 text-zinc-400 hover:text-emerald-600 cursor-pointer"
+                      className="p-1 text-zinc-400 hover:text-brand-600 cursor-pointer"
                     >
-                      <Edit2 size={14} />
+                      <Edit2 size={13} />
                     </button>
                   </div>
                   <div className="space-y-1 text-xs text-zinc-600">
@@ -746,7 +751,7 @@ export const InventoryPage: React.FC = () => {
                 setLocationPrimary(false);
                 setIsLocationModalOpen(true);
               }}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer flex items-center space-x-1.5"
+              className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium shadow-xs cursor-pointer flex items-center space-x-1.5"
             >
               <Plus size={15} />
               <span>Add Location</span>
@@ -755,19 +760,19 @@ export const InventoryPage: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {locations.length === 0 ? (
-              <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-2xl border border-zinc-200 p-8 space-y-1">
+              <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-xl border border-zinc-200 p-8 space-y-1">
                 <Building2 size={32} className="mx-auto text-zinc-300" />
-                <p className="font-bold text-zinc-700">No warehouse locations configured</p>
+                <p className="font-semibold text-zinc-700">No warehouse locations configured</p>
                 <p className="text-xs text-zinc-400">Add branch stores and central stock facilities.</p>
               </div>
             ) : (
               locations.map((loc) => (
-                <div key={loc.id} className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3">
+                <div key={loc.id} className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <h4 className="font-bold text-zinc-900 text-sm">{loc.name}</h4>
+                      <h4 className="font-semibold text-zinc-900 text-xs">{loc.name}</h4>
                       {loc.primary && (
-                        <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold border border-blue-200">
+                        <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-[10px] font-medium border border-brand-200">
                           Primary
                         </span>
                       )}
@@ -782,9 +787,9 @@ export const InventoryPage: React.FC = () => {
                         setLocationPrimary(loc.primary || false);
                         setIsLocationModalOpen(true);
                       }}
-                      className="p-1 text-zinc-400 hover:text-emerald-600 cursor-pointer"
+                      className="p-1 text-zinc-400 hover:text-brand-600 cursor-pointer"
                     >
-                      <Edit2 size={14} />
+                      <Edit2 size={13} />
                     </button>
                   </div>
                   <div className="space-y-1 text-xs text-zinc-600">
@@ -802,14 +807,14 @@ export const InventoryPage: React.FC = () => {
       {/* Adjust Stock Modal */}
       {isAdjustModalOpen && adjustingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+          <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
-                  <Boxes size={16} />
+                <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
+                  <Boxes size={15} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-zinc-900">Adjust Stock Count</h3>
+                  <h3 className="text-sm font-semibold text-zinc-900">Adjust Stock Count</h3>
                   <p className="text-[11px] text-zinc-500">{adjustingItem.productName}</p>
                 </div>
               </div>
@@ -822,13 +827,13 @@ export const InventoryPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleAdjustStock} className="space-y-4">
-              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 flex items-center justify-between text-xs">
+              <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-200 flex items-center justify-between text-xs">
                 <span className="text-zinc-500 font-medium">Current Stock in System:</span>
-                <span className="font-black text-zinc-900 text-sm">{adjustingItem.stockQuantity} units</span>
+                <span className="font-bold text-zinc-900 text-sm">{adjustingItem.stockQuantity} units</span>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">New Total Stock Level</label>
+                <label className="text-xs font-medium text-zinc-700">New Total Stock Level</label>
                 <input
                   type="number"
                   min="0"
@@ -838,18 +843,18 @@ export const InventoryPage: React.FC = () => {
                     setAdjustNewAbsolute(e.target.value);
                     setAdjustDelta('0');
                   }}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-sm font-bold focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Reason / Audit Notes (Optional)</label>
+                <label className="text-xs font-medium text-zinc-700">Reason / Audit Notes (Optional)</label>
                 <input
                   type="text"
                   placeholder="e.g. Physical inventory count correction / damaged goods"
                   value={adjustNotes}
                   onChange={(e) => setAdjustNotes(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
@@ -857,16 +862,20 @@ export const InventoryPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsAdjustModalOpen(false)}
-                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-medium rounded-lg hover:bg-zinc-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Saving...' : 'Update Stock Count'}
+                  {actionLoading ? (
+                    <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+                  ) : (
+                    'Update Stock Count'
+                  )}
                 </button>
               </div>
             </form>
@@ -877,9 +886,9 @@ export const InventoryPage: React.FC = () => {
       {/* Stock Transfer Modal (Large Business) */}
       {isTransferModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+          <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <h3 className="text-sm font-bold text-zinc-900">Transfer Stock Between Locations</h3>
+              <h3 className="text-sm font-semibold text-zinc-900">Transfer Stock Between Locations</h3>
               <button
                 onClick={() => setIsTransferModalOpen(false)}
                 className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 cursor-pointer"
@@ -890,11 +899,11 @@ export const InventoryPage: React.FC = () => {
 
             <form onSubmit={handleTransferStock} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Product Item *</label>
+                <label className="text-xs font-medium text-zinc-700">Product Item *</label>
                 <select
                   value={transferProductId}
                   onChange={(e) => setTransferProductId(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700"
+                  className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
                 >
                   {allProducts.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -906,11 +915,11 @@ export const InventoryPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-zinc-700">From Location *</label>
+                  <label className="text-xs font-medium text-zinc-700">From Location *</label>
                   <select
                     value={transferSourceLocationId}
                     onChange={(e) => setTransferSourceLocationId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700"
+                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
                   >
                     {locations.map((l) => (
                       <option key={l.id} value={l.id}>
@@ -921,11 +930,11 @@ export const InventoryPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-zinc-700">To Location *</label>
+                  <label className="text-xs font-medium text-zinc-700">To Location *</label>
                   <select
                     value={transferTargetLocationId}
                     onChange={(e) => setTransferTargetLocationId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700"
+                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
                   >
                     {locations.map((l) => (
                       <option key={l.id} value={l.id}>
@@ -937,25 +946,25 @@ export const InventoryPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Transfer Quantity *</label>
+                <label className="text-xs font-medium text-zinc-700">Transfer Quantity *</label>
                 <input
                   type="number"
                   min="1"
                   required
                   value={transferQuantity}
                   onChange={(e) => setTransferQuantity(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-bold"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Transfer Notes (Optional)</label>
+                <label className="text-xs font-medium text-zinc-700">Transfer Notes (Optional)</label>
                 <input
                   type="text"
                   placeholder="e.g. Replenishing branch store inventory"
                   value={transferNotes}
                   onChange={(e) => setTransferNotes(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
@@ -963,16 +972,20 @@ export const InventoryPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsTransferModalOpen(false)}
-                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-medium rounded-lg hover:bg-zinc-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Transferring...' : 'Execute Transfer'}
+                  {actionLoading ? (
+                    <ButtonSpinner text="Transferring..." spinnerColor="text-white" />
+                  ) : (
+                    'Execute Transfer'
+                  )}
                 </button>
               </div>
             </form>
@@ -983,9 +996,9 @@ export const InventoryPage: React.FC = () => {
       {/* Location Modal */}
       {isLocationModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+          <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <h3 className="text-sm font-bold text-zinc-900">
+              <h3 className="text-sm font-semibold text-zinc-900">
                 {editingLocation ? 'Edit Warehouse Location' : 'Add New Location'}
               </h3>
               <button
@@ -998,36 +1011,36 @@ export const InventoryPage: React.FC = () => {
 
             <form onSubmit={handleSaveLocation} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Location Name *</label>
+                <label className="text-xs font-medium text-zinc-700">Location Name *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Central Warehouse / Counter A"
                   value={locationName}
                   onChange={(e) => setLocationName(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-semibold"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Location Code (Optional)</label>
+                <label className="text-xs font-medium text-zinc-700">Location Code (Optional)</label>
                 <input
                   type="text"
                   placeholder="e.g. WH-01"
                   value={locationCode}
                   onChange={(e) => setLocationCode(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-mono"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Address (Optional)</label>
+                <label className="text-xs font-medium text-zinc-700">Address (Optional)</label>
                 <input
                   type="text"
                   placeholder="e.g. Industrial Area Phase 1"
                   value={locationAddress}
                   onChange={(e) => setLocationAddress(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
@@ -1035,16 +1048,20 @@ export const InventoryPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsLocationModalOpen(false)}
-                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-medium rounded-lg hover:bg-zinc-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Saving...' : 'Save Location'}
+                  {actionLoading ? (
+                    <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+                  ) : (
+                    'Save Location'
+                  )}
                 </button>
               </div>
             </form>
@@ -1055,9 +1072,9 @@ export const InventoryPage: React.FC = () => {
       {/* Supplier Modal */}
       {isSupplierModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
+          <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <h3 className="text-sm font-bold text-zinc-900">
+              <h3 className="text-sm font-semibold text-zinc-900">
                 {editingSupplier ? 'Edit Supplier' : 'Register Supplier'}
               </h3>
               <button
@@ -1070,60 +1087,60 @@ export const InventoryPage: React.FC = () => {
 
             <form onSubmit={handleSaveSupplier} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Supplier / Vendor Name *</label>
+                <label className="text-xs font-medium text-zinc-700">Supplier / Vendor Name *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Apex Electronics Wholesale Ltd"
                   value={supplierName}
                   onChange={(e) => setSupplierName(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-semibold"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-zinc-700">Contact Person</label>
+                  <label className="text-xs font-medium text-zinc-700">Contact Person</label>
                   <input
                     type="text"
                     placeholder="e.g. Ramesh"
                     value={supplierContact}
                     onChange={(e) => setSupplierContact(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
+                    className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-zinc-700">Phone</label>
+                  <label className="text-xs font-medium text-zinc-700">Phone</label>
                   <input
                     type="text"
                     placeholder="+91 98765 43210"
                     value={supplierPhone}
                     onChange={(e) => setSupplierPhone(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
+                    className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Email</label>
+                <label className="text-xs font-medium text-zinc-700">Email</label>
                 <input
                   type="email"
                   placeholder="procurement@vendor.in"
                   value={supplierEmail}
                   onChange={(e) => setSupplierEmail(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">GSTIN / Tax ID</label>
+                <label className="text-xs font-medium text-zinc-700">GSTIN / Tax ID</label>
                 <input
                   type="text"
                   placeholder="29AAAAA0000A1Z5"
                   value={supplierTaxNumber}
                   onChange={(e) => setSupplierTaxNumber(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-mono"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
 
@@ -1131,16 +1148,20 @@ export const InventoryPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsSupplierModalOpen(false)}
-                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
+                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-medium rounded-lg hover:bg-zinc-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Saving...' : 'Save Supplier'}
+                  {actionLoading ? (
+                    <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+                  ) : (
+                    'Save Supplier'
+                  )}
                 </button>
               </div>
             </form>

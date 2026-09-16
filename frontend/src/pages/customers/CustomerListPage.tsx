@@ -17,6 +17,7 @@ import {
   X,
 } from 'lucide-react';
 import { formatCurrency } from '../../utils/currency';
+import { TableSkeleton, ButtonSpinner } from '../../components/common/LoadingStates';
 
 export const CustomerListPage: React.FC = () => {
   const { business, user } = useAuth();
@@ -191,7 +192,7 @@ export const CustomerListPage: React.FC = () => {
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
         >
           <UserPlus size={16} />
           <span>Add Customer</span>
@@ -200,12 +201,12 @@ export const CustomerListPage: React.FC = () => {
 
       {/* Alerts */}
       {successMessage && (
-        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-brand-50 border border-brand-200 text-brand-800 text-xs flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <CheckCircle2 size={15} className="text-emerald-600" />
+            <CheckCircle2 size={15} className="text-brand-600" />
             <span>{successMessage}</span>
           </div>
-          <button onClick={() => setSuccessMessage(null)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
+          <button onClick={() => setSuccessMessage(null)} className="text-brand-700 hover:text-brand-900 cursor-pointer">
             &times;
           </button>
         </div>
@@ -233,12 +234,12 @@ export const CustomerListPage: React.FC = () => {
               placeholder="Search by customer name, phone number or email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
+              className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
             />
           </div>
           <button
             type="submit"
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer"
+            className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer"
           >
             Search
           </button>
@@ -246,152 +247,150 @@ export const CustomerListPage: React.FC = () => {
       </div>
 
       {/* Customers Table */}
-      <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
-                <th className="py-3 px-4">Customer Name</th>
-                <th className="py-3 px-4">Contact Info</th>
-                <th className="py-3 px-4">Total Orders</th>
-                <th className="py-3 px-4">Lifetime Spend</th>
-                <th className="py-3 px-4">Last Purchase</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100 text-xs">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-zinc-400">
-                    Loading customer directory...
-                  </td>
+      {loading ? (
+        <TableSkeleton rows={6} columns={6} />
+      ) : (
+        <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                  <th className="py-3 px-4">Customer Name</th>
+                  <th className="py-3 px-4">Contact Info</th>
+                  <th className="py-3 px-4">Total Orders</th>
+                  <th className="py-3 px-4">Lifetime Spend</th>
+                  <th className="py-3 px-4">Last Purchase</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
-              ) : customers.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-zinc-500 space-y-1">
-                    <Users size={32} className="mx-auto text-zinc-300" />
-                    <p className="font-bold text-zinc-700">No customers found</p>
-                    <p className="text-[11px] text-zinc-400">Add a customer or attach one during POS checkout.</p>
-                  </td>
-                </tr>
-              ) : (
-                customers.map((cust) => {
-                  const lastPurchaseStr = cust.lastPurchaseDate
-                    ? new Date(cust.lastPurchaseDate).toLocaleDateString('en-IN', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })
-                    : 'No purchases yet';
+              </thead>
+              <tbody className="divide-y divide-zinc-100 text-xs">
+                {customers.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-12 text-center text-zinc-500 space-y-1">
+                      <Users size={32} className="mx-auto text-zinc-300" />
+                      <p className="font-bold text-zinc-700">No customers found</p>
+                      <p className="text-[11px] text-zinc-400">Add a customer or attach one during POS checkout.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  customers.map((cust) => {
+                    const lastPurchaseStr = cust.lastPurchaseDate
+                      ? new Date(cust.lastPurchaseDate).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })
+                      : 'No purchases yet';
 
-                  return (
-                    <tr key={cust.id} className="hover:bg-zinc-50/70 transition-colors">
-                      <td className="py-3 px-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
-                            {cust.name.charAt(0).toUpperCase()}
+                    return (
+                      <tr key={cust.id} className="hover:bg-zinc-50/70 transition-colors">
+                        <td className="py-3 px-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold text-xs">
+                              {cust.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <span className="font-bold text-zinc-900 block">{cust.name}</span>
+                              {cust.notes && (
+                                <span className="text-[10px] text-zinc-400 truncate max-w-xs block">
+                                  {cust.notes}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <div>
-                            <span className="font-bold text-zinc-900 block">{cust.name}</span>
-                            {cust.notes && (
-                              <span className="text-[10px] text-zinc-400 truncate max-w-xs block">
-                                {cust.notes}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      <td className="py-3 px-4 text-zinc-600">
-                        {cust.phone && (
-                          <div className="flex items-center space-x-1.5 text-zinc-800 font-mono text-[11px]">
-                            <Phone size={12} className="text-zinc-400" />
-                            <span>{cust.phone}</span>
-                          </div>
-                        )}
-                        {cust.email && (
-                          <div className="flex items-center space-x-1.5 text-zinc-500 text-[11px] mt-0.5">
-                            <Mail size={12} className="text-zinc-400" />
-                            <span className="truncate max-w-[160px]">{cust.email}</span>
-                          </div>
-                        )}
-                        {!cust.phone && !cust.email && <span className="text-zinc-400">—</span>}
-                      </td>
+                        <td className="py-3 px-4 text-zinc-600">
+                          {cust.phone && (
+                            <div className="flex items-center space-x-1.5 text-zinc-800 font-mono text-[11px]">
+                              <Phone size={12} className="text-zinc-400" />
+                              <span>{cust.phone}</span>
+                            </div>
+                          )}
+                          {cust.email && (
+                            <div className="flex items-center space-x-1.5 text-zinc-500 text-[11px] mt-0.5">
+                              <Mail size={12} className="text-zinc-400" />
+                              <span className="truncate max-w-[160px]">{cust.email}</span>
+                            </div>
+                          )}
+                          {!cust.phone && !cust.email && <span className="text-zinc-400">—</span>}
+                        </td>
 
-                      <td className="py-3 px-4 text-zinc-700 font-semibold">
-                        <span className="px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 text-[11px] font-bold">
-                          {cust.orderCount ?? 0} bills
-                        </span>
-                      </td>
+                        <td className="py-3 px-4 text-zinc-700 font-semibold">
+                          <span className="px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 text-[11px] font-bold">
+                            {cust.orderCount ?? 0} bills
+                          </span>
+                        </td>
 
-                      <td className="py-3 px-4 font-black text-zinc-950">
-                        {formatCurrency(cust.totalSpending ?? 0, currency)}
-                      </td>
+                        <td className="py-3 px-4 font-black text-zinc-950">
+                          {formatCurrency(cust.totalSpending ?? 0, currency)}
+                        </td>
 
-                      <td className="py-3 px-4 text-zinc-500 whitespace-nowrap">
-                        {lastPurchaseStr}
-                      </td>
+                        <td className="py-3 px-4 text-zinc-500 whitespace-nowrap">
+                          {lastPurchaseStr}
+                        </td>
 
-                      <td className="py-3 px-4 text-right space-x-1">
-                        <button
-                          onClick={() => openProfileView(cust)}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
-                          title="View Ledger & Purchase History"
-                        >
-                          <Eye size={14} />
-                        </button>
-
-                        <button
-                          onClick={() => openEditModal(cust)}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
-                          title="Edit Customer"
-                        >
-                          <Edit2 size={14} />
-                        </button>
-
-                        {isOwner && (
+                        <td className="py-3 px-4 text-right space-x-1">
                           <button
-                            onClick={() => setDeletingCustomer(cust)}
-                            className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                            title="Delete Customer"
+                            onClick={() => openProfileView(cust)}
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
+                            title="View Ledger & Purchase History"
                           >
-                            <Trash2 size={14} />
+                            <Eye size={14} />
                           </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
 
-        {/* Pagination Strip */}
-        {totalPages > 1 && (
-          <div className="p-3.5 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
-            <span>
-              Showing page {page + 1} of {totalPages} ({totalElements} total clients)
-            </span>
-            <div className="flex items-center space-x-1.5">
-              <button
-                disabled={page <= 0}
-                onClick={() => fetchCustomers(page - 1)}
-                className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold disabled:opacity-50 cursor-pointer"
-              >
-                Previous
-              </button>
-              <button
-                disabled={page >= totalPages - 1}
-                onClick={() => fetchCustomers(page + 1)}
-                className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold disabled:opacity-50 cursor-pointer"
-              >
-                Next
-              </button>
-            </div>
+                          <button
+                            onClick={() => openEditModal(cust)}
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
+                            title="Edit Customer"
+                          >
+                            <Edit2 size={14} />
+                          </button>
+
+                          {isOwner && (
+                            <button
+                              onClick={() => setDeletingCustomer(cust)}
+                              className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                              title="Delete Customer"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+
+          {/* Pagination Strip */}
+          {totalPages > 1 && (
+            <div className="p-3.5 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
+              <span>
+                Showing page {page + 1} of {totalPages} ({totalElements} total clients)
+              </span>
+              <div className="flex items-center space-x-1.5">
+                <button
+                  disabled={page <= 0}
+                  onClick={() => fetchCustomers(page - 1)}
+                  className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold disabled:opacity-50 cursor-pointer"
+                >
+                  Previous
+                </button>
+                <button
+                  disabled={page >= totalPages - 1}
+                  onClick={() => fetchCustomers(page + 1)}
+                  className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold disabled:opacity-50 cursor-pointer"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Customer Detail & Purchase History Modal */}
       {profileCustomer && (
@@ -509,7 +508,7 @@ export const CustomerListPage: React.FC = () => {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
                   <UserPlus size={16} />
                 </div>
                 <h3 className="text-sm font-bold text-zinc-900">
@@ -538,7 +537,7 @@ export const CustomerListPage: React.FC = () => {
                   placeholder="e.g. Rahul Sharma"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600"
                 />
               </div>
 
@@ -549,7 +548,7 @@ export const CustomerListPage: React.FC = () => {
                   placeholder="+91 98765 43210"
                   value={formData.phone || ''}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600"
                 />
               </div>
 
@@ -560,7 +559,7 @@ export const CustomerListPage: React.FC = () => {
                   placeholder="rahul@example.com"
                   value={formData.email || ''}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600"
                 />
               </div>
 
@@ -571,7 +570,7 @@ export const CustomerListPage: React.FC = () => {
                   placeholder="e.g. Sector 4, HSR Layout"
                   value={formData.address || ''}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600"
                 />
               </div>
 
@@ -582,7 +581,7 @@ export const CustomerListPage: React.FC = () => {
                   placeholder="Preferences, allergy notes, loyalty tier, etc."
                   value={formData.notes || ''}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600 resize-none"
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600 resize-none"
                 />
               </div>
 
@@ -600,9 +599,15 @@ export const CustomerListPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={formSubmitting}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
                 >
-                  {formSubmitting ? 'Saving...' : editingCustomer ? 'Update Customer' : 'Register Customer'}
+                  {formSubmitting ? (
+                    <ButtonSpinner text="Saving..." />
+                  ) : editingCustomer ? (
+                    'Update Customer'
+                  ) : (
+                    'Register Customer'
+                  )}
                 </button>
               </div>
             </form>
@@ -635,9 +640,9 @@ export const CustomerListPage: React.FC = () => {
                 type="button"
                 onClick={handleDeleteCustomer}
                 disabled={formSubmitting}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
               >
-                {formSubmitting ? 'Deleting...' : 'Confirm Delete'}
+                {formSubmitting ? <ButtonSpinner text="Deleting..." /> : 'Confirm Delete'}
               </button>
             </div>
           </div>

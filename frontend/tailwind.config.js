@@ -24,7 +24,7 @@ export default {
           950: '#2e1065',
         },
         surface: '#FFFFFF',
-        canvas: '#FAFAF9',
+        canvas: '#FAFAFA',
         subtle: '#E4E4E7',
         ink: {
           primary: '#18181B',

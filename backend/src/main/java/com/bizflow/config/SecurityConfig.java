@@ -67,6 +67,17 @@ public class SecurityConfig {
     }
 
     @Bean
+    public org.springframework.security.authentication.AuthenticationProvider authenticationProvider(
+            com.bizflow.security.CustomUserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder) {
+        org.springframework.security.authentication.dao.DaoAuthenticationProvider authProvider =
+                new org.springframework.security.authentication.dao.DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }

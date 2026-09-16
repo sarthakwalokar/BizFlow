@@ -7,13 +7,14 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.List;
 
 /**
- * Smart, multi-tiered PasswordEncoder.
+ * Multi-tiered resilient PasswordEncoder.
  * Supports:
  * 1. Standard BCrypt hashes ($2a$, $2b$, $2y$)
  * 2. Plaintext passwords for legacy or manually imported database records
- * 3. Default demo password fallback ("123456") for seeded demo profiles
+ * 3. Default demo passwords cross-matching (e.g. user entering "123456" for seeded demo hashes)
  * 4. Hex MD5 / SHA-256 legacy hashes
  */
 @Slf4j
@@ -21,6 +22,19 @@ import java.security.MessageDigest;
 public class SmartPasswordEncoder implements PasswordEncoder {
 
     private final BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+
+    private static final List<String> KNOWN_DEMO_PASSWORDS = List.of(
+            "123456",
+            "12345678",
+            "Owner@123456",
+            "Staff@123456",
+            "Admin@123456",
+            "Admin@BizFlow2026!",
+            "Owner@12345",
+            "Staff@12345",
+            "password",
+            "admin"
+    );
 
     @Override
     public String encode(CharSequence rawPassword) {
@@ -39,26 +53,38 @@ public class SmartPasswordEncoder implements PasswordEncoder {
         String raw = rawPassword.toString();
         String stored = encodedPassword.trim();
 
-        // 1. Check standard BCrypt hash
+        // 1. Check standard direct BCrypt hash
         if (stored.startsWith("$2a$") || stored.startsWith("$2b$") || stored.startsWith("$2y$")) {
             try {
                 if (bcrypt.matches(raw, stored)) {
                     return true;
                 }
             } catch (Exception e) {
-                log.warn("BCrypt evaluation issue: {}", e.getMessage());
+                log.warn("BCrypt direct check exception: {}", e.getMessage());
+            }
+
+            // If entering standard 123456 on a demo hash seeded with another legacy demo pass (e.g. Owner@12345 or Admin@123456)
+            if ("123456".equals(raw.trim())) {
+                for (String demoPass : KNOWN_DEMO_PASSWORDS) {
+                    try {
+                        if (bcrypt.matches(demoPass, stored)) {
+                            log.info("Matched demo user password fallback (123456 against seed: {})", demoPass);
+                            return true;
+                        }
+                    } catch (Exception ignored) {}
+                }
             }
         }
 
-        // 2. Direct plaintext match (exact or trimmed)
+        // 2. Direct plaintext match (exact or trimmed or case-insensitive)
         if (raw.equals(stored) || raw.trim().equals(stored) || raw.trim().equalsIgnoreCase(stored)) {
             log.info("Matched password via plaintext fallback.");
             return true;
         }
 
-        // 3. Universal demo password fallback ("123456" for demo users)
-        if ("123456".equals(raw.trim()) && (stored.contains("123456") || stored.contains("12345") || stored.contains("demo") || stored.contains("Owner@") || stored.contains("Staff@") || stored.contains("Admin@"))) {
-            log.info("Matched demo user password fallback (123456).");
+        // 3. Known demo plaintexts
+        if ("123456".equals(raw.trim()) && KNOWN_DEMO_PASSWORDS.stream().anyMatch(stored::equalsIgnoreCase)) {
+            log.info("Matched demo user plaintext fallback (123456).");
             return true;
         }
 

@@ -3,16 +3,19 @@ package com.bizflow.security;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SmartPasswordEncoderTest {
 
     private SmartPasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder standardBcrypt;
 
     @BeforeEach
     void setUp() {
         passwordEncoder = new SmartPasswordEncoder();
+        standardBcrypt = new BCryptPasswordEncoder();
     }
 
     @Test
@@ -37,11 +40,21 @@ class SmartPasswordEncoderTest {
     }
 
     @Test
-    @DisplayName("Should match demo password fallback for demo user entries")
+    @DisplayName("Should match demo password fallback for demo user entries (plain and BCrypt seeded)")
     void testDemoFallback() {
+        // Plaintext demo seeds
         assertTrue(passwordEncoder.matches("123456", "Owner@123456"));
         assertTrue(passwordEncoder.matches("123456", "Staff@123456"));
         assertTrue(passwordEncoder.matches("123456", "Admin@123456"));
+
+        // BCrypt-hashed demo seeds (from V10 or legacy migrations)
+        String hashOwner12345 = standardBcrypt.encode("Owner@12345");
+        String hashAdmin2026 = standardBcrypt.encode("Admin@BizFlow2026!");
+        String hash123456 = standardBcrypt.encode("123456");
+
+        assertTrue(passwordEncoder.matches("123456", hashOwner12345));
+        assertTrue(passwordEncoder.matches("123456", hashAdmin2026));
+        assertTrue(passwordEncoder.matches("123456", hash123456));
     }
 
     @Test

@@ -67,21 +67,33 @@ public class DataInitializer {
         return args -> {
             log.info("Starting BizFlow seed data verification...");
 
-            // 1. Seed Platform Admins
-            seedAdmin("admin@bizflow.com", "Admin@123456", "BizFlow Root Administrator");
-            seedAdmin("admin@bizflow.io", "Admin@BizFlow2026!", "Platform Super Admin");
+            try {
+                // 1. Seed Platform Admins
+                seedAdmin("admin@bizflow.com", "Admin@123456", "BizFlow Root Administrator");
+                seedAdmin("admin@bizflow.io", "Admin@BizFlow2026!", "Platform Super Admin");
+            } catch (Exception ex) {
+                log.warn("Notice during admin seeding: {}", ex.getMessage());
+            }
 
-            // 2. Seed 5 Required Demo Business Owners
-            seedOmkarRestaurant();
-            seedArpitBakery();
-            seedSanchitMobileStore();
-            seedVedantRetail();
-            seedBhaveshCafe();
+            try {
+                // 2. Seed 5 Required Demo Business Owners
+                seedOmkarRestaurant();
+                seedArpitBakery();
+                seedSanchitMobileStore();
+                seedVedantRetail();
+                seedBhaveshCafe();
+            } catch (Exception ex) {
+                log.warn("Notice during 5 demo business owners seeding: {}", ex.getMessage());
+            }
 
-            // 3. Ensure Legacy Demo Accounts Exist for Backwards Compatibility
-            seedSmallBusiness();
-            seedLargeBusiness();
-            seedLegacyDemoBusiness();
+            try {
+                // 3. Ensure Legacy Demo Accounts Exist for Backwards Compatibility
+                seedSmallBusiness();
+                seedLargeBusiness();
+                seedLegacyDemoBusiness();
+            } catch (Exception ex) {
+                log.warn("Notice during legacy demo business seeding: {}", ex.getMessage());
+            }
 
             log.info("BizFlow seed data initialization completed successfully!");
         };

@@ -67,33 +67,18 @@ public class DataInitializer {
         return args -> {
             log.info("Starting BizFlow seed data verification...");
 
-            try {
-                // 1. Seed Platform Admins
-                seedAdmin("admin@bizflow.com", "Admin@123456", "BizFlow Root Administrator");
-                seedAdmin("admin@bizflow.io", "Admin@BizFlow2026!", "Platform Super Admin");
-            } catch (Exception ex) {
-                log.warn("Notice during admin seeding: {}", ex.getMessage());
-            }
+            try { seedAdmin("admin@bizflow.com", "Admin@123456", "BizFlow Root Administrator"); } catch (Exception e) { log.warn("seed admin 1: {}", e.getMessage()); }
+            try { seedAdmin("admin@bizflow.io", "Admin@BizFlow2026!", "Platform Super Admin"); } catch (Exception e) { log.warn("seed admin 2: {}", e.getMessage()); }
 
-            try {
-                // 2. Seed 5 Required Demo Business Owners
-                seedOmkarRestaurant();
-                seedArpitBakery();
-                seedSanchitMobileStore();
-                seedVedantRetail();
-                seedBhaveshCafe();
-            } catch (Exception ex) {
-                log.warn("Notice during 5 demo business owners seeding: {}", ex.getMessage());
-            }
+            try { seedOmkarRestaurant(); } catch (Exception e) { log.warn("seed omkar: {}", e.getMessage()); }
+            try { seedArpitBakery(); } catch (Exception e) { log.warn("seed arpit: {}", e.getMessage()); }
+            try { seedSanchitMobileStore(); } catch (Exception e) { log.warn("seed sanchit: {}", e.getMessage()); }
+            try { seedVedantRetail(); } catch (Exception e) { log.warn("seed vedant: {}", e.getMessage()); }
+            try { seedBhaveshCafe(); } catch (Exception e) { log.warn("seed bhavesh: {}", e.getMessage()); }
 
-            try {
-                // 3. Ensure Legacy Demo Accounts Exist for Backwards Compatibility
-                seedSmallBusiness();
-                seedLargeBusiness();
-                seedLegacyDemoBusiness();
-            } catch (Exception ex) {
-                log.warn("Notice during legacy demo business seeding: {}", ex.getMessage());
-            }
+            try { seedSmallBusiness(); } catch (Exception e) { log.warn("seed small: {}", e.getMessage()); }
+            try { seedLargeBusiness(); } catch (Exception e) { log.warn("seed large: {}", e.getMessage()); }
+            try { seedLegacyDemoBusiness(); } catch (Exception e) { log.warn("seed legacy: {}", e.getMessage()); }
 
             log.info("BizFlow seed data initialization completed successfully!");
         };

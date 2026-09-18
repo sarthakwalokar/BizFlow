@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { LanguageSelector } from '../common/LanguageSelector';
 import {
   LayoutDashboard,
   Package,
@@ -40,6 +42,7 @@ interface NavGroup {
 
 export const AppLayout: React.FC = () => {
   const { user, business, logout } = useAuth();
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -56,7 +59,7 @@ export const AppLayout: React.FC = () => {
     {
       items: [
         {
-          label: 'Overview',
+          label: t('nav.overview', 'Overview'),
           path: '/dashboard',
           icon: LayoutDashboard,
           roles: ['OWNER', 'STAFF'],
@@ -64,22 +67,22 @@ export const AppLayout: React.FC = () => {
       ],
     },
     {
-      groupTitle: 'Business',
+      groupTitle: t('nav.business', 'Business'),
       items: [
         {
-          label: 'Products & Services',
+          label: t('nav.products', 'Products & Services'),
           path: '/dashboard/products',
           icon: Package,
           roles: ['OWNER', 'STAFF'],
         },
         {
-          label: 'Categories',
+          label: t('nav.categories', 'Categories'),
           path: '/dashboard/categories',
           icon: FolderTree,
           roles: ['OWNER', 'STAFF'],
         },
         {
-          label: 'Customers',
+          label: t('nav.customers', 'Customers'),
           path: '/dashboard/customers',
           icon: Contact,
           roles: ['OWNER', 'STAFF'],
@@ -87,28 +90,28 @@ export const AppLayout: React.FC = () => {
       ],
     },
     {
-      groupTitle: 'Operations',
+      groupTitle: t('nav.operations', 'Operations'),
       items: [
         {
-          label: 'POS Billing',
+          label: t('nav.pos', 'POS Billing'),
           path: '/dashboard/pos',
           icon: Receipt,
           roles: ['OWNER', 'STAFF'],
         },
         {
-          label: 'Invoices & Orders',
+          label: t('nav.bills', 'Invoices & Orders'),
           path: '/dashboard/bills',
           icon: CircleDollarSign,
           roles: ['OWNER', 'STAFF'],
         },
         {
-          label: 'Expenses',
+          label: t('nav.expenses', 'Expenses'),
           path: '/dashboard/expenses',
           icon: TrendingDown,
           roles: ['OWNER', 'STAFF'],
         },
         {
-          label: 'Inventory',
+          label: t('nav.inventory', 'Inventory'),
           path: '/dashboard/inventory',
           icon: Boxes,
           roles: ['OWNER', 'STAFF'],
@@ -117,16 +120,16 @@ export const AppLayout: React.FC = () => {
       ],
     },
     {
-      groupTitle: 'Insights',
+      groupTitle: t('nav.insights', 'Insights'),
       items: [
         {
-          label: 'Analytics',
+          label: t('nav.analytics', 'Analytics'),
           path: '/dashboard/analytics',
           icon: BarChart3,
           roles: ['OWNER', 'STAFF'],
         },
         {
-          label: 'Review Boost',
+          label: t('nav.reviews', 'Review Boost'),
           path: '/dashboard/reviews',
           icon: Star,
           roles: ['OWNER', 'STAFF'],
@@ -134,16 +137,16 @@ export const AppLayout: React.FC = () => {
       ],
     },
     {
-      groupTitle: 'Tools',
+      groupTitle: t('nav.tools', 'Tools'),
       items: [
         {
-          label: 'AI Assistant',
+          label: t('nav.aiAssistant', 'AI Assistant'),
           path: '/dashboard/ai-assistant',
           icon: Sparkles,
           roles: ['OWNER', 'STAFF'],
         },
         {
-          label: 'Reports',
+          label: t('nav.reports', 'Reports'),
           path: '/dashboard/reports',
           icon: FileText,
           roles: ['OWNER', 'STAFF'],
@@ -204,6 +207,7 @@ export const AppLayout: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-2">
+          <LanguageSelector variant="compact" />
           {business && (
             <span
               className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full border ${getBusinessTypeBadgeColor(
@@ -303,7 +307,7 @@ export const AppLayout: React.FC = () => {
             {isOwner && (
               <div className="space-y-1 pt-2 border-t border-zinc-100">
                 <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                  Administration
+                  {t('nav.settings', 'Administration')}
                 </div>
                 <Link
                   to="/dashboard/staff"
@@ -331,7 +335,7 @@ export const AppLayout: React.FC = () => {
                 >
                   <div className="flex items-center space-x-2.5">
                     <Settings size={16} className={location.pathname.startsWith('/dashboard/settings') ? 'text-brand-600' : 'text-zinc-400'} />
-                    <span>Settings</span>
+                    <span>{t('nav.settings', 'Business Settings')}</span>
                   </div>
                 </Link>
               </div>
@@ -348,7 +352,7 @@ export const AppLayout: React.FC = () => {
                   className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-brand-700 hover:bg-brand-50 transition-colors mt-1"
                 >
                   <ShieldAlert size={16} />
-                  <span>Admin Portal</span>
+                  <span>{t('nav.admin', 'Admin Portal')}</span>
                 </Link>
               </div>
             )}
@@ -376,7 +380,7 @@ export const AppLayout: React.FC = () => {
               </Link>
               <button
                 onClick={handleLogout}
-                title="Logout"
+                title={t('nav.logout', 'Logout')}
                 className="p-1.5 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
               >
                 <LogOut size={15} />
@@ -414,6 +418,8 @@ export const AppLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-4">
+            <LanguageSelector variant="compact" />
+
             {business && business.taxRate !== undefined && business.taxRate > 0 && (
               <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-semibold">
                 <Percent size={12} className="text-brand-600" />

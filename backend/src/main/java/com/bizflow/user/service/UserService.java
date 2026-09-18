@@ -39,9 +39,27 @@ public class UserService {
 
         user.setFullName(request.getFullName().trim());
         user.setPhone(request.getPhone());
+        if (request.getPreferredLanguage() != null && !request.getPreferredLanguage().isBlank()) {
+            user.setPreferredLanguage(request.getPreferredLanguage().trim().toLowerCase());
+        }
 
         User saved = userRepository.save(user);
-        log.info("User {} profile updated", userId);
+        log.info("User {} profile updated (language={})", userId, user.getPreferredLanguage());
+        return UserResponse.fromEntity(saved);
+    }
+
+    @Transactional
+    public UserResponse updateLanguage(String language) {
+        Long userId = SecurityUtils.getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        if (language != null && !language.isBlank()) {
+            user.setPreferredLanguage(language.trim().toLowerCase());
+        }
+
+        User saved = userRepository.save(user);
+        log.info("User {} language preference updated to {}", userId, user.getPreferredLanguage());
         return UserResponse.fromEntity(saved);
     }
 

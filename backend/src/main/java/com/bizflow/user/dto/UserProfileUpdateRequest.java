@@ -19,4 +19,7 @@ public class UserProfileUpdateRequest {
 
     @Size(max = 30, message = "Phone must not exceed 30 characters")
     private String phone;
+
+    @Size(max = 20, message = "Preferred language code must not exceed 20 characters")
+    private String preferredLanguage;
 }

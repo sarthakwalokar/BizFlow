@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { LanguageSelector } from './common/LanguageSelector';
 import { BookOpen, LogIn, UserPlus, LogOut, Shield } from 'lucide-react';
 import { SWAGGER_DOCS_URL } from '../api/axios';
 
@@ -34,6 +35,8 @@ export const Navbar: React.FC = () => {
 
         {/* Navigation / Actions */}
         <nav className="flex items-center space-x-2 sm:space-x-3">
+          <LanguageSelector variant="compact" />
+
           <a
             href={SWAGGER_DOCS_URL}
             target="_blank"

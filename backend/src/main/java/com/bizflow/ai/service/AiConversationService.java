@@ -75,7 +75,8 @@ public class AiConversationService {
         userMessage = messageRepository.save(userMessage);
 
         // 4. Build Real-time Grounded Business Context
-        String systemPrompt = businessContextService.buildSystemPromptForBusiness(businessId);
+        String userLanguage = user.getPreferredLanguage() != null ? user.getPreferredLanguage() : "en";
+        String systemPrompt = businessContextService.buildSystemPromptForBusiness(businessId, userLanguage);
 
         // 5. Query AI Gateway with Fallback Chain
         AIGatewayService.GenerationResult result = aiGatewayService.generateResponse(

@@ -45,6 +45,10 @@ public class AIBusinessContextService {
     private final ReviewRepository reviewRepository;
 
     public String buildSystemPromptForBusiness(Long businessId) {
+        return buildSystemPromptForBusiness(businessId, "en");
+    }
+
+    public String buildSystemPromptForBusiness(Long businessId, String preferredLanguage) {
         Business business = businessRepository.findById(businessId)
                 .orElseThrow(() -> new ResourceNotFoundException("Business", "id", businessId));
 
@@ -205,6 +209,7 @@ public class AIBusinessContextService {
                 3. Use clean Markdown formatting with clear section headers (###), bold numbers, bullet points, and highlight warnings (⚠️, 💡, 📊).
                 4. When recommending restocks, reference specific product names and current stock numbers from the snapshot.
                 5. Never reveal API keys, database internals, or execute destructive actions. You are strictly a read-only analytical advisor.
+                6. LANGUAGE REQUIREMENT: %s
                 """,
                 business.getName(), business.getBusinessType(), business.getCurrency(), business.getBusinessSize(),
                 business.getCurrency(), todaySales.toPlainString(), todayOrders,
@@ -220,8 +225,33 @@ public class AIBusinessContextService {
                 allProducts.size(), lowStockProducts.size(),
                 lowStockStr,
                 totalCustomers, activeCustomersCount, repeatRate, repeatCustomers,
-                reviewSummaryStr
+                reviewSummaryStr,
+                getLanguageInstruction(preferredLanguage)
         );
+    }
+
+    private String getLanguageInstruction(String lang) {
+        if (lang == null) return "Respond in English.";
+        return switch (lang.toLowerCase().trim()) {
+            case "mr" -> "Respond in Marathi (मराठी). Provide natural, clear, and professional Marathi business communication while keeping real currency numbers, percentages, and dish/product names accurate and readable.";
+            case "hi" -> "Respond in Hindi (हिन्दी). Provide natural, clear, and professional Hindi business communication while keeping real currency numbers, percentages, and dish/product names accurate and readable.";
+            case "bn" -> "Respond in Bengali (বাংলা). Use the provided BizFlow business data to answer accurately.";
+            case "gu" -> "Respond in Gujarati (ગુજરાતી). Use the provided BizFlow business data to answer accurately.";
+            case "ta" -> "Respond in Tamil (தமிழ்). Use the provided BizFlow business data to answer accurately.";
+            case "te" -> "Respond in Telugu (తెలుగు). Use the provided BizFlow business data to answer accurately.";
+            case "kn" -> "Respond in Kannada (ಕನ್ನಡ). Use the provided BizFlow business data to answer accurately.";
+            case "ml" -> "Respond in Malayalam (മലയാളം). Use the provided BizFlow business data to answer accurately.";
+            case "pa" -> "Respond in Punjabi (ਪੰਜਾਬੀ). Use the provided BizFlow business data to answer accurately.";
+            case "es" -> "Respond in Spanish (Español). Use the provided BizFlow business data to answer accurately.";
+            case "fr" -> "Respond in French (Français). Use the provided BizFlow business data to answer accurately.";
+            case "de" -> "Respond in German (Deutsch). Use the provided BizFlow business data to answer accurately.";
+            case "pt" -> "Respond in Portuguese (Português). Use the provided BizFlow business data to answer accurately.";
+            case "ar" -> "Respond in Arabic (العربية). Use the provided BizFlow business data to answer accurately.";
+            case "zh" -> "Respond in Simplified Chinese (中文). Use the provided BizFlow business data to answer accurately.";
+            case "ja" -> "Respond in Japanese (日本語). Use the provided BizFlow business data to answer accurately.";
+            case "ko" -> "Respond in Korean (한국어). Use the provided BizFlow business data to answer accurately.";
+            default -> "Respond in English. Use the provided BizFlow business data to answer accurately.";
+        };
     }
 
     public List<AiSuggestedQuestion> generateSuggestions(Long businessId) {

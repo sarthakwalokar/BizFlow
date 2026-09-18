@@ -5,11 +5,16 @@ import { User } from './auth';
 export interface UserProfileUpdateRequest {
   fullName: string;
   phone?: string;
+  preferredLanguage?: string;
 }
 
 export interface PasswordChangeRequest {
   currentPassword: string;
   newPassword: string;
+}
+
+export interface LanguageUpdateRequest {
+  language: string;
 }
 
 export const usersApi = {
@@ -20,6 +25,11 @@ export const usersApi = {
 
   updateMyProfile: async (data: UserProfileUpdateRequest): Promise<User> => {
     const res = await apiClient.put<ApiResponse<User>>('/users/me', data);
+    return res.data.data;
+  },
+
+  updateMyLanguage: async (language: string): Promise<User> => {
+    const res = await apiClient.put<ApiResponse<User>>('/users/me/language', { language });
     return res.data.data;
   },
 

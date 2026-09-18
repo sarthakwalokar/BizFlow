@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import {
   aiApi,
@@ -33,6 +34,7 @@ const SUGGESTED_PROMPTS = [
 
 export const AiAssistantPage: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [conversations, setConversations] = useState<AiConversationSummary[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<number | null>(null);
   const [messages, setMessages] = useState<AiMessage[]>([]);
@@ -268,8 +270,8 @@ export const AiAssistantPage: React.FC = () => {
               <Bot size={16} />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-zinc-900">AI Business Assistant</h2>
-              <p className="text-[11px] text-zinc-500">Real-time intelligent analytics, insights, and decision support</p>
+              <h2 className="text-sm font-bold text-zinc-900">{t('ai.title', 'AI Business Assistant')}</h2>
+              <p className="text-[11px] text-zinc-500">{t('ai.subtitle', 'Real-time intelligent analytics, insights, and decision support')}</p>
             </div>
           </div>
 
@@ -277,7 +279,7 @@ export const AiAssistantPage: React.FC = () => {
             {aiStatus?.geminiAvailable ? (
               <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-[11px] font-semibold">
                 <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-                <span>BizFlow AI Active</span>
+                <span>{t('ai.activeProvider', 'BizFlow AI Active')}</span>
               </div>
             ) : (
               <a
@@ -288,7 +290,7 @@ export const AiAssistantPage: React.FC = () => {
                 title="Click to get free AI Engine API Key"
               >
                 <KeyRound size={12} className="text-amber-600" />
-                <span>AI Key Required</span>
+                <span>{t('ai.setupRequired', 'AI Key Required')}</span>
                 <ExternalLink size={10} />
               </a>
             )}
@@ -459,7 +461,7 @@ export const AiAssistantPage: React.FC = () => {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask a question about sales, inventory, or expenses (Enter to send)..."
+              placeholder={t('ai.promptPlaceholder', 'Ask a question about sales, inventory, or expenses (Enter to send)...')}
               className="flex-1 bg-transparent border-none text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-0 resize-none py-1.5 px-2"
             />
 
@@ -467,6 +469,7 @@ export const AiAssistantPage: React.FC = () => {
               onClick={() => handleSendMessage()}
               disabled={!inputMessage.trim() || loading}
               className="p-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              title={t('ai.send', 'Ask AI')}
             >
               <Send size={15} />
             </button>

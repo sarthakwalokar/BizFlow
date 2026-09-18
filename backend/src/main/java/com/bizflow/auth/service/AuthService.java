@@ -63,6 +63,10 @@ public class AuthService {
 
         Business savedBusiness = businessRepository.save(business);
 
+        String prefLang = (request.getPreferredLanguage() != null && !request.getPreferredLanguage().isBlank())
+                ? request.getPreferredLanguage().trim().toLowerCase()
+                : "en";
+
         // 2. Create and persist Owner User entity
         User owner = User.builder()
                 .business(savedBusiness)
@@ -71,6 +75,7 @@ public class AuthService {
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
                 .role(Role.OWNER)
+                .preferredLanguage(prefLang)
                 .enabled(true)
                 .active(true)
                 .build();

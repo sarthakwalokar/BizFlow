@@ -45,4 +45,7 @@ public class SignupRequest {
     private String businessPhone;
 
     private String businessEmail;
+
+    @Size(max = 20, message = "Preferred language code must not exceed 20 characters")
+    private String preferredLanguage;
 }

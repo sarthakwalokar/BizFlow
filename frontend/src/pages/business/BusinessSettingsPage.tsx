@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { businessApi, BusinessUpdateRequest } from '../../api/business';
+import { usersApi } from '../../api/users';
 import { BusinessType } from '../../api/auth';
 import { formatCurrency } from '../../utils/currency';
 import { ButtonSpinner } from '../../components/common/LoadingStates';
+import { LanguageSelector } from '../../components/common/LanguageSelector';
 import {
   Building2,
   Percent,
@@ -17,7 +20,8 @@ import {
 } from 'lucide-react';
 
 export const BusinessSettingsPage: React.FC = () => {
-  const { business, updateBusinessState } = useAuth();
+  const { business, user, updateBusinessState, updateUserLanguage } = useAuth();
+  const { i18n } = useTranslation();
 
   const [name, setName] = useState('');
   const [businessType, setBusinessType] = useState<BusinessType>('RETAIL');
@@ -27,6 +31,49 @@ export const BusinessSettingsPage: React.FC = () => {
   const [logo, setLogo] = useState('');
   const [currency, setCurrency] = useState('USD');
   const [timezone, setTimezone] = useState('Asia/Kolkata');
+
+  // Language settings state
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(
+    user?.preferredLanguage || i18n.language || 'en'
+  );
+  const [languageSaving, setLanguageSaving] = useState(false);
+  const [languageSuccess, setLanguageSuccess] = useState<string | null>(null);
+
+  const handleLanguageChange = async (newLang: string) => {
+    setSelectedLanguage(newLang);
+    setLanguageSaving(true);
+    setLanguageSuccess(null);
+    try {
+      await usersApi.updateMyLanguage(newLang);
+      updateUserLanguage(newLang);
+      
+      const successMsgs: Record<string, string> = {
+        en: 'Language updated successfully',
+        hi: 'भाषा सफलतापूर्वक अपडेट की गई',
+        mr: 'भाषा यशस्वीरित्या बदलली',
+        bn: 'ভাষা সফলভাবে আপডেট করা হয়েছে',
+        gu: 'ભાષા સફળતાપૂર્વક અપડેટ કરવામાં આવી',
+        ta: 'மொழி வெற்றிகரமாக புதுப்பிக்கப்பட்டது',
+        te: 'భాష విజయవంతంగా నవీకరించబడింది',
+        kn: 'ಭಾಷೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ',
+        ml: 'ഭാഷ വിജയകരമായി പുതുക്കി',
+        pa: 'ਭਾਸ਼ਾ ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਡੇਟ ਕੀਤੀ ਗਈ',
+        es: 'Idioma actualizado correctamente',
+        fr: 'Langue mise à jour avec succès',
+        de: 'Sprache erfolgreich aktualisiert',
+        pt: 'Idioma atualizado com sucesso',
+        ar: 'تم تحديث اللغة بنجاح',
+        zh: '语言已成功更新',
+        ja: '言語が正常に更新されました',
+        ko: '언어가 성공적으로 업데이트되었습니다',
+      };
+      setLanguageSuccess(successMsgs[newLang] || successMsgs.en);
+    } catch {
+      setLanguageSuccess(null);
+    } finally {
+      setLanguageSaving(false);
+    }
+  };
 
   // Tax settings
   const [taxRate, setTaxRate] = useState<number>(0);
@@ -129,6 +176,41 @@ export const BusinessSettingsPage: React.FC = () => {
           <span className="font-medium">{errorMessage}</span>
         </div>
       )}
+
+      {/* Language Preference Card */}
+      <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
+              <Globe size={16} />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-zinc-900">Language / भाषा / भाषा</h2>
+              <p className="text-xs text-zinc-500">Choose your preferred language for BizFlow.</p>
+            </div>
+          </div>
+          {languageSaving && (
+            <span className="text-xs text-brand-600 font-medium animate-pulse">Saving...</span>
+          )}
+        </div>
+
+        {languageSuccess && (
+          <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-emerald-800 text-xs font-medium">
+            <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
+            <span>{languageSuccess}</span>
+          </div>
+        )}
+
+        <div className="max-w-md">
+          <LanguageSelector
+            value={selectedLanguage}
+            onChange={handleLanguageChange}
+          />
+          <p className="text-[11px] text-zinc-500 mt-2">
+            Switching language will immediately update your interface, navigation, and AI business assistant data prompts across your account.
+          </p>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Profile & Branding Card */}

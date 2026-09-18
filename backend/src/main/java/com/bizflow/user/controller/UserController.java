@@ -34,6 +34,13 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("Profile updated successfully", response));
     }
 
+    @PutMapping("/me/language")
+    @Operation(summary = "Update Preferred Language", description = "Updates preferred language for the authenticated user")
+    public ResponseEntity<ApiResponse<UserResponse>> updateMyLanguage(@Valid @RequestBody com.bizflow.user.dto.LanguageUpdateRequest request) {
+        UserResponse response = userService.updateLanguage(request.getLanguage());
+        return ResponseEntity.ok(ApiResponse.success("Language preference updated successfully", response));
+    }
+
     @PostMapping("/me/change-password")
     @Operation(summary = "Change Password", description = "Changes password after verifying the current password")
     public ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody PasswordChangeRequest request) {

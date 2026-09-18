@@ -23,6 +23,7 @@ public class UserResponse {
     private String permissions;
     private boolean enabled;
     private boolean active;
+    private String preferredLanguage;
     private Instant createdAt;
 
     public static UserResponse fromEntity(User user) {
@@ -37,6 +38,7 @@ public class UserResponse {
                 .permissions(user.getPermissions())
                 .enabled(user.isEnabled())
                 .active(user.isActive())
+                .preferredLanguage(user.getPreferredLanguage() != null ? user.getPreferredLanguage() : "en")
                 .createdAt(user.getCreatedAt())
                 .build();
     }

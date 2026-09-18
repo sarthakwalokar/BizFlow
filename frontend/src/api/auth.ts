@@ -37,6 +37,7 @@ export interface User {
   permissions?: string;
   businessId?: number;
   enabled: boolean;
+  preferredLanguage?: string;
   createdAt: string;
 }
 
@@ -79,6 +80,7 @@ export interface SignupRequest {
   businessAddress?: string;
   businessPhone?: string;
   businessEmail?: string;
+  preferredLanguage?: string;
 }
 
 export interface LoginRequest {

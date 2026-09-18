@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { BusinessType } from '../api/auth';
+import { LanguageSelector } from '../components/common/LanguageSelector';
 import { 
   User as UserIcon, 
   Mail, 
@@ -46,6 +48,7 @@ const businessTypeOptions: { value: BusinessType; label: string }[] = [
 
 export const SignupPage: React.FC = () => {
   const { signup } = useAuth();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const [fullName, setFullName] = useState('');
@@ -53,6 +56,7 @@ export const SignupPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
+  const [preferredLanguage, setPreferredLanguage] = useState<string>(i18n.language || 'en');
   
   const [businessName, setBusinessName] = useState('');
   const [businessType, setBusinessType] = useState<BusinessType>('RETAIL');
@@ -63,6 +67,11 @@ export const SignupPage: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleLanguageChange = (langCode: string) => {
+    setPreferredLanguage(langCode);
+    i18n.changeLanguage(langCode);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,6 +89,7 @@ export const SignupPage: React.FC = () => {
         businessAddress,
         businessPhone: businessPhone || phone,
         businessEmail: businessEmail || email,
+        preferredLanguage,
       });
 
       navigate('/dashboard');
@@ -357,6 +367,18 @@ export const SignupPage: React.FC = () => {
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
+                </div>
+
+                {/* Preferred Language Field */}
+                <div className="sm:col-span-2">
+                  <LanguageSelector
+                    label={t('auth.preferredLanguage', 'Preferred Language / पसंदीदा भाषा / पसंतीची भाषा')}
+                    value={preferredLanguage}
+                    onChange={handleLanguageChange}
+                  />
+                  <p className="text-[11px] text-zinc-500 mt-1">
+                    Select your preferred language. BizFlow interface and AI business insights will automatically adapt to your selection.
+                  </p>
                 </div>
               </div>
             </div>

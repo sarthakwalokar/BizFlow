@@ -64,6 +64,10 @@ public class User extends BaseEntity {
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
 
+    @Builder.Default
+    @Column(name = "preferred_language", length = 20, nullable = false)
+    private String preferredLanguage = "en";
+
     public Long getBusinessId() {
         try {
             return business != null ? business.getId() : null;

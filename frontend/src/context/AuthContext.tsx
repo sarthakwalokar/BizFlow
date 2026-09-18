@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Business, authApi, LoginRequest, SignupRequest } from '../api/auth';
+import i18n from '../i18n';
 
 interface AuthContextType {
   user: User | null;
@@ -12,6 +13,7 @@ interface AuthContextType {
   logout: () => void;
   updateBusinessState: (business: Business) => void;
   refreshUser: () => Promise<void>;
+  updateUserLanguage: (lang: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,6 +23,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [business, setBusiness] = useState<Business | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('bizflow_token'));
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const syncLanguage = (lang?: string) => {
+    if (lang && lang.trim()) {
+      i18n.changeLanguage(lang.trim().toLowerCase());
+    }
+  };
 
   const initAuth = async () => {
     const savedToken = localStorage.getItem('bizflow_token');
@@ -32,6 +40,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const data = await authApi.getMe();
       setUser(data.user);
+      if (data.user?.preferredLanguage) {
+        syncLanguage(data.user.preferredLanguage);
+      }
       if (data.business) {
         setBusiness(data.business);
       }
@@ -57,6 +68,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem('bizflow_token', data.accessToken);
       setToken(data.accessToken);
       setUser(data.user);
+      if (data.user?.preferredLanguage) {
+        syncLanguage(data.user.preferredLanguage);
+      }
       if (data.business) {
         setBusiness(data.business);
       }
@@ -73,6 +87,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem('bizflow_token', authData.accessToken);
       setToken(authData.accessToken);
       setUser(authData.user);
+      if (authData.user?.preferredLanguage) {
+        syncLanguage(authData.user.preferredLanguage);
+      }
       if (authData.business) {
         setBusiness(authData.business);
       }
@@ -98,12 +115,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const data = await authApi.getMe();
       setUser(data.user);
+      if (data.user?.preferredLanguage) {
+        syncLanguage(data.user.preferredLanguage);
+      }
       if (data.business) {
         setBusiness(data.business);
       }
     } catch {
       logout();
     }
+  };
+
+  const updateUserLanguage = (lang: string) => {
+    if (user) {
+      setUser({ ...user, preferredLanguage: lang });
+    }
+    syncLanguage(lang);
   };
 
   return (
@@ -119,6 +146,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         logout,
         updateBusinessState,
         refreshUser,
+        updateUserLanguage,
       }}
     >
       {children}

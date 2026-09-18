@@ -4,5 +4,6 @@ public enum TimeRange {
     TODAY,
     THIS_WEEK,
     THIS_MONTH,
+    THIS_YEAR,
     CUSTOM
 }

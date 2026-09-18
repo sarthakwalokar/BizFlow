@@ -63,7 +63,7 @@ class AiControllerTest {
                 .userMessageId(10L)
                 .assistantMessageId(11L)
                 .reply("### Monthly Sales\nYour gross revenue is $12,450 across 128 orders.")
-                .providerUsed("Google Gemini (gemini-1.5-flash)")
+                .providerUsed("BizFlow AI Engine")
                 .tokensUsed(420)
                 .createdAt(Instant.now())
                 .build();
@@ -77,7 +77,7 @@ class AiControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.conversationId").value(1))
                 .andExpect(jsonPath("$.data.reply").isNotEmpty())
-                .andExpect(jsonPath("$.data.providerUsed").value("Google Gemini (gemini-1.5-flash)"));
+                .andExpect(jsonPath("$.data.providerUsed").value("BizFlow AI Engine"));
     }
 
     @Test
@@ -166,8 +166,8 @@ class AiControllerTest {
     void testGetStatus() throws Exception {
         AiStatusResponse status = AiStatusResponse.builder()
                 .enabled(true)
-                .activeProvider("Google Gemini")
-                .availableProviders(List.of("Gemini", "Deterministic Engine"))
+                .activeProvider("BizFlow AI Engine")
+                .availableProviders(List.of("BizFlow AI Engine"))
                 .geminiAvailable(true)
                 .groqAvailable(false)
                 .openRouterAvailable(false)
@@ -179,7 +179,7 @@ class AiControllerTest {
         mockMvc.perform(get("/api/v1/ai/status"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.activeProvider").value("Google Gemini"))
+                .andExpect(jsonPath("$.data.activeProvider").value("BizFlow AI Engine"))
                 .andExpect(jsonPath("$.data.geminiAvailable").value(true));
     }
 }

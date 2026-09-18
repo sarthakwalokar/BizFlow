@@ -230,7 +230,7 @@ export const AdminSystemConfigPage: React.FC = () => {
             <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1">
               <span className="text-zinc-400 text-[10px] block">Available Fallback Chains</span>
               <span className="text-zinc-700">
-                {config?.availableAiProviders?.join(' → ') || 'Gemini → Groq → OpenRouter → Rule Engine'}
+                {config?.availableAiProviders?.join(' → ') || 'BizFlow AI Engine (Primary) → Rule Engine'}
               </span>
             </div>
 

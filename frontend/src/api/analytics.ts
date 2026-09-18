@@ -1,6 +1,6 @@
 import apiClient from './axios';
 
-export type TimeRange = 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH' | 'CUSTOM';
+export type TimeRange = 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH' | 'THIS_YEAR' | 'CUSTOM';
 
 export interface DailySalesPoint {
   date: string;

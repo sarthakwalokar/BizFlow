@@ -26,21 +26,18 @@ public class GeminiProvider implements AiProvider {
     // Ordered list of candidate Gemini models to try if the primary is retired or unavailable
     private static final List<String> FALLBACK_GEMINI_MODELS = List.of(
             "gemini-3.8-flash",
-            "gemini-2.5-flash",
-            "gemini-2.0-flash",
-            "gemini-1.5-flash-latest",
-            "gemini-1.5-flash",
-            "gemini-1.5-flash-8b",
-            "gemini-2.5-pro",
-            "gemini-1.5-pro"
+            "gemini-3.6-flash",
+            "gemini-3.7-flash",
+            "gemini-flash-latest",
+            "gemini-3.5-flash",
+            "gemini-3.1-pro-preview"
     );
 
     private volatile String lastWorkingModel = null;
 
     @Override
     public String getProviderName() {
-        String model = lastWorkingModel != null ? lastWorkingModel : aiProperties.getGemini().getModel();
-        return "Google Gemini (" + (model != null && !model.isBlank() ? model : "gemini-3.8-flash") + ")";
+        return "BizFlow AI Engine";
     }
 
     @Override
@@ -52,7 +49,7 @@ public class GeminiProvider implements AiProvider {
     public String generateCompletion(String systemPrompt, List<AiMessageDto> history, String userPrompt) {
         AiProperties.ProviderConfig config = aiProperties.getGemini();
         if (!config.isConfigured()) {
-            throw new IllegalStateException("Google Gemini API key is missing or not configured. Please set the GEMINI_API_KEY or BIZFLOW_AI_GEMINI_API_KEY environment variable.");
+            throw new IllegalStateException("BizFlow AI API key is missing or not configured. Please set the BIZFLOW_AI_GEMINI_API_KEY or GEMINI_API_KEY environment variable.");
         }
 
         String apiKey = config.getApiKey().trim();
@@ -142,13 +139,17 @@ public class GeminiProvider implements AiProvider {
                 log.warn("Gemini HTTP error ({}) for model {}: {}", e.getStatusCode().value(), model, errorBody);
                 String extractedMsg = extractErrorMessage(errorBody);
 
-                if (e.getStatusCode().value() == 400 && errorBody.contains("API_KEY_INVALID")) {
-                    throw new IllegalStateException("The configured Google Gemini API key is invalid. Please verify your GEMINI_API_KEY.");
+                if (e.getStatusCode().value() == 401
+                        || (e.getStatusCode().value() == 400 && errorBody.contains("API_KEY_INVALID"))
+                        || errorBody.contains("UNAUTHENTICATED")
+                        || errorBody.contains("ACCESS_TOKEN_TYPE_UNSUPPORTED")
+                        || errorBody.contains("invalid authentication credentials")) {
+                    throw new IllegalStateException("The configured AI API key is invalid or unrecognized. Please provide a valid API key in your .env file.");
                 } else if (e.getStatusCode().value() == 429 || errorBody.contains("RESOURCE_EXHAUSTED")) {
-                    throw new IllegalStateException("Google Gemini API quota/rate limit reached. Please check your Gemini account limits.");
+                    throw new IllegalStateException("AI service quota/rate limit reached. Please check your account limits or retry shortly.");
                 } else if (e.getStatusCode().value() == 404 || (extractedMsg != null && extractedMsg.contains("not found"))) {
                     // Model not found on this endpoint/version, continue loop to try next model
-                    lastException = new RuntimeException("Google Gemini model '" + model + "' not available: " + extractedMsg, e);
+                    lastException = new RuntimeException("AI model '" + model + "' not available: " + extractedMsg, e);
                     continue;
                 }
 

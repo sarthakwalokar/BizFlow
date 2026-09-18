@@ -98,7 +98,7 @@ export const PublicReviewPage: React.FC = () => {
     setAvailableTags(DEFAULT_CHIPS_BY_RATING[selectedStar] || []);
     setAiError(null);
 
-    // Automatically trigger Gemini review generation for the selected star
+    // Automatically trigger AI review generation for the selected star
     await triggerAiGeneration(selectedStar);
   };
 
@@ -125,7 +125,7 @@ export const PublicReviewPage: React.FC = () => {
       const msg =
         e.response?.data?.error?.message ||
         e.response?.data?.message ||
-        'Unable to generate AI review suggestions. Please ensure the Google Gemini API key is configured on the backend.';
+        'Unable to generate AI review suggestions. Please ensure the BizFlow AI API key is configured on the backend.';
       setAiError(msg);
     } finally {
       setGeneratingAi(false);
@@ -387,7 +387,7 @@ export const PublicReviewPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5 text-brand-800 text-xs font-bold">
                       <Sparkles size={14} className="text-brand-600 animate-pulse" />
-                      <span>Gemini AI Review Suggestions</span>
+                      <span>AI Review Suggestions</span>
                     </div>
 
                     <button

@@ -122,4 +122,36 @@ class AnalyticsControllerTest {
                 .andExpect(jsonPath("$.data.paymentDistribution[0].paymentMethod").value("CASH"))
                 .andExpect(jsonPath("$.data.branchPerformance[0].locationName").value("Downtown Flagship"));
     }
+
+    @Test
+    @WithMockUser(roles = "OWNER")
+    void testGetOverviewWithThisYear() throws Exception {
+        AnalyticsOverviewResponse response = AnalyticsOverviewResponse.builder()
+                .timeRange(TimeRange.THIS_YEAR)
+                .startDate(LocalDate.now().withDayOfYear(1))
+                .endDate(LocalDate.now())
+                .currency("INR")
+                .revenue(BigDecimal.valueOf(50000.00))
+                .orderCount(200)
+                .averageOrderValue(BigDecimal.valueOf(250.00))
+                .expenseTotal(BigDecimal.valueOf(10000.00))
+                .netRevenue(BigDecimal.valueOf(40000.00))
+                .profitMarginPercentage(80.0)
+                .salesTrend(List.of())
+                .expenseTrend(List.of())
+                .topProducts(List.of())
+                .paymentDistribution(List.of())
+                .branchPerformance(List.of())
+                .build();
+
+        when(analyticsService.getOverview(org.mockito.ArgumentMatchers.eq(TimeRange.THIS_YEAR), any(), any(), any()))
+                .thenReturn(response);
+
+        mockMvc.perform(get("/api/v1/analytics/overview")
+                        .param("timeRange", "THIS_YEAR"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.timeRange").value("THIS_YEAR"))
+                .andExpect(jsonPath("$.data.revenue").value(50000.00));
+    }
 }

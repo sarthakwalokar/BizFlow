@@ -31,17 +31,17 @@ class AIGatewayServiceTest {
     @Test
     void testGeminiCompletion_Success() {
         when(geminiProvider.isConfigured()).thenReturn(true);
-        when(geminiProvider.getProviderName()).thenReturn("Google Gemini (gemini-3.8-flash)");
+        when(geminiProvider.getProviderName()).thenReturn("BizFlow AI Engine");
         when(geminiProvider.generateCompletion(anyString(), anyList(), anyString()))
-                .thenReturn("Gemini response: Sales are up 15%.");
+                .thenReturn("AI response: Sales are up 15%.");
 
         AIGatewayService.GenerationResult result = aiGatewayService.generateResponse(
                 "System prompt", List.of(), "How were sales?"
         );
 
         assertNotNull(result);
-        assertEquals("Gemini response: Sales are up 15%.", result.reply());
-        assertTrue(result.providerUsed().contains("Gemini"));
+        assertEquals("AI response: Sales are up 15%.", result.reply());
+        assertEquals("BizFlow AI Engine", result.providerUsed());
         verify(geminiProvider, times(1)).generateCompletion(anyString(), anyList(), anyString());
     }
 
@@ -57,7 +57,7 @@ class AIGatewayServiceTest {
     @Test
     void testGeminiCompletion_WhenGeminiFails_ThrowsRuntimeException() {
         when(geminiProvider.isConfigured()).thenReturn(true);
-        when(geminiProvider.getProviderName()).thenReturn("Google Gemini (gemini-3.8-flash)");
+        when(geminiProvider.getProviderName()).thenReturn("BizFlow AI Engine");
         when(geminiProvider.generateCompletion(anyString(), anyList(), anyString()))
                 .thenThrow(new RuntimeException("API connection failure"));
 
@@ -65,14 +65,14 @@ class AIGatewayServiceTest {
             aiGatewayService.generateResponse("System prompt", List.of(), "Top products?");
         });
 
-        assertTrue(ex.getMessage().contains("Gemini generation failed"));
+        assertTrue(ex.getMessage().contains("AI generation failed"));
     }
 
     @Test
     void testGetAiStatus_WhenConfigured() {
         when(aiProperties.isEnabled()).thenReturn(true);
         when(geminiProvider.isConfigured()).thenReturn(true);
-        when(geminiProvider.getProviderName()).thenReturn("Google Gemini (gemini-3.8-flash)");
+        when(geminiProvider.getProviderName()).thenReturn("BizFlow AI Engine");
 
         AiStatusResponse status = aiGatewayService.getAiStatus();
 
@@ -81,7 +81,7 @@ class AIGatewayServiceTest {
         assertTrue(status.isGeminiAvailable());
         assertFalse(status.isGroqAvailable());
         assertFalse(status.isOpenRouterAvailable());
-        assertEquals("Google Gemini (gemini-3.8-flash)", status.getActiveProvider());
+        assertEquals("BizFlow AI Engine", status.getActiveProvider());
     }
 
     @Test
@@ -94,6 +94,6 @@ class AIGatewayServiceTest {
         assertNotNull(status);
         assertTrue(status.isEnabled());
         assertFalse(status.isGeminiAvailable());
-        assertEquals("Google Gemini (Key Required)", status.getActiveProvider());
+        assertEquals("BizFlow AI (Key Required)", status.getActiveProvider());
     }
 }

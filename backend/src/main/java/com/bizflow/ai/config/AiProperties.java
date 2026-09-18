@@ -34,7 +34,11 @@ public class AiProperties {
         }
 
         public boolean isConfigured() {
-            return apiKey != null && !apiKey.trim().isEmpty();
+            if (apiKey == null) return false;
+            String trimmed = apiKey.trim();
+            return !trimmed.isEmpty()
+                    && !trimmed.equalsIgnoreCase("your_gemini_api_key_here")
+                    && !trimmed.startsWith("<");
         }
     }
 }

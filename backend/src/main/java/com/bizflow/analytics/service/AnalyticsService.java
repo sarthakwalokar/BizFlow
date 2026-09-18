@@ -87,6 +87,10 @@ public class AnalyticsService {
                 startDate = today.with(TemporalAdjusters.firstDayOfMonth());
                 endDate = today;
             }
+            case THIS_YEAR -> {
+                startDate = today.with(TemporalAdjusters.firstDayOfYear());
+                endDate = today;
+            }
             case CUSTOM -> {
                 startDate = customStartDate != null ? customStartDate : today.minusDays(30);
                 endDate = customEndDate != null ? customEndDate : today;

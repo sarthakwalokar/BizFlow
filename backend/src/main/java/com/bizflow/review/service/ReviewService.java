@@ -385,7 +385,7 @@ public class ReviewService {
         Business business = resolveBusinessBySlugOrId(slugOrId);
         
         if (!geminiProvider.isConfigured()) {
-            throw new IllegalStateException("Google Gemini API key is missing or not configured. Please configure the GEMINI_API_KEY or BIZFLOW_AI_GEMINI_API_KEY environment variable.");
+            throw new IllegalStateException("BizFlow AI API key is missing or not configured. Please configure the GEMINI_API_KEY or BIZFLOW_AI_GEMINI_API_KEY environment variable.");
         }
 
         int rating = request != null && request.getRating() >= 1 && request.getRating() <= 5 ? request.getRating() : 5;
@@ -420,8 +420,8 @@ public class ReviewService {
         try {
             rawResponse = geminiProvider.generateCompletion(systemPrompt, List.of(), userPrompt);
         } catch (Exception e) {
-            log.error("Google Gemini API review generation failed: {}", e.getMessage());
-            throw new RuntimeException("Google Gemini review generation failed: " + e.getMessage(), e);
+            log.error("BizFlow AI review generation failed: {}", e.getMessage());
+            throw new RuntimeException("BizFlow AI review generation failed: " + e.getMessage(), e);
         }
 
         List<String> suggestions = new ArrayList<>();
@@ -447,7 +447,7 @@ public class ReviewService {
                 }
             }
         } catch (Exception e) {
-            log.warn("Failed to parse JSON response from Gemini, splitting by lines: {}", e.getMessage());
+            log.warn("Failed to parse JSON response from BizFlow AI, splitting by lines: {}", e.getMessage());
             String[] lines = rawResponse.split("\n");
             for (String line : lines) {
                 String cleanLine = line.replaceAll("^[-*0-9.]+\\s*", "").replaceAll("^\"|\"$", "").trim();

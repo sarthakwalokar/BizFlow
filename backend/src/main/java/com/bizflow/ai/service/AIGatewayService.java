@@ -22,28 +22,28 @@ public class AIGatewayService {
 
     public GenerationResult generateResponse(String systemPrompt, List<AiMessageDto> history, String userPrompt) {
         if (!geminiProvider.isConfigured()) {
-            log.warn("Gemini API key is not configured. Request cannot be processed.");
-            throw new IllegalStateException("Google Gemini API key is required but not configured. Please set the GEMINI_API_KEY or BIZFLOW_AI_GEMINI_API_KEY environment variable.");
+            log.warn("AI API key is not configured. Request cannot be processed.");
+            throw new IllegalStateException("BizFlow AI API key is required but not configured. Please set the BIZFLOW_AI_GEMINI_API_KEY or GEMINI_API_KEY environment variable.");
         }
 
         try {
-            log.info("Processing AI request exclusively with {}", geminiProvider.getProviderName());
+            log.info("Processing AI request with {}", geminiProvider.getProviderName());
             String reply = geminiProvider.generateCompletion(systemPrompt, history, userPrompt);
             return new GenerationResult(reply, geminiProvider.getProviderName(), estimateTokens(systemPrompt, userPrompt, reply));
         } catch (Exception e) {
-            log.error("Google Gemini API generation failed: {}", e.getMessage());
-            throw new RuntimeException("Gemini generation failed: " + e.getMessage(), e);
+            log.error("BizFlow AI generation failed: {}", e.getMessage());
+            throw new RuntimeException("AI generation failed: " + e.getMessage(), e);
         }
     }
 
     public AiStatusResponse getAiStatus() {
-        boolean geminiAvail = geminiProvider.isConfigured();
+        boolean aiAvail = geminiProvider.isConfigured();
 
         return AiStatusResponse.builder()
                 .enabled(aiProperties.isEnabled())
-                .activeProvider(geminiAvail ? geminiProvider.getProviderName() : "Google Gemini (Key Required)")
-                .availableProviders(geminiAvail ? List.of("Google Gemini") : List.of())
-                .geminiAvailable(geminiAvail)
+                .activeProvider(aiAvail ? geminiProvider.getProviderName() : "BizFlow AI (Key Required)")
+                .availableProviders(aiAvail ? List.of("BizFlow AI Engine") : List.of())
+                .geminiAvailable(aiAvail)
                 .groqAvailable(false)
                 .openRouterAvailable(false)
                 .fallbackAvailable(false)

@@ -4,6 +4,7 @@ import {
   aiApi,
   AiMessage,
   AiConversationSummary,
+  AiStatusResponse,
 } from '../../api/ai';
 import {
   Sparkles,
@@ -15,8 +16,12 @@ import {
   Copy,
   Check,
   MessageSquare,
+  KeyRound,
+  ExternalLink,
 } from 'lucide-react';
 import { AiAnalyzingIndicator, SkeletonBlock } from '../../components/common/LoadingStates';
+
+import { RichAiMessage } from '../../components/ai/RichAiMessage';
 
 const SUGGESTED_PROMPTS = [
   'How were my sales this month?',
@@ -32,6 +37,7 @@ export const AiAssistantPage: React.FC = () => {
   const [activeConversationId, setActiveConversationId] = useState<number | null>(null);
   const [messages, setMessages] = useState<AiMessage[]>([]);
   const [inputMessage, setInputMessage] = useState<string>('');
+  const [aiStatus, setAiStatus] = useState<AiStatusResponse | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingConversations, setLoadingConversations] = useState<boolean>(true);
@@ -58,8 +64,16 @@ export const AiAssistantPage: React.FC = () => {
   const loadInitialData = async () => {
     try {
       setLoadingConversations(true);
-      const convs = await aiApi.getConversations();
-      setConversations(convs || []);
+      const [convsRes, statusRes] = await Promise.allSettled([
+        aiApi.getConversations(),
+        aiApi.getAiStatus(),
+      ]);
+      if (convsRes.status === 'fulfilled') {
+        setConversations(convsRes.value || []);
+      }
+      if (statusRes.status === 'fulfilled') {
+        setAiStatus(statusRes.value);
+      }
     } catch (err) {
       console.error('Failed to load initial AI assistant data', err);
     } finally {
@@ -255,15 +269,67 @@ export const AiAssistantPage: React.FC = () => {
             </div>
             <div>
               <h2 className="text-sm font-bold text-zinc-900">AI Business Assistant</h2>
-              <p className="text-[11px] text-zinc-500">Ask questions about your business numbers and operations</p>
+              <p className="text-[11px] text-zinc-500">Real-time intelligent analytics, insights, and decision support</p>
             </div>
+          </div>
+
+          <div>
+            {aiStatus?.geminiAvailable ? (
+              <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-[11px] font-semibold">
+                <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+                <span>BizFlow AI Active</span>
+              </div>
+            ) : (
+              <a
+                href="https://aistudio.google.com/app/apikey"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100 text-[11px] font-semibold transition-colors cursor-pointer"
+                title="Click to get free AI Engine API Key"
+              >
+                <KeyRound size={12} className="text-amber-600" />
+                <span>AI Key Required</span>
+                <ExternalLink size={10} />
+              </a>
+            )}
           </div>
         </div>
 
         {/* Message Stream Area */}
         <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4">
+          {aiStatus && !aiStatus.geminiAvailable && (
+            <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-950 space-y-3 shadow-xs">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <KeyRound size={16} className="text-amber-700" />
+                  <span className="text-xs font-black uppercase tracking-wider text-amber-900">
+                    BizFlow AI Setup Required
+                  </span>
+                </div>
+                <a
+                  href="https://aistudio.google.com/app/apikey"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold transition-colors cursor-pointer"
+                >
+                  <span>Get Free Key</span>
+                  <ExternalLink size={11} />
+                </a>
+              </div>
+              <p className="text-xs text-amber-800 leading-relaxed">
+                BizFlow AI Assistant delivers instant analytics insights, sales velocity calculations, and automated business recommendations.
+              </p>
+              <div className="bg-white/80 rounded-xl p-3 border border-amber-200/60 text-xs text-zinc-700 space-y-1.5 font-mono">
+                <div className="text-[11px] font-sans font-bold text-zinc-800">Quick Configuration Steps:</div>
+                <div className="text-[11px]">1. Get a free API key at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-brand-600 underline font-sans">aistudio.google.com</a></div>
+                <div className="text-[11px]">2. Add to your root <span className="font-bold text-zinc-900">.env</span> file: <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900 font-semibold">GEMINI_API_KEY=your_key_here</code></div>
+                <div className="text-[11px]">3. Restart the backend server.</div>
+              </div>
+            </div>
+          )}
+
           {messages.length === 0 ? (
-            <div className="py-12 max-w-xl mx-auto text-center space-y-5">
+            <div className="py-8 max-w-xl mx-auto text-center space-y-5">
               <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto border border-brand-200">
                 <Sparkles size={24} />
               </div>
@@ -298,7 +364,7 @@ export const AiAssistantPage: React.FC = () => {
                   className={`flex items-start space-x-3 ${isUser ? 'justify-end' : 'justify-start'}`}
                 >
                   {!isUser && (
-                    <div className="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center shrink-0 mt-1">
+                    <div className="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center shrink-0 mt-1 shadow-xs font-bold text-xs">
                       <Bot size={14} />
                     </div>
                   )}
@@ -307,13 +373,17 @@ export const AiAssistantPage: React.FC = () => {
                     className={`max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed space-y-2 relative group ${
                       isUser
                         ? 'bg-brand-600 text-white font-medium rounded-tr-xs'
-                        : 'bg-zinc-50 border border-zinc-200 text-zinc-800 rounded-tl-xs shadow-xs'
+                        : 'bg-white border border-zinc-200/90 text-zinc-800 rounded-tl-xs shadow-card'
                     }`}
                   >
-                    <div className="whitespace-pre-wrap">{msg.content}</div>
+                    {isUser ? (
+                      <div className="whitespace-pre-wrap">{msg.content}</div>
+                    ) : (
+                      <RichAiMessage content={msg.content} />
+                    )}
 
                     {!isUser && (
-                      <div className="flex items-center justify-end pt-1 border-t border-zinc-200/60">
+                      <div className="flex items-center justify-end pt-1 border-t border-zinc-100">
                         <button
                           onClick={() => handleCopyMessage(msg.id, msg.content)}
                           className="text-[10px] text-zinc-400 hover:text-zinc-600 flex items-center space-x-1 cursor-pointer"
@@ -352,9 +422,28 @@ export const AiAssistantPage: React.FC = () => {
           )}
 
           {error && (
-            <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center space-x-2">
-              <AlertTriangle size={15} className="shrink-0 text-red-600" />
-              <span>{error}</span>
+            <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex flex-col space-y-2">
+              <div className="flex items-center space-x-2">
+                <AlertTriangle size={15} className="shrink-0 text-red-600" />
+                <span className="font-semibold">{error}</span>
+              </div>
+              {(error.includes('API key') || error.includes('not configured')) && (
+                <div className="pt-1 text-[11px] text-red-600">
+                  <p>
+                    To enable AI functionality, get a free API key from{' '}
+                    <a
+                      href="https://aistudio.google.com/app/apikey"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline font-bold hover:text-red-800 inline-flex items-center space-x-0.5"
+                    >
+                      <span>AI Key Console</span>
+                      <ExternalLink size={10} className="inline ml-0.5" />
+                    </a>
+                    {' '}and add <code className="bg-red-100 px-1 py-0.5 rounded font-mono font-bold text-red-900">GEMINI_API_KEY=your_key</code> to your project's <code className="bg-red-100 px-1 py-0.5 rounded font-mono font-bold text-red-900">.env</code> file.
+                  </p>
+                </div>
+              )}
             </div>
           )}
 

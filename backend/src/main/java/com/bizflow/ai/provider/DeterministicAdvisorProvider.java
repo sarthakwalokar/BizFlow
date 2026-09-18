@@ -58,7 +58,7 @@ public class DeterministicAdvisorProvider implements AiProvider {
                 "1. **Inventory Alignment**: Review low-stock alert products to avoid stockouts during peak business hours.\n" +
                 "2. **Overhead Optimization**: Monitor top operating expense categories (rent, utilities, procurement) to preserve gross margins.\n" +
                 "3. **Customer Retention**: Leverage repeat purchase patterns and invite satisfied customers to leave verified reviews.\n\n" +
-                "*(Note: You can configure a Google Gemini, Groq, or OpenRouter API key in your server environment for deeper conversational AI exploration.)*";
+                "*(Note: You can configure an AI API key (GEMINI_API_KEY) in your server environment for deeper conversational AI exploration.)*";
     }
 
     private String generateRestockAdvice(String context) {

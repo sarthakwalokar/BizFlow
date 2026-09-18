@@ -23,7 +23,19 @@ public class GeminiProvider implements AiProvider {
     private final AiProperties aiProperties;
     private final ObjectMapper objectMapper;
 
-    // Ordered list of candidate Gemini models to try if the primary is retired or unavailable
+    // Set of deprecated/retired models that should be automatically upgraded to modern equivalents
+    private static final Set<String> RETIRED_MODELS = Set.of(
+            "gemini-pro",
+            "gemini-1.0-pro",
+            "gemini-1.5-pro",
+            "gemini-1.5-flash",
+            "gemini-1.5-flash-8b",
+            "gemini-2.0-flash",
+            "gemini-2.5-flash",
+            "gemini-2.5-pro"
+    );
+
+    // Ordered list of candidate active Gemini models to try
     private static final List<String> FALLBACK_GEMINI_MODELS = List.of(
             "gemini-3.8-flash",
             "gemini-3.6-flash",
@@ -53,13 +65,16 @@ public class GeminiProvider implements AiProvider {
         }
 
         String apiKey = config.getApiKey().trim();
-        String configuredModel = config.getModel() != null && !config.getModel().isBlank()
-                ? config.getModel().trim().replace("models/", "")
+        String rawModel = config.getModel() != null && !config.getModel().isBlank()
+                ? config.getModel().trim().replace("models/", "").toLowerCase()
                 : "gemini-3.8-flash";
+
+        // Auto-upgrade obsolete or retired model names
+        String configuredModel = RETIRED_MODELS.contains(rawModel) ? "gemini-3.8-flash" : rawModel;
 
         // Build list of models to try (configured / last working first, then fallback list)
         LinkedHashSet<String> modelsToTry = new LinkedHashSet<>();
-        if (lastWorkingModel != null) {
+        if (lastWorkingModel != null && !RETIRED_MODELS.contains(lastWorkingModel)) {
             modelsToTry.add(lastWorkingModel);
         }
         modelsToTry.add(configuredModel);

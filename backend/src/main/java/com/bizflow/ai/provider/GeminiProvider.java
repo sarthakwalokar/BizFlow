@@ -134,7 +134,7 @@ public class GeminiProvider implements AiProvider {
                         .body(String.class);
 
                 if (responseJson == null || responseJson.isBlank()) {
-                    throw new RuntimeException("Empty response received from Google Gemini API.");
+                    throw new RuntimeException("Empty response received from AI service.");
                 }
 
                 JsonNode root = objectMapper.readTree(responseJson);
@@ -143,15 +143,15 @@ public class GeminiProvider implements AiProvider {
                     JsonNode parts = candidates.get(0).path("content").path("parts");
                     if (parts.isArray() && !parts.isEmpty()) {
                         lastWorkingModel = model;
-                        log.info("Google Gemini completion succeeded with model: {}", model);
+                        log.info("BizFlow AI completion succeeded with model: {}", model);
                         return parts.get(0).path("text").asText();
                     }
                 }
 
-                throw new RuntimeException("Unexpected response format from Google Gemini API: " + responseJson);
+                throw new RuntimeException("Unexpected response format from AI service: " + responseJson);
             } catch (HttpStatusCodeException e) {
                 String errorBody = e.getResponseBodyAsString();
-                log.warn("Gemini HTTP error ({}) for model {}: {}", e.getStatusCode().value(), model, errorBody);
+                log.warn("AI HTTP error ({}) for model {}: {}", e.getStatusCode().value(), model, errorBody);
                 String extractedMsg = extractErrorMessage(errorBody);
 
                 if (e.getStatusCode().value() == 401
@@ -162,20 +162,24 @@ public class GeminiProvider implements AiProvider {
                     throw new IllegalStateException("The configured AI API key is invalid or unrecognized. Please provide a valid API key in your .env file.");
                 } else if (e.getStatusCode().value() == 429 || errorBody.contains("RESOURCE_EXHAUSTED")) {
                     throw new IllegalStateException("AI service quota/rate limit reached. Please check your account limits or retry shortly.");
+                } else if (e.getStatusCode().value() == 503 || errorBody.contains("UNAVAILABLE") || errorBody.contains("high demand")) {
+                    // Temporary 503 spike on this model, continue to try next fallback model
+                    lastException = new RuntimeException("AI engine is currently experiencing high demand. Please try again in a moment.", e);
+                    continue;
                 } else if (e.getStatusCode().value() == 404 || (extractedMsg != null && extractedMsg.contains("not found"))) {
                     // Model not found on this endpoint/version, continue loop to try next model
                     lastException = new RuntimeException("AI model '" + model + "' not available: " + extractedMsg, e);
                     continue;
                 }
 
-                lastException = new RuntimeException("Google Gemini API error (" + e.getStatusCode().value() + "): " + (extractedMsg != null ? extractedMsg : e.getMessage()), e);
+                lastException = new RuntimeException("AI service error (" + e.getStatusCode().value() + "): " + (extractedMsg != null ? extractedMsg : e.getMessage()), e);
             } catch (Exception e) {
-                log.warn("Gemini AI completion failed for model {}: {}", model, e.getMessage());
+                log.warn("AI completion failed for model {}: {}", model, e.getMessage());
                 lastException = e;
             }
         }
 
-        throw new RuntimeException(lastException != null ? lastException.getMessage() : "All Gemini model endpoints failed.");
+        throw new RuntimeException(lastException != null ? lastException.getMessage() : "All AI model endpoints failed.");
     }
 
     private String extractErrorMessage(String json) {

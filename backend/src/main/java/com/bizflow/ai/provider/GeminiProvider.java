@@ -25,14 +25,14 @@ public class GeminiProvider implements AiProvider {
 
     // Ordered list of candidate Gemini models to try if the primary is retired or unavailable
     private static final List<String> FALLBACK_GEMINI_MODELS = List.of(
+            "gemini-3.8-flash",
             "gemini-2.5-flash",
             "gemini-2.0-flash",
             "gemini-1.5-flash-latest",
             "gemini-1.5-flash",
             "gemini-1.5-flash-8b",
             "gemini-2.5-pro",
-            "gemini-1.5-pro",
-            "gemini-pro"
+            "gemini-1.5-pro"
     );
 
     private volatile String lastWorkingModel = null;
@@ -40,7 +40,7 @@ public class GeminiProvider implements AiProvider {
     @Override
     public String getProviderName() {
         String model = lastWorkingModel != null ? lastWorkingModel : aiProperties.getGemini().getModel();
-        return "Google Gemini (" + (model != null && !model.isBlank() ? model : "gemini-1.5-flash") + ")";
+        return "Google Gemini (" + (model != null && !model.isBlank() ? model : "gemini-3.8-flash") + ")";
     }
 
     @Override
@@ -58,7 +58,7 @@ public class GeminiProvider implements AiProvider {
         String apiKey = config.getApiKey().trim();
         String configuredModel = config.getModel() != null && !config.getModel().isBlank()
                 ? config.getModel().trim().replace("models/", "")
-                : "gemini-1.5-flash";
+                : "gemini-3.8-flash";
 
         // Build list of models to try (configured / last working first, then fallback list)
         LinkedHashSet<String> modelsToTry = new LinkedHashSet<>();

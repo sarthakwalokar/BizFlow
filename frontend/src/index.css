@@ -166,12 +166,12 @@ input[type="search"] {
 }
 
 /* ==========================================================================
-   Print Optimization for Thermal & A4 Invoices
+   Print Optimization for Thermal Receipts & A4 Invoices
    ========================================================================== */
 @media print {
   @page {
-    size: A4 portrait;
-    margin: 8mm 10mm;
+    size: auto;
+    margin: 0mm;
   }
 
   html,
@@ -183,6 +183,8 @@ input[type="search"] {
     height: auto !important;
     min-height: auto !important;
     overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   header,
@@ -193,24 +195,49 @@ input[type="search"] {
     display: none !important;
   }
 
+  /* Print Isolation: Hide all application background UI when invoice modal is open */
+  body.receipt-modal-open *,
+  body:has(.receipt-modal-backdrop) * {
+    visibility: hidden;
+  }
+
+  body.receipt-modal-open .receipt-modal-container,
+  body.receipt-modal-open .receipt-modal-container *,
+  body:has(.receipt-modal-backdrop) .receipt-modal-container,
+  body:has(.receipt-modal-backdrop) .receipt-modal-container * {
+    visibility: visible;
+  }
+
   .receipt-modal-backdrop {
-    position: static !important;
-    background: transparent !important;
-    padding: 0 !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
     margin: 0 !important;
-    overflow: visible !important;
+    padding: 0 !important;
+    background: transparent !important;
     display: block !important;
+    z-index: 999999 !important;
+    overflow: visible !important;
   }
 
   .receipt-modal-container {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
     box-shadow: none !important;
     border: none !important;
-    margin: 0 auto !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    max-width: 90mm !important;
+    max-width: 100% !important;
     height: auto !important;
+    max-height: none !important;
     overflow: visible !important;
+    background: #FFFFFF !important;
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
@@ -218,17 +245,48 @@ input[type="search"] {
   .receipt-printable-content {
     padding: 0 !important;
     margin: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    background: #FFFFFF !important;
+  }
+
+  /* Format: Thermal Receipt (80mm / 3 inch) */
+  .receipt-format-thermal {
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 auto !important;
+    padding: 4mm 6mm !important;
     font-size: 11px !important;
     line-height: 1.35 !important;
+    box-sizing: border-box !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Format: Standard A4 Tax Invoice */
+  .receipt-format-a4 {
+    width: 100% !important;
+    max-width: 190mm !important;
+    margin: 0 auto !important;
+    padding: 8mm 10mm !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    box-sizing: border-box !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   table,
   tr,
   td,
   th,
-  .receipt-section {
+  .receipt-section,
+  .invoice-section {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }

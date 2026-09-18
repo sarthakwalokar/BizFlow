@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class AiProperties {
 
     private boolean enabled = true;
-    private ProviderConfig gemini = new ProviderConfig("gemini-1.5-flash", "https://generativelanguage.googleapis.com/v1beta", 15000);
+    private ProviderConfig gemini = new ProviderConfig("gemini-3.8-flash", "https://generativelanguage.googleapis.com/v1beta", 15000);
     private ProviderConfig groq = new ProviderConfig("llama-3.3-70b-versatile", "https://api.groq.com/openai/v1", 15000);
     private ProviderConfig openrouter = new ProviderConfig("meta-llama/llama-3.3-70b-instruct", "https://openrouter.ai/api/v1", 15000);
 

@@ -3,11 +3,7 @@ package com.bizflow.ai.service;
 import com.bizflow.ai.config.AiProperties;
 import com.bizflow.ai.dto.AiMessageDto;
 import com.bizflow.ai.dto.AiStatusResponse;
-import com.bizflow.ai.provider.DeterministicAdvisorProvider;
 import com.bizflow.ai.provider.GeminiProvider;
-import com.bizflow.ai.provider.GroqProvider;
-import com.bizflow.ai.provider.OpenRouterProvider;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,27 +25,13 @@ class AIGatewayServiceTest {
     @Mock
     private GeminiProvider geminiProvider;
 
-    @Mock
-    private GroqProvider groqProvider;
-
-    @Mock
-    private OpenRouterProvider openRouterProvider;
-
-    @Mock
-    private DeterministicAdvisorProvider deterministicAdvisorProvider;
-
     @InjectMocks
     private AIGatewayService aiGatewayService;
 
-    @BeforeEach
-    void setUp() {
-        when(aiProperties.isEnabled()).thenReturn(true);
-    }
-
     @Test
-    void testPriority1_GeminiSuccess() {
+    void testGeminiCompletion_Success() {
         when(geminiProvider.isConfigured()).thenReturn(true);
-        when(geminiProvider.getProviderName()).thenReturn("Google Gemini (gemini-1.5-flash)");
+        when(geminiProvider.getProviderName()).thenReturn("Google Gemini (gemini-3.8-flash)");
         when(geminiProvider.generateCompletion(anyString(), anyList(), anyString()))
                 .thenReturn("Gemini response: Sales are up 15%.");
 
@@ -60,76 +42,37 @@ class AIGatewayServiceTest {
         assertNotNull(result);
         assertEquals("Gemini response: Sales are up 15%.", result.reply());
         assertTrue(result.providerUsed().contains("Gemini"));
-        verify(groqProvider, never()).generateCompletion(any(), any(), any());
+        verify(geminiProvider, times(1)).generateCompletion(anyString(), anyList(), anyString());
     }
 
     @Test
-    void testPriority2_GroqFallbackWhenGeminiFails() {
+    void testGeminiCompletion_WhenNotConfigured_ThrowsIllegalStateException() {
+        when(geminiProvider.isConfigured()).thenReturn(false);
+
+        assertThrows(IllegalStateException.class, () -> {
+            aiGatewayService.generateResponse("System prompt", List.of(), "Expenses?");
+        });
+    }
+
+    @Test
+    void testGeminiCompletion_WhenGeminiFails_ThrowsRuntimeException() {
         when(geminiProvider.isConfigured()).thenReturn(true);
-        when(geminiProvider.getProviderName()).thenReturn("Google Gemini");
+        when(geminiProvider.getProviderName()).thenReturn("Google Gemini (gemini-3.8-flash)");
         when(geminiProvider.generateCompletion(anyString(), anyList(), anyString()))
-                .thenThrow(new RuntimeException("Gemini quota exceeded"));
+                .thenThrow(new RuntimeException("API connection failure"));
 
-        when(groqProvider.isConfigured()).thenReturn(true);
-        when(groqProvider.getProviderName()).thenReturn("Groq (llama-3.3-70b)");
-        when(groqProvider.generateCompletion(anyString(), anyList(), anyString()))
-                .thenReturn("Groq response: Top product is Espresso.");
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+            aiGatewayService.generateResponse("System prompt", List.of(), "Top products?");
+        });
 
-        AIGatewayService.GenerationResult result = aiGatewayService.generateResponse(
-                "System prompt", List.of(), "Top products?"
-        );
-
-        assertNotNull(result);
-        assertEquals("Groq response: Top product is Espresso.", result.reply());
-        assertTrue(result.providerUsed().contains("Groq"));
+        assertTrue(ex.getMessage().contains("Gemini generation failed"));
     }
 
     @Test
-    void testPriority3_OpenRouterFallbackWhenGeminiAndGroqFail() {
-        when(geminiProvider.isConfigured()).thenReturn(false);
-        when(groqProvider.isConfigured()).thenReturn(true);
-        when(groqProvider.getProviderName()).thenReturn("Groq");
-        when(groqProvider.generateCompletion(anyString(), anyList(), anyString()))
-                .thenThrow(new RuntimeException("Groq connection timeout"));
-
-        when(openRouterProvider.isConfigured()).thenReturn(true);
-        when(openRouterProvider.getProviderName()).thenReturn("OpenRouter");
-        when(openRouterProvider.generateCompletion(anyString(), anyList(), anyString()))
-                .thenReturn("OpenRouter response: Restock 5 units of Milk.");
-
-        AIGatewayService.GenerationResult result = aiGatewayService.generateResponse(
-                "System prompt", List.of(), "Restock list?"
-        );
-
-        assertNotNull(result);
-        assertEquals("OpenRouter response: Restock 5 units of Milk.", result.reply());
-        assertTrue(result.providerUsed().contains("OpenRouter"));
-    }
-
-    @Test
-    void testDeterministicFallback_WhenNoProvidersConfigured() {
-        when(geminiProvider.isConfigured()).thenReturn(false);
-        when(groqProvider.isConfigured()).thenReturn(false);
-        when(openRouterProvider.isConfigured()).thenReturn(false);
-        when(deterministicAdvisorProvider.getProviderName()).thenReturn("BizFlow Intelligent Advisor");
-        when(deterministicAdvisorProvider.generateCompletion(any(), any(), any()))
-                .thenReturn("Local advice: Review your top 3 expenses.");
-
-        AIGatewayService.GenerationResult result = aiGatewayService.generateResponse(
-                "System prompt", List.of(), "Expenses?"
-        );
-
-        assertNotNull(result);
-        assertEquals("Local advice: Review your top 3 expenses.", result.reply());
-        assertEquals("BizFlow Intelligent Advisor", result.providerUsed());
-    }
-
-    @Test
-    void testGetAiStatus() {
+    void testGetAiStatus_WhenConfigured() {
+        when(aiProperties.isEnabled()).thenReturn(true);
         when(geminiProvider.isConfigured()).thenReturn(true);
-        when(geminiProvider.getProviderName()).thenReturn("Google Gemini");
-        when(groqProvider.isConfigured()).thenReturn(false);
-        when(openRouterProvider.isConfigured()).thenReturn(false);
+        when(geminiProvider.getProviderName()).thenReturn("Google Gemini (gemini-3.8-flash)");
 
         AiStatusResponse status = aiGatewayService.getAiStatus();
 
@@ -138,7 +81,19 @@ class AIGatewayServiceTest {
         assertTrue(status.isGeminiAvailable());
         assertFalse(status.isGroqAvailable());
         assertFalse(status.isOpenRouterAvailable());
-        assertTrue(status.isFallbackAvailable());
-        assertEquals("Google Gemini", status.getActiveProvider());
+        assertEquals("Google Gemini (gemini-3.8-flash)", status.getActiveProvider());
+    }
+
+    @Test
+    void testGetAiStatus_WhenNotConfigured() {
+        when(aiProperties.isEnabled()).thenReturn(true);
+        when(geminiProvider.isConfigured()).thenReturn(false);
+
+        AiStatusResponse status = aiGatewayService.getAiStatus();
+
+        assertNotNull(status);
+        assertTrue(status.isEnabled());
+        assertFalse(status.isGeminiAvailable());
+        assertEquals("Google Gemini (Key Required)", status.getActiveProvider());
     }
 }

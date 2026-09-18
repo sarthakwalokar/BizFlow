@@ -28,7 +28,24 @@
     "active": "Active",
     "inactive": "Inactive",
     "total": "Total",
-    "date": "Date"
+    "date": "Date",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "discount": "Discount",
+    "notes": "Notes",
+    "description": "Description",
+    "confirm": "Confirm",
+    "discard": "Discard",
+    "continue": "Continue",
+    "processing": "Processing...",
+    "submit": "Submit",
+    "type": "Type",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "selectOption": "Select an option",
+    "notFound": "No data found"
   },
   "nav": {
     "overview": "Overview",
@@ -51,15 +68,16 @@
     "profile": "User Profile",
     "logout": "Logout",
     "language": "Language",
-    "admin": "Admin Portal"
+    "admin": "Admin Portal",
+    "staff": "Staff Management"
   },
   "auth": {
     "login": "Login",
     "signup": "Register",
     "registerTitle": "Register your business with BizFlow",
     "registerSubtitle": "Set up your owner account and onboard your business operations in minutes.",
-    "loginTitle": "Welcome back to BizFlow",
-    "loginSubtitle": "Sign in to access your business management dashboard.",
+    "loginTitle": "Sign in to your business",
+    "loginSubtitle": "Access your POS terminal, analytics, inventory, and management portal",
     "preferredLanguage": "Preferred Language",
     "preferredLanguageDesc": "Choose your primary language for BizFlow interface and AI assistant.",
     "accountDetails": "Owner Account Details",
@@ -80,7 +98,8 @@
     "dontHaveAccount": "Don't have an account?",
     "signIn": "Sign In",
     "createAccount": "Create Business Account",
-    "registering": "Registering..."
+    "registering": "Registering...",
+    "loggingIn": "Signing in..."
   },
   "dashboard": {
     "title": "Business Dashboard",
@@ -88,6 +107,7 @@
     "todaySales": "Today's Sales",
     "todayOrders": "Today's Orders",
     "monthRevenue": "Monthly Revenue",
+    "todayExpenses": "Today's Expenses",
     "lowStockAlerts": "Low Stock Alerts",
     "quickActions": "Quick Actions",
     "newBill": "New POS Bill",
@@ -96,10 +116,21 @@
     "recentOrders": "Recent Invoices",
     "topSelling": "Top Selling Products",
     "viewAll": "View All",
-    "noRecentOrders": "No recent orders recorded today."
+    "noRecentOrders": "No recent orders recorded today.",
+    "netMargin": "Net Margin",
+    "grossRevenue": "Gross Revenue",
+    "operationalExpenses": "Operational Expenses",
+    "fastTrack": "Fast-Track Operations",
+    "businessSnapshot": "Business Snapshot",
+    "ownerProfile": "Owner Profile",
+    "businessTier": "Business Tier",
+    "storeCatalog": "Store Catalog",
+    "customerDirectory": "Customer Directory",
+    "financialHealth": "Financial Health"
   },
   "billing": {
     "title": "POS Terminal & Billing",
+    "subtitle": "Fast checkout, customer management, and instant bill generation.",
     "searchProducts": "Search item by name, barcode, or SKU...",
     "cart": "Current Cart",
     "emptyCart": "Cart is empty. Click catalog items to start billing.",
@@ -117,14 +148,24 @@
     "split": "Split Payment",
     "completeOrder": "Complete & Generate Bill",
     "printReceipt": "Print Receipt",
-    "orderSuccess": "Order completed successfully!"
+    "orderSuccess": "Order completed successfully!",
+    "goods": "Goods",
+    "services": "Services",
+    "tenderAmount": "Cash Tendered",
+    "changeDue": "Change Due",
+    "addCustomer": "Add Customer",
+    "discountType": "Discount Type",
+    "billDetails": "Invoice Details",
+    "clearCart": "Clear Cart"
   },
   "products": {
     "title": "Products & Services",
     "subtitle": "Manage catalog items, pricing, SKU codes, and inventory levels.",
     "addProduct": "Add Item",
     "editProduct": "Edit Item",
+    "deleteProduct": "Delete Item",
     "productName": "Item Name",
+    "description": "Description",
     "sku": "SKU Code",
     "barcode": "Barcode",
     "price": "Selling Price",
@@ -132,7 +173,27 @@
     "stock": "In Stock",
     "category": "Category",
     "trackStock": "Track Inventory",
-    "lowStockThreshold": "Low Stock Alert Threshold"
+    "lowStockThreshold": "Low Stock Alert Threshold",
+    "physicalGoods": "Physical Goods",
+    "serviceItem": "Service / Labor",
+    "status": "Item Status",
+    "active": "Active",
+    "inactive": "Archived",
+    "noProductsFound": "No catalog items found.",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "itemType": "Item Type",
+    "sellingPrice": "Selling Price"
+  },
+  "categories": {
+    "title": "Categories",
+    "subtitle": "Organize your products and services into structured departments.",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "deleteCategory": "Delete Category",
+    "categoryName": "Category Name",
+    "description": "Description",
+    "itemCount": "Items",
+    "noCategoriesFound": "No categories found."
   },
   "inventory": {
     "title": "Inventory Management",
@@ -141,25 +202,64 @@
     "reorderLevel": "Reorder Threshold",
     "stockAdjustment": "Adjust Stock",
     "lowStockWarning": "Items Below Threshold",
-    "outOfStock": "Out of Stock"
+    "outOfStock": "Out of Stock",
+    "itemsTracked": "Tracked Items",
+    "stockValue": "Total Stock Value",
+    "addStock": "Receive Stock",
+    "adjustQuantity": "Quantity Adjustment",
+    "reason": "Adjustment Reason",
+    "purchaseOrder": "Purchase Order",
+    "supplier": "Supplier",
+    "unitCost": "Unit Cost",
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "outStock": "Out of Stock"
   },
   "expenses": {
     "title": "Expense Tracking",
     "subtitle": "Track operating costs, vendor disbursements, rent, and overhead expenses.",
     "recordExpense": "Record Expense",
+    "editExpense": "Edit Expense",
+    "deleteExpense": "Delete Expense",
     "category": "Expense Category",
     "amount": "Amount",
     "paymentDate": "Payment Date",
     "vendor": "Vendor / Payee",
-    "description": "Notes / Description"
+    "description": "Notes / Description",
+    "paymentMode": "Payment Mode",
+    "totalExpenses": "Total Expenses",
+    "monthlyExpenses": "This Month's Expenses",
+    "expenseBreakdown": "Expense Category Breakdown",
+    "noExpensesFound": "No expenses recorded."
   },
   "customers": {
     "title": "Customer Directory",
     "subtitle": "View loyal customers, purchase history, and spending trends.",
     "addCustomer": "Add Customer",
+    "editCustomer": "Edit Customer",
     "customerName": "Customer Name",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "address": "Billing Address",
     "totalSpent": "Total Lifetime Spent",
-    "totalOrders": "Total Visits / Orders"
+    "totalOrders": "Total Visits / Orders",
+    "loyaltyPoints": "Loyalty Points",
+    "lastVisit": "Last Purchase",
+    "noCustomersFound": "No customers found."
+  },
+  "orders": {
+    "title": "Invoices & Orders",
+    "subtitle": "Browse historical orders, reprint invoices, and review payment settlements.",
+    "invoiceNumber": "Invoice #",
+    "orderDate": "Date & Time",
+    "customer": "Customer",
+    "totalAmount": "Total Amount",
+    "paymentStatus": "Status",
+    "paymentMethod": "Payment Method",
+    "itemsCount": "Items",
+    "viewInvoice": "View Receipt",
+    "downloadReceipt": "Download PDF",
+    "noOrdersFound": "No past invoices found."
   },
   "analytics": {
     "title": "Analytics & Intelligence",
@@ -171,7 +271,24 @@
     "today": "Today",
     "thisWeek": "This Week",
     "thisMonth": "This Month",
-    "thisYear": "This Year"
+    "thisYear": "This Year",
+    "topProducts": "Top Performing Products",
+    "categoryPerformance": "Sales by Category",
+    "hourlySales": "Hourly Sales Velocity",
+    "metrics": "Key Performance Indicators"
+  },
+  "reports": {
+    "title": "Reports Center",
+    "subtitle": "Generate and export financial, inventory, tax, and sales performance reports.",
+    "salesReport": "Sales & Revenue Report",
+    "expenseReport": "Expense & Overhead Report",
+    "profitLossReport": "Profit & Loss Summary",
+    "taxReport": "Tax Collection Report (GST)",
+    "inventoryReport": "Inventory Valuation Report",
+    "generateReport": "Generate Report",
+    "dateRange": "Select Date Range",
+    "exportCsv": "Export to CSV",
+    "exportPdf": "Export to PDF"
   },
   "reviews": {
     "title": "Review Boost & Customer Feedback",
@@ -181,7 +298,25 @@
     "feedback": "Your Experience",
     "aiSuggestions": "AI Review Suggestions",
     "copyReview": "Copy Review Text",
-    "submitReview": "Submit Feedback"
+    "submitReview": "Submit Feedback",
+    "totalReviews": "Total Feedbacks Received",
+    "averageRating": "Average Rating",
+    "qrCodeTitle": "Customer QR Stand",
+    "qrCodeDesc": "Place this QR code on tables or billing counters to gather instant Google reviews.",
+    "shareLink": "Share Feedback URL"
+  },
+  "staff": {
+    "title": "Staff & Team Management",
+    "subtitle": "Invite cashiers, managers, and manage system role permissions.",
+    "addStaff": "Add Team Member",
+    "editStaff": "Edit Member",
+    "staffName": "Full Name",
+    "role": "Assigned Role",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "permissions": "Permissions",
+    "activeStaff": "Active Members",
+    "inviteStaff": "Invite Staff"
   },
   "ai": {
     "title": "BizFlow AI Assistant",
@@ -190,7 +325,11 @@
     "send": "Ask AI",
     "thinking": "Analyzing business database...",
     "activeProvider": "BizFlow AI Engine Active",
-    "setupRequired": "AI Key Required"
+    "setupRequired": "AI Key Required",
+    "suggestedQuestions": "Suggested Questions",
+    "clearChat": "Clear Conversation",
+    "copyResponse": "Copy Response",
+    "helpfulInsights": "Real-time AI Business Intelligence"
   },
   "settings": {
     "title": "Settings & Preferences",
@@ -201,6 +340,14 @@
     "languageTitle": "Language Preference",
     "languageDesc": "Choose your preferred language for BizFlow.",
     "saveChanges": "Save Configuration",
-    "savedSuccess": "Preferences saved successfully!"
+    "savedSuccess": "Preferences saved successfully!",
+    "businessName": "Business Name",
+    "businessType": "Business Type",
+    "currency": "Store Currency",
+    "timezone": "Time Zone",
+    "taxRate": "Tax Percentage (%)",
+    "taxName": "Tax Label (e.g. GST, VAT)",
+    "taxInclusive": "Prices are Tax-Inclusive",
+    "enterpriseMode": "Full Inventory Mode"
   }
 }

@@ -28,7 +28,24 @@
     "active": "활성",
     "inactive": "비활성",
     "total": "총합",
-    "date": "날짜"
+    "date": "날짜",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "discount": "Discount",
+    "notes": "Notes",
+    "description": "Description",
+    "confirm": "Confirm",
+    "discard": "Discard",
+    "continue": "Continue",
+    "processing": "Processing...",
+    "submit": "Submit",
+    "type": "Type",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "selectOption": "Select an option",
+    "notFound": "No data found"
   },
   "nav": {
     "overview": "개요",
@@ -51,7 +68,8 @@
     "profile": "사용자 프로필",
     "logout": "로그아웃",
     "language": "언어",
-    "admin": "관리자 포털"
+    "admin": "관리자 포털",
+    "staff": "Staff Management"
   },
   "auth": {
     "login": "로그인",
@@ -80,7 +98,8 @@
     "dontHaveAccount": "계정이 없으신가요?",
     "signIn": "로그인하기",
     "createAccount": "비즈니스 계정 만들기",
-    "registering": "등록 중..."
+    "registering": "등록 중...",
+    "loggingIn": "Signing in..."
   },
   "dashboard": {
     "title": "비즈니스 대시보드",
@@ -96,7 +115,18 @@
     "recentOrders": "최근 주문 내역",
     "topSelling": "인기 판매 상품",
     "viewAll": "전체 보기",
-    "noRecentOrders": "오늘 기록된 주문이 없습니다."
+    "noRecentOrders": "오늘 기록된 주문이 없습니다.",
+    "todayExpenses": "Today's Expenses",
+    "netMargin": "Net Margin",
+    "grossRevenue": "Gross Revenue",
+    "operationalExpenses": "Operational Expenses",
+    "fastTrack": "Fast-Track Operations",
+    "businessSnapshot": "Business Snapshot",
+    "ownerProfile": "Owner Profile",
+    "businessTier": "Business Tier",
+    "storeCatalog": "Store Catalog",
+    "customerDirectory": "Customer Directory",
+    "financialHealth": "Financial Health"
   },
   "billing": {
     "title": "POS 결제 터미널",
@@ -117,7 +147,16 @@
     "split": "복합 결제",
     "completeOrder": "결제 완료 및 영수증 발행",
     "printReceipt": "영수증 출력",
-    "orderSuccess": "주문 결제가 성공적으로 완료되었습니다!"
+    "orderSuccess": "주문 결제가 성공적으로 완료되었습니다!",
+    "subtitle": "Fast checkout, customer management, and instant bill generation.",
+    "goods": "Goods",
+    "services": "Services",
+    "tenderAmount": "Cash Tendered",
+    "changeDue": "Change Due",
+    "addCustomer": "Add Customer",
+    "discountType": "Discount Type",
+    "billDetails": "Invoice Details",
+    "clearCart": "Clear Cart"
   },
   "products": {
     "title": "상품 및 서비스",
@@ -132,7 +171,18 @@
     "stock": "현재 재고",
     "category": "카테고리",
     "trackStock": "재고 추적 활성화",
-    "lowStockThreshold": "재고 부족 알림 기준"
+    "lowStockThreshold": "재고 부족 알림 기준",
+    "deleteProduct": "Delete Item",
+    "description": "Description",
+    "physicalGoods": "Physical Goods",
+    "serviceItem": "Service / Labor",
+    "status": "Item Status",
+    "active": "Active",
+    "inactive": "Archived",
+    "noProductsFound": "No catalog items found.",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "itemType": "Item Type",
+    "sellingPrice": "Selling Price"
   },
   "inventory": {
     "title": "재고 관리",
@@ -141,7 +191,18 @@
     "reorderLevel": "재발주 기준점",
     "stockAdjustment": "재고 조정",
     "lowStockWarning": "기준 미달 품목",
-    "outOfStock": "품절"
+    "outOfStock": "품절",
+    "itemsTracked": "Tracked Items",
+    "stockValue": "Total Stock Value",
+    "addStock": "Receive Stock",
+    "adjustQuantity": "Quantity Adjustment",
+    "reason": "Adjustment Reason",
+    "purchaseOrder": "Purchase Order",
+    "supplier": "Supplier",
+    "unitCost": "Unit Cost",
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "outStock": "Out of Stock"
   },
   "expenses": {
     "title": "지출 관리",
@@ -151,7 +212,14 @@
     "amount": "금액",
     "paymentDate": "결제일",
     "vendor": "거래처 / 수취인",
-    "description": "상세 내용"
+    "description": "상세 내용",
+    "editExpense": "Edit Expense",
+    "deleteExpense": "Delete Expense",
+    "paymentMode": "Payment Mode",
+    "totalExpenses": "Total Expenses",
+    "monthlyExpenses": "This Month's Expenses",
+    "expenseBreakdown": "Expense Category Breakdown",
+    "noExpensesFound": "No expenses recorded."
   },
   "customers": {
     "title": "고객 명단",
@@ -159,7 +227,14 @@
     "addCustomer": "고객 추가",
     "customerName": "고객명",
     "totalSpent": "누적 구매액",
-    "totalOrders": "방문 및 주문 횟수"
+    "totalOrders": "방문 및 주문 횟수",
+    "editCustomer": "Edit Customer",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "address": "Billing Address",
+    "loyaltyPoints": "Loyalty Points",
+    "lastVisit": "Last Purchase",
+    "noCustomersFound": "No customers found."
   },
   "analytics": {
     "title": "통계 및 분석",
@@ -171,7 +246,11 @@
     "today": "오늘",
     "thisWeek": "이번 주",
     "thisMonth": "이번 달",
-    "thisYear": "올해"
+    "thisYear": "올해",
+    "topProducts": "Top Performing Products",
+    "categoryPerformance": "Sales by Category",
+    "hourlySales": "Hourly Sales Velocity",
+    "metrics": "Key Performance Indicators"
   },
   "reviews": {
     "title": "리뷰 부스트 & 피드백",
@@ -181,7 +260,12 @@
     "feedback": "이용 후기",
     "aiSuggestions": "AI 리뷰 추천 문구",
     "copyReview": "문구 복사",
-    "submitReview": "피드백 제출"
+    "submitReview": "피드백 제출",
+    "totalReviews": "Total Feedbacks Received",
+    "averageRating": "Average Rating",
+    "qrCodeTitle": "Customer QR Stand",
+    "qrCodeDesc": "Place this QR code on tables or billing counters to gather instant Google reviews.",
+    "shareLink": "Share Feedback URL"
   },
   "ai": {
     "title": "BizFlow AI 비즈니스 어시스턴트",
@@ -190,7 +274,11 @@
     "send": "질문하기",
     "thinking": "데이터 분석 중...",
     "activeProvider": "BizFlow AI 엔진 가동 중",
-    "setupRequired": "AI 키 설정 필요"
+    "setupRequired": "AI 키 설정 필요",
+    "suggestedQuestions": "Suggested Questions",
+    "clearChat": "Clear Conversation",
+    "copyResponse": "Copy Response",
+    "helpfulInsights": "Real-time AI Business Intelligence"
   },
   "settings": {
     "title": "환경설정 및 기본정보",
@@ -201,6 +289,65 @@
     "languageTitle": "선호 언어 설정",
     "languageDesc": "BizFlow에서 사용할 기본 언어를 선택하세요.",
     "saveChanges": "설정 저장",
-    "savedSuccess": "설정이 성공적으로 저장되었습니다!"
+    "savedSuccess": "설정이 성공적으로 저장되었습니다!",
+    "businessName": "Business Name",
+    "businessType": "Business Type",
+    "currency": "Store Currency",
+    "timezone": "Time Zone",
+    "taxRate": "Tax Percentage (%)",
+    "taxName": "Tax Label (e.g. GST, VAT)",
+    "taxInclusive": "Prices are Tax-Inclusive",
+    "enterpriseMode": "Full Inventory Mode"
+  },
+  "categories": {
+    "title": "Categories",
+    "subtitle": "Organize your products and services into structured departments.",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "deleteCategory": "Delete Category",
+    "categoryName": "Category Name",
+    "description": "Description",
+    "itemCount": "Items",
+    "noCategoriesFound": "No categories found."
+  },
+  "orders": {
+    "title": "Invoices & Orders",
+    "subtitle": "Browse historical orders, reprint invoices, and review payment settlements.",
+    "invoiceNumber": "Invoice #",
+    "orderDate": "Date & Time",
+    "customer": "Customer",
+    "totalAmount": "Total Amount",
+    "paymentStatus": "Status",
+    "paymentMethod": "Payment Method",
+    "itemsCount": "Items",
+    "viewInvoice": "View Receipt",
+    "downloadReceipt": "Download PDF",
+    "noOrdersFound": "No past invoices found."
+  },
+  "reports": {
+    "title": "Reports Center",
+    "subtitle": "Generate and export financial, inventory, tax, and sales performance reports.",
+    "salesReport": "Sales & Revenue Report",
+    "expenseReport": "Expense & Overhead Report",
+    "profitLossReport": "Profit & Loss Summary",
+    "taxReport": "Tax Collection Report (GST)",
+    "inventoryReport": "Inventory Valuation Report",
+    "generateReport": "Generate Report",
+    "dateRange": "Select Date Range",
+    "exportCsv": "Export to CSV",
+    "exportPdf": "Export to PDF"
+  },
+  "staff": {
+    "title": "Staff & Team Management",
+    "subtitle": "Invite cashiers, managers, and manage system role permissions.",
+    "addStaff": "Add Team Member",
+    "editStaff": "Edit Member",
+    "staffName": "Full Name",
+    "role": "Assigned Role",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "permissions": "Permissions",
+    "activeStaff": "Active Members",
+    "inviteStaff": "Invite Staff"
   }
 }

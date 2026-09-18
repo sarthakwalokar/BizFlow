@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { businessApi, StaffCreateRequest, StaffUpdateRequest } from '../../api/business';
 import { User } from '../../api/auth';
 import {
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react';
 
 export const StaffManagementPage: React.FC = () => {
+  const { t } = useTranslation();
   const [staffList, setStaffList] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>('');
@@ -198,9 +200,9 @@ export const StaffManagementPage: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Staff Management</h1>
+          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('staff.title')}</h1>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Invite employees, configure POS capabilities, enable/disable access, and reset passwords.
+            {t('staff.subtitle')}
           </p>
         </div>
 
@@ -209,7 +211,7 @@ export const StaffManagementPage: React.FC = () => {
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer shrink-0"
         >
           <UserPlus size={15} />
-          <span>Add Staff Member</span>
+          <span>{t('staff.addStaff')}</span>
         </button>
       </div>
 
@@ -231,19 +233,19 @@ export const StaffManagementPage: React.FC = () => {
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
-          <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Total Staff</span>
+          <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('staff.title')}</span>
           <div className="text-xl font-bold text-zinc-900 mt-1">{staffList.length}</div>
           <span className="text-[11px] text-zinc-400">Registered employees</span>
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
-          <span className="text-[11px] font-medium text-brand-600 uppercase tracking-wider">Active Accounts</span>
+          <span className="text-[11px] font-medium text-brand-600 uppercase tracking-wider">{t('staff.activeStaff')}</span>
           <div className="text-xl font-bold text-brand-700 mt-1">{activeCount}</div>
           <span className="text-[11px] text-brand-600">Can log in and operate</span>
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
-          <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Disabled</span>
+          <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('common.inactive')}</span>
           <div className="text-xl font-bold text-zinc-600 mt-1">{disabledCount}</div>
           <span className="text-[11px] text-zinc-400">Access suspended</span>
         </div>
@@ -255,7 +257,7 @@ export const StaffManagementPage: React.FC = () => {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
           <input
             type="text"
-            placeholder="Search staff by name, email, phone..."
+            placeholder={t('common.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs bg-zinc-50 focus:bg-white"
@@ -271,7 +273,7 @@ export const StaffManagementPage: React.FC = () => {
                 : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
             }`}
           >
-            All ({staffList.length})
+            {t('common.all')} ({staffList.length})
           </button>
           <button
             onClick={() => setStatusFilter('ACTIVE')}
@@ -281,7 +283,7 @@ export const StaffManagementPage: React.FC = () => {
                 : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
             }`}
           >
-            Active ({activeCount})
+            {t('common.active')} ({activeCount})
           </button>
           <button
             onClick={() => setStatusFilter('DISABLED')}
@@ -291,7 +293,7 @@ export const StaffManagementPage: React.FC = () => {
                 : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
             }`}
           >
-            Disabled ({disabledCount})
+            {t('common.inactive')} ({disabledCount})
           </button>
         </div>
       </div>

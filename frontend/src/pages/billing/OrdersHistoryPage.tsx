@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { billingApi, Order, PaymentStatus, OrderStatus, PaymentMethod } from '../../api/billing';
 import { InvoiceReceiptModal } from '../../components/billing/InvoiceReceiptModal';
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react';
 
 export const OrdersHistoryPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const currency = business?.currency || 'USD';
   const [orders, setOrders] = useState<Order[]>([]);
@@ -100,9 +102,9 @@ export const OrdersHistoryPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Invoice &amp; Sales Orders</h1>
+        <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('orders.title')}</h1>
         <p className="text-xs text-zinc-500 mt-0.5">
-          View generated tax receipts, customer payment logs, and void transactions.
+          {t('orders.subtitle')}
         </p>
       </div>
 
@@ -138,7 +140,7 @@ export const OrdersHistoryPage: React.FC = () => {
             <Search size={14} className="absolute left-3.5 top-2.5 text-zinc-400" />
             <input
               type="text"
-              placeholder="Search by invoice number or customer phone..."
+              placeholder={t('common.search')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-3 py-1.5 bg-zinc-50 focus:bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
@@ -152,7 +154,7 @@ export const OrdersHistoryPage: React.FC = () => {
               onChange={(e) => setPaymentStatus(e.target.value)}
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
-              <option value="ALL">All Payment Statuses</option>
+              <option value="ALL">{t('common.all')} {t('common.status')}</option>
               <option value="COMPLETED">Paid (Completed)</option>
               <option value="PENDING">Pending</option>
               <option value="CANCELLED">Cancelled / Void</option>
@@ -164,7 +166,7 @@ export const OrdersHistoryPage: React.FC = () => {
               onChange={(e) => setOrderStatus(e.target.value)}
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
-              <option value="ALL">All Order States</option>
+              <option value="ALL">{t('common.all')} Orders</option>
               <option value="COMPLETED">Completed</option>
               <option value="CANCELLED">Cancelled</option>
             </select>
@@ -175,7 +177,7 @@ export const OrdersHistoryPage: React.FC = () => {
               onChange={(e) => setPaymentMethod(e.target.value)}
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
-              <option value="ALL">All Payment Modes</option>
+              <option value="ALL">{t('common.all')} {t('billing.paymentMethod')}</option>
               <option value="UPI">UPI</option>
               <option value="CASH">Cash</option>
               <option value="CARD">Card</option>
@@ -187,7 +189,7 @@ export const OrdersHistoryPage: React.FC = () => {
               type="submit"
               className="px-4 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium shadow-xs transition-colors cursor-pointer"
             >
-              Filter
+              {t('common.filter')}
             </button>
           </div>
         </form>
@@ -204,15 +206,15 @@ export const OrdersHistoryPage: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-zinc-50 border-b border-zinc-200 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-                  <th className="py-3 px-4">Invoice #</th>
-                  <th className="py-3 px-4">Date &amp; Time</th>
-                  <th className="py-3 px-4">Customer</th>
+                  <th className="py-3 px-4">{t('orders.invoiceNumber')}</th>
+                  <th className="py-3 px-4">{t('orders.orderDate')}</th>
+                  <th className="py-3 px-4">{t('orders.customer')}</th>
                   <th className="py-3 px-4">Cashier</th>
-                  <th className="py-3 px-4">Items</th>
-                  <th className="py-3 px-4">Payment</th>
-                  <th className="py-3 px-4">Total</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4">{t('orders.itemsCount')}</th>
+                  <th className="py-3 px-4">{t('orders.paymentMethod')}</th>
+                  <th className="py-3 px-4">{t('orders.totalAmount')}</th>
+                  <th className="py-3 px-4">{t('orders.paymentStatus')}</th>
+                  <th className="py-3 px-4 text-right">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 text-xs">
@@ -220,8 +222,7 @@ export const OrdersHistoryPage: React.FC = () => {
                   <tr>
                     <td colSpan={9} className="py-12 text-center text-zinc-500 space-y-1">
                       <Receipt size={32} className="mx-auto text-zinc-300" />
-                      <p className="font-semibold text-zinc-700">No invoices match criteria</p>
-                      <p className="text-[11px] text-zinc-400">Try adjusting your filters or search keyword.</p>
+                      <p className="font-semibold text-zinc-700">{t('orders.noOrdersFound')}</p>
                     </td>
                   </tr>
                 ) : (

@@ -28,7 +28,24 @@
     "active": "ਸਰਗਰਮ",
     "inactive": "ਨਿਸ਼ਕਿਰਿਆ",
     "total": "ਕੁੱਲ",
-    "date": "ਮਿਤੀ"
+    "date": "ਮਿਤੀ",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "discount": "Discount",
+    "notes": "Notes",
+    "description": "Description",
+    "confirm": "Confirm",
+    "discard": "Discard",
+    "continue": "Continue",
+    "processing": "Processing...",
+    "submit": "Submit",
+    "type": "Type",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "selectOption": "Select an option",
+    "notFound": "No data found"
   },
   "nav": {
     "overview": "ਸੰਖੇਪ ਜਾਣਕਾਰੀ",
@@ -51,7 +68,8 @@
     "profile": "ਪ੍ਰੋਫਾਈਲ",
     "logout": "ਲਾਗ ਆਉਟ",
     "language": "ਭਾਸ਼ਾ",
-    "admin": "ਐਡਮਿਨ ਪੋਰਟਲ"
+    "admin": "ਐਡਮਿਨ ਪੋਰਟਲ",
+    "staff": "Staff Management"
   },
   "auth": {
     "login": "ਲਾਗਇਨ",
@@ -80,7 +98,8 @@
     "dontHaveAccount": "ਖਾਤਾ ਨਹੀਂ ਹੈ?",
     "signIn": "ਸਾਈਨ ਇਨ ਕਰੋ",
     "createAccount": "ਨਵਾਂ ਖਾਤਾ ਬਣਾਓ",
-    "registering": "ਰਜਿਸਟਰ ਹੋ ਰਿਹਾ ਹੈ..."
+    "registering": "ਰਜਿਸਟਰ ਹੋ ਰਿਹਾ ਹੈ...",
+    "loggingIn": "Signing in..."
   },
   "dashboard": {
     "title": "ਕਾਰੋਬਾਰੀ ਡੈਸ਼ਬੋਰਡ",
@@ -96,7 +115,18 @@
     "recentOrders": "ਹਾਲੀਆ ਬਿੱਲ",
     "topSelling": "ਸਭ ਤੋਂ ਵੱਧ ਵਿਕਣ ਵਾਲੀਆਂ ਵਸਤੂਆਂ",
     "viewAll": "ਸਾਰੇ ਵੇਖੋ",
-    "noRecentOrders": "ਅੱਜ ਕੋਈ ਆਰਡਰ ਨਹੀਂ ਹੈ।"
+    "noRecentOrders": "ਅੱਜ ਕੋਈ ਆਰਡਰ ਨਹੀਂ ਹੈ।",
+    "todayExpenses": "Today's Expenses",
+    "netMargin": "Net Margin",
+    "grossRevenue": "Gross Revenue",
+    "operationalExpenses": "Operational Expenses",
+    "fastTrack": "Fast-Track Operations",
+    "businessSnapshot": "Business Snapshot",
+    "ownerProfile": "Owner Profile",
+    "businessTier": "Business Tier",
+    "storeCatalog": "Store Catalog",
+    "customerDirectory": "Customer Directory",
+    "financialHealth": "Financial Health"
   },
   "billing": {
     "title": "ਪੀਓਐਸ ਬਿਲਿੰਗ ਕਾਊਂਟਰ",
@@ -117,7 +147,16 @@
     "split": "ਵੰਡ ਕੇ ਭੁਗਤਾਨ",
     "completeOrder": "ਬਿੱਲ ਪੂਰਾ ਕਰੋ",
     "printReceipt": "ਰਸੀਦ ਪ੍ਰਿੰਟ ਕਰੋ",
-    "orderSuccess": "ਆਰਡਰ ਸਫਲਤਾਪੂਰਵਕ ਪੂਰਾ ਹੋਇਆ!"
+    "orderSuccess": "ਆਰਡਰ ਸਫਲਤਾਪੂਰਵਕ ਪੂਰਾ ਹੋਇਆ!",
+    "subtitle": "Fast checkout, customer management, and instant bill generation.",
+    "goods": "Goods",
+    "services": "Services",
+    "tenderAmount": "Cash Tendered",
+    "changeDue": "Change Due",
+    "addCustomer": "Add Customer",
+    "discountType": "Discount Type",
+    "billDetails": "Invoice Details",
+    "clearCart": "Clear Cart"
   },
   "products": {
     "title": "ਉਤਪਾਦ ਅਤੇ ਸੇਵਾਵਾਂ",
@@ -132,7 +171,18 @@
     "stock": "ਸਟਾਕ ਵਿੱਚ",
     "category": "ਸ਼੍ਰੇਣੀ",
     "trackStock": "ਸਟਾਕ ਟਰੈਕ ਕਰੋ",
-    "lowStockThreshold": "ਘੱਟ ਸਟਾਕ ਸੀਮਾ"
+    "lowStockThreshold": "ਘੱਟ ਸਟਾਕ ਸੀਮਾ",
+    "deleteProduct": "Delete Item",
+    "description": "Description",
+    "physicalGoods": "Physical Goods",
+    "serviceItem": "Service / Labor",
+    "status": "Item Status",
+    "active": "Active",
+    "inactive": "Archived",
+    "noProductsFound": "No catalog items found.",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "itemType": "Item Type",
+    "sellingPrice": "Selling Price"
   },
   "inventory": {
     "title": "ਇਨਵੈਂਟਰੀ ਪ੍ਰਬੰਧਨ",
@@ -141,7 +191,18 @@
     "reorderLevel": "ਮੁੜ-ਆਰਡਰ ਸੀਮਾ",
     "stockAdjustment": "ਸਟਾਕ ਵਿਵਸਥਾ",
     "lowStockWarning": "ਸੀਮਾ ਤੋਂ ਘੱਟ ਵਸਤੂਆਂ",
-    "outOfStock": "ਸਟਾਕ ਖਤਮ"
+    "outOfStock": "ਸਟਾਕ ਖਤਮ",
+    "itemsTracked": "Tracked Items",
+    "stockValue": "Total Stock Value",
+    "addStock": "Receive Stock",
+    "adjustQuantity": "Quantity Adjustment",
+    "reason": "Adjustment Reason",
+    "purchaseOrder": "Purchase Order",
+    "supplier": "Supplier",
+    "unitCost": "Unit Cost",
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "outStock": "Out of Stock"
   },
   "expenses": {
     "title": "ਖਰਚਿਆਂ ਦੀ ਨਿਗਰਾਨੀ",
@@ -151,7 +212,14 @@
     "amount": "ਰਕਮ",
     "paymentDate": "ਮਿਤੀ",
     "vendor": "ਵਿਕਰੇਤਾ",
-    "description": "ਵੇਰਵਾ"
+    "description": "ਵੇਰਵਾ",
+    "editExpense": "Edit Expense",
+    "deleteExpense": "Delete Expense",
+    "paymentMode": "Payment Mode",
+    "totalExpenses": "Total Expenses",
+    "monthlyExpenses": "This Month's Expenses",
+    "expenseBreakdown": "Expense Category Breakdown",
+    "noExpensesFound": "No expenses recorded."
   },
   "customers": {
     "title": "ਗਾਹਕ ਡਾਇਰੈਕਟਰੀ",
@@ -159,7 +227,14 @@
     "addCustomer": "ਗਾਹਕ ਸ਼ਾਮਲ ਕਰੋ",
     "customerName": "ਗਾਹਕ ਦਾ ਨਾਮ",
     "totalSpent": "ਕੁੱਲ ਖਰਚ",
-    "totalOrders": "ਕੁੱਲ ਆਰਡਰ"
+    "totalOrders": "ਕੁੱਲ ਆਰਡਰ",
+    "editCustomer": "Edit Customer",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "address": "Billing Address",
+    "loyaltyPoints": "Loyalty Points",
+    "lastVisit": "Last Purchase",
+    "noCustomersFound": "No customers found."
   },
   "analytics": {
     "title": "ਵਿਸ਼ਲੇਸ਼ਣ",
@@ -171,7 +246,11 @@
     "today": "ਅੱਜ",
     "thisWeek": "ਇਸ ਹਫ਼ਤੇ",
     "thisMonth": "ਇਸ ਮਹੀਨੇ",
-    "thisYear": "ਇਸ ਸਾਲ"
+    "thisYear": "ਇਸ ਸਾਲ",
+    "topProducts": "Top Performing Products",
+    "categoryPerformance": "Sales by Category",
+    "hourlySales": "Hourly Sales Velocity",
+    "metrics": "Key Performance Indicators"
   },
   "reviews": {
     "title": "ਸਮੀਖਿਆ ਬੂਸਟ",
@@ -181,7 +260,12 @@
     "feedback": "ਤੁਹਾਡਾ ਅਨੁਭਵ",
     "aiSuggestions": "AI ਸੁਝਾਅ",
     "copyReview": "ਕਾਪੀ ਕਰੋ",
-    "submitReview": "ਜਮ੍ਹਾਂ ਕਰੋ"
+    "submitReview": "ਜਮ੍ਹਾਂ ਕਰੋ",
+    "totalReviews": "Total Feedbacks Received",
+    "averageRating": "Average Rating",
+    "qrCodeTitle": "Customer QR Stand",
+    "qrCodeDesc": "Place this QR code on tables or billing counters to gather instant Google reviews.",
+    "shareLink": "Share Feedback URL"
   },
   "ai": {
     "title": "BizFlow AI ਸਹਾਇਕ",
@@ -190,7 +274,11 @@
     "send": "ਪੁੱਛੋ",
     "thinking": "ਵਿਸ਼ਲੇਸ਼ਣ ਹੋ ਰਿਹਾ ਹੈ...",
     "activeProvider": "BizFlow AI ਸਰਗਰਮ ਹੈ",
-    "setupRequired": "AI ਕੁੰਜੀ ਲੋੜੀਂਦੀ ਹੈ"
+    "setupRequired": "AI ਕੁੰਜੀ ਲੋੜੀਂਦੀ ਹੈ",
+    "suggestedQuestions": "Suggested Questions",
+    "clearChat": "Clear Conversation",
+    "copyResponse": "Copy Response",
+    "helpfulInsights": "Real-time AI Business Intelligence"
   },
   "settings": {
     "title": "ਸੈਟਿੰਗਾਂ",
@@ -201,6 +289,65 @@
     "languageTitle": "ਭਾਸ਼ਾ ਤਰਜੀਹ",
     "languageDesc": "BizFlow ਲਈ ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਚੁਣੋ।",
     "saveChanges": "ਸੰਭਾਲੋ",
-    "savedSuccess": "ਸੈਟਿੰਗਾਂ ਸਫਲਤਾਪੂਰਵਕ ਸੁਰੱਖਿਅਤ ਕੀਤੀਆਂ ਗਈਆਂ!"
+    "savedSuccess": "ਸੈਟਿੰਗਾਂ ਸਫਲਤਾਪੂਰਵਕ ਸੁਰੱਖਿਅਤ ਕੀਤੀਆਂ ਗਈਆਂ!",
+    "businessName": "Business Name",
+    "businessType": "Business Type",
+    "currency": "Store Currency",
+    "timezone": "Time Zone",
+    "taxRate": "Tax Percentage (%)",
+    "taxName": "Tax Label (e.g. GST, VAT)",
+    "taxInclusive": "Prices are Tax-Inclusive",
+    "enterpriseMode": "Full Inventory Mode"
+  },
+  "categories": {
+    "title": "Categories",
+    "subtitle": "Organize your products and services into structured departments.",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "deleteCategory": "Delete Category",
+    "categoryName": "Category Name",
+    "description": "Description",
+    "itemCount": "Items",
+    "noCategoriesFound": "No categories found."
+  },
+  "orders": {
+    "title": "Invoices & Orders",
+    "subtitle": "Browse historical orders, reprint invoices, and review payment settlements.",
+    "invoiceNumber": "Invoice #",
+    "orderDate": "Date & Time",
+    "customer": "Customer",
+    "totalAmount": "Total Amount",
+    "paymentStatus": "Status",
+    "paymentMethod": "Payment Method",
+    "itemsCount": "Items",
+    "viewInvoice": "View Receipt",
+    "downloadReceipt": "Download PDF",
+    "noOrdersFound": "No past invoices found."
+  },
+  "reports": {
+    "title": "Reports Center",
+    "subtitle": "Generate and export financial, inventory, tax, and sales performance reports.",
+    "salesReport": "Sales & Revenue Report",
+    "expenseReport": "Expense & Overhead Report",
+    "profitLossReport": "Profit & Loss Summary",
+    "taxReport": "Tax Collection Report (GST)",
+    "inventoryReport": "Inventory Valuation Report",
+    "generateReport": "Generate Report",
+    "dateRange": "Select Date Range",
+    "exportCsv": "Export to CSV",
+    "exportPdf": "Export to PDF"
+  },
+  "staff": {
+    "title": "Staff & Team Management",
+    "subtitle": "Invite cashiers, managers, and manage system role permissions.",
+    "addStaff": "Add Team Member",
+    "editStaff": "Edit Member",
+    "staffName": "Full Name",
+    "role": "Assigned Role",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "permissions": "Permissions",
+    "activeStaff": "Active Members",
+    "inviteStaff": "Invite Staff"
   }
 }

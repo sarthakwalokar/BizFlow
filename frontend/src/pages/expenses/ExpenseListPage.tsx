@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import {
   expensesApi,
@@ -49,6 +50,7 @@ const CATEGORY_METADATA: Record<
 };
 
 export const ExpenseListPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business, user } = useAuth();
   const isOwner = user?.role === 'OWNER';
 
@@ -235,9 +237,9 @@ export const ExpenseListPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Expense Management</h1>
+          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('expenses.title')}</h1>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Log overheads, supplier payouts, payroll, rent, and track total expenditures.
+            {t('expenses.subtitle')}
           </p>
         </div>
 
@@ -246,7 +248,7 @@ export const ExpenseListPage: React.FC = () => {
           className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
         >
           <Plus size={15} />
-          <span>Log Expense</span>
+          <span>{t('expenses.recordExpense')}</span>
         </button>
       </div>
 
@@ -281,7 +283,7 @@ export const ExpenseListPage: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Today's Expenses</span>
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">{t('dashboard.todayExpenses')}</span>
             <div className="text-2xl font-bold text-rose-600">
               {formatCurrency(summary?.todayExpenses ?? 0, currency)}
             </div>
@@ -289,7 +291,7 @@ export const ExpenseListPage: React.FC = () => {
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">This Month's Total</span>
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">{t('expenses.monthlyExpenses')}</span>
             <div className="text-2xl font-bold text-zinc-900">
               {formatCurrency(summary?.monthExpenses ?? 0, currency)}
             </div>
@@ -297,7 +299,7 @@ export const ExpenseListPage: React.FC = () => {
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">All-Time Recorded</span>
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">{t('expenses.totalExpenses')}</span>
             <div className="text-2xl font-bold text-zinc-900">
               {formatCurrency(summary?.totalExpenses ?? 0, currency)}
             </div>
@@ -313,7 +315,7 @@ export const ExpenseListPage: React.FC = () => {
             <Search size={14} className="absolute left-3.5 top-2.5 text-zinc-400" />
             <input
               type="text"
-              placeholder="Search description, reference ID or notes..."
+              placeholder={t('common.search')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-3 py-1.5 bg-zinc-50 focus:bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
@@ -327,10 +329,9 @@ export const ExpenseListPage: React.FC = () => {
               onChange={(e) => setDatePreset(e.target.value as any)}
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
-              <option value="THIS_MONTH">This Month</option>
-              <option value="TODAY">Today Only</option>
-              <option value="ALL">All Time</option>
-              <option value="CUSTOM">Custom Range</option>
+              <option value="THIS_MONTH">{t('analytics.thisMonth')}</option>
+              <option value="TODAY">{t('analytics.today')}</option>
+              <option value="ALL">{t('common.all')}</option>
             </select>
 
             {/* Category Filter */}
@@ -339,7 +340,7 @@ export const ExpenseListPage: React.FC = () => {
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
-              <option value="ALL">All Categories</option>
+              <option value="ALL">{t('common.all')} {t('expenses.category')}</option>
               {Object.entries(CATEGORY_METADATA).map(([key, meta]) => (
                 <option key={key} value={key}>
                   {meta.label}

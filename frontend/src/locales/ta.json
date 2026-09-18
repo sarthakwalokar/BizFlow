@@ -28,7 +28,24 @@
     "active": "செயலில்",
     "inactive": "செயலற்ற",
     "total": "மொத்தம்",
-    "date": "தேதி"
+    "date": "தேதி",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "discount": "Discount",
+    "notes": "Notes",
+    "description": "Description",
+    "confirm": "Confirm",
+    "discard": "Discard",
+    "continue": "Continue",
+    "processing": "Processing...",
+    "submit": "Submit",
+    "type": "Type",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "selectOption": "Select an option",
+    "notFound": "No data found"
   },
   "nav": {
     "overview": "மேலோட்டம்",
@@ -51,7 +68,8 @@
     "profile": "சுயவிவரம்",
     "logout": "வெளியேறு",
     "language": "மொழி",
-    "admin": "நிர்வாகி போர்டல்"
+    "admin": "நிர்வாகி போர்டல்",
+    "staff": "Staff Management"
   },
   "auth": {
     "login": "உள்நுழைக",
@@ -80,7 +98,8 @@
     "dontHaveAccount": "கணக்கு இல்லையா?",
     "signIn": "உள்நுழையவும்",
     "createAccount": "புதிய கணக்கை உருவாக்கவும்",
-    "registering": "பதிவாகிறது..."
+    "registering": "பதிவாகிறது...",
+    "loggingIn": "Signing in..."
   },
   "dashboard": {
     "title": "வணிக டாஷ்போர்டு",
@@ -96,7 +115,18 @@
     "recentOrders": "சமீபத்திய பில்கள்",
     "topSelling": "அதிகம் விற்பனையாகும் பொருட்கள்",
     "viewAll": "அனைத்தையும் பார்",
-    "noRecentOrders": "இன்று எந்த ஆர்டரும் இல்லை."
+    "noRecentOrders": "இன்று எந்த ஆர்டரும் இல்லை.",
+    "todayExpenses": "Today's Expenses",
+    "netMargin": "Net Margin",
+    "grossRevenue": "Gross Revenue",
+    "operationalExpenses": "Operational Expenses",
+    "fastTrack": "Fast-Track Operations",
+    "businessSnapshot": "Business Snapshot",
+    "ownerProfile": "Owner Profile",
+    "businessTier": "Business Tier",
+    "storeCatalog": "Store Catalog",
+    "customerDirectory": "Customer Directory",
+    "financialHealth": "Financial Health"
   },
   "billing": {
     "title": "பிஓஎஸ் பில்லிங் கவுண்டர்",
@@ -117,7 +147,16 @@
     "split": "பிரித்து செலுத்துதல்",
     "completeOrder": "பில் முடிக்கவும்",
     "printReceipt": "ரசீது அச்சிடு",
-    "orderSuccess": "ஆர்டர் வெற்றிகரமாக முடிந்தது!"
+    "orderSuccess": "ஆர்டர் வெற்றிகரமாக முடிந்தது!",
+    "subtitle": "Fast checkout, customer management, and instant bill generation.",
+    "goods": "Goods",
+    "services": "Services",
+    "tenderAmount": "Cash Tendered",
+    "changeDue": "Change Due",
+    "addCustomer": "Add Customer",
+    "discountType": "Discount Type",
+    "billDetails": "Invoice Details",
+    "clearCart": "Clear Cart"
   },
   "products": {
     "title": "தயாரிப்புகள் & சேவைகள்",
@@ -132,7 +171,18 @@
     "stock": "இருப்பில் உள்ளது",
     "category": "வகை",
     "trackStock": "இருப்பைக் கண்காணிக்கவும்",
-    "lowStockThreshold": "குறைந்த இருப்பு வரம்பு"
+    "lowStockThreshold": "குறைந்த இருப்பு வரம்பு",
+    "deleteProduct": "Delete Item",
+    "description": "Description",
+    "physicalGoods": "Physical Goods",
+    "serviceItem": "Service / Labor",
+    "status": "Item Status",
+    "active": "Active",
+    "inactive": "Archived",
+    "noProductsFound": "No catalog items found.",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "itemType": "Item Type",
+    "sellingPrice": "Selling Price"
   },
   "inventory": {
     "title": "சரக்கு இருப்பு மேலாண்மை",
@@ -141,7 +191,18 @@
     "reorderLevel": "மறுஆர்டர் வரம்பு",
     "stockAdjustment": "இருப்பை சரிசெய்",
     "lowStockWarning": "குறைந்த பொருட்கள்",
-    "outOfStock": "இருப்பு இல்லை"
+    "outOfStock": "இருப்பு இல்லை",
+    "itemsTracked": "Tracked Items",
+    "stockValue": "Total Stock Value",
+    "addStock": "Receive Stock",
+    "adjustQuantity": "Quantity Adjustment",
+    "reason": "Adjustment Reason",
+    "purchaseOrder": "Purchase Order",
+    "supplier": "Supplier",
+    "unitCost": "Unit Cost",
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "outStock": "Out of Stock"
   },
   "expenses": {
     "title": "செலவு கண்காணிப்பு",
@@ -151,7 +212,14 @@
     "amount": "தொகை",
     "paymentDate": "தேதி",
     "vendor": "விற்பனையாளர்",
-    "description": "விவரம்"
+    "description": "விவரம்",
+    "editExpense": "Edit Expense",
+    "deleteExpense": "Delete Expense",
+    "paymentMode": "Payment Mode",
+    "totalExpenses": "Total Expenses",
+    "monthlyExpenses": "This Month's Expenses",
+    "expenseBreakdown": "Expense Category Breakdown",
+    "noExpensesFound": "No expenses recorded."
   },
   "customers": {
     "title": "வாடிக்கையாளர் பட்டியல்",
@@ -159,7 +227,14 @@
     "addCustomer": "வாடிக்கையாளரைச் சேர்",
     "customerName": "வாடிக்கையாளர் பெயர்",
     "totalSpent": "மொத்த செலவு",
-    "totalOrders": "மொத்த வருகைகள்"
+    "totalOrders": "மொத்த வருகைகள்",
+    "editCustomer": "Edit Customer",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "address": "Billing Address",
+    "loyaltyPoints": "Loyalty Points",
+    "lastVisit": "Last Purchase",
+    "noCustomersFound": "No customers found."
   },
   "analytics": {
     "title": "பகுப்பாய்வு",
@@ -171,7 +246,11 @@
     "today": "இன்று",
     "thisWeek": "இந்த வாரம்",
     "thisMonth": "இந்த மாதம்",
-    "thisYear": "இந்த ஆண்டு"
+    "thisYear": "இந்த ஆண்டு",
+    "topProducts": "Top Performing Products",
+    "categoryPerformance": "Sales by Category",
+    "hourlySales": "Hourly Sales Velocity",
+    "metrics": "Key Performance Indicators"
   },
   "reviews": {
     "title": "மதிப்பாய்வு பூஸ்ட்",
@@ -181,7 +260,12 @@
     "feedback": "உங்கள் அனுபவம்",
     "aiSuggestions": "AI பரிந்துரைகள்",
     "copyReview": "நகலெடு",
-    "submitReview": "சமர்ப்பிக்கவும்"
+    "submitReview": "சமர்ப்பிக்கவும்",
+    "totalReviews": "Total Feedbacks Received",
+    "averageRating": "Average Rating",
+    "qrCodeTitle": "Customer QR Stand",
+    "qrCodeDesc": "Place this QR code on tables or billing counters to gather instant Google reviews.",
+    "shareLink": "Share Feedback URL"
   },
   "ai": {
     "title": "BizFlow AI உதவியாளர்",
@@ -190,7 +274,11 @@
     "send": "கேளுங்கள்",
     "thinking": "ஆராய்கிறது...",
     "activeProvider": "BizFlow AI செயலில் உள்ளது",
-    "setupRequired": "AI கீ தேவை"
+    "setupRequired": "AI கீ தேவை",
+    "suggestedQuestions": "Suggested Questions",
+    "clearChat": "Clear Conversation",
+    "copyResponse": "Copy Response",
+    "helpfulInsights": "Real-time AI Business Intelligence"
   },
   "settings": {
     "title": "அமைப்புகள்",
@@ -201,6 +289,65 @@
     "languageTitle": "மொழி விருப்பம்",
     "languageDesc": "BizFlow க்கான உங்கள் விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்.",
     "saveChanges": "சேமிக்கவும்",
-    "savedSuccess": "அமைப்புகள் வெற்றிகரமாக சேமிக்கப்பட்டன!"
+    "savedSuccess": "அமைப்புகள் வெற்றிகரமாக சேமிக்கப்பட்டன!",
+    "businessName": "Business Name",
+    "businessType": "Business Type",
+    "currency": "Store Currency",
+    "timezone": "Time Zone",
+    "taxRate": "Tax Percentage (%)",
+    "taxName": "Tax Label (e.g. GST, VAT)",
+    "taxInclusive": "Prices are Tax-Inclusive",
+    "enterpriseMode": "Full Inventory Mode"
+  },
+  "categories": {
+    "title": "Categories",
+    "subtitle": "Organize your products and services into structured departments.",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "deleteCategory": "Delete Category",
+    "categoryName": "Category Name",
+    "description": "Description",
+    "itemCount": "Items",
+    "noCategoriesFound": "No categories found."
+  },
+  "orders": {
+    "title": "Invoices & Orders",
+    "subtitle": "Browse historical orders, reprint invoices, and review payment settlements.",
+    "invoiceNumber": "Invoice #",
+    "orderDate": "Date & Time",
+    "customer": "Customer",
+    "totalAmount": "Total Amount",
+    "paymentStatus": "Status",
+    "paymentMethod": "Payment Method",
+    "itemsCount": "Items",
+    "viewInvoice": "View Receipt",
+    "downloadReceipt": "Download PDF",
+    "noOrdersFound": "No past invoices found."
+  },
+  "reports": {
+    "title": "Reports Center",
+    "subtitle": "Generate and export financial, inventory, tax, and sales performance reports.",
+    "salesReport": "Sales & Revenue Report",
+    "expenseReport": "Expense & Overhead Report",
+    "profitLossReport": "Profit & Loss Summary",
+    "taxReport": "Tax Collection Report (GST)",
+    "inventoryReport": "Inventory Valuation Report",
+    "generateReport": "Generate Report",
+    "dateRange": "Select Date Range",
+    "exportCsv": "Export to CSV",
+    "exportPdf": "Export to PDF"
+  },
+  "staff": {
+    "title": "Staff & Team Management",
+    "subtitle": "Invite cashiers, managers, and manage system role permissions.",
+    "addStaff": "Add Team Member",
+    "editStaff": "Edit Member",
+    "staffName": "Full Name",
+    "role": "Assigned Role",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "permissions": "Permissions",
+    "activeStaff": "Active Members",
+    "inviteStaff": "Invite Staff"
   }
 }

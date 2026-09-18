@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { Lock, Mail, ArrowRight, AlertCircle, Shield, Eye, EyeOff } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -52,10 +54,10 @@ export const LoginPage: React.FC = () => {
         </div>
 
         <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-zinc-950">
-          Sign in to your business
+          {t('auth.loginTitle')}
         </h2>
         <p className="mt-1 text-center text-xs text-zinc-500">
-          Access your POS terminal, analytics, inventory, and management portal
+          {t('auth.loginSubtitle')}
         </p>
       </div>
 
@@ -72,7 +74,7 @@ export const LoginPage: React.FC = () => {
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-xs font-semibold text-zinc-700 mb-1.5" htmlFor="login-email">
-                Email Address
+                {t('auth.email')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
@@ -93,7 +95,7 @@ export const LoginPage: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-semibold text-zinc-700" htmlFor="login-password">
-                  Password
+                  {t('auth.password')}
                 </label>
               </div>
               <div className="relative">
@@ -129,11 +131,11 @@ export const LoginPage: React.FC = () => {
               {loading ? (
                 <span className="inline-flex items-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Signing in...</span>
+                  <span>{t('auth.loggingIn')}</span>
                 </span>
               ) : (
                 <>
-                  <span>Sign In</span>
+                  <span>{t('auth.signIn')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -142,9 +144,9 @@ export const LoginPage: React.FC = () => {
 
           <div className="pt-4 border-t border-zinc-100 flex flex-col space-y-2.5 text-center">
             <p className="text-xs text-zinc-500">
-              New business owner?{' '}
+              {t('auth.dontHaveAccount')}{' '}
               <Link to="/signup" className="font-semibold text-brand-600 hover:text-brand-700 hover:underline">
-                Register your business
+                {t('auth.signup')}
               </Link>
             </p>
 

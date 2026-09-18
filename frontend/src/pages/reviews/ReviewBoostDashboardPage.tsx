@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import {
   reviewsApi,
@@ -23,6 +24,7 @@ import {
 } from 'lucide-react';
 
 export const ReviewBoostDashboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business, user } = useAuth();
   const isOwner = user?.role === 'OWNER';
 
@@ -154,9 +156,9 @@ export const ReviewBoostDashboardPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Review Boost</h1>
+          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('reviews.title')}</h1>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Collect customer feedback at counter, boost 5-star ratings, and protect online reputation.
+            {t('reviews.subtitle')}
           </p>
         </div>
 
@@ -203,7 +205,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 pb-5 border-b border-zinc-100">
             {/* Average Rating Big Card */}
             <div className="space-y-1.5">
-              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Average Customer Rating</span>
+              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">{t('reviews.averageRating')}</span>
               <div className="flex items-baseline space-x-3">
                 <span className="text-4xl sm:text-5xl font-bold text-zinc-900">
                   {loading ? '...' : Number(avgRating).toFixed(1)}
@@ -222,7 +224,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <p className="text-xs text-zinc-500">Based on {totalRevCount} verified reviews</p>
+              <p className="text-xs text-zinc-500">{t('reviews.totalReviews')}: {totalRevCount}</p>
             </div>
 
             {/* Quick URL Cards */}

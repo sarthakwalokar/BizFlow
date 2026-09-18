@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { customersApi, Customer, CustomerProfile, CustomerRequest } from '../../api/customers';
 import { Order } from '../../api/billing';
@@ -20,6 +21,7 @@ import { formatCurrency } from '../../utils/currency';
 import { TableSkeleton, ButtonSpinner } from '../../components/common/LoadingStates';
 
 export const CustomerListPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business, user } = useAuth();
   const isOwner = user?.role === 'OWNER';
 
@@ -184,9 +186,9 @@ export const CustomerListPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">Customer CRM</h1>
+          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">{t('customers.title')}</h1>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Manage your client ledger, lifetime spending, purchase history, and contact directory.
+            {t('customers.subtitle')}
           </p>
         </div>
 
@@ -195,7 +197,7 @@ export const CustomerListPage: React.FC = () => {
           className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
         >
           <UserPlus size={16} />
-          <span>Add Customer</span>
+          <span>{t('customers.addCustomer')}</span>
         </button>
       </div>
 
@@ -231,7 +233,7 @@ export const CustomerListPage: React.FC = () => {
             <Search size={15} className="absolute left-3.5 top-3 text-zinc-400" />
             <input
               type="text"
-              placeholder="Search by customer name, phone number or email..."
+              placeholder={t('common.search')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
@@ -241,7 +243,7 @@ export const CustomerListPage: React.FC = () => {
             type="submit"
             className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer"
           >
-            Search
+            {t('common.search')}
           </button>
         </form>
       </div>
@@ -255,12 +257,12 @@ export const CustomerListPage: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
-                  <th className="py-3 px-4">Customer Name</th>
-                  <th className="py-3 px-4">Contact Info</th>
-                  <th className="py-3 px-4">Total Orders</th>
-                  <th className="py-3 px-4">Lifetime Spend</th>
-                  <th className="py-3 px-4">Last Purchase</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4">{t('customers.customerName')}</th>
+                  <th className="py-3 px-4">{t('common.phone')} / {t('common.email')}</th>
+                  <th className="py-3 px-4">{t('customers.totalOrders')}</th>
+                  <th className="py-3 px-4">{t('customers.totalSpent')}</th>
+                  <th className="py-3 px-4">{t('customers.lastVisit')}</th>
+                  <th className="py-3 px-4 text-right">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 text-xs">
@@ -268,8 +270,7 @@ export const CustomerListPage: React.FC = () => {
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-zinc-500 space-y-1">
                       <Users size={32} className="mx-auto text-zinc-300" />
-                      <p className="font-bold text-zinc-700">No customers found</p>
-                      <p className="text-[11px] text-zinc-400">Add a customer or attach one during POS checkout.</p>
+                      <p className="font-bold text-zinc-700">{t('customers.noCustomersFound')}</p>
                     </td>
                   </tr>
                 ) : (

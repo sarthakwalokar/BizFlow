@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
-import { LanguageSelector } from '../common/LanguageSelector';
 import {
   LayoutDashboard,
   Package,
@@ -207,7 +206,6 @@ export const AppLayout: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-2">
-          <LanguageSelector variant="compact" />
           {business && (
             <span
               className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full border ${getBusinessTypeBadgeColor(
@@ -418,8 +416,6 @@ export const AppLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <LanguageSelector variant="compact" />
-
             {business && business.taxRate !== undefined && business.taxRate > 0 && (
               <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-semibold">
                 <Percent size={12} className="text-brand-600" />

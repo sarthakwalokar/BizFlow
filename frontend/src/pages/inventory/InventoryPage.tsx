@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import {
   inventoryApi,
@@ -29,6 +30,7 @@ import {
 import { formatCurrency } from '../../utils/currency';
 
 export const InventoryPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const isLarge = business?.businessSize === 'LARGE';
 
@@ -307,7 +309,7 @@ export const InventoryPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-black text-zinc-950 tracking-tight">Inventory &amp; Stock</h1>
+            <h1 className="text-2xl font-black text-zinc-950 tracking-tight">{t('inventory.title')}</h1>
             <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
               isLarge
                 ? 'bg-blue-50 text-blue-700 border-blue-200'
@@ -317,9 +319,7 @@ export const InventoryPage: React.FC = () => {
             </span>
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
-            {isLarge
-              ? 'Multi-branch warehouse control, stock movements, supplier directory, and purchase orders.'
-              : 'Real-time stock counts, automated sales deductions, and low-stock warning thresholds.'}
+            {t('inventory.subtitle')}
           </p>
         </div>
 
@@ -346,7 +346,7 @@ export const InventoryPage: React.FC = () => {
         <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
-            <span className="font-medium">{successMessage}</span>
+            <span>{successMessage}</span>
           </div>
           <button onClick={() => setSuccessMessage(null)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
             &times;
@@ -358,7 +358,7 @@ export const InventoryPage: React.FC = () => {
         <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <AlertCircle size={15} className="text-rose-600 shrink-0" />
-            <span className="font-medium">{errorMessage}</span>
+            <span>{errorMessage}</span>
           </div>
           <button onClick={() => setErrorMessage(null)} className="text-rose-700 hover:text-rose-900 cursor-pointer">
             &times;
@@ -372,13 +372,13 @@ export const InventoryPage: React.FC = () => {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
-            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Tracked Products</span>
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">{t('inventory.itemsTracked')}</span>
             <div className="text-2xl font-bold text-zinc-900">{summary?.totalTrackedProducts ?? stockItems.length}</div>
             <span className="text-[10px] text-zinc-400">Physical stock items</span>
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
-            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Low Stock Warnings</span>
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">{t('inventory.lowStockWarning')}</span>
             <div className={`text-2xl font-bold ${summary?.lowStockProducts && summary.lowStockProducts > 0 ? 'text-amber-600' : 'text-zinc-900'}`}>
               {summary?.lowStockProducts ?? 0}
             </div>
@@ -386,7 +386,7 @@ export const InventoryPage: React.FC = () => {
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
-            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Out of Stock</span>
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">{t('inventory.outOfStock')}</span>
             <div className={`text-2xl font-bold ${summary?.outOfStockProducts && summary.outOfStockProducts > 0 ? 'text-rose-600' : 'text-zinc-900'}`}>
               {summary?.outOfStockProducts ?? 0}
             </div>
@@ -394,7 +394,7 @@ export const InventoryPage: React.FC = () => {
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
-            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Inventory Value</span>
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">{t('inventory.stockValue')}</span>
             <div className="text-2xl font-bold text-zinc-900">
               {formatCurrency(summary?.totalInventoryValuation ?? 0, currency)}
             </div>
@@ -442,7 +442,7 @@ export const InventoryPage: React.FC = () => {
               <Search size={14} className="absolute left-3.5 top-2.5 text-zinc-400" />
               <input
                 type="text"
-                placeholder="Search stock by product name or SKU..."
+                placeholder={t('common.search')}
                 value={stockSearch}
                 onChange={(e) => setStockSearch(e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 bg-zinc-50 focus:bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
@@ -455,7 +455,7 @@ export const InventoryPage: React.FC = () => {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
               >
-                <option value="ALL">All Categories</option>
+                <option value="ALL">{t('common.all')} {t('categories.title')}</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.name}>
                     {c.name}
@@ -472,7 +472,7 @@ export const InventoryPage: React.FC = () => {
                     : 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50'
                 }`}
               >
-                Low Stock Only
+                {t('inventory.lowStock')}
               </button>
             </div>
           </div>
@@ -483,12 +483,12 @@ export const InventoryPage: React.FC = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
-                    <th className="py-3 px-4">Product Item</th>
-                    <th className="py-3 px-4">Category</th>
-                    <th className="py-3 px-4">Price</th>
-                    <th className="py-3 px-4">Stock Quantity</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Action</th>
+                    <th className="py-3 px-4">{t('products.productName')}</th>
+                    <th className="py-3 px-4">{t('products.category')}</th>
+                    <th className="py-3 px-4">{t('products.price')}</th>
+                    <th className="py-3 px-4">{t('inventory.currentStock')}</th>
+                    <th className="py-3 px-4">{t('products.status')}</th>
+                    <th className="py-3 px-4 text-right">{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 text-xs">

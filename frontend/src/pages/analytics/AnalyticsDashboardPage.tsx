@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { analyticsApi, AnalyticsOverview, TimeRange } from '../../api/analytics';
 import { inventoryApi, Location } from '../../api/inventory';
@@ -16,6 +17,7 @@ import { formatCurrency } from '../../utils/currency';
 import { MetricCardsSkeleton, ChartSkeleton, SkeletonBlock } from '../../components/common/LoadingStates';
 
 export const AnalyticsDashboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
 
   const [timeRange, setTimeRange] = useState<TimeRange>('THIS_MONTH');
@@ -166,9 +168,9 @@ export const AnalyticsDashboardPage: React.FC = () => {
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">Financial &amp; Sales Analytics</h1>
+          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">{t('analytics.title')}</h1>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Real-time profit margins, order velocity, top performing products, and payment mode breakdowns.
+            {t('analytics.subtitle')}
           </p>
         </div>
 
@@ -196,10 +198,10 @@ export const AnalyticsDashboardPage: React.FC = () => {
           {/* Time Preset Selector */}
           <div className="flex items-center space-x-1 bg-white border border-zinc-200 rounded-xl p-1 text-xs font-semibold">
             {[
-              { id: 'TODAY', label: 'Today' },
-              { id: 'THIS_WEEK', label: '7 Days' },
-              { id: 'THIS_MONTH', label: 'Month' },
-              { id: 'THIS_YEAR', label: 'Year' },
+              { id: 'TODAY', label: t('analytics.today') },
+              { id: 'THIS_WEEK', label: t('analytics.thisWeek') },
+              { id: 'THIS_MONTH', label: t('analytics.thisMonth') },
+              { id: 'THIS_YEAR', label: t('analytics.thisYear') },
             ].map((preset) => (
               <button
                 key={preset.id}
@@ -219,7 +221,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
             onClick={fetchAnalytics}
             disabled={loading}
             className="p-2 rounded-xl bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-600 transition-colors cursor-pointer"
-            title="Refresh Analytics"
+            title={t('common.refresh')}
           >
             <RefreshCw size={14} className={loading ? 'animate-spin text-brand-600' : ''} />
           </button>
@@ -240,7 +242,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
           {/* Gross Revenue */}
           <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Gross Revenue</span>
+              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{t('dashboard.grossRevenue')}</span>
               <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
                 <TrendingUp size={16} />
               </div>
@@ -254,7 +256,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
           {/* Operating Expenses */}
           <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Operating Expenses</span>
+              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{t('dashboard.operationalExpenses')}</span>
               <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
                 <TrendingDown size={16} />
               </div>
@@ -268,7 +270,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
           {/* Net Profit Margin */}
           <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Net Operating Profit</span>
+              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{t('dashboard.netMargin')}</span>
               <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
                 <Percent size={16} />
               </div>
@@ -284,7 +286,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
           {/* Total Orders & AOV */}
           <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Average Order Value</span>
+              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{t('dashboard.todayOrders')}</span>
               <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
                 <ShoppingCart size={16} />
               </div>
@@ -301,12 +303,12 @@ export const AnalyticsDashboardPage: React.FC = () => {
 
       {/* Sales Velocity Trend Area Chart */}
       {loading ? (
-        <ChartSkeleton title="Revenue Velocity Trend" />
+        <ChartSkeleton title={t('analytics.revenueTrend')} />
       ) : (
         <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-zinc-900">Revenue Velocity Trend</h3>
+              <h3 className="text-sm font-bold text-zinc-900">{t('analytics.revenueTrend')}</h3>
               <p className="text-xs text-zinc-500">Daily sales performance trajectory</p>
             </div>
             <span className="text-[10px] font-bold text-brand-700 bg-brand-50 px-2.5 py-1 rounded-full border border-brand-200">
@@ -325,7 +327,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
           <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
             <div className="flex items-center space-x-2">
               <Award className="w-4 h-4 text-brand-600" />
-              <h3 className="text-sm font-bold text-zinc-900">Top Selling Products &amp; Services</h3>
+              <h3 className="text-sm font-bold text-zinc-900">{t('analytics.topProducts')}</h3>
             </div>
             <span className="text-xs text-zinc-400">By Revenue</span>
           </div>

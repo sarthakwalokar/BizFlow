@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { productsApi, Product, ProductType } from '../../api/products';
 import { categoriesApi, Category } from '../../api/categories';
@@ -36,6 +37,7 @@ interface CartItem {
 }
 
 export const POSBillingPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
 
   // Catalog State
@@ -331,7 +333,7 @@ export const POSBillingPage: React.FC = () => {
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Scan barcode, type SKU or product name..."
+                placeholder={t('billing.searchProducts')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-9 pr-8 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
@@ -356,7 +358,7 @@ export const POSBillingPage: React.FC = () => {
                     : 'text-zinc-600 hover:text-zinc-900'
                 }`}
               >
-                All
+                {t('common.all')}
               </button>
               <button
                 onClick={() => setSelectedType('PHYSICAL')}
@@ -367,7 +369,7 @@ export const POSBillingPage: React.FC = () => {
                 }`}
               >
                 <Package size={13} />
-                <span>Goods</span>
+                <span>{t('billing.goods')}</span>
               </button>
               <button
                 onClick={() => setSelectedType('SERVICE')}
@@ -378,7 +380,7 @@ export const POSBillingPage: React.FC = () => {
                 }`}
               >
                 <Scissors size={13} />
-                <span>Services</span>
+                <span>{t('billing.services')}</span>
               </button>
             </div>
           </div>
@@ -393,7 +395,7 @@ export const POSBillingPage: React.FC = () => {
                   : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
               }`}
             >
-              All Items ({products.length})
+              {t('common.all')} ({products.length})
             </button>
             {categories.map((cat) => (
               <button
@@ -418,8 +420,7 @@ export const POSBillingPage: React.FC = () => {
           ) : filteredProducts.length === 0 ? (
             <div className="py-16 text-center text-zinc-500 bg-white rounded-2xl border border-zinc-200 p-8 space-y-2">
               <Package size={36} className="mx-auto text-zinc-300" />
-              <p className="font-bold text-zinc-700">No matching catalog items found</p>
-              <p className="text-xs text-zinc-400">Try adjusting your keyword search or category filter.</p>
+              <p className="font-bold text-zinc-700">{t('products.noProductsFound')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -515,7 +516,7 @@ export const POSBillingPage: React.FC = () => {
         <div className="p-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/60">
           <div className="flex items-center space-x-2">
             <ShoppingCart size={18} className="text-brand-600" />
-            <h3 className="font-bold text-sm text-zinc-900">Billing Cart</h3>
+            <h3 className="font-bold text-sm text-zinc-900">{t('billing.cart')}</h3>
             <span className="px-2 py-0.5 rounded-full bg-brand-100 text-brand-800 text-[10px] font-bold">
               {cart.reduce((a, b) => a + b.quantity, 0)} items
             </span>
@@ -527,7 +528,7 @@ export const POSBillingPage: React.FC = () => {
               className="text-xs font-semibold text-rose-600 hover:text-rose-700 flex items-center space-x-1 cursor-pointer"
             >
               <RotateCcw size={12} />
-              <span>Clear</span>
+              <span>{t('billing.clearCart')}</span>
             </button>
           )}
         </div>
@@ -563,7 +564,7 @@ export const POSBillingPage: React.FC = () => {
                   <Search size={14} className="absolute left-3 top-2.5 text-zinc-400" />
                   <input
                     type="text"
-                    placeholder="Attach Customer (Phone / Name)..."
+                    placeholder={t('billing.customerInfo')}
                     value={customerSearch}
                     onChange={(e) => setCustomerSearch(e.target.value)}
                     className="w-full pl-8 pr-3 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
@@ -576,7 +577,7 @@ export const POSBillingPage: React.FC = () => {
                   title="New Customer"
                 >
                   <UserPlus size={14} />
-                  <span>New</span>
+                  <span>{t('billing.addCustomer')}</span>
                 </button>
               </div>
 
@@ -598,7 +599,7 @@ export const POSBillingPage: React.FC = () => {
                         <div className="text-xs font-bold text-zinc-900">{c.name}</div>
                         <div className="text-[10px] text-zinc-500">{c.phone || c.email}</div>
                       </div>
-                      <span className="text-[10px] text-brand-600 font-semibold">Select</span>
+                      <span className="text-[10px] text-brand-600 font-semibold">{t('common.view')}</span>
                     </button>
                   ))}
                 </div>
@@ -626,8 +627,7 @@ export const POSBillingPage: React.FC = () => {
           {cart.length === 0 ? (
             <div className="py-12 text-center text-zinc-400 space-y-2">
               <ShoppingCart size={32} className="mx-auto text-zinc-300" />
-              <p className="text-xs font-medium">Cart is currently empty</p>
-              <p className="text-[10px] text-zinc-400">Click products on the left to add items</p>
+              <p className="text-xs font-medium">{t('billing.emptyCart')}</p>
             </div>
           ) : (
             cart.map((item) => (
@@ -682,7 +682,7 @@ export const POSBillingPage: React.FC = () => {
           {/* Subtotal, Discount & Tax */}
           <div className="space-y-1.5 text-xs">
             <div className="flex items-center justify-between text-zinc-600">
-              <span>Subtotal</span>
+              <span>{t('billing.subtotal')}</span>
               <span className="font-bold text-zinc-900">
                 {formatCurrency(subtotal, currency)}
               </span>
@@ -691,7 +691,7 @@ export const POSBillingPage: React.FC = () => {
             {/* Discount row */}
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center space-x-1 text-zinc-600">
-                <span>Discount</span>
+                <span>{t('billing.discount')}</span>
                 <button
                   onClick={() => setIsPercentageDiscount(!isPercentageDiscount)}
                   className="px-1.5 py-0.5 rounded bg-zinc-200 text-[10px] font-bold hover:bg-zinc-300 cursor-pointer"
@@ -731,7 +731,7 @@ export const POSBillingPage: React.FC = () => {
 
             {/* Grand Total */}
             <div className="pt-2 border-t border-zinc-200 flex items-center justify-between">
-              <span className="font-bold text-zinc-900 text-sm">Grand Total</span>
+              <span className="font-bold text-zinc-900 text-sm">{t('billing.totalPayable')}</span>
               <span className="font-black text-zinc-950 text-xl">
                 {formatCurrency(grandTotal, currency)}
               </span>
@@ -741,13 +741,13 @@ export const POSBillingPage: React.FC = () => {
           {/* Payment Method Selector Pills */}
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">
-              Payment Method
+              {t('billing.paymentMethod')}
             </label>
             <div className="grid grid-cols-5 gap-1.5">
               {[
-                { id: 'UPI', label: 'UPI / QR', icon: QrCode },
-                { id: 'CASH', label: 'Cash', icon: Coins },
-                { id: 'CARD', label: 'Card', icon: CreditCard },
+                { id: 'UPI', label: t('billing.upi'), icon: QrCode },
+                { id: 'CASH', label: t('billing.cash'), icon: Coins },
+                { id: 'CARD', label: t('billing.card'), icon: CreditCard },
                 { id: 'CREDIT', label: 'Credit', icon: Wallet },
                 { id: 'OTHER', label: 'Other', icon: Banknote },
               ].map((m) => {

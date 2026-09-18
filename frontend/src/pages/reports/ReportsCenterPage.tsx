@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { reportsApi, ReportType, ReportDataResponse } from '../../api/reports';
 import { inventoryApi, Location } from '../../api/inventory';
@@ -25,6 +26,7 @@ import {
 } from 'lucide-react';
 
 export const ReportsCenterPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const currency = business?.currency || 'USD';
 
@@ -152,13 +154,13 @@ export const ReportsCenterPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Reports & Statements</h1>
+            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('reports.title')}</h1>
             <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium border border-brand-200">
               Audit Ready
             </span>
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Audit-ready financial, sales, inventory, and ledger statements with instant PDF and Excel exports.
+            {t('reports.subtitle')}
           </p>
         </div>
 
@@ -174,7 +176,7 @@ export const ReportsCenterPage: React.FC = () => {
             ) : (
               <>
                 <Download size={14} className="text-zinc-500" />
-                <span>Export PDF</span>
+                <span>{t('reports.exportPdf')}</span>
               </>
             )}
           </button>
@@ -189,7 +191,7 @@ export const ReportsCenterPage: React.FC = () => {
             ) : (
               <>
                 <FileSpreadsheet size={14} />
-                <span>Export Excel (.xlsx)</span>
+                <span>{t('reports.exportCsv')}</span>
               </>
             )}
           </button>

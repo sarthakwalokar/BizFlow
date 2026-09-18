@@ -28,7 +28,24 @@
     "active": "启用",
     "inactive": "停用",
     "total": "总计",
-    "date": "日期"
+    "date": "日期",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "discount": "Discount",
+    "notes": "Notes",
+    "description": "Description",
+    "confirm": "Confirm",
+    "discard": "Discard",
+    "continue": "Continue",
+    "processing": "Processing...",
+    "submit": "Submit",
+    "type": "Type",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "selectOption": "Select an option",
+    "notFound": "No data found"
   },
   "nav": {
     "overview": "概览",
@@ -51,7 +68,8 @@
     "profile": "个人资料",
     "logout": "退出登录",
     "language": "语言设置",
-    "admin": "管理后台"
+    "admin": "管理后台",
+    "staff": "Staff Management"
   },
   "auth": {
     "login": "登录",
@@ -80,7 +98,8 @@
     "dontHaveAccount": "还没有账户？",
     "signIn": "立即登录",
     "createAccount": "创建企业账户",
-    "registering": "注册中..."
+    "registering": "注册中...",
+    "loggingIn": "Signing in..."
   },
   "dashboard": {
     "title": "企业仪表盘",
@@ -96,7 +115,18 @@
     "recentOrders": "近期账单",
     "topSelling": "热销商品",
     "viewAll": "查看全部",
-    "noRecentOrders": "今日暂无订单记录。"
+    "noRecentOrders": "今日暂无订单记录。",
+    "todayExpenses": "Today's Expenses",
+    "netMargin": "Net Margin",
+    "grossRevenue": "Gross Revenue",
+    "operationalExpenses": "Operational Expenses",
+    "fastTrack": "Fast-Track Operations",
+    "businessSnapshot": "Business Snapshot",
+    "ownerProfile": "Owner Profile",
+    "businessTier": "Business Tier",
+    "storeCatalog": "Store Catalog",
+    "customerDirectory": "Customer Directory",
+    "financialHealth": "Financial Health"
   },
   "billing": {
     "title": "POS 智能收银台",
@@ -117,7 +147,16 @@
     "split": "组合支付",
     "completeOrder": "完成并生成小票",
     "printReceipt": "打印收据",
-    "orderSuccess": "订单结算成功！"
+    "orderSuccess": "订单结算成功！",
+    "subtitle": "Fast checkout, customer management, and instant bill generation.",
+    "goods": "Goods",
+    "services": "Services",
+    "tenderAmount": "Cash Tendered",
+    "changeDue": "Change Due",
+    "addCustomer": "Add Customer",
+    "discountType": "Discount Type",
+    "billDetails": "Invoice Details",
+    "clearCart": "Clear Cart"
   },
   "products": {
     "title": "产品与服务",
@@ -132,7 +171,18 @@
     "stock": "当前库存",
     "category": "所属分类",
     "trackStock": "启用库存追踪",
-    "lowStockThreshold": "低库存预警阈值"
+    "lowStockThreshold": "低库存预警阈值",
+    "deleteProduct": "Delete Item",
+    "description": "Description",
+    "physicalGoods": "Physical Goods",
+    "serviceItem": "Service / Labor",
+    "status": "Item Status",
+    "active": "Active",
+    "inactive": "Archived",
+    "noProductsFound": "No catalog items found.",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "itemType": "Item Type",
+    "sellingPrice": "Selling Price"
   },
   "inventory": {
     "title": "库存管理中心",
@@ -141,7 +191,18 @@
     "reorderLevel": "补货阈值",
     "stockAdjustment": "库存调账",
     "lowStockWarning": "告警低库存商品",
-    "outOfStock": "已售罄"
+    "outOfStock": "已售罄",
+    "itemsTracked": "Tracked Items",
+    "stockValue": "Total Stock Value",
+    "addStock": "Receive Stock",
+    "adjustQuantity": "Quantity Adjustment",
+    "reason": "Adjustment Reason",
+    "purchaseOrder": "Purchase Order",
+    "supplier": "Supplier",
+    "unitCost": "Unit Cost",
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "outStock": "Out of Stock"
   },
   "expenses": {
     "title": "支出与成本追踪",
@@ -151,7 +212,14 @@
     "amount": "金额",
     "paymentDate": "付款日期",
     "vendor": "收款方 / 供应商",
-    "description": "备注说明"
+    "description": "备注说明",
+    "editExpense": "Edit Expense",
+    "deleteExpense": "Delete Expense",
+    "paymentMode": "Payment Mode",
+    "totalExpenses": "Total Expenses",
+    "monthlyExpenses": "This Month's Expenses",
+    "expenseBreakdown": "Expense Category Breakdown",
+    "noExpensesFound": "No expenses recorded."
   },
   "customers": {
     "title": "客户名册",
@@ -159,7 +227,14 @@
     "addCustomer": "添加客户",
     "customerName": "客户姓名",
     "totalSpent": "累计消费金额",
-    "totalOrders": "累计下单次数"
+    "totalOrders": "累计下单次数",
+    "editCustomer": "Edit Customer",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "address": "Billing Address",
+    "loyaltyPoints": "Loyalty Points",
+    "lastVisit": "Last Purchase",
+    "noCustomersFound": "No customers found."
   },
   "analytics": {
     "title": "数据分析与报表",
@@ -171,7 +246,11 @@
     "today": "今日",
     "thisWeek": "本周",
     "thisMonth": "本月",
-    "thisYear": "本年"
+    "thisYear": "本年",
+    "topProducts": "Top Performing Products",
+    "categoryPerformance": "Sales by Category",
+    "hourlySales": "Hourly Sales Velocity",
+    "metrics": "Key Performance Indicators"
   },
   "reviews": {
     "title": "评价增长与反馈",
@@ -181,7 +260,12 @@
     "feedback": "就餐/购物体验",
     "aiSuggestions": "AI 评价建议",
     "copyReview": "复制文案",
-    "submitReview": "提交反馈"
+    "submitReview": "提交反馈",
+    "totalReviews": "Total Feedbacks Received",
+    "averageRating": "Average Rating",
+    "qrCodeTitle": "Customer QR Stand",
+    "qrCodeDesc": "Place this QR code on tables or billing counters to gather instant Google reviews.",
+    "shareLink": "Share Feedback URL"
   },
   "ai": {
     "title": "BizFlow AI 商业顾问",
@@ -190,7 +274,11 @@
     "send": "咨询 AI",
     "thinking": "正在分析企业数据库...",
     "activeProvider": "BizFlow AI 引擎运行中",
-    "setupRequired": "需配置 AI 密钥"
+    "setupRequired": "需配置 AI 密钥",
+    "suggestedQuestions": "Suggested Questions",
+    "clearChat": "Clear Conversation",
+    "copyResponse": "Copy Response",
+    "helpfulInsights": "Real-time AI Business Intelligence"
   },
   "settings": {
     "title": "系统设置与偏好",
@@ -201,6 +289,65 @@
     "languageTitle": "首选语言设置",
     "languageDesc": "选择您在 BizFlow 中的默认语言。",
     "saveChanges": "保存设置",
-    "savedSuccess": "偏好设置已成功保存！"
+    "savedSuccess": "偏好设置已成功保存！",
+    "businessName": "Business Name",
+    "businessType": "Business Type",
+    "currency": "Store Currency",
+    "timezone": "Time Zone",
+    "taxRate": "Tax Percentage (%)",
+    "taxName": "Tax Label (e.g. GST, VAT)",
+    "taxInclusive": "Prices are Tax-Inclusive",
+    "enterpriseMode": "Full Inventory Mode"
+  },
+  "categories": {
+    "title": "Categories",
+    "subtitle": "Organize your products and services into structured departments.",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "deleteCategory": "Delete Category",
+    "categoryName": "Category Name",
+    "description": "Description",
+    "itemCount": "Items",
+    "noCategoriesFound": "No categories found."
+  },
+  "orders": {
+    "title": "Invoices & Orders",
+    "subtitle": "Browse historical orders, reprint invoices, and review payment settlements.",
+    "invoiceNumber": "Invoice #",
+    "orderDate": "Date & Time",
+    "customer": "Customer",
+    "totalAmount": "Total Amount",
+    "paymentStatus": "Status",
+    "paymentMethod": "Payment Method",
+    "itemsCount": "Items",
+    "viewInvoice": "View Receipt",
+    "downloadReceipt": "Download PDF",
+    "noOrdersFound": "No past invoices found."
+  },
+  "reports": {
+    "title": "Reports Center",
+    "subtitle": "Generate and export financial, inventory, tax, and sales performance reports.",
+    "salesReport": "Sales & Revenue Report",
+    "expenseReport": "Expense & Overhead Report",
+    "profitLossReport": "Profit & Loss Summary",
+    "taxReport": "Tax Collection Report (GST)",
+    "inventoryReport": "Inventory Valuation Report",
+    "generateReport": "Generate Report",
+    "dateRange": "Select Date Range",
+    "exportCsv": "Export to CSV",
+    "exportPdf": "Export to PDF"
+  },
+  "staff": {
+    "title": "Staff & Team Management",
+    "subtitle": "Invite cashiers, managers, and manage system role permissions.",
+    "addStaff": "Add Team Member",
+    "editStaff": "Edit Member",
+    "staffName": "Full Name",
+    "role": "Assigned Role",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "permissions": "Permissions",
+    "activeStaff": "Active Members",
+    "inviteStaff": "Invite Staff"
   }
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { productsApi } from '../../api/products';
 import { businessApi } from '../../api/business';
@@ -27,6 +28,7 @@ import {
 
 export const DashboardHomePage: React.FC = () => {
   const { user, business } = useAuth();
+  const { t } = useTranslation();
   const [productCount, setProductCount] = useState<number>(0);
   const [activeProductCount, setActiveProductCount] = useState<number>(0);
   const [staffCount, setStaffCount] = useState<number>(0);
@@ -41,9 +43,9 @@ export const DashboardHomePage: React.FC = () => {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return t('dashboard.greetingMorning', 'Good morning');
+    if (hour < 17) return t('dashboard.greetingAfternoon', 'Good afternoon');
+    return t('dashboard.greetingEvening', 'Good evening');
   };
 
   useEffect(() => {
@@ -110,7 +112,7 @@ export const DashboardHomePage: React.FC = () => {
             {getGreeting()}, {user?.fullName || 'Business Owner'}
           </h1>
           <p className="text-xs sm:text-sm text-zinc-500 mt-0.5">
-            Here's what's happening with your business today.
+            {t('dashboard.subtitle', "Here's what's happening with your business today.")}
           </p>
         </div>
 
@@ -120,7 +122,7 @@ export const DashboardHomePage: React.FC = () => {
             className="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center space-x-2 cursor-pointer"
           >
             <Receipt size={15} />
-            <span>Launch POS Billing</span>
+            <span>{t('dashboard.launchPos', 'Launch POS Billing')}</span>
           </Link>
 
           <Link
@@ -128,7 +130,7 @@ export const DashboardHomePage: React.FC = () => {
             className="px-4 py-2.5 rounded-xl bg-white hover:bg-zinc-50 text-zinc-700 text-xs font-bold border border-zinc-200 shadow-xs transition-colors flex items-center space-x-1.5 cursor-pointer"
           >
             <BarChart3 size={15} />
-            <span>Analytics</span>
+            <span>{t('dashboard.analytics', 'Analytics')}</span>
           </Link>
         </div>
       </div>
@@ -142,7 +144,7 @@ export const DashboardHomePage: React.FC = () => {
             {/* 1. Today's Sales */}
             <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Today's Sales</span>
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">{t('dashboard.todaySales', "Today's Sales")}</span>
                 <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
                   <TrendingUp size={16} />
                 </div>
@@ -152,10 +154,10 @@ export const DashboardHomePage: React.FC = () => {
               </div>
               <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
                 <span className="text-zinc-500 font-medium">
-                  {`${todayOrders} bills recorded`}
+                  {`${todayOrders} ${t('dashboard.billsRecorded', 'bills recorded')}`}
                 </span>
                 <Link to="/dashboard/bills" className="text-brand-600 font-semibold hover:underline text-[11px]">
-                  Invoices →
+                  {t('dashboard.invoices', 'Invoices')} →
                 </Link>
               </div>
             </div>
@@ -163,7 +165,7 @@ export const DashboardHomePage: React.FC = () => {
             {/* 2. Today's Orders */}
             <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Orders</span>
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">{t('dashboard.orders', 'Orders')}</span>
                 <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
                   <ShoppingBag size={16} />
                 </div>
@@ -172,7 +174,7 @@ export const DashboardHomePage: React.FC = () => {
                 {todayOrders}
               </div>
               <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
-                <span className="text-zinc-500 font-medium">Counter transactions</span>
+                <span className="text-zinc-500 font-medium">{t('dashboard.counterTransactions', 'Counter transactions')}</span>
                 <span className="text-[11px] font-semibold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md">
                   POS Ready
                 </span>
@@ -182,7 +184,7 @@ export const DashboardHomePage: React.FC = () => {
             {/* 3. Expenses */}
             <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Expenses</span>
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">{t('dashboard.expenses', 'Expenses')}</span>
                 <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
                   <TrendingDown size={16} />
                 </div>
@@ -191,9 +193,9 @@ export const DashboardHomePage: React.FC = () => {
                 {formatCurrency(todayExpenses, currency)}
               </div>
               <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
-                <span className="text-zinc-500 font-medium">Daily logged overhead</span>
+                <span className="text-zinc-500 font-medium">{t('dashboard.dailyLoggedOverhead', 'Daily logged overhead')}</span>
                 <Link to="/dashboard/expenses" className="text-rose-600 font-semibold hover:underline text-[11px]">
-                  Manage →
+                  {t('dashboard.manage', 'Manage')} →
                 </Link>
               </div>
             </div>
@@ -201,7 +203,7 @@ export const DashboardHomePage: React.FC = () => {
             {/* 4. Review Rating */}
             <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Review Rating</span>
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">{t('dashboard.reviewRating', 'Review Rating')}</span>
                 <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
                   <Star size={16} className="fill-amber-500 text-amber-500" />
                 </div>
@@ -211,9 +213,9 @@ export const DashboardHomePage: React.FC = () => {
                 <Star className="w-5 h-5 fill-amber-500 text-amber-500 inline" />
               </div>
               <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-100">
-                <span className="text-zinc-500 font-medium">{totalReviews} verified reviews</span>
+                <span className="text-zinc-500 font-medium">{totalReviews} {t('dashboard.verifiedReviews', 'verified reviews')}</span>
                 <Link to="/dashboard/reviews" className="text-amber-700 font-semibold hover:underline text-[11px]">
-                  QR Boost →
+                  {t('dashboard.qrBoost', 'QR Boost')} →
                 </Link>
               </div>
             </div>
@@ -247,11 +249,11 @@ export const DashboardHomePage: React.FC = () => {
             {/* Today's Financial Overview */}
             <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Today's Net Margin</span>
+                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{t('dashboard.todayNetMargin', "Today's Net Margin")}</span>
                 <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
                   todayNet >= 0 ? 'bg-brand-50 text-brand-700 border-brand-200' : 'bg-rose-50 text-rose-700 border-rose-200'
                 }`}>
-                  {todayNet >= 0 ? '+ Net Profit' : '- Net Deficit'}
+                  {todayNet >= 0 ? t('dashboard.netProfit', '+ Net Profit') : t('dashboard.netDeficit', '- Net Deficit')}
                 </span>
               </div>
 
@@ -263,7 +265,7 @@ export const DashboardHomePage: React.FC = () => {
                 <div>
                   <span className="text-[11px] font-semibold text-brand-600 flex items-center gap-1">
                     <TrendingUp size={13} />
-                    <span>Revenue Today</span>
+                    <span>{t('dashboard.revenueToday', 'Revenue Today')}</span>
                   </span>
                   <div className="text-base font-extrabold text-zinc-900 mt-0.5">
                     {formatCurrency(todaySales, currency)}
@@ -272,7 +274,7 @@ export const DashboardHomePage: React.FC = () => {
                 <div>
                   <span className="text-[11px] font-semibold text-rose-600 flex items-center gap-1">
                     <TrendingDown size={13} />
-                    <span>Expenses Today</span>
+                    <span>{t('dashboard.expensesToday', 'Expenses Today')}</span>
                   </span>
                   <div className="text-base font-extrabold text-zinc-900 mt-0.5">
                     {formatCurrency(todayExpenses, currency)}
@@ -284,11 +286,11 @@ export const DashboardHomePage: React.FC = () => {
             {/* This Month's Financial Overview */}
             <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-3.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">This Month's Net Balance</span>
+                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{t('dashboard.monthNetMargin', "This Month's Net Balance")}</span>
                 <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
                   monthNet >= 0 ? 'bg-brand-50 text-brand-700 border-brand-200' : 'bg-rose-50 text-rose-700 border-rose-200'
                 }`}>
-                  {monthNet >= 0 ? '+ Monthly Profit' : '- Monthly Deficit'}
+                  {monthNet >= 0 ? t('dashboard.monthlyProfit', '+ Monthly Profit') : t('dashboard.monthlyDeficit', '- Monthly Deficit')}
                 </span>
               </div>
 
@@ -300,7 +302,7 @@ export const DashboardHomePage: React.FC = () => {
                 <div>
                   <span className="text-[11px] font-semibold text-brand-600 flex items-center gap-1">
                     <TrendingUp size={13} />
-                    <span>Month's Revenue</span>
+                    <span>{t('dashboard.monthRevenue', "Month's Revenue")}</span>
                   </span>
                   <div className="text-base font-extrabold text-zinc-900 mt-0.5">
                     {formatCurrency(monthSales, currency)}
@@ -309,7 +311,7 @@ export const DashboardHomePage: React.FC = () => {
                 <div>
                   <span className="text-[11px] font-semibold text-rose-600 flex items-center gap-1">
                     <TrendingDown size={13} />
-                    <span>Month's Expenses</span>
+                    <span>{t('dashboard.monthExpenses', "Month's Expenses")}</span>
                   </span>
                   <div className="text-base font-extrabold text-zinc-900 mt-0.5">
                     {formatCurrency(monthExpenses, currency)}
@@ -333,7 +335,7 @@ export const DashboardHomePage: React.FC = () => {
                   : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
               }`}
             >
-              Recent Invoices ({summary?.recentOrders.length ?? 0})
+              {t('dashboard.recentInvoices', 'Recent Invoices')} ({summary?.recentOrders.length ?? 0})
             </button>
             <button
               onClick={() => setActiveFeedTab('EXPENSES')}
@@ -343,7 +345,7 @@ export const DashboardHomePage: React.FC = () => {
                   : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
               }`}
             >
-              Recent Expenses ({expenseSummary?.recentExpenses.length ?? 0})
+              {t('dashboard.recentExpenses', 'Recent Expenses')} ({expenseSummary?.recentExpenses.length ?? 0})
             </button>
           </div>
 
@@ -351,7 +353,7 @@ export const DashboardHomePage: React.FC = () => {
             to={activeFeedTab === 'INVOICES' ? '/dashboard/bills' : '/dashboard/expenses'}
             className="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 self-start sm:self-auto"
           >
-            <span>{activeFeedTab === 'INVOICES' ? 'View All Invoices' : 'View All Expenses'}</span>
+            <span>{activeFeedTab === 'INVOICES' ? t('dashboard.viewAllInvoices', 'View All Invoices') : t('dashboard.viewAllExpenses', 'View All Expenses')}</span>
             <ArrowUpRight size={14} />
           </Link>
         </div>
@@ -362,13 +364,13 @@ export const DashboardHomePage: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider border-b border-zinc-100">
-                  <th className="pb-2.5">Invoice</th>
-                  <th className="pb-2.5">Customer</th>
-                  <th className="pb-2.5">Billed By</th>
-                  <th className="pb-2.5">Method</th>
-                  <th className="pb-2.5">Amount</th>
-                  <th className="pb-2.5">Status</th>
-                  <th className="pb-2.5 text-right">Action</th>
+                  <th className="pb-2.5">{t('dashboard.invoice', 'Invoice')}</th>
+                  <th className="pb-2.5">{t('dashboard.customer', 'Customer')}</th>
+                  <th className="pb-2.5">{t('dashboard.billedBy', 'Billed By')}</th>
+                  <th className="pb-2.5">{t('dashboard.method', 'Method')}</th>
+                  <th className="pb-2.5">{t('dashboard.amount', 'Amount')}</th>
+                  <th className="pb-2.5">{t('dashboard.status', 'Status')}</th>
+                  <th className="pb-2.5 text-right">{t('dashboard.action', 'Action')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 text-xs">
@@ -388,9 +390,9 @@ export const DashboardHomePage: React.FC = () => {
                   <tr>
                     <td colSpan={7} className="py-8 text-center text-zinc-500 space-y-1">
                       <Receipt size={28} className="mx-auto text-zinc-300" />
-                      <p className="font-bold text-zinc-700">No transactions recorded yet</p>
+                      <p className="font-bold text-zinc-700">{t('dashboard.noTransactions', 'No transactions recorded yet')}</p>
                       <p className="text-[11px] text-zinc-400">
-                        Open the POS Terminal to create your first customer bill.
+                        {t('dashboard.openPosHint', 'Open the POS Terminal to create your first customer bill.')}
                       </p>
                     </td>
                   </tr>
@@ -412,7 +414,7 @@ export const DashboardHomePage: React.FC = () => {
 
                         <td className="py-2.5">
                           <span className="font-semibold text-zinc-800">
-                            {order.customer ? order.customer.name : 'Walk-in'}
+                            {order.customer ? order.customer.name : t('pos.walkIn', 'Walk-in')}
                           </span>
                         </td>
 
@@ -441,17 +443,17 @@ export const DashboardHomePage: React.FC = () => {
                             {order.paymentStatus === 'COMPLETED' ? (
                               <>
                                 <CheckCircle2 size={11} className="text-brand-600" />
-                                <span>Paid</span>
+                                <span>{t('common.paid', 'Paid')}</span>
                               </>
                             ) : order.paymentStatus === 'CANCELLED' ? (
                               <>
                                 <XCircle size={11} className="text-rose-600" />
-                                <span>Cancelled</span>
+                                <span>{t('common.cancelled', 'Cancelled')}</span>
                               </>
                             ) : (
                               <>
                                 <Clock size={11} className="text-amber-600" />
-                                <span>Pending</span>
+                                <span>{t('common.pending', 'Pending')}</span>
                               </>
                             )}
                           </span>
@@ -461,7 +463,7 @@ export const DashboardHomePage: React.FC = () => {
                           <button
                             onClick={() => setSelectedOrderForReceipt(order)}
                             className="p-1 rounded-lg text-zinc-400 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
-                            title="View Invoice Receipt"
+                            title={t('pos.viewReceipt', 'View Invoice Receipt')}
                           >
                             <Eye size={15} />
                           </button>
@@ -481,12 +483,12 @@ export const DashboardHomePage: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider border-b border-zinc-100">
-                  <th className="pb-2.5">Date</th>
-                  <th className="pb-2.5">Category</th>
-                  <th className="pb-2.5">Description</th>
-                  <th className="pb-2.5">Method</th>
-                  <th className="pb-2.5">Logged By</th>
-                  <th className="pb-2.5 text-right">Amount</th>
+                  <th className="pb-2.5">{t('common.date', 'Date')}</th>
+                  <th className="pb-2.5">{t('expenses.category', 'Category')}</th>
+                  <th className="pb-2.5">{t('expenses.description', 'Description')}</th>
+                  <th className="pb-2.5">{t('expenses.method', 'Method')}</th>
+                  <th className="pb-2.5">{t('expenses.loggedBy', 'Logged By')}</th>
+                  <th className="pb-2.5 text-right">{t('expenses.amount', 'Amount')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 text-xs">
@@ -505,9 +507,9 @@ export const DashboardHomePage: React.FC = () => {
                   <tr>
                     <td colSpan={6} className="py-8 text-center text-zinc-500 space-y-1">
                       <Receipt size={28} className="mx-auto text-zinc-300" />
-                      <p className="font-bold text-zinc-700">No recent expenses logged</p>
+                      <p className="font-bold text-zinc-700">{t('expenses.noExpenses', 'No recent expenses logged')}</p>
                       <p className="text-[11px] text-zinc-400">
-                        Record your business overheads to keep track of spending.
+                        {t('expenses.recordPrompt', 'Record your business overheads to keep track of spending.')}
                       </p>
                     </td>
                   </tr>
@@ -548,8 +550,8 @@ export const DashboardHomePage: React.FC = () => {
         {/* Quick Fast Actions */}
         <div className="lg:col-span-2 p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-4">
           <div>
-            <h3 className="text-sm font-bold text-zinc-900">Fast Track Operations</h3>
-            <p className="text-xs text-zinc-500">Shortcuts to daily business routines</p>
+            <h3 className="text-sm font-bold text-zinc-900">{t('dashboard.fastTrackOps', 'Fast Track Operations')}</h3>
+            <p className="text-xs text-zinc-500">{t('dashboard.shortcutsHint', 'Shortcuts to daily business routines')}</p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2.5">
@@ -560,8 +562,8 @@ export const DashboardHomePage: React.FC = () => {
               <div className="w-9 h-9 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold mb-1.5 shadow-xs">
                 <Receipt size={18} />
               </div>
-              <span className="text-xs font-bold text-zinc-900">POS Terminal</span>
-              <span className="text-[10px] text-brand-700">Quick Billing</span>
+              <span className="text-xs font-bold text-zinc-900">{t('pos.title', 'POS Terminal')}</span>
+              <span className="text-[10px] text-brand-700">{t('pos.quickBilling', 'Quick Billing')}</span>
             </Link>
 
             <Link
@@ -571,8 +573,8 @@ export const DashboardHomePage: React.FC = () => {
               <div className="w-9 h-9 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center font-bold mb-1.5">
                 <TrendingDown size={18} />
               </div>
-              <span className="text-xs font-bold text-zinc-900">Expenses</span>
-              <span className="text-[10px] text-zinc-500">Log Outflows</span>
+              <span className="text-xs font-bold text-zinc-900">{t('expenses.title', 'Expenses')}</span>
+              <span className="text-[10px] text-zinc-500">{t('expenses.logOutflows', 'Log Outflows')}</span>
             </Link>
 
             <Link
@@ -582,8 +584,8 @@ export const DashboardHomePage: React.FC = () => {
               <div className="w-9 h-9 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold mb-1.5">
                 <Users size={18} />
               </div>
-              <span className="text-xs font-bold text-zinc-900">Clients CRM</span>
-              <span className="text-[10px] text-zinc-500">Ledger History</span>
+              <span className="text-xs font-bold text-zinc-900">{t('customers.title', 'Clients CRM')}</span>
+              <span className="text-[10px] text-zinc-500">{t('customers.ledgerHistory', 'Ledger History')}</span>
             </Link>
 
             <Link
@@ -593,8 +595,8 @@ export const DashboardHomePage: React.FC = () => {
               <div className="w-9 h-9 rounded-lg bg-flow-100 text-flow-700 flex items-center justify-center font-bold mb-1.5">
                 <Package size={18} />
               </div>
-              <span className="text-xs font-bold text-zinc-900">Catalog</span>
-              <span className="text-[10px] text-zinc-500">{activeProductCount}/{productCount} Items</span>
+              <span className="text-xs font-bold text-zinc-900">{t('products.title', 'Catalog')}</span>
+              <span className="text-[10px] text-zinc-500">{activeProductCount}/{productCount} {t('products.items', 'Items')}</span>
             </Link>
 
             {isOwner && (
@@ -605,8 +607,8 @@ export const DashboardHomePage: React.FC = () => {
                 <div className="w-9 h-9 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold mb-1.5">
                   <Users size={18} />
                 </div>
-                <span className="text-xs font-bold text-zinc-900">Staff Team</span>
-                <span className="text-[10px] text-zinc-500">{staffCount} Members</span>
+                <span className="text-xs font-bold text-zinc-900">{t('nav.staff', 'Staff Team')}</span>
+                <span className="text-[10px] text-zinc-500">{staffCount} {t('common.members', 'Members')}</span>
               </Link>
             )}
           </div>
@@ -616,36 +618,36 @@ export const DashboardHomePage: React.FC = () => {
         <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-zinc-900">Business Details</h3>
+              <h3 className="text-sm font-bold text-zinc-900">{t('dashboard.businessDetails', 'Business Details')}</h3>
               {isOwner && (
                 <Link
                   to="/dashboard/settings"
                   className="text-xs font-bold text-brand-600 hover:underline"
                 >
-                  Settings
+                  {t('nav.settings', 'Settings')}
                 </Link>
               )}
             </div>
 
             <div className="space-y-2.5 text-xs">
               <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-100">
-                <span className="text-zinc-400 text-[10px] block font-medium">Business Name</span>
+                <span className="text-zinc-400 text-[10px] block font-medium">{t('auth.businessName', 'Business Name')}</span>
                 <span className="text-zinc-900 font-bold text-sm">{business?.name}</span>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-100">
-                  <span className="text-zinc-400 text-[10px] block font-medium">Vertical Type</span>
+                  <span className="text-zinc-400 text-[10px] block font-medium">{t('dashboard.verticalType', 'Vertical Type')}</span>
                   <span className="text-zinc-900 font-semibold">{business?.businessType}</span>
                 </div>
                 <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-100">
-                  <span className="text-zinc-400 text-[10px] block font-medium">Currency</span>
+                  <span className="text-zinc-400 text-[10px] block font-medium">{t('common.currency', 'Currency')}</span>
                   <span className="text-zinc-900 font-bold">{business?.currency || 'USD'}</span>
                 </div>
               </div>
 
               <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-100 space-y-0.5">
-                <span className="text-zinc-400 text-[10px] block font-medium">Tax Configuration</span>
+                <span className="text-zinc-400 text-[10px] block font-medium">{t('settings.taxConfig', 'Tax Configuration')}</span>
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-900 font-semibold">
                     {business?.taxName || 'GST'}: {business?.taxRate || 0}%
@@ -657,7 +659,7 @@ export const DashboardHomePage: React.FC = () => {
                         : 'bg-zinc-200 text-zinc-700'
                     }`}
                   >
-                    {business?.taxInclusive ? 'Inclusive' : 'Exclusive'}
+                    {business?.taxInclusive ? t('settings.inclusive', 'Inclusive') : t('settings.exclusive', 'Exclusive')}
                   </span>
                 </div>
                 {business?.taxNumber && (

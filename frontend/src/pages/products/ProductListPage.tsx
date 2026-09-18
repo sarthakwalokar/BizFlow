@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { productsApi, Product, ProductRequest, ProductType } from '../../api/products';
 import { categoriesApi, Category } from '../../api/categories';
@@ -17,6 +18,7 @@ import { formatCurrency, getCurrencySymbol } from '../../utils/currency';
 import { TableSkeleton, ButtonSpinner } from '../../components/common/LoadingStates';
 
 export const ProductListPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -220,9 +222,9 @@ export const ProductListPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">Products &amp; Services</h1>
+          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">{t('products.title')}</h1>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Manage your retail goods, professional services, inventory alerts, and pricing.
+            {t('products.subtitle')}
           </p>
         </div>
 
@@ -231,7 +233,7 @@ export const ProductListPage: React.FC = () => {
           className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
         >
           <Plus size={16} />
-          <span>Add Item</span>
+          <span>{t('products.addProduct')}</span>
         </button>
       </div>
 
@@ -267,7 +269,7 @@ export const ProductListPage: React.FC = () => {
             <Search size={15} className="absolute left-3.5 top-3 text-zinc-400" />
             <input
               type="text"
-              placeholder="Search by name, barcode or SKU..."
+              placeholder={t('common.search')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
@@ -281,9 +283,9 @@ export const ProductListPage: React.FC = () => {
               onChange={(e) => setSelectedType(e.target.value as any)}
               className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-brand-600"
             >
-              <option value="ALL">All Types</option>
-              <option value="PHYSICAL">Goods (Physical)</option>
-              <option value="SERVICE">Services</option>
+              <option value="ALL">{t('common.all')} {t('products.itemType')}</option>
+              <option value="PHYSICAL">{t('products.physicalGoods')}</option>
+              <option value="SERVICE">{t('products.serviceItem')}</option>
             </select>
 
             {/* Category Filter */}
@@ -292,7 +294,7 @@ export const ProductListPage: React.FC = () => {
               onChange={(e) => setSelectedCategoryId(e.target.value)}
               className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-brand-600"
             >
-              <option value="ALL">All Categories</option>
+              <option value="ALL">{t('common.all')} {t('categories.title')}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -306,16 +308,16 @@ export const ProductListPage: React.FC = () => {
               onChange={(e) => setSelectedActive(e.target.value)}
               className="px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:outline-none focus:border-brand-600"
             >
-              <option value="ALL">All Status</option>
-              <option value="ACTIVE">Active Only</option>
-              <option value="INACTIVE">Archived</option>
+              <option value="ALL">{t('common.all')} {t('common.status')}</option>
+              <option value="ACTIVE">{t('common.active')}</option>
+              <option value="INACTIVE">{t('common.inactive')}</option>
             </select>
 
             <button
               type="submit"
               className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer"
             >
-              Filter
+              {t('common.filter')}
             </button>
           </div>
         </form>
@@ -330,13 +332,13 @@ export const ProductListPage: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
-                  <th className="py-3 px-4">Item Details</th>
-                  <th className="py-3 px-4">Type</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">Price</th>
-                  <th className="py-3 px-4">Stock</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4">{t('products.productName')}</th>
+                  <th className="py-3 px-4">{t('products.itemType')}</th>
+                  <th className="py-3 px-4">{t('products.category')}</th>
+                  <th className="py-3 px-4">{t('products.price')}</th>
+                  <th className="py-3 px-4">{t('products.stock')}</th>
+                  <th className="py-3 px-4">{t('products.status')}</th>
+                  <th className="py-3 px-4 text-right">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 text-xs">
@@ -344,8 +346,7 @@ export const ProductListPage: React.FC = () => {
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-zinc-500 space-y-1">
                       <Package size={32} className="mx-auto text-zinc-300" />
-                      <p className="font-bold text-zinc-700">No items match your query</p>
-                      <p className="text-[11px] text-zinc-400">Add a product or adjust your filters.</p>
+                      <p className="font-bold text-zinc-700">{t('products.noProductsFound')}</p>
                     </td>
                   </tr>
                 ) : (
@@ -468,7 +469,7 @@ export const ProductListPage: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-zinc-900">
-                    {editingProduct ? 'Edit Catalog Item' : 'Add New Catalog Item'}
+                    {editingProduct ? t('products.editProduct') : t('products.addProduct')}
                   </h3>
                   <p className="text-[11px] text-zinc-500">Configure item pricing and stock</p>
                 </div>
@@ -487,7 +488,7 @@ export const ProductListPage: React.FC = () => {
             <form onSubmit={editingProduct ? handleUpdateProduct : handleCreateProduct} className="space-y-4">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-zinc-700">
-                  Item Name <span className="text-rose-500">*</span>
+                  {t('products.productName')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -501,23 +502,23 @@ export const ProductListPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-zinc-700">Item Type *</label>
+                  <label className="text-xs font-bold text-zinc-700">{t('products.itemType')} *</label>
                   <select
                     value={productType}
                     onChange={(e) => {
-                      const t = e.target.value as ProductType;
-                      setProductType(t);
-                      if (t === 'SERVICE') setTrackStock(false);
+                      const tType = e.target.value as ProductType;
+                      setProductType(tType);
+                      if (tType === 'SERVICE') setTrackStock(false);
                     }}
                     className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:ring-1 focus:ring-emerald-600"
                   >
-                    <option value="PHYSICAL">Goods (Physical Product)</option>
-                    <option value="SERVICE">Service / Labour</option>
+                    <option value="PHYSICAL">{t('products.physicalGoods')}</option>
+                    <option value="SERVICE">{t('products.serviceItem')}</option>
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-zinc-700">Category</label>
+                  <label className="text-xs font-bold text-zinc-700">{t('products.category')}</label>
                   <select
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
@@ -536,7 +537,7 @@ export const ProductListPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-zinc-700">
-                    Selling Price ({currencySymbol}) <span className="text-rose-500">*</span>
+                    {t('products.price')} ({currencySymbol}) <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -551,7 +552,7 @@ export const ProductListPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-zinc-700">Cost Price ({currencySymbol})</label>
+                  <label className="text-xs font-bold text-zinc-700">{t('products.costPrice')} ({currencySymbol})</label>
                   <input
                     type="number"
                     min="0"
@@ -565,7 +566,7 @@ export const ProductListPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">SKU / Barcode (Optional)</label>
+                <label className="text-xs font-bold text-zinc-700">{t('products.sku')}</label>
                 <input
                   type="text"
                   placeholder="e.g. PRD-890123"
@@ -584,13 +585,13 @@ export const ProductListPage: React.FC = () => {
                       onChange={(e) => setTrackStock(e.target.checked)}
                       className="w-4 h-4 rounded text-brand-600 focus:ring-brand-600"
                     />
-                    <span className="text-xs font-bold text-zinc-800">Track stock inventory for this item</span>
+                    <span className="text-xs font-bold text-zinc-800">{t('products.trackStock')}</span>
                   </label>
 
                   {trackStock && (
                     <div className="grid grid-cols-2 gap-3 pt-1">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-zinc-600">Stock Quantity</label>
+                        <label className="text-[11px] font-semibold text-zinc-600">{t('products.stock')}</label>
                         <input
                           type="number"
                           min="0"
@@ -600,7 +601,7 @@ export const ProductListPage: React.FC = () => {
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-zinc-600">Low Stock Alert Level</label>
+                        <label className="text-[11px] font-semibold text-zinc-600">{t('products.lowStockThreshold')}</label>
                         <input
                           type="number"
                           min="0"
@@ -623,7 +624,7 @@ export const ProductListPage: React.FC = () => {
                   }}
                   className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -633,9 +634,9 @@ export const ProductListPage: React.FC = () => {
                   {actionLoading ? (
                     <ButtonSpinner text="Saving..." />
                   ) : editingProduct ? (
-                    'Update Item'
+                    t('common.save')
                   ) : (
-                    'Add to Catalog'
+                    t('products.addProduct')
                   )}
                 </button>
               </div>
@@ -650,13 +651,11 @@ export const ProductListPage: React.FC = () => {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
             <div className="flex items-center space-x-2.5 text-rose-600">
               <Trash2 size={20} />
-              <h3 className="text-base font-bold text-zinc-900">Delete Catalog Item</h3>
+              <h3 className="text-base font-bold text-zinc-900">{t('products.deleteProduct')}</h3>
             </div>
 
             <p className="text-xs text-zinc-600 leading-relaxed">
-              Are you sure you want to remove{' '}
-              <strong className="text-zinc-900">"{deletingProduct.name}"</strong>?
-              This will deactivate or delete the item from your catalog.
+              {t('products.confirmDelete')}
             </p>
 
             <div className="flex justify-end space-x-2 pt-2">
@@ -665,7 +664,7 @@ export const ProductListPage: React.FC = () => {
                 onClick={() => setDeletingProduct(null)}
                 className="px-4 py-2 border border-zinc-200 text-zinc-700 rounded-xl text-xs font-semibold hover:bg-zinc-50 cursor-pointer"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="button"
@@ -673,7 +672,7 @@ export const ProductListPage: React.FC = () => {
                 disabled={actionLoading}
                 className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
               >
-                {actionLoading ? <ButtonSpinner text="Deleting..." /> : 'Confirm Delete'}
+                {actionLoading ? <ButtonSpinner text="Deleting..." /> : t('common.delete')}
               </button>
             </div>
           </div>

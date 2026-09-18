@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { categoriesApi, Category, CategoryRequest } from '../../api/categories';
 import {
   FolderTree,
@@ -14,6 +15,7 @@ import {
 import { ButtonSpinner, SkeletonBlock } from '../../components/common/LoadingStates';
 
 export const CategoryListPage: React.FC = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>('');
@@ -154,9 +156,9 @@ export const CategoryListPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">Categories</h1>
+          <h1 className="text-2xl font-black text-zinc-950 tracking-tight">{t('categories.title')}</h1>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Organize catalog products and services into customer-friendly groups.
+            {t('categories.subtitle')}
           </p>
         </div>
 
@@ -165,7 +167,7 @@ export const CategoryListPage: React.FC = () => {
           className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
         >
           <Plus size={16} />
-          <span>New Category</span>
+          <span>{t('categories.addCategory')}</span>
         </button>
       </div>
 
@@ -200,7 +202,7 @@ export const CategoryListPage: React.FC = () => {
           <Search size={15} className="absolute left-3.5 top-3 text-zinc-400" />
           <input
             type="text"
-            placeholder="Search categories..."
+            placeholder={t('common.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
@@ -228,8 +230,7 @@ export const CategoryListPage: React.FC = () => {
         ) : filteredCategories.length === 0 ? (
           <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-2xl border border-zinc-200 p-8 space-y-1">
             <FolderTree size={32} className="mx-auto text-zinc-300" />
-            <p className="font-bold text-zinc-700">No categories found</p>
-            <p className="text-xs text-zinc-400">Create your first category to group catalog items.</p>
+            <p className="font-bold text-zinc-700">{t('categories.noCategoriesFound')}</p>
           </div>
         ) : (
           filteredCategories.map((cat) => (
@@ -249,13 +250,13 @@ export const CategoryListPage: React.FC = () => {
                         : 'bg-zinc-100 text-zinc-600'
                     }`}
                   >
-                    {cat.active ? 'Active' : 'Inactive'}
+                    {cat.active ? t('common.active') : t('common.inactive')}
                   </span>
                 </div>
 
                 <h3 className="text-base font-bold text-zinc-900">{cat.name}</h3>
                 <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2">
-                  {cat.description || 'No description provided.'}
+                  {cat.description || '—'}
                 </p>
               </div>
 
@@ -291,7 +292,7 @@ export const CategoryListPage: React.FC = () => {
                   <Tag size={16} />
                 </div>
                 <h3 className="text-sm font-bold text-zinc-900">
-                  {editingCategory ? 'Edit Category' : 'Create Category'}
+                  {editingCategory ? t('categories.editCategory') : t('categories.addCategory')}
                 </h3>
               </div>
               <button
@@ -308,7 +309,7 @@ export const CategoryListPage: React.FC = () => {
             <form onSubmit={editingCategory ? handleUpdateCategory : handleCreateCategory} className="space-y-4">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-zinc-700">
-                  Category Name <span className="text-rose-500">*</span>
+                  {t('categories.categoryName')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -321,7 +322,7 @@ export const CategoryListPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Description (Optional)</label>
+                <label className="text-xs font-bold text-zinc-700">{t('common.description')}</label>
                 <textarea
                   rows={3}
                   placeholder="Brief summary of items in this category..."
@@ -338,7 +339,7 @@ export const CategoryListPage: React.FC = () => {
                   onChange={(e) => setActive(e.target.checked)}
                   className="w-4 h-4 rounded text-brand-600 focus:ring-brand-600"
                 />
-                <span className="text-xs font-semibold text-zinc-800">Active in POS and catalog</span>
+                <span className="text-xs font-semibold text-zinc-800">{t('common.active')}</span>
               </label>
 
               <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-100">
@@ -350,7 +351,7 @@ export const CategoryListPage: React.FC = () => {
                   }}
                   className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -360,9 +361,9 @@ export const CategoryListPage: React.FC = () => {
                   {actionLoading ? (
                     <ButtonSpinner text="Saving..." />
                   ) : editingCategory ? (
-                    'Update Category'
+                    t('common.save')
                   ) : (
-                    'Create Category'
+                    t('categories.addCategory')
                   )}
                 </button>
               </div>
@@ -377,13 +378,12 @@ export const CategoryListPage: React.FC = () => {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
             <div className="flex items-center space-x-2.5 text-rose-600">
               <Trash2 size={20} />
-              <h3 className="text-base font-bold text-zinc-900">Delete Category</h3>
+              <h3 className="text-base font-bold text-zinc-900">{t('categories.deleteCategory')}</h3>
             </div>
 
             <p className="text-xs text-zinc-600 leading-relaxed">
               Are you sure you want to delete category{' '}
               <strong className="text-zinc-900">"{deletingCategory.name}"</strong>?
-              Items assigned to this category will become uncategorized.
             </p>
 
             <div className="flex justify-end space-x-2 pt-2">
@@ -392,7 +392,7 @@ export const CategoryListPage: React.FC = () => {
                 onClick={() => setDeletingCategory(null)}
                 className="px-4 py-2 border border-zinc-200 text-zinc-700 rounded-xl text-xs font-semibold hover:bg-zinc-50 cursor-pointer"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="button"
@@ -400,7 +400,7 @@ export const CategoryListPage: React.FC = () => {
                 disabled={actionLoading}
                 className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
               >
-                {actionLoading ? <ButtonSpinner text="Deleting..." /> : 'Confirm Delete'}
+                {actionLoading ? <ButtonSpinner text="Deleting..." /> : t('common.delete')}
               </button>
             </div>
           </div>

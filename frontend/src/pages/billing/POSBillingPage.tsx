@@ -453,7 +453,7 @@ export const POSBillingPage: React.FC = () => {
                           className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
                             prod.productType === 'PHYSICAL'
                               ? 'bg-zinc-100 text-zinc-700 border border-zinc-200'
-                              : 'bg-purple-50 text-purple-700 border border-purple-200'
+                              : 'bg-flow-50 text-flow-700 border border-flow-200'
                           }`}
                         >
                           {prod.productType}

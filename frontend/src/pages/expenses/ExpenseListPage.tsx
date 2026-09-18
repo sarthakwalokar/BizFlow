@@ -43,7 +43,7 @@ const CATEGORY_METADATA: Record<
   ELECTRICITY: { label: 'Electricity & Utilities', icon: Zap, color: 'text-amber-700', bgColor: 'bg-amber-50 border-amber-200' },
   PURCHASE: { label: 'Inventory / Purchase', icon: ShoppingBag, color: 'text-brand-700', bgColor: 'bg-brand-50 border-brand-200' },
   TRANSPORT: { label: 'Transport & Logistics', icon: Truck, color: 'text-cyan-700', bgColor: 'bg-cyan-50 border-cyan-200' },
-  MARKETING: { label: 'Marketing & Ads', icon: Megaphone, color: 'text-purple-700', bgColor: 'bg-purple-50 border-purple-200' },
+  MARKETING: { label: 'Marketing & Ads', icon: Megaphone, color: 'text-flow-700', bgColor: 'bg-flow-50 border-flow-200' },
   MAINTENANCE: { label: 'Maintenance & Repairs', icon: Wrench, color: 'text-rose-700', bgColor: 'bg-rose-50 border-rose-200' },
   OTHER: { label: 'Other Expenses', icon: HelpCircle, color: 'text-zinc-700', bgColor: 'bg-zinc-100 border-zinc-200' },
 };

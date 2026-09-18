@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { BusinessType } from '../api/auth';
 import { 
-  Layers, 
   User as UserIcon, 
   Mail, 
   Lock, 
@@ -101,17 +100,16 @@ export const SignupPage: React.FC = () => {
         
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <Link to="/" className="inline-flex items-center space-x-2.5 justify-center">
-            <div className="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-xs">
-              <Layers className="w-5 h-5" />
-            </div>
-            <span className="text-2xl font-black text-zinc-950 tracking-tight">
-              Biz<span className="text-brand-600">Flow</span>
-            </span>
+          <Link to="/" className="inline-flex items-center justify-center">
+            <img
+              src="/Bizflow-logo.png"
+              alt="BizFlow"
+              className="h-14 sm:h-16 w-auto max-w-[240px] object-contain"
+            />
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-950 tracking-tight">
-            Register Your Business
-          </h1>
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-950">
+            Register your business with BizFlow
+          </h2>
           <p className="text-xs sm:text-sm text-zinc-500 max-w-md mx-auto">
             Set up your owner account and onboard your business operations in minutes.
           </p>

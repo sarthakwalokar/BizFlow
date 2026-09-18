@@ -349,7 +349,7 @@ export const AdminBusinessesPage: React.FC = () => {
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 font-bold text-sm">
+                <div className="w-8 h-8 rounded-lg bg-brand-50 border border-brand-200 flex items-center justify-center text-brand-700 font-bold text-sm">
                   <Building2 size={16} />
                 </div>
                 <div>
@@ -395,8 +395,8 @@ export const AdminBusinessesPage: React.FC = () => {
                 {/* Owner Info Card */}
                 {businessDetail.owner && (
                   <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1.5">
-                    <div className="text-xs font-semibold text-purple-800 flex items-center gap-1.5">
-                      <ShieldCheck size={14} className="text-purple-600" />
+                    <div className="text-xs font-semibold text-brand-800 flex items-center gap-1.5">
+                      <ShieldCheck size={14} className="text-brand-600" />
                       <span>Primary Owner Account</span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs">

@@ -276,7 +276,7 @@ export const PublicReviewPage: React.FC = () => {
 
               {/* Positive Review Google Action Card */}
               {isPositiveRating && redirectUrl && (
-                <div className="p-5 rounded-xl bg-gradient-to-br from-brand-50 via-purple-50/60 to-white border border-brand-200 text-left space-y-4 shadow-xs">
+                <div className="p-5 rounded-xl bg-gradient-to-br from-brand-50 via-flow-50/60 to-white border border-brand-200 text-left space-y-4 shadow-xs">
                   <div className="flex items-center justify-between border-b border-brand-100 pb-3">
                     <div className="flex items-center space-x-2">
                       <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-xs border border-brand-200 text-amber-500">
@@ -383,7 +383,7 @@ export const PublicReviewPage: React.FC = () => {
 
               {/* AI GENERATOR & SUGGESTION CARDS (Shows once star is selected) */}
               {rating > 0 && (
-                <div className="p-4 rounded-xl bg-purple-50/50 border border-purple-100 space-y-3.5 animate-fadeIn">
+                <div className="p-4 rounded-xl bg-brand-50/40 border border-brand-100 space-y-3.5 animate-fadeIn">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5 text-brand-800 text-xs font-bold">
                       <Sparkles size={14} className="text-brand-600 animate-pulse" />
@@ -426,7 +426,7 @@ export const PublicReviewPage: React.FC = () => {
                             className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer border ${
                               selectedTag === tag
                                 ? 'bg-brand-600 text-white border-brand-600 shadow-2xs'
-                                : 'bg-white hover:bg-purple-50 text-zinc-700 border-zinc-200'
+                                : 'bg-white hover:bg-brand-50 text-zinc-700 border-zinc-200'
                             }`}
                           >
                             {tag}

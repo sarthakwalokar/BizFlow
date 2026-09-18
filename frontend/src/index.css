@@ -39,8 +39,8 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type=
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: #6D28D9;
-  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.15);
+  border-color: #1D4ED8;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
 }
 
 /* 2. Clear placeholder styling */
@@ -70,8 +70,8 @@ select option {
 }
 
 select option:checked {
-  background-color: #EDE9FE;
-  color: #5B21B6;
+  background-color: #DBEAFE;
+  color: #1E40AF;
 }
 
 /* 5. Autofill fix */

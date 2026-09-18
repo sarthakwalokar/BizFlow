@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Layers, BookOpen, LogIn, UserPlus, LogOut, Shield } from 'lucide-react';
+import { BookOpen, LogIn, UserPlus, LogOut, Shield } from 'lucide-react';
 import { SWAGGER_DOCS_URL } from '../api/axios';
 
 export const Navbar: React.FC = () => {
@@ -20,20 +20,15 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <div className="flex items-center space-x-3">
-          <Link to="/" className="flex items-center space-x-2.5">
-            <div className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center shadow-xs">
-              <Layers className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg font-extrabold tracking-tight text-zinc-900">
-                  Biz<span className="text-brand-600">Flow</span>
-                </span>
-                <span className="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-brand-50 text-brand-700 border border-brand-200">
-                  SaaS
-                </span>
-              </div>
-            </div>
+          <Link to="/" className="flex items-center space-x-2.5 py-1">
+            <img
+              src="/Bizflow-logo.png"
+              alt="BizFlow"
+              className="h-11 sm:h-12 w-auto max-w-[170px] sm:max-w-[190px] object-contain"
+            />
+            <span className="hidden sm:inline-block px-2 py-0.5 text-[11px] font-semibold rounded-full bg-brand-50 text-brand-700 border border-brand-200">
+              SaaS
+            </span>
           </Link>
         </div>
 

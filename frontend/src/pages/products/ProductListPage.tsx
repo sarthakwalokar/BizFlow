@@ -360,7 +360,7 @@ export const ProductListPage: React.FC = () => {
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
                               prod.productType === 'PHYSICAL'
                                 ? 'bg-zinc-100 text-zinc-700'
-                                : 'bg-purple-50 text-purple-700'
+                                : 'bg-flow-50 text-flow-700'
                             }`}>
                               {prod.productType === 'PHYSICAL' ? <Package size={16} /> : <Scissors size={16} />}
                             </div>
@@ -377,7 +377,7 @@ export const ProductListPage: React.FC = () => {
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                             prod.productType === 'PHYSICAL'
                               ? 'bg-zinc-100 text-zinc-700 border border-zinc-200'
-                              : 'bg-purple-50 text-purple-700 border border-purple-200'
+                              : 'bg-flow-50 text-flow-700 border border-flow-200'
                           }`}>
                             {prod.productType}
                           </span>

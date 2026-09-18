@@ -22,7 +22,6 @@ import {
   BarChart3,
   FileText,
   Sparkles,
-  Layers,
   FolderTree,
   LucideIcon
 } from 'lucide-react';
@@ -196,10 +195,11 @@ export const AppLayout: React.FC = () => {
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <div className="flex items-center space-x-2">
-            <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm shadow-xs">
-              <Layers size={14} />
-            </div>
-            <span className="font-extrabold text-zinc-950 tracking-tight text-base">BizFlow</span>
+            <img
+              src="/Bizflow-logo.png"
+              alt="BizFlow"
+              className="h-8 sm:h-9 w-auto max-w-[140px] object-contain"
+            />
           </div>
         </div>
 
@@ -226,15 +226,13 @@ export const AppLayout: React.FC = () => {
           {/* Logo & Tenant Header */}
           <div className="p-4 border-b border-zinc-100">
             <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-xs">
-                <Layers className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="text-base font-extrabold text-zinc-950 tracking-tight block">BizFlow</span>
-                <span className="text-[10px] text-brand-700 font-bold uppercase tracking-wider">
-                  SaaS Business Suite
-                </span>
-              </div>
+              <Link to="/dashboard" className="flex items-center">
+                <img
+                  src="/Bizflow-logo.png"
+                  alt="BizFlow"
+                  className="h-9 sm:h-10 w-auto max-w-[175px] object-contain"
+                />
+              </Link>
             </div>
 
             {business && (
@@ -341,13 +339,13 @@ export const AppLayout: React.FC = () => {
 
             {isAdmin && (
               <div className="pt-2 border-t border-zinc-100">
-                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-700">
+                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-700">
                   Platform Admin
                 </div>
                 <Link
                   to="/admin/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-purple-700 hover:bg-purple-50 transition-colors mt-1"
+                  className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-brand-700 hover:bg-brand-50 transition-colors mt-1"
                 >
                   <ShieldAlert size={16} />
                   <span>Admin Portal</span>

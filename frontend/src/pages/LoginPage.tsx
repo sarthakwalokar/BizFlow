@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Layers, Lock, Mail, ArrowRight, AlertCircle, Shield, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, ArrowRight, AlertCircle, Shield, Eye, EyeOff } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const { login } = useAuth();
@@ -42,13 +42,12 @@ export const LoginPage: React.FC = () => {
     <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <Link to="/" className="flex items-center space-x-2.5">
-            <div className="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-xs">
-              <Layers className="w-5 h-5" />
-            </div>
-            <span className="text-2xl font-black text-zinc-950 tracking-tight">
-              Biz<span className="text-brand-600">Flow</span>
-            </span>
+          <Link to="/" className="flex items-center">
+            <img
+              src="/Bizflow-logo.png"
+              alt="BizFlow"
+              className="h-14 sm:h-16 w-auto max-w-[240px] object-contain"
+            />
           </Link>
         </div>
 

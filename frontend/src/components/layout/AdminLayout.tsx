@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
-  ShieldAlert,
   LayoutDashboard,
   Building2,
   Users,
@@ -65,10 +64,14 @@ export const AdminLayout: React.FC = () => {
       {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 bg-white sticky top-0 z-50 shadow-xs">
         <div className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center text-white shadow-xs">
-            <ShieldAlert size={18} />
-          </div>
-          <span className="font-bold text-zinc-900 text-sm tracking-tight">BizFlow Admin</span>
+          <img
+            src="/Bizflow-logo.png"
+            alt="BizFlow"
+            className="h-8 sm:h-9 w-auto max-w-[140px] object-contain"
+          />
+          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand-50 text-brand-700 border border-brand-200 uppercase">
+            Admin
+          </span>
         </div>
 
         <button
@@ -87,19 +90,20 @@ export const AdminLayout: React.FC = () => {
       >
         <div className="space-y-5">
           {/* Brand Logo */}
-          <div className="flex items-center space-x-3 px-2 py-1">
-            <div className="w-9 h-9 rounded-xl bg-purple-600 flex items-center justify-center text-white shadow-xs">
-              <ShieldAlert size={20} />
+          <div className="px-2 py-1 space-y-1">
+            <div className="flex items-center space-x-2">
+              <Link to="/admin/dashboard" className="flex items-center">
+                <img
+                  src="/Bizflow-logo.png"
+                  alt="BizFlow"
+                  className="h-9 sm:h-10 w-auto max-w-[170px] object-contain"
+                />
+              </Link>
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand-50 text-brand-700 border border-brand-200 uppercase">
+                Admin
+              </span>
             </div>
-            <div>
-              <div className="flex items-center space-x-1.5">
-                <span className="font-extrabold text-zinc-950 text-base tracking-tight">BizFlow</span>
-                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-purple-50 text-purple-700 border border-purple-200 uppercase">
-                  Admin
-                </span>
-              </div>
-              <p className="text-[10px] text-zinc-500 font-medium">Platform Governance Center</p>
-            </div>
+            <p className="text-[10px] text-zinc-500 font-medium pl-0.5">Platform Governance Center</p>
           </div>
 
           {/* Navigation Links */}
@@ -119,11 +123,11 @@ export const AdminLayout: React.FC = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
                     active
-                      ? 'bg-purple-50 text-purple-700 font-bold'
+                      ? 'bg-brand-50 text-brand-700 font-bold'
                       : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
                   }`}
                 >
-                  <Icon size={16} className={active ? 'text-purple-600' : 'text-zinc-400'} />
+                  <Icon size={16} className={active ? 'text-brand-600' : 'text-zinc-400'} />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -134,13 +138,13 @@ export const AdminLayout: React.FC = () => {
         {/* User Badge & Logout */}
         <div className="space-y-2 pt-3 border-t border-zinc-100">
           <div className="flex items-center space-x-2.5 px-2 py-1.5 rounded-xl bg-zinc-50 border border-zinc-200">
-            <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">
+            <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xs">
               {user?.fullName?.charAt(0) || 'A'}
             </div>
             <div className="truncate flex-1">
               <p className="text-xs font-semibold text-zinc-900 truncate">{user?.fullName || 'Root Admin'}</p>
-              <span className="text-[10px] text-purple-700 font-medium flex items-center space-x-1">
-                <Zap size={10} className="text-purple-600" />
+              <span className="text-[10px] text-brand-700 font-medium flex items-center space-x-1">
+                <Zap size={10} className="text-brand-600" />
                 <span>Super Administrator</span>
               </span>
             </div>

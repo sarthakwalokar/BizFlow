@@ -5,7 +5,6 @@ import { Business, User } from '../api/auth';
 import { 
   Building, 
   Users, 
-  ShieldAlert, 
   LogOut, 
   CheckCircle2, 
   XCircle, 
@@ -63,22 +62,24 @@ export const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col selection:bg-purple-500 selection:text-white">
+    <div className="min-h-screen bg-slate-950 flex flex-col selection:bg-brand-500 selection:text-white">
       {/* Admin Header */}
-      <header className="sticky top-0 z-40 border-b border-purple-900/40 bg-slate-950/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-brand-900/40 bg-slate-950/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
-              <ShieldAlert className="w-6 h-6 text-white" />
-            </div>
-            <div>
+            <img
+              src="/Bizflow-logo.png"
+              alt="BizFlow"
+              className="h-10 sm:h-11 w-auto max-w-[180px] object-contain"
+            />
+            <div className="border-l border-slate-800 pl-3">
               <div className="flex items-center space-x-2">
-                <span className="text-lg font-bold text-white tracking-tight">Platform Admin</span>
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                <span className="text-sm font-bold text-white tracking-tight">Platform Admin</span>
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">
                   ROOT ADMIN
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">Tenant Oversight • Logged in as <span className="text-purple-300 font-medium">{user?.fullName}</span></p>
+              <p className="text-[11px] text-slate-400">Tenant Oversight • Logged in as <span className="text-brand-300 font-medium">{user?.fullName}</span></p>
             </div>
           </div>
 
@@ -136,7 +137,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="glass-card rounded-xl p-4 border border-slate-800 space-y-1">
             <div className="text-xs text-slate-400 flex items-center justify-between">
               <span>Total Users</span>
-              <Users className="w-3.5 h-3.5 text-purple-400" />
+              <Users className="w-3.5 h-3.5 text-brand-400" />
             </div>
             <div className="text-2xl font-black text-white">{stats?.totalUsers ?? '—'}</div>
           </div>
@@ -164,7 +165,7 @@ export const AdminDashboard: React.FC = () => {
             onClick={() => setActiveTab('businesses')}
             className={`flex items-center space-x-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === 'businesses'
-                ? 'border-purple-500 text-purple-400 bg-purple-500/5'
+                ? 'border-brand-500 text-brand-400 bg-brand-500/5'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -176,7 +177,7 @@ export const AdminDashboard: React.FC = () => {
             onClick={() => setActiveTab('users')}
             className={`flex items-center space-x-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === 'users'
-                ? 'border-purple-500 text-purple-400 bg-purple-500/5'
+                ? 'border-brand-500 text-brand-400 bg-brand-500/5'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -297,7 +298,7 @@ export const AdminDashboard: React.FC = () => {
                         <td className="px-6 py-4">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                             u.role === 'ADMIN'
-                              ? 'bg-purple-500/10 text-purple-300 border-purple-500/20'
+                              ? 'bg-brand-500/10 text-brand-300 border-brand-500/20'
                               : u.role === 'OWNER'
                               ? 'bg-amber-500/10 text-amber-300 border-amber-500/20'
                               : 'bg-blue-500/10 text-blue-300 border-blue-500/20'

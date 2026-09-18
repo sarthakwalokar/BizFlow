@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ShieldAlert, Lock, Mail, ArrowRight, AlertCircle, KeyRound, Sparkles, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, ArrowRight, AlertCircle, KeyRound, Eye, EyeOff } from 'lucide-react';
 
 export const AdminLoginPage: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('admin@bizflow.com');
-  const [password, setPassword] = useState('Admin@123456');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,28 +36,21 @@ export const AdminLoginPage: React.FC = () => {
     }
   };
 
-  const handlePrefillAdmin = (adminEmail: string, adminPass: string) => {
-    setEmail(adminEmail);
-    setPassword(adminPass);
-    setError(null);
-  };
-
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-zinc-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <Link to="/" className="flex items-center space-x-2.5">
-            <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white shadow-xs">
-              <ShieldAlert className="w-5 h-5" />
-            </div>
-            <span className="text-2xl font-black text-zinc-950 tracking-tight">
-              Biz<span className="text-purple-600">Flow</span>
-            </span>
+          <Link to="/" className="flex items-center">
+            <img
+              src="/Bizflow-logo.png"
+              alt="BizFlow"
+              className="h-14 sm:h-16 w-auto max-w-[240px] object-contain"
+            />
           </Link>
         </div>
 
         <div className="mt-5 text-center space-y-1">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-[11px] font-semibold">
+          <div className="inline-flex items-center space-x-1.5 px-3 py-0.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[11px] font-semibold">
             <KeyRound className="w-3 h-3" />
             <span>Platform Governance</span>
           </div>
@@ -80,22 +73,6 @@ export const AdminLoginPage: React.FC = () => {
             </div>
           )}
 
-          {/* Quick Prefill Banner */}
-          <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 flex items-center justify-between text-xs text-zinc-700">
-            <div>
-              <p className="font-semibold text-zinc-900">Platform Super Admin</p>
-              <p className="text-[11px] text-zinc-500">admin@bizflow.com</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => handlePrefillAdmin('admin@bizflow.com', 'Admin@123456')}
-              className="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
-            >
-              <Sparkles className="w-3 h-3" />
-              <span>Fill</span>
-            </button>
-          </div>
-
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-xs font-semibold text-zinc-700 mb-1.5" htmlFor="admin-email">
@@ -112,7 +89,7 @@ export const AdminLoginPage: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@bizflow.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-600 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600 transition-colors"
                 />
               </div>
             </div>
@@ -132,7 +109,7 @@ export const AdminLoginPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-600 transition-colors"
+                  className="w-full pl-10 pr-10 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600 transition-colors"
                 />
                 <button
                   type="button"
@@ -149,7 +126,7 @@ export const AdminLoginPage: React.FC = () => {
               type="submit"
               disabled={loading}
               id="admin-login-submit-btn"
-              className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-semibold text-sm shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold text-sm shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <span>{loading ? 'Authenticating...' : 'Access Admin Portal'}</span>
               <ArrowRight className="w-4 h-4" />

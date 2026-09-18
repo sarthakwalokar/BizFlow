@@ -8,7 +8,6 @@ import {
   Phone, 
   Mail, 
   DollarSign, 
-  Layers, 
   ShieldAlert 
 } from 'lucide-react';
 
@@ -16,18 +15,20 @@ export const StaffDashboard: React.FC = () => {
   const { user, business, logout } = useAuth();
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col selection:bg-indigo-600 selection:text-white">
+    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col selection:bg-brand-600 selection:text-white">
       {/* Top Header */}
       <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-15 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center shadow-xs">
-              <Layers className="w-5 h-5 text-white" />
-            </div>
-            <div>
+            <img
+              src="/Bizflow-logo.png"
+              alt="BizFlow"
+              className="h-10 sm:h-11 w-auto max-w-[180px] object-contain"
+            />
+            <div className="border-l border-slate-800 pl-3">
               <div className="flex items-center space-x-2">
                 <span className="text-base font-bold text-white tracking-tight">{business?.name || 'Assigned Business'}</span>
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase">
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 uppercase">
                   {business?.businessType || 'RETAIL'}
                 </span>
               </div>
@@ -36,8 +37,8 @@ export const StaffDashboard: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className="hidden sm:flex items-center space-x-1.5 px-3 py-1 text-xs font-semibold rounded-lg bg-indigo-950 text-indigo-300 border border-indigo-800">
-              <UserCheck className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="hidden sm:flex items-center space-x-1.5 px-3 py-1 text-xs font-semibold rounded-lg bg-brand-950 text-brand-300 border border-brand-800">
+              <UserCheck className="w-3.5 h-3.5 text-brand-400" />
               <span>STAFF Role</span>
             </div>
 
@@ -58,7 +59,7 @@ export const StaffDashboard: React.FC = () => {
         
         {/* Role Notice */}
         <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700 flex items-start space-x-3 text-xs text-slate-300">
-          <ShieldAlert className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" />
+          <ShieldAlert className="w-5 h-5 text-brand-400 flex-shrink-0 mt-0.5" />
           <div className="space-y-1">
             <p className="font-semibold text-white">Operational Staff Workspace</p>
             <p className="text-slate-400">
@@ -71,7 +72,7 @@ export const StaffDashboard: React.FC = () => {
         <div className="bg-slate-800/80 rounded-2xl p-6 sm:p-8 border border-slate-700 shadow-sm space-y-6">
           <div className="border-b border-slate-700 pb-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 text-indigo-400">
+              <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 text-brand-400">
                 <Building className="w-5 h-5" />
               </div>
               <div>
@@ -86,7 +87,7 @@ export const StaffDashboard: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-xs text-slate-300">
             <div className="flex items-start space-x-3">
-              <MapPin className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
+              <MapPin className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold text-slate-400 block mb-0.5">Location Address</span>
                 <span>{business?.address || 'No address specified'}</span>
@@ -94,7 +95,7 @@ export const StaffDashboard: React.FC = () => {
             </div>
 
             <div className="flex items-start space-x-3">
-              <Phone className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
+              <Phone className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold text-slate-400 block mb-0.5">Store Phone</span>
                 <span>{business?.phone || 'No phone specified'}</span>
@@ -102,7 +103,7 @@ export const StaffDashboard: React.FC = () => {
             </div>
 
             <div className="flex items-start space-x-3">
-              <Mail className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
+              <Mail className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold text-slate-400 block mb-0.5">Store Contact</span>
                 <span>{business?.email || 'No email specified'}</span>
@@ -110,7 +111,7 @@ export const StaffDashboard: React.FC = () => {
             </div>
 
             <div className="flex items-start space-x-3">
-              <DollarSign className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
+              <DollarSign className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold text-slate-400 block mb-0.5">Operational Currency</span>
                 <span>{business?.currency || 'USD'}</span>
@@ -118,7 +119,7 @@ export const StaffDashboard: React.FC = () => {
             </div>
 
             <div className="flex items-start space-x-3">
-              <UserCheck className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
+              <UserCheck className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold text-slate-400 block mb-0.5">My Staff Account</span>
                 <span>{user?.fullName} ({user?.email})</span>

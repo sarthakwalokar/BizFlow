@@ -97,9 +97,9 @@ export const AnalyticsDashboardPage: React.FC = () => {
       <div className="w-full overflow-x-auto">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-48 overflow-visible">
           <defs>
-            <linearGradient id="purpleAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#6D28D9" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#6D28D9" stopOpacity="0.0" />
+            <linearGradient id="brandAreaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#1D4ED8" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#0D9488" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
@@ -129,10 +129,10 @@ export const AnalyticsDashboardPage: React.FC = () => {
           })}
 
           {/* Fill Area */}
-          <path d={areaD} fill="url(#purpleAreaGrad)" />
+          <path d={areaD} fill="url(#brandAreaGrad)" />
 
           {/* Stroke Line */}
-          <path d={pathD} fill="none" stroke="#6D28D9" strokeWidth="2.5" strokeLinecap="round" />
+          <path d={pathD} fill="none" stroke="#1D4ED8" strokeWidth="2.5" strokeLinecap="round" />
 
           {/* Data Points */}
           {points.map((p, idx) => (
@@ -285,7 +285,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
           <div className="p-5 rounded-2xl bg-white border border-zinc-200 shadow-card space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Average Order Value</span>
-              <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+              <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
                 <ShoppingCart size={16} />
               </div>
             </div>

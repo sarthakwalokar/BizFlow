@@ -11,17 +11,29 @@ export default {
       },
       colors: {
         brand: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#6d28d9', // Deep Violet Primary Accent
-          700: '#5b21b6', // Accent Hover
-          800: '#4c1d95',
-          900: '#3b0764',
-          950: '#2e1065',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6', // Bright Blue
+          600: '#1d4ed8', // Royal / Deep Blue (from "Biz" & arrow)
+          700: '#1e40af', // Deep Blue Hover
+          800: '#1e3a8a', // Navy Accent
+          900: '#172554',
+          950: '#0f172a',
+        },
+        flow: {
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488', // Teal (from "Flow")
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
         },
         surface: '#FFFFFF',
         canvas: '#FAFAFA',

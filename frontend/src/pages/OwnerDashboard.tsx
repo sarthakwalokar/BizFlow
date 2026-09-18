@@ -15,7 +15,6 @@ import {
   MapPin, 
   Calendar, 
   ShieldCheck, 
-  Layers, 
   Save, 
   UserPlus, 
   DollarSign, 
@@ -149,10 +148,12 @@ export const OwnerDashboard: React.FC = () => {
       <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
-              <Layers className="w-6 h-6 text-white" />
-            </div>
-            <div>
+            <img
+              src="/Bizflow-logo.png"
+              alt="BizFlow"
+              className="h-10 sm:h-11 w-auto max-w-[180px] object-contain"
+            />
+            <div className="border-l border-slate-800 pl-3">
               <div className="flex items-center space-x-2">
                 <span className="text-lg font-bold text-white tracking-tight">{business?.name || 'My Business'}</span>
                 <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 uppercase">

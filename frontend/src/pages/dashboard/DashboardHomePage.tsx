@@ -577,9 +577,9 @@ export const DashboardHomePage: React.FC = () => {
 
             <Link
               to="/dashboard/customers"
-              className="p-3.5 rounded-xl border border-zinc-200 hover:border-purple-300 hover:bg-purple-50/40 transition-all flex flex-col items-center text-center group cursor-pointer"
+              className="p-3.5 rounded-xl border border-zinc-200 hover:border-brand-300 hover:bg-brand-50/40 transition-all flex flex-col items-center text-center group cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold mb-1.5">
+              <div className="w-9 h-9 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold mb-1.5">
                 <Users size={18} />
               </div>
               <span className="text-xs font-bold text-zinc-900">Clients CRM</span>
@@ -588,9 +588,9 @@ export const DashboardHomePage: React.FC = () => {
 
             <Link
               to="/dashboard/products"
-              className="p-3.5 rounded-xl border border-zinc-200 hover:border-indigo-300 hover:bg-indigo-50/40 transition-all flex flex-col items-center text-center group cursor-pointer"
+              className="p-3.5 rounded-xl border border-zinc-200 hover:border-flow-300 hover:bg-flow-50/40 transition-all flex flex-col items-center text-center group cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold mb-1.5">
+              <div className="w-9 h-9 rounded-lg bg-flow-100 text-flow-700 flex items-center justify-center font-bold mb-1.5">
                 <Package size={18} />
               </div>
               <span className="text-xs font-bold text-zinc-900">Catalog</span>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, Shield, Zap, Layers } from 'lucide-react';
+import { Database, Shield, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
@@ -8,12 +8,16 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white">
-              <Layers className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="font-bold text-zinc-900 text-sm">BizFlow SaaS Platform</span>
-              <p className="text-xs text-zinc-500 mt-0.5">Unified Operations, POS Billing & Business Intelligence</p>
+            <Link to="/" className="flex items-center">
+              <img
+                src="/Bizflow-logo.png"
+                alt="BizFlow"
+                className="h-9 sm:h-10 w-auto max-w-[170px] object-contain"
+              />
+            </Link>
+            <div className="border-l border-zinc-200 pl-3">
+              <span className="font-bold text-zinc-900 text-xs sm:text-sm">Unified Commerce Platform</span>
+              <p className="text-[11px] text-zinc-500">POS Billing, AI Insights & Multi-Tenant Operations</p>
             </div>
           </div>
 

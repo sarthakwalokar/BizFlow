@@ -8,3 +8,11 @@ services:
     envVars:
       - key: JAVA_VERSION
         value: 17
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: 5
+      - key: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
+        value: 1
+      - key: SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT
+        value: 30000

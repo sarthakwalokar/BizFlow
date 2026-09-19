@@ -110,11 +110,11 @@ export const SignupPage: React.FC = () => {
         
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <Link to="/" className="inline-flex items-center justify-center">
+          <Link to="/" className="inline-flex items-center group bg-slate-950 px-5 py-2.5 rounded-2xl border border-slate-800 shadow-md hover:scale-105 transition-all">
             <img
-              src="/Bizflow-logo.png"
+              src="/Bizflow-logo-dark.png"
               alt="BizFlow"
-              className="h-12 sm:h-14 w-auto max-w-[210px] object-contain"
+              className="h-8 sm:h-9 w-auto max-w-[160px] object-contain"
             />
           </Link>
           <h2 className="text-2xl font-bold tracking-tight text-zinc-950">

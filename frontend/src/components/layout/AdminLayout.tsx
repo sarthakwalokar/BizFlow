@@ -66,11 +66,13 @@ export const AdminLayout: React.FC = () => {
       {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 bg-white sticky top-0 z-50 shadow-xs">
         <div className="flex items-center space-x-2.5">
-          <img
-            src="/Bizflow-logo.png"
-            alt="BizFlow"
-            className="h-8 sm:h-9 w-auto max-w-[140px] object-contain"
-          />
+          <div className="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 flex items-center">
+            <img
+              src="/Bizflow-logo-dark.png"
+              alt="BizFlow"
+              className="h-7 sm:h-8 w-auto max-w-[130px] object-contain"
+            />
+          </div>
           <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand-50 text-brand-700 border border-brand-200 uppercase">
             {t('common.admin', 'Admin')}
           </span>
@@ -94,11 +96,11 @@ export const AdminLayout: React.FC = () => {
           {/* Brand Logo */}
           <div className="px-2 py-1 space-y-1">
             <div className="flex items-center space-x-2">
-              <Link to="/admin/dashboard" className="flex items-center">
+              <Link to="/admin/dashboard" className="flex items-center bg-slate-950 px-3.5 py-1.5 rounded-xl border border-slate-800 hover:opacity-95 transition-opacity">
                 <img
-                  src="/Bizflow-logo.png"
+                  src="/Bizflow-logo-dark.png"
                   alt="BizFlow"
-                  className="h-9 sm:h-10 w-auto max-w-[170px] object-contain"
+                  className="h-7 sm:h-8 w-auto max-w-[140px] object-contain"
                 />
               </Link>
               <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand-50 text-brand-700 border border-brand-200 uppercase">

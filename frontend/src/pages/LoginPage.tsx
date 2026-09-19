@@ -44,11 +44,11 @@ export const LoginPage: React.FC = () => {
     <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="inline-flex items-center group bg-slate-950 px-5 py-2.5 rounded-2xl border border-slate-800 shadow-md hover:scale-105 transition-all">
             <img
-              src="/Bizflow-logo.png"
+              src="/Bizflow-logo-dark.png"
               alt="BizFlow"
-              className="h-12 sm:h-14 w-auto max-w-[210px] object-contain"
+              className="h-8 sm:h-9 w-auto max-w-[160px] object-contain"
             />
           </Link>
         </div>

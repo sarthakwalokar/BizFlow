@@ -197,11 +197,11 @@ export const AppLayout: React.FC = () => {
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <div className="flex items-center space-x-2">
-            <Link to="/dashboard" className="flex items-center">
+            <Link to="/dashboard" className="flex items-center bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
               <img
-                src="/Bizflow-logo.png"
+                src="/Bizflow-logo-dark.png"
                 alt="BizFlow"
-                className="h-8 w-auto max-w-[140px] object-contain"
+                className="h-7 sm:h-8 w-auto max-w-[130px] object-contain"
               />
             </Link>
           </div>

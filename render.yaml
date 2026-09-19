@@ -16,3 +16,9 @@ services:
         value: 1
       - key: SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT
         value: 30000
+      - key: BIZFLOW_AI_ENABLED
+        value: "true"
+      - key: OPENROUTER_MODEL
+        value: "meta-llama/llama-3.3-70b-instruct"
+      - key: GEMINI_MODEL
+        value: "gemini-1.5-flash"

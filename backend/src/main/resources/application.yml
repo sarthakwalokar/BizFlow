@@ -87,13 +87,13 @@ bizflow:
   ai:
     enabled: ${BIZFLOW_AI_ENABLED:true}
     openrouter:
-      api-key: ${OPENROUTER_API_KEY:${BIZFLOW_AI_OPENROUTER_API_KEY:}}
+      api-key: ${OPENROUTER_API_KEY:${BIZFLOW_AI_OPENROUTER_API_KEY:${OPENROUTER_KEY:}}}
       model: ${OPENROUTER_MODEL:${BIZFLOW_AI_OPENROUTER_MODEL:meta-llama/llama-3.3-70b-instruct}}
       base-url: ${OPENROUTER_BASE_URL:${BIZFLOW_AI_OPENROUTER_BASE_URL:https://openrouter.ai/api/v1}}
       timeout-ms: ${OPENROUTER_TIMEOUT_MS:${BIZFLOW_AI_OPENROUTER_TIMEOUT_MS:20000}}
     gemini:
       api-key: ${GEMINI_API_KEY:${BIZFLOW_AI_GEMINI_API_KEY:}}
-      model: ${GEMINI_MODEL:${BIZFLOW_AI_GEMINI_MODEL:gemini-2.5-flash-lite}}
+      model: ${GEMINI_MODEL:${BIZFLOW_AI_GEMINI_MODEL:gemini-1.5-flash}}
       base-url: ${GEMINI_BASE_URL:${BIZFLOW_AI_GEMINI_BASE_URL:https://generativelanguage.googleapis.com/v1beta}}
       timeout-ms: ${GEMINI_TIMEOUT_MS:${BIZFLOW_AI_GEMINI_TIMEOUT_MS:20000}}
 

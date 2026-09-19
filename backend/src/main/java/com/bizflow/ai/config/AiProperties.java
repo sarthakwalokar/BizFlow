@@ -13,7 +13,7 @@ public class AiProperties {
 
     private boolean enabled = true;
     private ProviderConfig openrouter = new ProviderConfig("meta-llama/llama-3.3-70b-instruct", "https://openrouter.ai/api/v1", 20000);
-    private ProviderConfig gemini = new ProviderConfig("gemini-2.5-flash-lite", "https://generativelanguage.googleapis.com/v1beta", 20000);
+    private ProviderConfig gemini = new ProviderConfig("gemini-1.5-flash", "https://generativelanguage.googleapis.com/v1beta", 20000);
 
     @Getter
     @Setter
@@ -32,12 +32,26 @@ public class AiProperties {
             this.timeoutMs = timeoutMs;
         }
 
+        public String getEffectiveApiKey() {
+            if (apiKey != null && !apiKey.trim().isEmpty() && !apiKey.startsWith("<") && !apiKey.equalsIgnoreCase("your_gemini_api_key_here")) {
+                return apiKey.trim();
+            }
+            if (model != null && (model.startsWith("sk-or-v1-") || model.startsWith("AIzaSy"))) {
+                return model.trim();
+            }
+            return "";
+        }
+
+        public String getEffectiveModel(String defaultModel) {
+            if (model != null && !model.isBlank() && !model.startsWith("sk-or-v1-") && !model.startsWith("AIzaSy")) {
+                return model.trim();
+            }
+            return defaultModel;
+        }
+
         public boolean isConfigured() {
-            if (apiKey == null) return false;
-            String trimmed = apiKey.trim();
-            return !trimmed.isEmpty()
-                    && !trimmed.equalsIgnoreCase("your_gemini_api_key_here")
-                    && !trimmed.startsWith("<");
+            String key = getEffectiveApiKey();
+            return !key.isEmpty();
         }
     }
 }

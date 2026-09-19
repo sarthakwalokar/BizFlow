@@ -35,15 +35,12 @@ public class GeminiProvider implements AiProvider {
     }
 
     public String getFreeTierModelName() {
-        String rawModel = aiProperties.getGemini().getModel();
-        if (rawModel == null || rawModel.isBlank()) {
-            return "gemini-2.5-flash-lite";
-        }
+        String rawModel = aiProperties.getGemini().getEffectiveModel("gemini-1.5-flash");
         String cleaned = rawModel.trim().replace("models/", "").toLowerCase();
         // Prevent accidental paid model configuration
         if (cleaned.contains("pro") || cleaned.contains("ultra") || cleaned.contains("advanced")) {
-            log.warn("Configured Gemini model '{}' is not a free-tier model. Defaulting to free-tier 'gemini-2.5-flash-lite'.", cleaned);
-            return "gemini-2.5-flash-lite";
+            log.warn("Configured Gemini model '{}' is not a free-tier model. Defaulting to free-tier 'gemini-1.5-flash'.", cleaned);
+            return "gemini-1.5-flash";
         }
         return cleaned;
     }
@@ -55,8 +52,14 @@ public class GeminiProvider implements AiProvider {
             throw new IllegalStateException("Gemini API key is missing or not configured. Set the GEMINI_API_KEY environment variable.");
         }
 
-        String apiKey = config.getApiKey().trim();
-        String model = getFreeTierModelName();
+        String apiKey = config.getEffectiveApiKey();
+        String primaryModel = getFreeTierModelName();
+
+        List<String> modelsToTry = new ArrayList<>();
+        modelsToTry.add(primaryModel);
+        if (!modelsToTry.contains("gemini-1.5-flash")) modelsToTry.add("gemini-1.5-flash");
+        if (!modelsToTry.contains("gemini-2.0-flash")) modelsToTry.add("gemini-2.0-flash");
+        if (!modelsToTry.contains("gemini-1.5-flash-8b")) modelsToTry.add("gemini-1.5-flash-8b");
 
         RestClient restClient = RestClient.builder()
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -97,49 +100,48 @@ public class GeminiProvider implements AiProvider {
                 "maxOutputTokens", 2048
         ));
 
-        try {
-            String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + apiKey;
-            log.debug("Attempting Gemini Free Tier completion with model: {}", model);
+        Exception lastException = null;
 
-            String responseJson = restClient.post()
-                    .uri(url)
-                    .body(requestBody)
-                    .retrieve()
-                    .body(String.class);
+        for (String model : modelsToTry) {
+            try {
+                String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + apiKey;
+                log.debug("Attempting Gemini Free Tier completion with model: {}", model);
 
-            if (responseJson == null || responseJson.isBlank()) {
-                throw new RuntimeException("Empty response received from Gemini AI Free Tier.");
-            }
+                String responseJson = restClient.post()
+                        .uri(url)
+                        .body(requestBody)
+                        .retrieve()
+                        .body(String.class);
 
-            JsonNode root = objectMapper.readTree(responseJson);
-            JsonNode candidates = root.path("candidates");
-            if (candidates.isArray() && !candidates.isEmpty()) {
-                JsonNode parts = candidates.get(0).path("content").path("parts");
-                if (parts.isArray() && !parts.isEmpty()) {
-                    log.info("Gemini Free Tier completion succeeded with model: {}", model);
-                    return parts.get(0).path("text").asText();
+                if (responseJson == null || responseJson.isBlank()) {
+                    continue;
                 }
+
+                JsonNode root = objectMapper.readTree(responseJson);
+                JsonNode candidates = root.path("candidates");
+                if (candidates.isArray() && !candidates.isEmpty()) {
+                    JsonNode parts = candidates.get(0).path("content").path("parts");
+                    if (parts.isArray() && !parts.isEmpty()) {
+                        log.info("Gemini Free Tier completion succeeded with model: {}", model);
+                        return parts.get(0).path("text").asText();
+                    }
+                }
+            } catch (HttpStatusCodeException e) {
+                String errorBody = e.getResponseBodyAsString();
+                log.warn("Gemini HTTP error ({}) for model {}: {}", e.getStatusCode().value(), model, errorBody);
+                lastException = e;
+                if (e.getStatusCode().value() == 401
+                        || (e.getStatusCode().value() == 400 && errorBody.contains("API_KEY_INVALID"))
+                        || errorBody.contains("UNAUTHENTICATED")) {
+                    throw new IllegalStateException("The configured Gemini API key is invalid or unauthorized.");
+                }
+            } catch (Exception e) {
+                log.warn("Gemini Free Tier completion failed for model {}: {}", model, e.getMessage());
+                lastException = e;
             }
-
-            throw new RuntimeException("Unexpected response format from Gemini AI: " + responseJson);
-        } catch (HttpStatusCodeException e) {
-            String errorBody = e.getResponseBodyAsString();
-            log.warn("Gemini HTTP error ({}) for model {}: {}", e.getStatusCode().value(), model, errorBody);
-            String extractedMsg = extractErrorMessage(errorBody);
-
-            if (e.getStatusCode().value() == 401
-                    || (e.getStatusCode().value() == 400 && errorBody.contains("API_KEY_INVALID"))
-                    || errorBody.contains("UNAUTHENTICATED")) {
-                throw new IllegalStateException("The configured Gemini API key is invalid or unauthorized.");
-            } else if (e.getStatusCode().value() == 429 || errorBody.contains("RESOURCE_EXHAUSTED")) {
-                throw new IllegalStateException("Gemini Free Tier quota/rate limit reached. Please retry shortly.");
-            }
-
-            throw new RuntimeException("Gemini service error (" + e.getStatusCode().value() + "): " + (extractedMsg != null ? extractedMsg : e.getMessage()), e);
-        } catch (Exception e) {
-            log.warn("Gemini Free Tier completion failed for model {}: {}", model, e.getMessage());
-            throw new RuntimeException("Gemini generation error: " + e.getMessage(), e);
         }
+
+        throw new RuntimeException("Gemini generation error: " + (lastException != null ? lastException.getMessage() : "All Gemini models unavailable"), lastException);
     }
 
     private String extractErrorMessage(String json) {

@@ -24,7 +24,7 @@ public class OpenRouterProvider implements AiProvider {
 
     @Override
     public String getProviderName() {
-        return "OpenRouter (" + aiProperties.getOpenrouter().getModel() + ")";
+        return "OpenRouter (" + aiProperties.getOpenrouter().getEffectiveModel("meta-llama/llama-3.3-70b-instruct") + ")";
     }
 
     @Override
@@ -39,10 +39,13 @@ public class OpenRouterProvider implements AiProvider {
             throw new IllegalStateException("OpenRouter API key is not configured.");
         }
 
+        String apiKey = config.getEffectiveApiKey();
+        String model = config.getEffectiveModel("meta-llama/llama-3.3-70b-instruct");
+
         try {
             RestClient restClient = RestClient.builder()
                     .baseUrl(config.getBaseUrl())
-                    .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + config.getApiKey())
+                    .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
                     .defaultHeader("HTTP-Referer", "https://bizflow.app")
                     .defaultHeader("X-Title", "BizFlow AI Business Assistant")
                     .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -64,7 +67,7 @@ public class OpenRouterProvider implements AiProvider {
             messages.add(Map.of("role", "user", "content", userPrompt));
 
             Map<String, Object> requestBody = Map.of(
-                    "model", config.getModel(),
+                    "model", model,
                     "messages", messages,
                     "temperature", 0.3,
                     "max_tokens", 2048

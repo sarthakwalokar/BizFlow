@@ -173,7 +173,7 @@ export const AppLayout: React.FC = () => {
       case 'SERVICE':
         return 'bg-brand-50 text-brand-700 border-brand-200';
       default:
-        return 'bg-zinc-100 text-zinc-700 border-zinc-200';
+        return 'bg-slate-100 text-slate-700 border-slate-200';
     }
   };
 
@@ -185,30 +185,32 @@ export const AppLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex flex-col md:flex-row font-sans text-zinc-900">
+    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans text-slate-900 antialiased">
       {/* Mobile Top Header */}
-      <header className="md:hidden bg-white border-b border-zinc-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+      <header className="md:hidden bg-slate-950 text-white border-b border-slate-800 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-md">
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-100 focus:outline-none cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none cursor-pointer"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <div className="flex items-center space-x-2">
-            <img
-              src="/Bizflow-logo.png"
-              alt="BizFlow"
-              className="h-8 sm:h-9 w-auto max-w-[140px] object-contain"
-            />
+            <Link to="/dashboard" className="flex items-center">
+              <img
+                src="/Bizflow-logo.png"
+                alt="BizFlow"
+                className="h-8 w-auto max-w-[140px] object-contain"
+              />
+            </Link>
           </div>
         </div>
 
         <div className="flex items-center space-x-2">
           {business && (
             <span
-              className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full border ${getBusinessTypeBadgeColor(
+              className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${getBusinessTypeBadgeColor(
                 business.businessType
               )}`}
             >
@@ -218,35 +220,33 @@ export const AppLayout: React.FC = () => {
         </div>
       </header>
 
-      {/* Sidebar Navigation */}
+      {/* Sidebar Navigation - Sleek Navy Theme matching reference */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white text-zinc-700 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 md:static md:inset-auto md:min-h-screen shadow-xl md:shadow-none border-r border-zinc-200 ${
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-slate-950 text-slate-300 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 md:static md:inset-auto md:min-h-screen shadow-2xl md:shadow-none border-r border-slate-800/70 ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo & Tenant Header */}
-          <div className="p-4 border-b border-zinc-100">
-            <div className="flex items-center space-x-2.5">
-              <Link to="/dashboard" className="flex items-center">
-                <img
-                  src="/Bizflow-logo.png"
-                  alt="BizFlow"
-                  className="h-9 sm:h-10 w-auto max-w-[175px] object-contain"
-                />
-              </Link>
-            </div>
+          <div className="p-4 border-b border-slate-800/80">
+            <Link to="/dashboard" className="flex items-center group py-1">
+              <img
+                src="/Bizflow-logo-dark.png"
+                alt="BizFlow"
+                className="h-8 sm:h-9 w-auto max-w-[160px] object-contain group-hover:scale-105 transition-transform"
+              />
+            </Link>
 
             {business && (
-              <div className="mt-3 p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80 flex items-center space-x-2.5">
-                <div className="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold text-xs flex-shrink-0">
-                  <Store size={14} />
+              <div className="mt-4 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-lg bg-brand-500/20 text-cyan-400 border border-brand-500/30 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                  <Store size={15} />
                 </div>
-                <div className="overflow-hidden flex-1">
-                  <h4 className="text-xs font-bold text-zinc-900 truncate">{business.name}</h4>
+                <div className="overflow-hidden flex-1 min-w-0">
+                  <h4 className="text-xs font-bold text-white truncate">{business.name}</h4>
                   <div className="flex items-center space-x-1.5 mt-0.5">
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-brand-600"></span>
-                    <span className="text-[10px] text-zinc-500 font-medium truncate">
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span className="text-[10px] text-slate-400 font-medium truncate">
                       {business.businessType || t('dashboard.activeStore', 'Active Store')}
                     </span>
                   </div>
@@ -256,7 +256,7 @@ export const AppLayout: React.FC = () => {
           </div>
 
           {/* Nav Links */}
-          <nav className="p-3 space-y-4 flex-1 overflow-y-auto">
+          <nav className="p-3 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
             {navGroups.map((group, gIdx) => {
               const visibleItems = group.items.filter((item) => {
                 if (!user || !item.roles.includes(user.role)) return false;
@@ -269,7 +269,7 @@ export const AppLayout: React.FC = () => {
               return (
                 <div key={gIdx} className="space-y-1">
                   {group.groupTitle && (
-                    <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                    <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       {group.groupTitle}
                     </div>
                   )}
@@ -283,17 +283,17 @@ export const AppLayout: React.FC = () => {
                         key={item.path}
                         to={item.path}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                           active
-                            ? 'bg-brand-50 text-brand-700 font-bold'
-                            : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                            ? 'bg-gradient-to-r from-brand-600 to-brand-700 text-white font-bold shadow-md shadow-brand-600/30'
+                            : 'text-slate-400 hover:text-white hover:bg-slate-900/80'
                         }`}
                       >
                         <div className="flex items-center space-x-2.5">
-                          <Icon size={16} className={active ? 'text-brand-600' : 'text-zinc-400'} />
+                          <Icon size={16} className={active ? 'text-white' : 'text-slate-400'} />
                           <span>{item.label}</span>
                         </div>
-                        {active && <ChevronRight size={13} className="text-brand-600" />}
+                        {active && <ChevronRight size={13} className="text-white/80" />}
                       </Link>
                     );
                   })}
@@ -303,21 +303,21 @@ export const AppLayout: React.FC = () => {
 
             {/* Owner Section: Settings & Staff */}
             {isOwner && (
-              <div className="space-y-1 pt-2 border-t border-zinc-100">
-                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+              <div className="space-y-1 pt-2 border-t border-slate-800">
+                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                   {t('nav.administration', 'Administration')}
                 </div>
                 <Link
                   to="/dashboard/staff"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                     location.pathname.startsWith('/dashboard/staff')
-                      ? 'bg-brand-50 text-brand-700 font-bold'
-                      : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                      ? 'bg-gradient-to-r from-brand-600 to-brand-700 text-white font-bold shadow-md shadow-brand-600/30'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-900/80'
                   }`}
                 >
                   <div className="flex items-center space-x-2.5">
-                    <Users size={16} className={location.pathname.startsWith('/dashboard/staff') ? 'text-brand-600' : 'text-zinc-400'} />
+                    <Users size={16} className={location.pathname.startsWith('/dashboard/staff') ? 'text-white' : 'text-slate-400'} />
                     <span>{t('nav.staff', 'Staff Team')}</span>
                   </div>
                 </Link>
@@ -325,14 +325,14 @@ export const AppLayout: React.FC = () => {
                 <Link
                   to="/dashboard/settings"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                     location.pathname.startsWith('/dashboard/settings')
-                      ? 'bg-brand-50 text-brand-700 font-bold'
-                      : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                      ? 'bg-gradient-to-r from-brand-600 to-brand-700 text-white font-bold shadow-md shadow-brand-600/30'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-900/80'
                   }`}
                 >
                   <div className="flex items-center space-x-2.5">
-                    <Settings size={16} className={location.pathname.startsWith('/dashboard/settings') ? 'text-brand-600' : 'text-zinc-400'} />
+                    <Settings size={16} className={location.pathname.startsWith('/dashboard/settings') ? 'text-white' : 'text-slate-400'} />
                     <span>{t('nav.settings', 'Business Settings')}</span>
                   </div>
                 </Link>
@@ -340,14 +340,14 @@ export const AppLayout: React.FC = () => {
             )}
 
             {isAdmin && (
-              <div className="pt-2 border-t border-zinc-100">
-                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-700">
+              <div className="pt-2 border-t border-slate-800">
+                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-cyan-400">
                   {t('admin.portal', 'Platform Admin')}
                 </div>
                 <Link
                   to="/admin/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-brand-700 hover:bg-brand-50 transition-colors mt-1"
+                  className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-cyan-400 hover:bg-cyan-950/40 hover:text-cyan-300 transition-colors mt-1"
                 >
                   <ShieldAlert size={16} />
                   <span>{t('nav.adminDashboard', 'Admin Portal')}</span>
@@ -357,21 +357,21 @@ export const AppLayout: React.FC = () => {
           </nav>
 
           {/* User Profile & Logout Bottom Bar */}
-          <div className="p-3 border-t border-zinc-200 bg-white">
-            <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-50 border border-zinc-200/80">
+          <div className="p-3 border-t border-slate-800/80 bg-slate-950">
+            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900/90 border border-slate-800">
               <Link
                 to="/dashboard/profile"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center space-x-2.5 overflow-hidden flex-1 group"
               >
-                <div className="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-cyan-500 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
                   {user?.fullName ? user.fullName.charAt(0) : 'U'}
                 </div>
-                <div className="overflow-hidden">
-                  <p className="text-xs font-semibold text-zinc-900 truncate group-hover:text-brand-600 transition-colors">
+                <div className="overflow-hidden min-w-0">
+                  <p className="text-xs font-semibold text-white truncate group-hover:text-cyan-400 transition-colors">
                     {user?.fullName}
                   </p>
-                  <span className="inline-block text-[9px] font-bold px-1.5 py-0.2 rounded bg-zinc-200 text-zinc-700">
+                  <span className="inline-block text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">
                     {user?.role}
                   </span>
                 </div>
@@ -379,9 +379,9 @@ export const AppLayout: React.FC = () => {
               <button
                 onClick={handleLogout}
                 title={t('nav.logout', 'Logout')}
-                className="p-1.5 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer"
               >
-                <LogOut size={15} />
+                <LogOut size={16} />
               </button>
             </div>
           </div>
@@ -392,32 +392,52 @@ export const AppLayout: React.FC = () => {
       {mobileMenuOpen && (
         <div
           onClick={() => setMobileMenuOpen(false)}
-          className="fixed inset-0 z-30 bg-black/40 md:hidden"
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-xs md:hidden"
         />
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top Navbar */}
-        <header className="hidden md:flex h-16 bg-white border-b border-zinc-200 px-8 items-center justify-between sticky top-0 z-20 shadow-xs">
-          <div className="flex items-center space-x-3">
-            <h1 className="text-base font-bold text-zinc-900">
-              {business ? business.name : t('common.platform', 'BizFlow Platform')}
-            </h1>
-            {business && (
-              <span
-                className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full border ${getBusinessTypeBadgeColor(
-                  business.businessType
-                )}`}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50">
+        {/* Top Header matching reference image layout */}
+        <header className="hidden md:flex h-16 bg-white border-b border-slate-200/90 px-8 items-center justify-between sticky top-0 z-20 shadow-xs">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
+              <h1 className="text-base font-bold text-slate-900">
+                {business ? business.name : t('common.platform', 'BizFlow Platform')}
+              </h1>
+              {business && (
+                <span
+                  className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full border ${getBusinessTypeBadgeColor(
+                    business.businessType
+                  )}`}
+                >
+                  {business.businessType}
+                </span>
+              )}
+            </div>
+
+            {/* Quick POS & AI Shortcuts in Top Bar */}
+            <div className="hidden lg:flex items-center space-x-2">
+              <Link
+                to="/dashboard/pos"
+                className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors"
               >
-                {business.businessType}
-              </span>
-            )}
+                <Receipt size={13} />
+                <span>{t('nav.pos', 'POS Billing')}</span>
+              </Link>
+              <Link
+                to="/dashboard/ai-assistant"
+                className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-cyan-50 text-cyan-700 hover:bg-cyan-100 transition-colors"
+              >
+                <Sparkles size={13} />
+                <span>{t('nav.aiAssistant', 'AI Assistant')}</span>
+              </Link>
+            </div>
           </div>
 
           <div className="flex items-center space-x-4">
             {business && business.taxRate !== undefined && business.taxRate > 0 && (
-              <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-semibold">
+              <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold">
                 <Percent size={12} className="text-brand-600" />
                 <span>
                   {business.taxName || 'GST'}: {business.taxRate}%
@@ -426,17 +446,17 @@ export const AppLayout: React.FC = () => {
               </div>
             )}
 
-            <div className="h-5 w-px bg-zinc-200"></div>
+            <div className="h-5 w-px bg-slate-200"></div>
 
             <Link
               to="/dashboard/profile"
               className="flex items-center space-x-2.5 hover:opacity-80 transition-opacity"
             >
               <div className="text-right">
-                <p className="text-xs font-bold text-zinc-900">{user?.fullName}</p>
-                <p className="text-[10px] text-zinc-500">{user?.email}</p>
+                <p className="text-xs font-bold text-slate-900">{user?.fullName}</p>
+                <p className="text-[10px] text-slate-500">{user?.email}</p>
               </div>
-              <div className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-cyan-500 text-white flex items-center justify-center font-bold text-xs shadow-xs">
                 {user?.fullName ? user.fullName.charAt(0) : 'U'}
               </div>
             </Link>
@@ -444,7 +464,7 @@ export const AppLayout: React.FC = () => {
         </header>
 
         {/* Page Body */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#FAFAFA]">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50/70">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>

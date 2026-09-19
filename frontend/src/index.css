@@ -14,9 +14,52 @@
     font-feature-settings: "rlig" 1, "calt" 1, "tnum" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    color: #18181B;
-    background-color: #FAFAF9;
+    color: #0F172A;
+    background-color: #F8FAFC;
   }
+}
+
+/* ==========================================================================
+   Reference Theme Modern Gradients & Micro-Animations
+   ========================================================================== */
+
+.gradient-text-bizflow {
+  background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #06B6D4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-cyan-blue {
+  background: linear-gradient(135deg, #06B6D4 0%, #2563EB 100%);
+}
+
+.gradient-hero-ambient {
+  background: radial-gradient(circle at 85% 15%, rgba(6, 182, 212, 0.15) 0%, rgba(37, 99, 235, 0.08) 35%, transparent 70%),
+              radial-gradient(circle at 15% 85%, rgba(14, 165, 233, 0.12) 0%, rgba(20, 184, 166, 0.08) 40%, transparent 65%);
+}
+
+.perspective-laptop {
+  transform: perspective(1200px) rotateX(8deg) rotateY(-8deg) rotateZ(2deg);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+}
+
+.perspective-laptop:hover {
+  transform: perspective(1200px) rotateX(4deg) rotateY(-4deg) rotateZ(1deg) translateY(-4px);
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.card-hover-lift {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.card-hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.12);
 }
 
 /* ==========================================================================

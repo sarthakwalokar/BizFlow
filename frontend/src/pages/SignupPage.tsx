@@ -114,7 +114,7 @@ export const SignupPage: React.FC = () => {
             <img
               src="/Bizflow-logo.png"
               alt="BizFlow"
-              className="h-14 sm:h-16 w-auto max-w-[240px] object-contain"
+              className="h-12 sm:h-14 w-auto max-w-[210px] object-contain"
             />
           </Link>
           <h2 className="text-2xl font-bold tracking-tight text-zinc-950">

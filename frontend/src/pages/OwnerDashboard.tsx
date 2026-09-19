@@ -149,9 +149,9 @@ export const OwnerDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <img
-              src="/Bizflow-logo.png"
+              src="/Bizflow-logo-dark.png"
               alt="BizFlow"
-              className="h-10 sm:h-11 w-auto max-w-[180px] object-contain"
+              className="h-8 sm:h-9 w-auto max-w-[160px] object-contain"
             />
             <div className="border-l border-slate-800 pl-3">
               <div className="flex items-center space-x-2">

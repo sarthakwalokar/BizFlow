@@ -48,7 +48,7 @@ export const LoginPage: React.FC = () => {
             <img
               src="/Bizflow-logo.png"
               alt="BizFlow"
-              className="h-14 sm:h-16 w-auto max-w-[240px] object-contain"
+              className="h-12 sm:h-14 w-auto max-w-[210px] object-contain"
             />
           </Link>
         </div>

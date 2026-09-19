@@ -916,11 +916,13 @@ export const App: React.FC = () => {
             <Route path="categories" element={<CategoryListPage />} />
             <Route path="pos" element={<POSBillingPage />} />
             <Route path="orders" element={<OrdersHistoryPage />} />
+            <Route path="bills" element={<OrdersHistoryPage />} />
             <Route path="customers" element={<CustomerListPage />} />
             <Route path="expenses" element={<ExpenseListPage />} />
             <Route path="inventory" element={<InventoryPage />} />
             <Route path="analytics" element={<AnalyticsDashboardPage />} />
             <Route path="reports" element={<ReportsCenterPage />} />
+            <Route path="ai-assistant" element={<AiAssistantPage />} />
             <Route path="ai" element={<AiAssistantPage />} />
             <Route path="reviews" element={<ReviewBoostDashboardPage />} />
             <Route path="staff" element={<StaffManagementPage />} />

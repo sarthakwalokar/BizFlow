@@ -4,16 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { BusinessType } from '../api/auth';
 import { LanguageSelector } from '../components/common/LanguageSelector';
-import { 
-  User as UserIcon, 
-  Mail, 
-  Lock, 
-  Phone, 
-  Building, 
-  MapPin, 
-  Coffee, 
-  Building2, 
-  ArrowRight, 
+import {
+  User as UserIcon,
+  Mail,
+  Lock,
+  Phone,
+  Building,
+  MapPin,
+  Coffee,
+  Building2,
+  ArrowRight,
   AlertCircle,
   Eye,
   EyeOff,
@@ -44,6 +44,7 @@ const businessTypeOptions: { value: BusinessType; labelKey: string; defaultLabel
   { value: 'CONSULTANCY', labelKey: 'business.typeConsultancy', defaultLabel: 'Consultancy & Agency' },
   { value: 'EDUCATION', labelKey: 'business.typeEducation', defaultLabel: 'Education & Coaching Institute' },
   { value: 'OTHER', labelKey: 'business.typeOther', defaultLabel: 'Other Commercial Enterprise' },
+
 ];
 
 export const SignupPage: React.FC = () => {
@@ -57,7 +58,7 @@ export const SignupPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
   const [preferredLanguage, setPreferredLanguage] = useState<string>(i18n.language || 'en');
-  
+
   const [businessName, setBusinessName] = useState('');
   const [businessType, setBusinessType] = useState<BusinessType>('RETAIL');
   const [businessSize, setBusinessSize] = useState<'SMALL' | 'LARGE'>('SMALL');
@@ -107,7 +108,7 @@ export const SignupPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-3xl mx-auto space-y-6">
-        
+
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <Link to="/" className="inline-flex items-center group bg-slate-950 px-5 py-2.5 rounded-2xl border border-slate-800 shadow-md hover:scale-105 transition-all">
@@ -127,7 +128,7 @@ export const SignupPage: React.FC = () => {
 
         {/* Form Container */}
         <div className="bg-white rounded-2xl p-6 sm:p-10 border border-zinc-200 shadow-card space-y-8">
-          
+
           {error && (
             <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-start space-x-3 text-xs text-red-700">
               <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
@@ -136,7 +137,7 @@ export const SignupPage: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            
+
             {/* Section 1: Business Profile */}
             <div className="space-y-4">
               <div className="border-b border-zinc-100 pb-2">
@@ -190,11 +191,10 @@ export const SignupPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setBusinessSize('SMALL')}
-                      className={`p-3.5 rounded-xl border text-left flex items-start space-x-3 transition-all cursor-pointer ${
-                        businessSize === 'SMALL'
+                      className={`p-3.5 rounded-xl border text-left flex items-start space-x-3 transition-all cursor-pointer ${businessSize === 'SMALL'
                           ? 'bg-brand-50 border-brand-600 text-brand-950 ring-1 ring-brand-600 shadow-xs'
                           : 'bg-white border-zinc-200 text-zinc-700 hover:border-zinc-300'
-                      }`}
+                        }`}
                     >
                       <Coffee className={`w-5 h-5 mt-0.5 ${businessSize === 'SMALL' ? 'text-brand-600' : 'text-zinc-400'}`} />
                       <div>
@@ -206,11 +206,10 @@ export const SignupPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setBusinessSize('LARGE')}
-                      className={`p-3.5 rounded-xl border text-left flex items-start space-x-3 transition-all cursor-pointer ${
-                        businessSize === 'LARGE'
+                      className={`p-3.5 rounded-xl border text-left flex items-start space-x-3 transition-all cursor-pointer ${businessSize === 'LARGE'
                           ? 'bg-brand-50 border-brand-600 text-brand-950 ring-1 ring-brand-600 shadow-xs'
                           : 'bg-white border-zinc-200 text-zinc-700 hover:border-zinc-300'
-                      }`}
+                        }`}
                     >
                       <Building2 className={`w-5 h-5 mt-0.5 ${businessSize === 'LARGE' ? 'text-brand-600' : 'text-zinc-400'}`} />
                       <div>

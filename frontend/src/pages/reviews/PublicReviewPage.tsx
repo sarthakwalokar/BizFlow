@@ -27,7 +27,8 @@ const DEFAULT_CHIPS_BY_RATING: Record<number, string[]> = {
 
 export const PublicReviewPage: React.FC = () => {
   const { t } = useTranslation();
-  const { slugOrId } = useParams<{ slugOrId: string }>();
+  const { slug, slugOrId } = useParams<{ slug?: string; slugOrId?: string }>();
+  const activeSlug = (slug || slugOrId || '').trim();
 
   const [businessInfo, setBusinessInfo] = useState<PublicBusinessReviewInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,6 +49,7 @@ export const PublicReviewPage: React.FC = () => {
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [copiedReview, setCopiedReview] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   // Helper to ensure URL always has https:// protocol and falls back to Google search
   const formatExternalUrl = (url?: string): string | null => {
@@ -67,23 +69,58 @@ export const PublicReviewPage: React.FC = () => {
     return `https://www.google.com/search?q=${searchTarget}`;
   };
 
-  useEffect(() => {
-    const fetchBusiness = async () => {
-      if (!slugOrId) return;
-      try {
-        setLoading(true);
-        const data = await reviewsApi.getPublicReviewInfo(slugOrId);
-        setBusinessInfo(data);
-      } catch (err: any) {
-        setErrorMessage(t('publicReview.loadFailed', 'Unable to load review form for this business.'));
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBusiness();
-  }, [slugOrId]);
+  const fetchBusiness = async () => {
+    if (!activeSlug) {
+      setLoading(false);
+      setErrorMessage(t('publicReview.invalidLink', 'Invalid or missing review link.'));
+      return;
+    }
 
-  const [aiError, setAiError] = useState<string | null>(null);
+    try {
+      setLoading(true);
+      setErrorMessage(null);
+      const data = await reviewsApi.getPublicReviewInfo(activeSlug);
+      setBusinessInfo(data);
+    } catch (err: any) {
+      console.error('Failed to load public review info:', err);
+      const msg =
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        t('publicReview.loadFailed', 'Unable to load review form for this business.');
+      setErrorMessage(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBusiness();
+  }, [activeSlug]);
+
+  const DEFAULT_TEMPLATES_BY_RATING: Record<number, string[]> = {
+    5: [
+      `Exceptional experience at ${businessInfo?.name || 'this place'}! The service was swift, the quality was outstanding, and the staff was super friendly. Highly recommended!`,
+      `Amazing quality and top-notch customer service. One of the best places around!`,
+      `Fantastic experience! Fast checkout, clean environment, and great value for money.`
+    ],
+    4: [
+      `Very good experience overall at ${businessInfo?.name || 'this business'}. Prompt service and helpful staff. Will definitely visit again.`,
+      `Great service and pleasant atmosphere. Quality is consistently good.`,
+      `Smooth and pleasant visit. Helpful team and fair prices.`
+    ],
+    3: [
+      `Decent experience. Service was acceptable though there is room for improvement in speed.`,
+      `Average visit overall. Fair prices and decent quality.`
+    ],
+    2: [
+      `Needs improvement. Service was slow and could be better organized.`,
+      `Expected a better experience. Hoping service quality improves.`
+    ],
+    1: [
+      `Very disappointing experience today. Service was poor and needs urgent attention.`,
+      `Not satisfied with the service provided.`
+    ]
+  };
 
   // Handle Star Rating Selection
   const handleSelectRating = async (selectedStar: number) => {
@@ -92,16 +129,23 @@ export const PublicReviewPage: React.FC = () => {
     setAvailableTags(DEFAULT_CHIPS_BY_RATING[selectedStar] || []);
     setAiError(null);
 
-    // Automatically trigger AI review generation for the selected star
+    // Provide instant local review suggestions immediately so the UI is responsive
+    const localTemplates = DEFAULT_TEMPLATES_BY_RATING[selectedStar] || [];
+    if (localTemplates.length > 0) {
+      setFeedbackText(localTemplates[0]);
+      setAiSuggestions(localTemplates);
+    }
+
+    // Trigger backend AI review generation for enriched custom suggestions
     await triggerAiGeneration(selectedStar);
   };
 
   const triggerAiGeneration = async (starLevel: number, keyword?: string) => {
-    if (!slugOrId) return;
+    if (!activeSlug) return;
     try {
       setGeneratingAi(true);
       setAiError(null);
-      const res: AiReviewSuggestionResponse = await reviewsApi.generateAiReview(slugOrId, {
+      const res: AiReviewSuggestionResponse = await reviewsApi.generateAiReview(activeSlug, {
         rating: starLevel,
         keywords: keyword,
       });
@@ -119,7 +163,7 @@ export const PublicReviewPage: React.FC = () => {
       const msg =
         e.response?.data?.error?.message ||
         e.response?.data?.message ||
-        t('publicReview.aiGenNotice', 'Unable to generate AI review suggestions.');
+        t('publicReview.aiGenNotice', 'Unable to generate live AI review suggestions.');
       setAiError(msg);
     } finally {
       setGeneratingAi(false);
@@ -141,7 +185,7 @@ export const PublicReviewPage: React.FC = () => {
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (rating === 0) {
-      setErrorMessage(t('publicReview.tapToRate'));
+      setErrorMessage(t('publicReview.tapToRate', 'Please select a star rating'));
       return;
     }
 
@@ -152,7 +196,7 @@ export const PublicReviewPage: React.FC = () => {
       const isPositive = rating >= 4;
       const targetGoogleUrl = isPositive ? getGoogleReviewDestination(businessInfo) : undefined;
 
-      await reviewsApi.submitPublicReview(slugOrId!, {
+      await reviewsApi.submitPublicReview(activeSlug, {
         rating,
         feedbackText: feedbackText.trim() || undefined,
         customerName: customerName.trim() || undefined,
@@ -207,7 +251,35 @@ export const PublicReviewPage: React.FC = () => {
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
-          <span className="text-xs font-medium text-zinc-500">{t('common.loading')}</span>
+          <span className="text-xs font-medium text-zinc-500">{t('common.loading', 'Loading review portal...')}</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (errorMessage && !businessInfo) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
+        <div className="max-w-sm w-full bg-white rounded-xl border border-zinc-200 p-6 text-center space-y-4 shadow-xs">
+          <AlertCircle size={40} className="mx-auto text-amber-500" />
+          <h2 className="text-base font-bold text-zinc-900">{t('publicReview.loadFailed', 'Review Portal Unavailable')}</h2>
+          <p className="text-xs text-zinc-500 leading-relaxed">
+            {errorMessage}
+          </p>
+          <div className="flex items-center justify-center gap-2 pt-2">
+            <button
+              onClick={fetchBusiness}
+              className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold cursor-pointer shadow-xs transition-colors"
+            >
+              {t('common.retry', 'Try Again')}
+            </button>
+            <Link
+              to="/"
+              className="px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-medium"
+            >
+              {t('common.back', 'Back to Home')}
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -226,7 +298,7 @@ export const PublicReviewPage: React.FC = () => {
             to="/"
             className="inline-block px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-medium"
           >
-            {t('common.back')}
+            {t('common.back', 'Back to Home')}
           </Link>
         </div>
       </div>

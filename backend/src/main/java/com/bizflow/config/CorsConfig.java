@@ -43,15 +43,18 @@ public class CorsConfig {
             }
         }
 
-        // Allow origin patterns for onrender.com subdomains and local development
-        configuration.setAllowedOriginPatterns(List.of(
-                "http://localhost:*",
-                "http://127.0.0.1:*",
-                "https://*.onrender.com",
-                "https://bizflow-frontend-spa8.onrender.com"
-        ));
+        List<String> patterns = new ArrayList<>();
+        patterns.add("http://localhost:*");
+        patterns.add("http://127.0.0.1:*");
+        patterns.add("https://*.onrender.com");
+        patterns.add("https://bizflow-frontend-spa8.onrender.com");
+        for (String origin : origins) {
+            if (!patterns.contains(origin)) {
+                patterns.add(origin);
+            }
+        }
 
-        configuration.setAllowedOrigins(origins);
+        configuration.setAllowedOriginPatterns(patterns);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList(
                 "Authorization",

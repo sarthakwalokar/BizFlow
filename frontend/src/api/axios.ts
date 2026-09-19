@@ -6,6 +6,30 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
  * VITE_API_BASE_URL is passed with or without '/api/v1'.
  */
 export const getApiBaseUrl = (): string => {
+  const isBrowser = typeof window !== 'undefined';
+  const isLocalHost =
+    isBrowser &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '0.0.0.0');
+
+  // If accessed from public domain (like on Render or customer mobile browser),
+  // never fall back to localhost. Use deployed production backend API URL.
+  if (isBrowser && !isLocalHost) {
+    const envUrl = import.meta.env.VITE_API_BASE_URL;
+    if (
+      envUrl &&
+      typeof envUrl === 'string' &&
+      !envUrl.includes('localhost') &&
+      !envUrl.includes('127.0.0.1') &&
+      envUrl.trim() !== ''
+    ) {
+      const cleaned = envUrl.trim().replace(/\/+$/, '');
+      return cleaned.endsWith('/api/v1') ? cleaned : `${cleaned}/api/v1`;
+    }
+    return 'https://bizflow-backend-8uow.onrender.com/api/v1';
+  }
+
   const envUrl = import.meta.env.VITE_API_BASE_URL;
   if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
     const cleaned = envUrl.trim().replace(/\/+$/, '');

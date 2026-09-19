@@ -42,10 +42,11 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final BusinessRepository businessRepository;
+    private final com.bizflow.ai.provider.OpenRouterProvider openRouterProvider;
     private final com.bizflow.ai.provider.GeminiProvider geminiProvider;
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
-    @Value("${app.frontend.url:http://localhost:5173}")
+    @Value("${app.frontend.url:https://bizflow-frontend-spa8.onrender.com}")
     private String frontendBaseUrl;
 
     @Transactional(readOnly = true)
@@ -342,7 +343,13 @@ public class ReviewService {
     }
 
     private String buildDirectReviewUrl(String slug) {
-        String base = frontendBaseUrl.replaceAll("/+$", "");
+        String base = (frontendBaseUrl != null && !frontendBaseUrl.trim().isEmpty())
+                ? frontendBaseUrl.trim()
+                : "https://bizflow-frontend-spa8.onrender.com";
+        if (base.contains("localhost") || base.contains("127.0.0.1") || base.contains("0.0.0.0")) {
+            base = "https://bizflow-frontend-spa8.onrender.com";
+        }
+        base = base.replaceAll("/+$", "");
         return base + "/review/" + slug;
     }
 
@@ -383,10 +390,6 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public AiReviewSuggestionResponse generateAiReview(String slugOrId, AiReviewGenerateRequest request) {
         Business business = resolveBusinessBySlugOrId(slugOrId);
-        
-        if (!geminiProvider.isConfigured()) {
-            throw new IllegalStateException("BizFlow AI API key is missing or not configured. Please configure the GEMINI_API_KEY or BIZFLOW_AI_GEMINI_API_KEY environment variable.");
-        }
 
         int rating = request != null && request.getRating() >= 1 && request.getRating() <= 5 ? request.getRating() : 5;
         String bizName = business.getName();
@@ -416,52 +419,66 @@ public class ReviewService {
                 rating, bizName, bizType,
                 !keywords.isEmpty() ? "Customer highlighted aspect: " + keywords : "");
 
-        String rawResponse;
-        try {
-            rawResponse = geminiProvider.generateCompletion(systemPrompt, List.of(), userPrompt);
-        } catch (Exception e) {
-            log.error("BizFlow AI review generation failed: {}", e.getMessage());
-            throw new RuntimeException("BizFlow AI review generation failed: " + e.getMessage(), e);
+        String rawResponse = null;
+
+        // 1. Try OpenRouter first (meta-llama/llama-3.3-70b-instruct)
+        if (openRouterProvider != null && openRouterProvider.isConfigured()) {
+            try {
+                rawResponse = openRouterProvider.generateCompletion(systemPrompt, List.of(), userPrompt);
+                log.info("AI review generation succeeded with OpenRouter for business {}", bizName);
+            } catch (Exception e) {
+                log.warn("OpenRouter review generation failed, falling back to Gemini: {}", e.getMessage());
+            }
+        }
+
+        // 2. Try Gemini fallback
+        if (rawResponse == null && geminiProvider != null && geminiProvider.isConfigured()) {
+            try {
+                rawResponse = geminiProvider.generateCompletion(systemPrompt, List.of(), userPrompt);
+                log.info("AI review generation succeeded with Gemini for business {}", bizName);
+            } catch (Exception e) {
+                log.warn("Gemini review generation failed: {}", e.getMessage());
+            }
         }
 
         List<String> suggestions = new ArrayList<>();
         List<String> tags = new ArrayList<>();
 
-        try {
-            String cleanJson = cleanJsonString(rawResponse);
-            JsonNode root = objectMapper.readTree(cleanJson);
-            if (root.path("suggestions").isArray()) {
-                for (JsonNode n : root.path("suggestions")) {
-                    String text = n.asText().trim();
-                    if (!text.isEmpty()) {
-                        suggestions.add(text);
+        if (rawResponse != null) {
+            try {
+                String cleanJson = cleanJsonString(rawResponse);
+                JsonNode root = objectMapper.readTree(cleanJson);
+                if (root.path("suggestions").isArray()) {
+                    for (JsonNode n : root.path("suggestions")) {
+                        String text = n.asText().trim();
+                        if (!text.isEmpty()) {
+                            suggestions.add(text);
+                        }
                     }
                 }
-            }
-            if (root.path("highlightTags").isArray()) {
-                for (JsonNode n : root.path("highlightTags")) {
-                    String tag = n.asText().trim();
-                    if (!tag.isEmpty()) {
-                        tags.add(tag);
+                if (root.path("highlightTags").isArray()) {
+                    for (JsonNode n : root.path("highlightTags")) {
+                        String tag = n.asText().trim();
+                        if (!tag.isEmpty()) {
+                            tags.add(tag);
+                        }
                     }
                 }
-            }
-        } catch (Exception e) {
-            log.warn("Failed to parse JSON response from BizFlow AI, splitting by lines: {}", e.getMessage());
-            String[] lines = rawResponse.split("\n");
-            for (String line : lines) {
-                String cleanLine = line.replaceAll("^[-*0-9.]+\\s*", "").replaceAll("^\"|\"$", "").trim();
-                if (cleanLine.length() > 15 && !cleanLine.startsWith("{") && !cleanLine.startsWith("}")) {
-                    suggestions.add(cleanLine);
+            } catch (Exception e) {
+                log.warn("Failed to parse JSON response from AI review, splitting by lines: {}", e.getMessage());
+                String[] lines = rawResponse.split("\n");
+                for (String line : lines) {
+                    String cleanLine = line.replaceAll("^[-*0-9.]+\\s*", "").replaceAll("^\"|\"$", "").trim();
+                    if (cleanLine.length() > 15 && !cleanLine.startsWith("{") && !cleanLine.startsWith("}")) {
+                        suggestions.add(cleanLine);
+                    }
                 }
             }
         }
 
+        // 3. Fallback to tailored review suggestions if AI services are unreachable or unconfigured
         if (suggestions.isEmpty()) {
-            String clean = rawResponse.replaceAll("^\"|\"$", "").trim();
-            if (!clean.isEmpty()) {
-                suggestions.add(clean);
-            }
+            suggestions = buildFallbackSuggestions(rating, bizName, keywords);
         }
 
         // Default highlight tags based on star rating if empty
@@ -481,6 +498,31 @@ public class ReviewService {
                 .alternativeSuggestions(suggestions)
                 .highlightTags(tags)
                 .build();
+    }
+
+    private List<String> buildFallbackSuggestions(int rating, String bizName, String keywords) {
+        List<String> list = new ArrayList<>();
+        String aspect = (keywords != null && !keywords.trim().isEmpty()) ? " - especially regarding " + keywords.trim() : "";
+
+        if (rating == 5) {
+            list.add(String.format("Exceptional experience at %s! Staff was very courteous, service was rapid, and the overall quality was top notch%s. Highly recommended!", bizName, aspect));
+            list.add(String.format("Hands down one of the best visits I have had. %s consistently delivers fantastic service and great value.", bizName));
+            list.add(String.format("Outstanding quality and super friendly team at %s. Fast checkout and very pleasant atmosphere!", bizName));
+        } else if (rating == 4) {
+            list.add(String.format("Very good visit to %s. Helpful staff, prompt service, and fair pricing%s. Will definitely visit again.", bizName, aspect));
+            list.add(String.format("Great overall experience at %s. Clean premises and good attention to detail.", bizName));
+            list.add(String.format("Solid 4-star experience. Quality is reliable and checkout was smooth.", bizName));
+        } else if (rating == 3) {
+            list.add(String.format("Decent experience at %s. The service was acceptable, though there is some room for improvement in turnaround time%s.", bizName, aspect));
+            list.add(String.format("Average visit overall. Fair prices and decent quality, but could be slightly better organized.", bizName));
+        } else if (rating == 2) {
+            list.add(String.format("Service at %s was below expectations today%s. Hoping the management looks into improving wait times.", bizName, aspect));
+            list.add(String.format("Needs noticeable improvement in customer service and efficiency.", bizName));
+        } else {
+            list.add(String.format("Very disappointed with the service at %s today%s. Urgent attention is needed to improve customer satisfaction.", bizName, aspect));
+            list.add("Not satisfied with the service provided during my visit.");
+        }
+        return list;
     }
 
     private String cleanJsonString(String text) {

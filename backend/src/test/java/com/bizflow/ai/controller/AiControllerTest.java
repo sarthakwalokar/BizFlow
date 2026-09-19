@@ -166,12 +166,12 @@ class AiControllerTest {
     void testGetStatus() throws Exception {
         AiStatusResponse status = AiStatusResponse.builder()
                 .enabled(true)
-                .activeProvider("BizFlow AI Engine")
-                .availableProviders(List.of("BizFlow AI Engine"))
-                .geminiAvailable(true)
+                .activeProvider("OpenRouter (meta-llama/llama-3.3-70b-instruct)")
+                .availableProviders(List.of("OpenRouter (meta-llama/llama-3.3-70b-instruct)"))
+                .openRouterAvailable(true)
+                .geminiAvailable(false)
                 .groqAvailable(false)
-                .openRouterAvailable(false)
-                .fallbackAvailable(true)
+                .fallbackAvailable(false)
                 .build();
 
         when(aiGatewayService.getAiStatus()).thenReturn(status);
@@ -179,7 +179,7 @@ class AiControllerTest {
         mockMvc.perform(get("/api/v1/ai/status"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.activeProvider").value("BizFlow AI Engine"))
-                .andExpect(jsonPath("$.data.geminiAvailable").value(true));
+                .andExpect(jsonPath("$.data.activeProvider").value("OpenRouter (meta-llama/llama-3.3-70b-instruct)"))
+                .andExpect(jsonPath("$.data.openRouterAvailable").value(true));
     }
 }

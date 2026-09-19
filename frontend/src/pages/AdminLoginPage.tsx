@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { Lock, Mail, ArrowRight, AlertCircle, KeyRound, Eye, EyeOff } from 'lucide-react';
 
 export const AdminLoginPage: React.FC = () => {
   const { login } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -23,13 +25,13 @@ export const AdminLoginPage: React.FC = () => {
       if (user.role === 'ADMIN') {
         navigate('/admin/dashboard');
       } else {
-        setError('Unauthorized access: This portal is strictly restricted to platform administrators.');
+        setError(t('admin.unauthorizedAccess', 'Unauthorized access: This portal is strictly restricted to platform administrators.'));
       }
     } catch (err: any) {
       setError(
         err.response?.data?.message ||
         err.message ||
-        'Authentication failed. Please verify admin credentials.'
+        t('auth.adminAuthFailed', 'Authentication failed. Please verify admin credentials.')
       );
     } finally {
       setLoading(false);
@@ -52,13 +54,13 @@ export const AdminLoginPage: React.FC = () => {
         <div className="mt-5 text-center space-y-1">
           <div className="inline-flex items-center space-x-1.5 px-3 py-0.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[11px] font-semibold">
             <KeyRound className="w-3 h-3" />
-            <span>Platform Governance</span>
+            <span>{t('admin.platformGovernance', 'Platform Governance')}</span>
           </div>
           <h2 className="text-2xl font-bold tracking-tight text-zinc-950">
-            Administrator Portal
+            {t('admin.portal', 'Administrator Portal')}
           </h2>
           <p className="text-xs text-zinc-500">
-            Tenant governance, system diagnostics, and platform control
+            {t('admin.portalSubtitle', 'Tenant governance, system diagnostics, and platform control')}
           </p>
         </div>
       </div>
@@ -76,7 +78,7 @@ export const AdminLoginPage: React.FC = () => {
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-xs font-semibold text-zinc-700 mb-1.5" htmlFor="admin-email">
-                Admin Email
+                {t('admin.adminEmail', 'Admin Email')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
@@ -96,7 +98,7 @@ export const AdminLoginPage: React.FC = () => {
 
             <div>
               <label className="block text-xs font-semibold text-zinc-700 mb-1.5" htmlFor="admin-password">
-                Password
+                {t('profile.currentPassword', 'Password')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
@@ -128,7 +130,7 @@ export const AdminLoginPage: React.FC = () => {
               id="admin-login-submit-btn"
               className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold text-sm shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              <span>{loading ? 'Authenticating...' : 'Access Admin Portal'}</span>
+              <span>{loading ? t('auth.loggingIn', 'Authenticating...') : t('admin.accessPortal', 'Access Admin Portal')}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
@@ -138,7 +140,7 @@ export const AdminLoginPage: React.FC = () => {
               to="/login"
               className="text-xs text-zinc-500 hover:text-zinc-800 transition-colors"
             >
-              ← Back to Business Login
+              ← {t('auth.backToBusinessLogin', 'Back to Business Login')}
             </Link>
           </div>
         </div>

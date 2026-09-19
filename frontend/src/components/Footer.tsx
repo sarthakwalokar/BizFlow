@@ -1,8 +1,11 @@
 import React from 'react';
 import { Database, Shield, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const Footer: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t border-zinc-200 bg-white mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -16,33 +19,43 @@ export const Footer: React.FC = () => {
               />
             </Link>
             <div className="border-l border-zinc-200 pl-3">
-              <span className="font-bold text-zinc-900 text-xs sm:text-sm">Unified Commerce Platform</span>
-              <p className="text-[11px] text-zinc-500">POS Billing, AI Insights & Multi-Tenant Operations</p>
+              <span className="font-bold text-zinc-900 text-xs sm:text-sm">
+                {t('footer.tagline', 'Unified Commerce Platform')}
+              </span>
+              <p className="text-[11px] text-zinc-500">
+                {t('footer.subtitle', 'POS Billing, AI Insights & Multi-Tenant Operations')}
+              </p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-6 text-xs text-zinc-500 font-medium">
             <div className="flex items-center space-x-1.5">
               <Zap className="w-3.5 h-3.5 text-brand-600" />
-              <span>Stateless JWT Auth</span>
+              <span>{t('footer.statelessAuth', 'Stateless JWT Auth')}</span>
             </div>
             <div className="flex items-center space-x-1.5">
               <Database className="w-3.5 h-3.5 text-brand-600" />
-              <span>PostgreSQL Multi-Tenant</span>
+              <span>{t('footer.postgresDb', 'PostgreSQL Multi-Tenant')}</span>
             </div>
             <div className="flex items-center space-x-1.5">
               <Shield className="w-3.5 h-3.5 text-brand-600" />
-              <span>Enterprise Grade Security</span>
+              <span>{t('footer.security', 'Enterprise Grade Security')}</span>
             </div>
           </div>
         </div>
 
         <div className="mt-8 pt-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-400 gap-4">
-          <p>© {new Date().getFullYear()} BizFlow Platform. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {t('footer.copyright', 'BizFlow Platform. All rights reserved.')}</p>
           <div className="flex items-center space-x-4">
-            <Link to="/login" className="hover:text-zinc-600 transition-colors">Business Login</Link>
-            <Link to="/signup" className="hover:text-zinc-600 transition-colors">Create Account</Link>
-            <Link to="/admin/login" className="hover:text-zinc-600 transition-colors">Admin Portal</Link>
+            <Link to="/login" className="hover:text-zinc-600 transition-colors">
+              {t('footer.businessLogin', 'Business Login')}
+            </Link>
+            <Link to="/signup" className="hover:text-zinc-600 transition-colors">
+              {t('footer.createAccount', 'Create Account')}
+            </Link>
+            <Link to="/admin/login" className="hover:text-zinc-600 transition-colors">
+              {t('footer.adminPortal', 'Admin Portal')}
+            </Link>
           </div>
         </div>
       </div>

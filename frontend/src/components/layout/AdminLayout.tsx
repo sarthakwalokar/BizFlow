@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard,
@@ -15,6 +16,7 @@ import {
 
 export const AdminLayout: React.FC = () => {
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -26,27 +28,27 @@ export const AdminLayout: React.FC = () => {
 
   const navItems = [
     {
-      label: 'Platform Overview',
+      label: t('admin.overview', 'Platform Overview'),
       path: '/admin/dashboard',
       icon: LayoutDashboard,
     },
     {
-      label: 'Tenants & Businesses',
+      label: t('admin.businesses', 'Tenants & Businesses'),
       path: '/admin/businesses',
       icon: Building2,
     },
     {
-      label: 'Platform Users',
+      label: t('admin.users', 'Platform Users'),
       path: '/admin/users',
       icon: Users,
     },
     {
-      label: 'Platform Reports',
+      label: t('admin.reports', 'Platform Reports'),
       path: '/admin/reports',
       icon: BarChart3,
     },
     {
-      label: 'System Config',
+      label: t('admin.systemConfig', 'System Config'),
       path: '/admin/settings',
       icon: Settings,
     },
@@ -70,7 +72,7 @@ export const AdminLayout: React.FC = () => {
             className="h-8 sm:h-9 w-auto max-w-[140px] object-contain"
           />
           <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand-50 text-brand-700 border border-brand-200 uppercase">
-            Admin
+            {t('common.admin', 'Admin')}
           </span>
         </div>
 
@@ -100,16 +102,16 @@ export const AdminLayout: React.FC = () => {
                 />
               </Link>
               <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand-50 text-brand-700 border border-brand-200 uppercase">
-                Admin
+                {t('common.admin', 'Admin')}
               </span>
             </div>
-            <p className="text-[10px] text-zinc-500 font-medium pl-0.5">Platform Governance Center</p>
+            <p className="text-[10px] text-zinc-500 font-medium pl-0.5">{t('admin.governanceCenter', 'Platform Governance Center')}</p>
           </div>
 
           {/* Navigation Links */}
           <nav className="space-y-1 pt-1">
             <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider px-3 py-1">
-              Platform Administration
+              {t('admin.platformAdmin', 'Platform Administration')}
             </div>
 
             {navItems.map((item) => {
@@ -145,7 +147,7 @@ export const AdminLayout: React.FC = () => {
               <p className="text-xs font-semibold text-zinc-900 truncate">{user?.fullName || 'Root Admin'}</p>
               <span className="text-[10px] text-brand-700 font-medium flex items-center space-x-1">
                 <Zap size={10} className="text-brand-600" />
-                <span>Super Administrator</span>
+                <span>{t('admin.superAdmin', 'Super Administrator')}</span>
               </span>
             </div>
           </div>
@@ -155,7 +157,7 @@ export const AdminLayout: React.FC = () => {
             className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-xl bg-zinc-50 hover:bg-red-50 text-zinc-600 hover:text-red-700 border border-zinc-200 hover:border-red-200 text-xs font-semibold transition-colors cursor-pointer"
           >
             <LogOut size={14} />
-            <span>Sign Out Admin</span>
+            <span>{t('admin.signOutAdmin', 'Sign Out Admin')}</span>
           </button>
         </div>
       </aside>

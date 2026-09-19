@@ -19,31 +19,31 @@ import {
   EyeOff,
 } from 'lucide-react';
 
-const businessTypeOptions: { value: BusinessType; label: string }[] = [
-  { value: 'RETAIL', label: 'Retail Store / Shop' },
-  { value: 'GROCERY', label: 'Grocery & Kirana Store' },
-  { value: 'SUPERMARKET', label: 'Supermarket / Hypermarket' },
-  { value: 'RESTAURANT', label: 'Restaurant / Fine Dining' },
-  { value: 'CAFE', label: 'Café & Bistro' },
-  { value: 'BAKERY', label: 'Bakery & Patisserie' },
-  { value: 'SWEET_SHOP', label: 'Sweet Shop / Confectionery' },
-  { value: 'SALON', label: 'Salon & Hair Studio' },
-  { value: 'BEAUTY_PARLOUR', label: 'Beauty Parlour & Spa' },
-  { value: 'CLOTHING', label: 'Clothing & Apparel / Boutique' },
-  { value: 'ELECTRONICS', label: 'Electronics & Appliances' },
-  { value: 'PHARMACY', label: 'Pharmacy & Medical Store' },
-  { value: 'HARDWARE', label: 'Hardware & Electrical' },
-  { value: 'FURNITURE', label: 'Furniture & Home Decor' },
-  { value: 'STATIONERY', label: 'Stationery & Book Store' },
-  { value: 'MOBILE_STORE', label: 'Mobile Store & Tech Hub' },
-  { value: 'REPAIR', label: 'Repair & Service Center' },
-  { value: 'FITNESS', label: 'Fitness & Gym Studio' },
-  { value: 'HOTEL', label: 'Hotel & Hospitality' },
-  { value: 'CATERING', label: 'Catering & Event Services' },
-  { value: 'SERVICE', label: 'Professional & Trade Services' },
-  { value: 'CONSULTANCY', label: 'Consultancy & Agency' },
-  { value: 'EDUCATION', label: 'Education & Coaching Institute' },
-  { value: 'OTHER', label: 'Other Commercial Enterprise' },
+const businessTypeOptions: { value: BusinessType; labelKey: string; defaultLabel: string }[] = [
+  { value: 'RETAIL', labelKey: 'business.typeRetail', defaultLabel: 'Retail Store / Shop' },
+  { value: 'GROCERY', labelKey: 'business.typeGrocery', defaultLabel: 'Grocery & Kirana Store' },
+  { value: 'SUPERMARKET', labelKey: 'business.typeSupermarket', defaultLabel: 'Supermarket / Hypermarket' },
+  { value: 'RESTAURANT', labelKey: 'business.typeRestaurant', defaultLabel: 'Restaurant / Fine Dining' },
+  { value: 'CAFE', labelKey: 'business.typeCafe', defaultLabel: 'Café & Bistro' },
+  { value: 'BAKERY', labelKey: 'business.typeBakery', defaultLabel: 'Bakery & Patisserie' },
+  { value: 'SWEET_SHOP', labelKey: 'business.typeSweetShop', defaultLabel: 'Sweet Shop / Confectionery' },
+  { value: 'SALON', labelKey: 'business.typeSalon', defaultLabel: 'Salon & Hair Studio' },
+  { value: 'BEAUTY_PARLOUR', labelKey: 'business.typeBeautyParlour', defaultLabel: 'Beauty Parlour & Spa' },
+  { value: 'CLOTHING', labelKey: 'business.typeClothing', defaultLabel: 'Clothing & Apparel / Boutique' },
+  { value: 'ELECTRONICS', labelKey: 'business.typeElectronics', defaultLabel: 'Electronics & Appliances' },
+  { value: 'PHARMACY', labelKey: 'business.typePharmacy', defaultLabel: 'Pharmacy & Medical Store' },
+  { value: 'HARDWARE', labelKey: 'business.typeHardware', defaultLabel: 'Hardware & Electrical' },
+  { value: 'FURNITURE', labelKey: 'business.typeFurniture', defaultLabel: 'Furniture & Home Decor' },
+  { value: 'STATIONERY', labelKey: 'business.typeStationery', defaultLabel: 'Stationery & Book Store' },
+  { value: 'MOBILE_STORE', labelKey: 'business.typeMobileStore', defaultLabel: 'Mobile Store & Tech Hub' },
+  { value: 'REPAIR', labelKey: 'business.typeRepair', defaultLabel: 'Repair & Service Center' },
+  { value: 'FITNESS', labelKey: 'business.typeFitness', defaultLabel: 'Fitness & Gym Studio' },
+  { value: 'HOTEL', labelKey: 'business.typeHotel', defaultLabel: 'Hotel & Hospitality' },
+  { value: 'CATERING', labelKey: 'business.typeCatering', defaultLabel: 'Catering & Event Services' },
+  { value: 'SERVICE', labelKey: 'business.typeService', defaultLabel: 'Professional & Trade Services' },
+  { value: 'CONSULTANCY', labelKey: 'business.typeConsultancy', defaultLabel: 'Consultancy & Agency' },
+  { value: 'EDUCATION', labelKey: 'business.typeEducation', defaultLabel: 'Education & Coaching Institute' },
+  { value: 'OTHER', labelKey: 'business.typeOther', defaultLabel: 'Other Commercial Enterprise' },
 ];
 
 export const SignupPage: React.FC = () => {
@@ -97,7 +97,7 @@ export const SignupPage: React.FC = () => {
       setError(
         err.response?.data?.message ||
         err.message ||
-        'Registration failed. Please verify your information and try again.'
+        t('auth.signupError', 'Registration failed. Please verify your information and try again.')
       );
     } finally {
       setLoading(false);
@@ -118,10 +118,10 @@ export const SignupPage: React.FC = () => {
             />
           </Link>
           <h2 className="text-2xl font-bold tracking-tight text-zinc-950">
-            Register your business with BizFlow
+            {t('auth.signupTitle', 'Register your business with BizFlow')}
           </h2>
           <p className="text-xs sm:text-sm text-zinc-500 max-w-md mx-auto">
-            Set up your owner account and onboard your business operations in minutes.
+            {t('auth.signupSubtitle', 'Set up your owner account and onboard your business operations in minutes.')}
           </p>
         </div>
 
@@ -142,15 +142,15 @@ export const SignupPage: React.FC = () => {
               <div className="border-b border-zinc-100 pb-2">
                 <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
                   <Building className="w-4 h-4 text-brand-600" />
-                  <span>1. Business Information</span>
+                  <span>{t('auth.businessInformation', '1. Business Information')}</span>
                 </h2>
-                <p className="text-[11px] text-zinc-500">Tell us about your company or establishment</p>
+                <p className="text-[11px] text-zinc-500">{t('auth.tellUsAboutBiz', 'Tell us about your company or establishment')}</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-zinc-700 mb-1" htmlFor="signup-biz-name">
-                    Business Name *
+                    {t('settings.businessName', 'Business Name')} *
                   </label>
                   <input
                     id="signup-biz-name"
@@ -158,14 +158,14 @@ export const SignupPage: React.FC = () => {
                     required
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="e.g. Spice Garden Fine Dine"
+                    placeholder={t('auth.businessNamePlaceholder', 'e.g. Spice Garden Fine Dine')}
                     className="w-full px-3.5 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-zinc-700 mb-1" htmlFor="signup-biz-type">
-                    Business Type / Industry Vertical *
+                    {t('auth.businessTypeVertical', 'Business Type / Industry Vertical')} *
                   </label>
                   <select
                     id="signup-biz-type"
@@ -175,7 +175,7 @@ export const SignupPage: React.FC = () => {
                   >
                     {businessTypeOptions.map((opt) => (
                       <option key={opt.value} value={opt.value}>
-                        {opt.label}
+                        {t(opt.labelKey, opt.defaultLabel)}
                       </option>
                     ))}
                   </select>
@@ -184,7 +184,7 @@ export const SignupPage: React.FC = () => {
                 {/* Business Size Selector */}
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-zinc-700 mb-2">
-                    Business Size / Scale *
+                    {t('auth.businessSizeScale', 'Business Size / Scale')} *
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button
@@ -198,8 +198,8 @@ export const SignupPage: React.FC = () => {
                     >
                       <Coffee className={`w-5 h-5 mt-0.5 ${businessSize === 'SMALL' ? 'text-brand-600' : 'text-zinc-400'}`} />
                       <div>
-                        <div className="text-xs font-bold text-zinc-900">Small Business / Single Counter</div>
-                        <div className="text-[11px] text-zinc-500 mt-0.5">Lean stock, direct POS billing, quick operations</div>
+                        <div className="text-xs font-bold text-zinc-900">{t('landing.smallBusiness', 'Small Business / Single Counter')}</div>
+                        <div className="text-[11px] text-zinc-500 mt-0.5">{t('auth.smallBizDesc', 'Lean stock, direct POS billing, quick operations')}</div>
                       </div>
                     </button>
 
@@ -214,8 +214,8 @@ export const SignupPage: React.FC = () => {
                     >
                       <Building2 className={`w-5 h-5 mt-0.5 ${businessSize === 'LARGE' ? 'text-brand-600' : 'text-zinc-400'}`} />
                       <div>
-                        <div className="text-xs font-bold text-zinc-900">Large Enterprise / Multi-Branch</div>
-                        <div className="text-[11px] text-zinc-500 mt-0.5">Warehouses, suppliers, inward POs & stock ledger</div>
+                        <div className="text-xs font-bold text-zinc-900">{t('landing.largeBusiness', 'Large Enterprise / Multi-Branch')}</div>
+                        <div className="text-[11px] text-zinc-500 mt-0.5">{t('auth.largeBizDesc', 'Warehouses, suppliers, inward POs & stock ledger')}</div>
                       </div>
                     </button>
                   </div>
@@ -223,7 +223,7 @@ export const SignupPage: React.FC = () => {
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-zinc-700 mb-1" htmlFor="signup-biz-addr">
-                    Business Address
+                    {t('settings.address', 'Business Address')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
@@ -234,7 +234,7 @@ export const SignupPage: React.FC = () => {
                       type="text"
                       value={businessAddress}
                       onChange={(e) => setBusinessAddress(e.target.value)}
-                      placeholder="e.g. 100 Feet Road, Indiranagar, Bengaluru"
+                      placeholder={t('auth.addressPlaceholder', 'e.g. 100 Feet Road, Indiranagar, Bengaluru')}
                       className="w-full pl-10 pr-3.5 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
                     />
                   </div>
@@ -242,28 +242,28 @@ export const SignupPage: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-zinc-700 mb-1" htmlFor="signup-biz-phone">
-                    Business Phone
+                    {t('settings.phone', 'Business Phone')}
                   </label>
                   <input
                     id="signup-biz-phone"
                     type="tel"
                     value={businessPhone}
                     onChange={(e) => setBusinessPhone(e.target.value)}
-                    placeholder="e.g. +91 98765 43210"
+                    placeholder="+91 98765 43210"
                     className="w-full px-3.5 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-zinc-700 mb-1" htmlFor="signup-biz-email">
-                    Business Email
+                    {t('common.email', 'Business Email')}
                   </label>
                   <input
                     id="signup-biz-email"
                     type="email"
                     value={businessEmail}
                     onChange={(e) => setBusinessEmail(e.target.value)}
-                    placeholder="e.g. contact@business.in"
+                    placeholder="contact@business.in"
                     className="w-full px-3.5 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
                   />
                 </div>
@@ -275,15 +275,15 @@ export const SignupPage: React.FC = () => {
               <div className="border-b border-zinc-100 pb-2">
                 <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
                   <UserIcon className="w-4 h-4 text-brand-600" />
-                  <span>2. Business Owner Credentials</span>
+                  <span>{t('auth.ownerCredentials', '2. Business Owner Credentials')}</span>
                 </h2>
-                <p className="text-[11px] text-zinc-500">You will automatically receive OWNER privileges for this business</p>
+                <p className="text-[11px] text-zinc-500">{t('auth.ownerPrivilegesNote', 'You will automatically receive OWNER privileges for this business')}</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-zinc-700 mb-1" htmlFor="signup-owner-name">
-                    Full Name *
+                    {t('profile.fullName', 'Full Name')} *
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
@@ -295,7 +295,7 @@ export const SignupPage: React.FC = () => {
                       required
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Arjun Kapoor"
+                      placeholder={t('auth.ownerNamePlaceholder', 'Arjun Kapoor')}
                       className="w-full pl-10 pr-3.5 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
                     />
                   </div>
@@ -303,7 +303,7 @@ export const SignupPage: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-zinc-700 mb-1" htmlFor="signup-owner-phone">
-                    Owner Phone
+                    {t('profile.phone', 'Owner Phone')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
@@ -314,7 +314,7 @@ export const SignupPage: React.FC = () => {
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+91 98765 43210"
+                      placeholder={t('auth.phonePlaceholder', '+91 98765 43210')}
                       className="w-full pl-10 pr-3.5 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
                     />
                   </div>
@@ -322,7 +322,7 @@ export const SignupPage: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-zinc-700 mb-1" htmlFor="signup-owner-email">
-                    Login Email Address *
+                    {t('auth.loginEmail', 'Login Email Address')} *
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
@@ -334,7 +334,7 @@ export const SignupPage: React.FC = () => {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="owner@mybusiness.in"
+                      placeholder={t('auth.emailPlaceholder', 'owner@mybusiness.in')}
                       className="w-full pl-10 pr-3.5 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
                     />
                   </div>
@@ -342,7 +342,7 @@ export const SignupPage: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-zinc-700 mb-1" htmlFor="signup-owner-password">
-                    Password *
+                    {t('profile.newPassword', 'Password')} *
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
@@ -355,7 +355,7 @@ export const SignupPage: React.FC = () => {
                       minLength={6}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Min 6 characters"
+                      placeholder={t('auth.minSixChars', 'Min 6 characters')}
                       className="w-full pl-10 pr-10 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
                     />
                     <button
@@ -377,7 +377,7 @@ export const SignupPage: React.FC = () => {
                     onChange={handleLanguageChange}
                   />
                   <p className="text-[11px] text-zinc-500 mt-1">
-                    Select your preferred language. BizFlow interface and AI business insights will automatically adapt to your selection.
+                    {t('auth.preferredLanguageHelp', 'Select your preferred language. BizFlow interface and AI business insights will automatically adapt to your selection.')}
                   </p>
                 </div>
               </div>
@@ -393,11 +393,11 @@ export const SignupPage: React.FC = () => {
               {loading ? (
                 <span className="inline-flex items-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Creating account...</span>
+                  <span>{t('auth.signingUp', 'Creating account...')}</span>
                 </span>
               ) : (
                 <>
-                  <span>Complete Onboarding & Launch Workspace</span>
+                  <span>{t('auth.signupButton', 'Complete Onboarding & Launch Workspace')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -405,9 +405,9 @@ export const SignupPage: React.FC = () => {
           </form>
 
           <p className="text-center text-xs text-zinc-500">
-            Already have an account?{' '}
+            {t('auth.alreadyHaveAccount', 'Already have an account?')}{' '}
             <Link to="/login" className="font-semibold text-brand-600 hover:text-brand-700 hover:underline">
-              Sign in here
+              {t('auth.loginButton', 'Sign in here')}
             </Link>
           </p>
         </div>

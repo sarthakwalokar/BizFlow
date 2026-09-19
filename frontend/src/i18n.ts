@@ -50,12 +50,24 @@ export const applyLanguageDirection = (langCode: string) => {
   document.documentElement.lang = lang.code;
 };
 
+export const formatFallbackKey = (key: string): string => {
+  const lastPart = key.split('.').pop() || key;
+  return lastPart
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/[-_]/g, ' ')
+    .replace(/^./, (str) => str.toUpperCase())
+    .trim();
+};
+
 i18n
   .use(initReactI18next)
   .init({
     resources,
     lng: savedLanguage,
     fallbackLng: DEFAULT_LANGUAGE,
+    parseMissingKeyHandler: (key: string) => {
+      return formatFallbackKey(key);
+    },
     interpolation: {
       escapeValue: false, // React already safes from XSS
     },

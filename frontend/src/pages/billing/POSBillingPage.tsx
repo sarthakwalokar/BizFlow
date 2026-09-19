@@ -93,14 +93,14 @@ export const POSBillingPage: React.FC = () => {
         setProducts(items);
         setCategories(catRes || []);
       } catch (err) {
-        setErrorMessage('Failed to load products and categories.');
+        setErrorMessage(t('billing.loadError', 'Failed to load products and categories.'));
       } finally {
         setLoadingCatalog(false);
       }
     };
 
     initPOS();
-  }, []);
+  }, [t]);
 
   // Quick Customer Search
   useEffect(() => {
@@ -128,7 +128,7 @@ export const POSBillingPage: React.FC = () => {
     setErrorMessage(null);
 
     if (product.trackStock && (product.stockQuantity ?? 0) <= 0) {
-      setErrorMessage(`"${product.name}" is currently out of stock.`);
+      setErrorMessage(`"${product.name}" ${t('billing.outOfStockMsg', 'is currently out of stock.')}`);
       return;
     }
 
@@ -141,7 +141,7 @@ export const POSBillingPage: React.FC = () => {
 
         if (product.trackStock && newQty > (product.stockQuantity ?? 0)) {
           setErrorMessage(
-            `Cannot add more "${product.name}". Only ${product.stockQuantity ?? 0} in stock.`
+            `${t('billing.cannotAddMore', 'Cannot add more')} "${product.name}". ${t('billing.onlyInStock', 'Only')} ${product.stockQuantity ?? 0} ${t('billing.inStockAvailable', 'in stock.')}`
           );
           return prevCart;
         }
@@ -177,7 +177,7 @@ export const POSBillingPage: React.FC = () => {
 
             if (product && product.trackStock && newQty > (product.stockQuantity ?? 0)) {
               setErrorMessage(
-                `Cannot set quantity to ${newQty}. Only ${product.stockQuantity ?? 0} units available.`
+                `${t('billing.cannotSetQty', 'Cannot set quantity to')} ${newQty}. ${t('billing.onlyInStock', 'Only')} ${product.stockQuantity ?? 0} ${t('billing.unitsAvailable', 'units available.')}`
               );
               return item;
             }
@@ -242,7 +242,7 @@ export const POSBillingPage: React.FC = () => {
   // Submit Order Checkout
   const handleCheckout = async () => {
     if (cart.length === 0) {
-      setErrorMessage('Your cart is empty. Add items from the catalog first.');
+      setErrorMessage(t('billing.cartEmpty', 'Your cart is empty. Add items from the catalog first.'));
       return;
     }
 
@@ -269,12 +269,12 @@ export const POSBillingPage: React.FC = () => {
     try {
       const created = await billingApi.createOrder(orderPayload);
       setCompletedOrder(created);
-      setSuccessToast(`Bill ${created.invoiceNumber} processed successfully!`);
+      setSuccessToast(`${t('billing.saleCompleted', 'Sale completed!')} #${created.invoiceNumber}`);
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.message ||
           err.message ||
-          'Failed to process checkout. Please try again.'
+          t('billing.checkoutError', 'Failed to process checkout. Please try again.')
       );
     } finally {
       setProcessingOrder(false);
@@ -299,10 +299,10 @@ export const POSBillingPage: React.FC = () => {
       setNewCustName('');
       setNewCustPhone('');
       setNewCustEmail('');
-      setSuccessToast(`Customer "${newCust.name}" attached to bill.`);
+      setSuccessToast(`${t('customers.customerSaved', 'Customer saved!')} "${newCust.name}"`);
     } catch (err: any) {
       setErrorMessage(
-        err.response?.data?.message || 'Failed to register customer. Check phone or email.'
+        err.response?.data?.message || t('customers.saveError', 'Failed to register customer. Check phone or email.')
       );
     } finally {
       setCreatingCustomer(false);
@@ -333,7 +333,7 @@ export const POSBillingPage: React.FC = () => {
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder={t('billing.searchProducts')}
+                placeholder={t('billing.searchProducts', 'Search products by name or barcode...')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-9 pr-8 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
@@ -358,7 +358,7 @@ export const POSBillingPage: React.FC = () => {
                     : 'text-zinc-600 hover:text-zinc-900'
                 }`}
               >
-                {t('common.all')}
+                {t('common.all', 'All')}
               </button>
               <button
                 onClick={() => setSelectedType('PHYSICAL')}
@@ -369,7 +369,7 @@ export const POSBillingPage: React.FC = () => {
                 }`}
               >
                 <Package size={13} />
-                <span>{t('billing.goods')}</span>
+                <span>{t('products.goods', 'Goods')}</span>
               </button>
               <button
                 onClick={() => setSelectedType('SERVICE')}
@@ -380,7 +380,7 @@ export const POSBillingPage: React.FC = () => {
                 }`}
               >
                 <Scissors size={13} />
-                <span>{t('billing.services')}</span>
+                <span>{t('products.services', 'Services')}</span>
               </button>
             </div>
           </div>
@@ -395,7 +395,7 @@ export const POSBillingPage: React.FC = () => {
                   : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
               }`}
             >
-              {t('common.all')} ({products.length})
+              {t('common.all', 'All')} ({products.length})
             </button>
             {categories.map((cat) => (
               <button
@@ -420,7 +420,7 @@ export const POSBillingPage: React.FC = () => {
           ) : filteredProducts.length === 0 ? (
             <div className="py-16 text-center text-zinc-500 bg-white rounded-2xl border border-zinc-200 p-8 space-y-2">
               <Package size={36} className="mx-auto text-zinc-300" />
-              <p className="font-bold text-zinc-700">{t('products.noProductsFound')}</p>
+              <p className="font-bold text-zinc-700">{t('products.noProductsFound', 'No products found')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -454,7 +454,7 @@ export const POSBillingPage: React.FC = () => {
                           className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
                             prod.productType === 'PHYSICAL'
                               ? 'bg-zinc-100 text-zinc-700 border border-zinc-200'
-                              : 'bg-flow-50 text-flow-700 border border-flow-200'
+                              : 'bg-brand-50 text-brand-700 border border-brand-200'
                           }`}
                         >
                           {prod.productType}
@@ -489,13 +489,13 @@ export const POSBillingPage: React.FC = () => {
                           }`}
                         >
                           {isOutOfStock
-                            ? 'Out of Stock'
+                            ? t('products.outOfStock', 'Out of Stock')
                             : isLowStock
-                            ? `Low: ${prod.stockQuantity}`
-                            : `${prod.stockQuantity} left`}
+                            ? `${t('products.low', 'Low')}: ${prod.stockQuantity}`
+                            : `${prod.stockQuantity} ${t('products.left', 'left')}`}
                         </span>
                       ) : (
-                        <span className="text-[10px] text-brand-700 font-semibold">Service</span>
+                        <span className="text-[10px] text-brand-700 font-semibold">{t('products.service', 'Service')}</span>
                       )}
 
                       <span className="font-black text-xs text-zinc-950">
@@ -516,9 +516,9 @@ export const POSBillingPage: React.FC = () => {
         <div className="p-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/60">
           <div className="flex items-center space-x-2">
             <ShoppingCart size={18} className="text-brand-600" />
-            <h3 className="font-bold text-sm text-zinc-900">{t('billing.cart')}</h3>
+            <h3 className="font-bold text-sm text-zinc-900">{t('billing.cart', 'Cart')}</h3>
             <span className="px-2 py-0.5 rounded-full bg-brand-100 text-brand-800 text-[10px] font-bold">
-              {cart.reduce((a, b) => a + b.quantity, 0)} items
+              {cart.reduce((a, b) => a + b.quantity, 0)} {t('billing.items', 'items')}
             </span>
           </div>
 
@@ -528,7 +528,7 @@ export const POSBillingPage: React.FC = () => {
               className="text-xs font-semibold text-rose-600 hover:text-rose-700 flex items-center space-x-1 cursor-pointer"
             >
               <RotateCcw size={12} />
-              <span>{t('billing.clearCart')}</span>
+              <span>{t('billing.clearCart', 'Clear Cart')}</span>
             </button>
           )}
         </div>
@@ -546,7 +546,7 @@ export const POSBillingPage: React.FC = () => {
                     {selectedCustomer.name}
                   </h5>
                   <p className="text-[10px] text-zinc-500 truncate">
-                    {selectedCustomer.phone || selectedCustomer.email || 'Attached Customer'}
+                    {selectedCustomer.phone || selectedCustomer.email || t('billing.customerDetails', 'Attached Customer')}
                   </p>
                 </div>
               </div>
@@ -564,7 +564,7 @@ export const POSBillingPage: React.FC = () => {
                   <Search size={14} className="absolute left-3 top-2.5 text-zinc-400" />
                   <input
                     type="text"
-                    placeholder={t('billing.customerInfo')}
+                    placeholder={t('billing.customerName', 'Search Customer (Name/Phone)...')}
                     value={customerSearch}
                     onChange={(e) => setCustomerSearch(e.target.value)}
                     className="w-full pl-8 pr-3 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
@@ -574,10 +574,10 @@ export const POSBillingPage: React.FC = () => {
                   type="button"
                   onClick={() => setIsNewCustomerModalOpen(true)}
                   className="px-2.5 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold text-xs flex items-center space-x-1 cursor-pointer"
-                  title="New Customer"
+                  title={t('customers.addCustomer', 'Add Customer')}
                 >
                   <UserPlus size={14} />
-                  <span>{t('billing.addCustomer')}</span>
+                  <span>{t('common.add', 'Add')}</span>
                 </button>
               </div>
 
@@ -599,7 +599,7 @@ export const POSBillingPage: React.FC = () => {
                         <div className="text-xs font-bold text-zinc-900">{c.name}</div>
                         <div className="text-[10px] text-zinc-500">{c.phone || c.email}</div>
                       </div>
-                      <span className="text-[10px] text-brand-600 font-semibold">{t('common.view')}</span>
+                      <span className="text-[10px] text-brand-600 font-semibold">{t('common.view', 'Select')}</span>
                     </button>
                   ))}
                 </div>
@@ -627,7 +627,7 @@ export const POSBillingPage: React.FC = () => {
           {cart.length === 0 ? (
             <div className="py-12 text-center text-zinc-400 space-y-2">
               <ShoppingCart size={32} className="mx-auto text-zinc-300" />
-              <p className="text-xs font-medium">{t('billing.emptyCart')}</p>
+              <p className="text-xs font-medium">{t('billing.cartEmpty', 'Cart is empty. Add products to begin.')}</p>
             </div>
           ) : (
             cart.map((item) => (
@@ -682,7 +682,7 @@ export const POSBillingPage: React.FC = () => {
           {/* Subtotal, Discount & Tax */}
           <div className="space-y-1.5 text-xs">
             <div className="flex items-center justify-between text-zinc-600">
-              <span>{t('billing.subtotal')}</span>
+              <span>{t('billing.subtotal', 'Subtotal')}</span>
               <span className="font-bold text-zinc-900">
                 {formatCurrency(subtotal, currency)}
               </span>
@@ -691,7 +691,7 @@ export const POSBillingPage: React.FC = () => {
             {/* Discount row */}
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center space-x-1 text-zinc-600">
-                <span>{t('billing.discount')}</span>
+                <span>{t('billing.discountAmount', 'Discount')}</span>
                 <button
                   onClick={() => setIsPercentageDiscount(!isPercentageDiscount)}
                   className="px-1.5 py-0.5 rounded bg-zinc-200 text-[10px] font-bold hover:bg-zinc-300 cursor-pointer"
@@ -720,10 +720,10 @@ export const POSBillingPage: React.FC = () => {
             {taxRate > 0 && (
               <div className="flex items-center justify-between text-zinc-600">
                 <span>
-                  {business?.taxName || 'GST'} ({taxRate}%{taxInclusive ? ' incl.' : ''})
+                  {business?.taxName || 'GST'} ({taxRate}%{taxInclusive ? ` ${t('billing.inclusive', 'incl.')}` : ''})
                 </span>
                 <span className="font-bold text-zinc-900">
-                  {taxInclusive ? '(included) ' : '+'}
+                  {taxInclusive ? `(${t('billing.included', 'included')}) ` : '+'}
                   {formatCurrency(calculatedTax, currency)}
                 </span>
               </div>
@@ -731,7 +731,7 @@ export const POSBillingPage: React.FC = () => {
 
             {/* Grand Total */}
             <div className="pt-2 border-t border-zinc-200 flex items-center justify-between">
-              <span className="font-bold text-zinc-900 text-sm">{t('billing.totalPayable')}</span>
+              <span className="font-bold text-zinc-900 text-sm">{t('billing.grandTotal', 'Total Payable')}</span>
               <span className="font-black text-zinc-950 text-xl">
                 {formatCurrency(grandTotal, currency)}
               </span>
@@ -741,15 +741,15 @@ export const POSBillingPage: React.FC = () => {
           {/* Payment Method Selector Pills */}
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">
-              {t('billing.paymentMethod')}
+              {t('billing.paymentMethod', 'Payment Method')}
             </label>
             <div className="grid grid-cols-5 gap-1.5">
               {[
-                { id: 'UPI', label: t('billing.upi'), icon: QrCode },
-                { id: 'CASH', label: t('billing.cash'), icon: Coins },
-                { id: 'CARD', label: t('billing.card'), icon: CreditCard },
-                { id: 'CREDIT', label: 'Credit', icon: Wallet },
-                { id: 'OTHER', label: 'Other', icon: Banknote },
+                { id: 'UPI', label: t('billing.upi', 'UPI / QR'), icon: QrCode },
+                { id: 'CASH', label: t('billing.cash', 'Cash'), icon: Coins },
+                { id: 'CARD', label: t('billing.card', 'Card'), icon: CreditCard },
+                { id: 'CREDIT', label: t('billing.credit', 'Credit'), icon: Wallet },
+                { id: 'OTHER', label: t('common.other', 'Other'), icon: Banknote },
               ].map((m) => {
                 const Icon = m.icon;
                 const isSelected = paymentMethod === m.id;
@@ -777,10 +777,10 @@ export const POSBillingPage: React.FC = () => {
             <div className="p-2.5 bg-zinc-100 rounded-xl border border-zinc-200 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider">
-                  Quick Cash Tender
+                  {t('billing.quickCash', 'Quick Cash Tender')}
                 </span>
                 <div className="flex items-center space-x-1">
-                  <span className="text-[10px] text-zinc-500">Tendered: {currencySymbol}</span>
+                  <span className="text-[10px] text-zinc-500">{t('billing.tendered', 'Tendered')}: {currencySymbol}</span>
                   <input
                     type="number"
                     min="0"
@@ -794,7 +794,7 @@ export const POSBillingPage: React.FC = () => {
 
               <div className="flex flex-wrap gap-1">
                 {[
-                  { label: 'Exact', amount: Math.ceil(grandTotal) },
+                  { label: t('billing.exact', 'Exact'), amount: Math.ceil(grandTotal) },
                   { label: `${currencySymbol}100`, amount: 100 },
                   { label: `${currencySymbol}200`, amount: 200 },
                   { label: `${currencySymbol}500`, amount: 500 },
@@ -813,7 +813,7 @@ export const POSBillingPage: React.FC = () => {
 
               {numCashTendered >= grandTotal && grandTotal > 0 && (
                 <div className="flex items-center justify-between pt-1 border-t border-zinc-200 text-xs font-bold text-brand-700">
-                  <span>Change Due:</span>
+                  <span>{t('billing.changeDue', 'Change Due')}:</span>
                   <span>{formatCurrency(changeDue, currency)}</span>
                 </div>
               )}
@@ -824,7 +824,7 @@ export const POSBillingPage: React.FC = () => {
           {paymentMethod !== 'CASH' && (
             <input
               type="text"
-              placeholder="UPI Txn ID / Card Auth Code (Optional)..."
+              placeholder={t('billing.txnRefPlaceholder', 'UPI Txn ID / Card Auth Code (Optional)...')}
               value={transactionRef}
               onChange={(e) => setTransactionRef(e.target.value)}
               className="w-full px-3 py-1.5 rounded-xl border border-zinc-200 text-xs font-mono bg-white focus:outline-none focus:ring-1 focus:ring-brand-600"
@@ -838,11 +838,11 @@ export const POSBillingPage: React.FC = () => {
             className="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
           >
             {processingOrder ? (
-              <ButtonSpinner text="Processing Order..." />
+              <ButtonSpinner text={t('common.processing', 'Processing Order...')} />
             ) : (
               <>
                 <Receipt size={17} />
-                <span>Charge {formatCurrency(grandTotal, currency)}</span>
+                <span>{t('billing.completeSale', 'Complete Sale')} ({formatCurrency(grandTotal, currency)})</span>
               </>
             )}
           </button>
@@ -873,8 +873,8 @@ export const POSBillingPage: React.FC = () => {
                   <UserPlus size={18} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-zinc-900">Add Customer</h3>
-                  <p className="text-[11px] text-zinc-500">Quickly register a new customer</p>
+                  <h3 className="text-sm font-bold text-zinc-900">{t('customers.addCustomer', 'Add Customer')}</h3>
+                  <p className="text-[11px] text-zinc-500">{t('customers.quickRegister', 'Quickly register a new customer')}</p>
                 </div>
               </div>
               <button
@@ -888,12 +888,12 @@ export const POSBillingPage: React.FC = () => {
             <form onSubmit={handleCreateCustomer} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-zinc-700">
-                  Customer Name <span className="text-rose-500">*</span>
+                  {t('customers.customerName', 'Customer Name')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Rahul Sharma"
+                  placeholder={t('customers.namePlaceholder', 'e.g. Rahul Sharma')}
                   value={newCustName}
                   onChange={(e) => setNewCustName(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-brand-600 text-xs font-medium"
@@ -902,7 +902,7 @@ export const POSBillingPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-zinc-700">
-                  Phone Number
+                  {t('customers.phone', 'Phone Number')}
                 </label>
                 <input
                   type="text"
@@ -915,7 +915,7 @@ export const POSBillingPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-zinc-700">
-                  Email Address
+                  {t('common.email', 'Email Address')}
                 </label>
                 <input
                   type="email"
@@ -932,14 +932,14 @@ export const POSBillingPage: React.FC = () => {
                   onClick={() => setIsNewCustomerModalOpen(false)}
                   className="px-3.5 py-2 rounded-xl border border-zinc-200 text-zinc-600 text-xs font-bold hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={creatingCustomer}
                   className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
                 >
-                  {creatingCustomer ? <ButtonSpinner text="Saving..." /> : 'Save & Attach'}
+                  {creatingCustomer ? <ButtonSpinner text={t('common.saving', 'Saving...')} /> : t('customers.saveAndAttach', 'Save & Attach')}
                 </button>
               </div>
             </form>

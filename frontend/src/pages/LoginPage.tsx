@@ -33,7 +33,7 @@ export const LoginPage: React.FC = () => {
       setError(
         err.response?.data?.message ||
         err.message ||
-        'Authentication failed. Please verify your email and password.'
+        t('auth.loginError', 'Authentication failed. Please verify your email and password.')
       );
     } finally {
       setLoading(false);
@@ -54,10 +54,10 @@ export const LoginPage: React.FC = () => {
         </div>
 
         <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-zinc-950">
-          {t('auth.loginTitle')}
+          {t('auth.loginTitle', 'Log in to your BizFlow account')}
         </h2>
         <p className="mt-1 text-center text-xs text-zinc-500">
-          {t('auth.loginSubtitle')}
+          {t('auth.loginSubtitle', 'Enter your credentials to access your business dashboard')}
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export const LoginPage: React.FC = () => {
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-xs font-semibold text-zinc-700 mb-1.5" htmlFor="login-email">
-                {t('auth.email')}
+                {t('common.email', 'Email Address')} *
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
@@ -86,7 +86,7 @@ export const LoginPage: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="owner@example.com"
+                  placeholder={t('auth.emailPlaceholder', 'owner@example.com')}
                   className="w-full pl-10 pr-4 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600 transition-colors"
                 />
               </div>
@@ -95,7 +95,7 @@ export const LoginPage: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-semibold text-zinc-700" htmlFor="login-password">
-                  {t('auth.password')}
+                  {t('profile.currentPassword', 'Password')} *
                 </label>
               </div>
               <div className="relative">
@@ -131,11 +131,11 @@ export const LoginPage: React.FC = () => {
               {loading ? (
                 <span className="inline-flex items-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>{t('auth.loggingIn')}</span>
+                  <span>{t('auth.loggingIn', 'Signing In...')}</span>
                 </span>
               ) : (
                 <>
-                  <span>{t('auth.signIn')}</span>
+                  <span>{t('auth.loginButton', 'Sign In')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -144,9 +144,9 @@ export const LoginPage: React.FC = () => {
 
           <div className="pt-4 border-t border-zinc-100 flex flex-col space-y-2.5 text-center">
             <p className="text-xs text-zinc-500">
-              {t('auth.dontHaveAccount')}{' '}
+              {t('auth.dontHaveAccount', "Don't have an account?")}{' '}
               <Link to="/signup" className="font-semibold text-brand-600 hover:text-brand-700 hover:underline">
-                {t('auth.signup')}
+                {t('auth.signupButton', 'Create Account')}
               </Link>
             </p>
 
@@ -155,7 +155,7 @@ export const LoginPage: React.FC = () => {
               className="inline-flex items-center justify-center space-x-1.5 text-xs text-zinc-400 hover:text-zinc-700 transition-colors pt-1"
             >
               <Shield className="w-3.5 h-3.5 text-zinc-500" />
-              <span>Platform Administrator Portal</span>
+              <span>{t('auth.adminPortalLogin', 'Platform Administrator Portal')}</span>
             </Link>
           </div>
         </div>

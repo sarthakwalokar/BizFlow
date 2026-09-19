@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { adminApi, AdminBusinessDetail } from '../../api/admin';
 import { Business, BusinessType } from '../../api/auth';
 import { ButtonSpinner, TableSkeleton } from '../../components/common/LoadingStates';
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export const AdminBusinessesPage: React.FC = () => {
+  const { t } = useTranslation();
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -112,13 +114,13 @@ export const AdminBusinessesPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Tenants & Businesses</h1>
+            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('admin.businesses')}</h1>
             <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium border border-brand-200">
-              {totalElements} Registered
+              {totalElements} {t('common.all', 'Total')}
             </span>
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Search, inspect tenant metadata, configure scale tiers, and activate or suspend accounts.
+            {t('auth.adminLoginSubtitle')}
           </p>
         </div>
 
@@ -128,7 +130,7 @@ export const AdminBusinessesPage: React.FC = () => {
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-medium shadow-xs transition-colors cursor-pointer self-start sm:self-auto disabled:opacity-50"
         >
           <RefreshCw size={13} className={loading ? 'animate-spin text-brand-600' : 'text-zinc-400'} />
-          <span>Refresh</span>
+          <span>{t('common.refresh')}</span>
         </button>
       </div>
 
@@ -142,14 +144,14 @@ export const AdminBusinessesPage: React.FC = () => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by business name, email, or phone..."
+              placeholder={t('admin.searchBusinesses')}
               className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-zinc-50 border border-zinc-200 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white"
             />
           </div>
 
           {/* Business Type Filter */}
           <div className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1.5">
-            <span className="text-[11px] font-medium text-zinc-500">Type:</span>
+            <span className="text-[11px] font-medium text-zinc-500">{t('common.type')}:</span>
             <select
               value={selectedType}
               onChange={(e) => {
@@ -158,7 +160,7 @@ export const AdminBusinessesPage: React.FC = () => {
               }}
               className="bg-transparent text-xs font-medium text-zinc-700 focus:outline-none cursor-pointer"
             >
-              <option value="ALL">All Types</option>
+              <option value="ALL">{t('common.all')}</option>
               {businessTypes.map((bt) => (
                 <option key={bt.type} value={bt.type}>
                   {bt.label}
@@ -169,7 +171,7 @@ export const AdminBusinessesPage: React.FC = () => {
 
           {/* Status Filter */}
           <div className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1.5">
-            <span className="text-[11px] font-medium text-zinc-500">Status:</span>
+            <span className="text-[11px] font-medium text-zinc-500">{t('common.status')}:</span>
             <select
               value={selectedStatus}
               onChange={(e) => {
@@ -178,9 +180,9 @@ export const AdminBusinessesPage: React.FC = () => {
               }}
               className="bg-transparent text-xs font-medium text-zinc-700 focus:outline-none cursor-pointer"
             >
-              <option value="ALL">All Statuses</option>
-              <option value="ACTIVE">Active Only</option>
-              <option value="INACTIVE">Inactive Only</option>
+              <option value="ALL">{t('common.all')}</option>
+              <option value="ACTIVE">{t('common.active')}</option>
+              <option value="INACTIVE">{t('common.inactive')}</option>
             </select>
           </div>
 
@@ -188,7 +190,7 @@ export const AdminBusinessesPage: React.FC = () => {
             type="submit"
             className="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium transition-colors shadow-xs cursor-pointer"
           >
-            Apply Filters
+            {t('common.apply')}
           </button>
         </form>
       </div>
@@ -199,12 +201,12 @@ export const AdminBusinessesPage: React.FC = () => {
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-medium uppercase tracking-wider text-[10px]">
-                <th className="px-4 py-3">Tenant Name</th>
-                <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">Contact</th>
-                <th className="px-4 py-3">Tier</th>
-                <th className="px-4 py-3 text-center">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th className="px-4 py-3">{t('auth.businessName')}</th>
+                <th className="px-4 py-3">{t('products.category')}</th>
+                <th className="px-4 py-3">{t('customers.phone')}</th>
+                <th className="px-4 py-3">{t('settings.businessScale')}</th>
+                <th className="px-4 py-3 text-center">{t('common.status')}</th>
+                <th className="px-4 py-3 text-right">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
@@ -218,8 +220,8 @@ export const AdminBusinessesPage: React.FC = () => {
                 <tr>
                   <td colSpan={6} className="px-4 py-12 text-center text-zinc-400 space-y-1">
                     <Building2 size={28} className="mx-auto text-zinc-300 mb-2" />
-                    <p className="font-medium text-zinc-700">No businesses found</p>
-                    <p className="text-[11px] text-zinc-400">Try adjusting your search terms or filters.</p>
+                    <p className="font-medium text-zinc-700">{t('common.notFound')}</p>
+                    <p className="text-[11px] text-zinc-400">{t('common.noDataFound')}</p>
                   </td>
                 </tr>
               ) : (
@@ -237,7 +239,7 @@ export const AdminBusinessesPage: React.FC = () => {
                           <div>
                             <span className="font-medium text-zinc-900 text-xs">{biz.name}</span>
                             <span className="text-[11px] text-zinc-400 block font-mono">
-                              ID #{biz.id} • {biz.currency || 'USD'}
+                              {t('common.id')} #{biz.id} • {biz.currency || 'USD'}
                             </span>
                           </div>
                         </div>
@@ -291,7 +293,7 @@ export const AdminBusinessesPage: React.FC = () => {
                           ) : (
                             <XCircle size={11} />
                           )}
-                          <span>{biz.active ? 'Active' : 'Inactive'}</span>
+                          <span>{biz.active ? t('common.active') : t('common.inactive')}</span>
                         </button>
                       </td>
 
@@ -302,7 +304,7 @@ export const AdminBusinessesPage: React.FC = () => {
                           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-medium transition-colors cursor-pointer"
                         >
                           <Eye size={12} />
-                          <span>Inspect</span>
+                          <span>{t('common.view')}</span>
                         </button>
                       </td>
                     </tr>
@@ -317,7 +319,7 @@ export const AdminBusinessesPage: React.FC = () => {
         {totalPages > 1 && (
           <div className="px-4 py-3 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
             <span>
-              Showing Page {page + 1} of {totalPages} ({totalElements} tenants)
+              {t('common.showing')} {page + 1} {t('common.of')} {totalPages} ({totalElements} records)
             </span>
 
             <div className="flex items-center gap-1.5">
@@ -327,14 +329,14 @@ export const AdminBusinessesPage: React.FC = () => {
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-600 disabled:opacity-40 font-medium cursor-pointer"
               >
                 <ChevronLeft size={13} />
-                <span>Previous</span>
+                <span>{t('common.previous')}</span>
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
                 disabled={page >= totalPages - 1}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-600 disabled:opacity-40 font-medium cursor-pointer"
               >
-                <span>Next</span>
+                <span>{t('common.next')}</span>
                 <ChevronRight size={13} />
               </button>
             </div>
@@ -369,25 +371,25 @@ export const AdminBusinessesPage: React.FC = () => {
             </div>
 
             {loadingDetail ? (
-              <div className="py-12 text-center text-xs text-zinc-400">Loading tenant details...</div>
+              <div className="py-12 text-center text-xs text-zinc-400">{t('common.loading')}</div>
             ) : businessDetail ? (
               <div className="space-y-5">
                 {/* Aggregate Entity Metrics */}
                 <div className="grid grid-cols-4 gap-2.5">
                   <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-200 text-center">
-                    <span className="text-[10px] font-medium text-zinc-500 uppercase">Staff</span>
+                    <span className="text-[10px] font-medium text-zinc-500 uppercase">{t('nav.staff')}</span>
                     <div className="text-base font-bold text-zinc-900 mt-0.5">{businessDetail.staffCount}</div>
                   </div>
                   <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-200 text-center">
-                    <span className="text-[10px] font-medium text-zinc-500 uppercase">Products</span>
+                    <span className="text-[10px] font-medium text-zinc-500 uppercase">{t('nav.products')}</span>
                     <div className="text-base font-bold text-zinc-900 mt-0.5">{businessDetail.productCount}</div>
                   </div>
                   <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-200 text-center">
-                    <span className="text-[10px] font-medium text-zinc-500 uppercase">Customers</span>
+                    <span className="text-[10px] font-medium text-zinc-500 uppercase">{t('nav.customers')}</span>
                     <div className="text-base font-bold text-zinc-900 mt-0.5">{businessDetail.customerCount}</div>
                   </div>
                   <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-200 text-center">
-                    <span className="text-[10px] font-medium text-zinc-500 uppercase">Orders</span>
+                    <span className="text-[10px] font-medium text-zinc-500 uppercase">{t('nav.bills')}</span>
                     <div className="text-base font-bold text-zinc-900 mt-0.5">{businessDetail.orderCount}</div>
                   </div>
                 </div>
@@ -397,15 +399,15 @@ export const AdminBusinessesPage: React.FC = () => {
                   <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1.5">
                     <div className="text-xs font-semibold text-brand-800 flex items-center gap-1.5">
                       <ShieldCheck size={14} className="text-brand-600" />
-                      <span>Primary Owner Account</span>
+                      <span>{t('staff.roleOwner')}</span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div>
-                        <span className="text-zinc-400 block text-[10px]">Full Name</span>
+                        <span className="text-zinc-400 block text-[10px]">{t('profile.fullName')}</span>
                         <span className="font-medium text-zinc-900">{businessDetail.owner.fullName}</span>
                       </div>
                       <div>
-                        <span className="text-zinc-400 block text-[10px]">Email</span>
+                        <span className="text-zinc-400 block text-[10px]">{t('profile.primaryEmail')}</span>
                         <span className="font-medium text-zinc-900">{businessDetail.owner.email}</span>
                       </div>
                     </div>
@@ -415,33 +417,33 @@ export const AdminBusinessesPage: React.FC = () => {
                 {/* Configuration Specs */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
                   <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
-                    <span className="text-zinc-400 text-[10px] block">Currency</span>
+                    <span className="text-zinc-400 text-[10px] block">{t('settings.operatingCurrency')}</span>
                     <span className="font-medium text-zinc-800">{businessDetail.currency}</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
-                    <span className="text-zinc-400 text-[10px] block">Timezone</span>
+                    <span className="text-zinc-400 text-[10px] block">{t('settings.systemTimezone')}</span>
                     <span className="font-medium text-zinc-800">{businessDetail.timezone}</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
-                    <span className="text-zinc-400 text-[10px] block">Tier Size</span>
+                    <span className="text-zinc-400 text-[10px] block">{t('settings.businessScale')}</span>
                     <span className="font-medium text-brand-700">{businessDetail.businessSize}</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
-                    <span className="text-zinc-400 text-[10px] block">Tax Config</span>
+                    <span className="text-zinc-400 text-[10px] block">{t('settings.taxSettings')}</span>
                     <span className="font-medium text-zinc-800">
                       {businessDetail.taxName} ({businessDetail.taxRate}%)
                     </span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
-                    <span className="text-zinc-400 text-[10px] block">Inventory</span>
+                    <span className="text-zinc-400 text-[10px] block">{t('settings.inventoryModule')}</span>
                     <span className="font-medium text-zinc-800">
-                      {businessDetail.inventoryEnabled ? 'Enabled' : 'Disabled'}
+                      {businessDetail.inventoryEnabled ? t('common.active') : t('common.inactive')}
                     </span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
-                    <span className="text-zinc-400 text-[10px] block">Review Boost</span>
+                    <span className="text-zinc-400 text-[10px] block">{t('nav.reviews')}</span>
                     <span className="font-medium text-zinc-800">
-                      {businessDetail.reviewEnabled ? 'Active' : 'Disabled'}
+                      {businessDetail.reviewEnabled ? t('common.active') : t('common.inactive')}
                     </span>
                   </div>
                 </div>
@@ -449,13 +451,13 @@ export const AdminBusinessesPage: React.FC = () => {
                 {/* Status Toggle Action */}
                 <div className="pt-2 flex items-center justify-between border-t border-zinc-100">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-zinc-500">Status:</span>
+                    <span className="text-xs text-zinc-500">{t('common.status')}:</span>
                     <span
                       className={`text-xs font-semibold ${
                         businessDetail.active ? 'text-emerald-700' : 'text-zinc-500'
                       }`}
                     >
-                      {businessDetail.active ? 'Active' : 'Suspended'}
+                      {businessDetail.active ? t('common.active') : t('common.inactive')}
                     </span>
                   </div>
 
@@ -469,7 +471,7 @@ export const AdminBusinessesPage: React.FC = () => {
                     }`}
                   >
                     {updatingId === businessDetail.id && <ButtonSpinner size="xs" />}
-                    <span>{businessDetail.active ? 'Deactivate Business' : 'Activate Business'}</span>
+                    <span>{businessDetail.active ? t('common.inactive') : t('common.active')}</span>
                   </button>
                 </div>
               </div>
@@ -480,4 +482,5 @@ export const AdminBusinessesPage: React.FC = () => {
     </div>
   );
 };
+
 

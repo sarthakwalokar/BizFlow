@@ -17,20 +17,9 @@ import {
   Copy,
   Check,
   MessageSquare,
-  KeyRound,
-  ExternalLink,
 } from 'lucide-react';
 import { AiAnalyzingIndicator, SkeletonBlock } from '../../components/common/LoadingStates';
-
 import { RichAiMessage } from '../../components/ai/RichAiMessage';
-
-const SUGGESTED_PROMPTS = [
-  'How were my sales this month?',
-  'What are my best-selling products?',
-  'Which products need restocking?',
-  'What are my biggest expenses?',
-  'How are my reviews performing?',
-];
 
 export const AiAssistantPage: React.FC = () => {
   const { user } = useAuth();
@@ -48,6 +37,14 @@ export const AiAssistantPage: React.FC = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const suggestedPrompts = [
+    t('ai.qSalesMonth'),
+    t('ai.qTopProducts'),
+    t('ai.qRestockAlert'),
+    t('ai.qExpenseBreakdown'),
+    t('ai.qReviewSentiment'),
+  ];
 
   // Auto scroll to bottom of chat
   const scrollToBottom = () => {
@@ -91,7 +88,7 @@ export const AiAssistantPage: React.FC = () => {
       const detail = await aiApi.getConversationDetail(convId);
       setMessages(detail.messages);
     } catch (err) {
-      setError('Could not load chat history.');
+      setError(t('ai.loadError', 'Could not load chat history.'));
     }
   };
 
@@ -139,7 +136,7 @@ export const AiAssistantPage: React.FC = () => {
       const assistantMsg: AiMessage = {
         id: Date.now() + 1,
         role: 'ASSISTANT',
-        content: response.reply || response.response || 'No response generated.',
+        content: response.reply || response.response || t('ai.noResponse', 'No response generated.'),
         createdAt: new Date().toISOString(),
       };
 
@@ -151,7 +148,7 @@ export const AiAssistantPage: React.FC = () => {
       setError(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'The AI service is currently unavailable. Please check your backend connection or retry in a moment.'
+        t('ai.serviceUnavailable', 'The AI service is currently unavailable.')
       );
     } finally {
       setLoading(false);
@@ -180,7 +177,7 @@ export const AiAssistantPage: React.FC = () => {
         handleNewChat();
       }
     } catch (err) {
-      setError('Failed to delete conversation.');
+      setError(t('ai.deleteFailed', 'Failed to delete conversation.'));
     }
   };
 
@@ -195,13 +192,13 @@ export const AiAssistantPage: React.FC = () => {
             className="w-full py-2.5 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center space-x-2 cursor-pointer"
           >
             <Plus size={15} />
-            <span>New Conversation</span>
+            <span>{t('ai.newChat')}</span>
           </button>
 
           {/* Conversations List */}
           <div className="flex-1 overflow-y-auto space-y-1 pr-1">
             <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider px-2 py-1 block">
-              Recent Consultations
+              {t('ai.chatHistory')}
             </span>
 
             {loadingConversations ? (
@@ -213,7 +210,7 @@ export const AiAssistantPage: React.FC = () => {
             ) : conversations.length === 0 ? (
               <div className="text-center py-8 text-zinc-400 text-xs space-y-1 px-2">
                 <MessageSquare size={20} className="mx-auto text-zinc-300" />
-                <p>No prior conversations</p>
+                <p>{t('ai.noHistory')}</p>
               </div>
             ) : (
               conversations.map((conv) => {
@@ -229,7 +226,7 @@ export const AiAssistantPage: React.FC = () => {
                     }`}
                   >
                     <div className="truncate flex-1 pr-1.5">
-                      <span className="truncate block text-xs">{conv.title || 'Business Consultation'}</span>
+                      <span className="truncate block text-xs">{conv.title || 'Inquiry'}</span>
                       <span className="text-[10px] text-zinc-400 block font-normal">
                         {new Date(conv.updatedAt).toLocaleDateString('en-IN', {
                           day: 'numeric',
@@ -241,7 +238,7 @@ export const AiAssistantPage: React.FC = () => {
                     <button
                       onClick={(e) => handleDeleteConversation(conv.id, e)}
                       className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-zinc-200 text-zinc-400 hover:text-rose-600 transition-opacity"
-                      title="Delete chat"
+                      title={t('common.delete')}
                     >
                       <Trash2 size={13} />
                     </button>
@@ -256,7 +253,7 @@ export const AiAssistantPage: React.FC = () => {
         <div className="pt-3 border-t border-zinc-100 text-[11px] text-zinc-500 flex items-center justify-between">
           <div className="flex items-center space-x-1.5">
             <span className="w-2 h-2 rounded-full bg-brand-600" />
-            <span className="font-medium">Context: Live Business DB</span>
+            <span className="font-medium">{t('ai.helpfulInsights')}</span>
           </div>
         </div>
       </div>
@@ -270,66 +267,28 @@ export const AiAssistantPage: React.FC = () => {
               <Bot size={16} />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-zinc-900">{t('ai.title', 'AI Business Assistant')}</h2>
-              <p className="text-[11px] text-zinc-500">{t('ai.subtitle', 'Real-time intelligent analytics, insights, and decision support')}</p>
+              <h2 className="text-sm font-bold text-zinc-900">{t('ai.title')}</h2>
+              <p className="text-[11px] text-zinc-500">{t('ai.subtitle')}</p>
             </div>
           </div>
 
           <div>
-            {aiStatus?.geminiAvailable ? (
+            {aiStatus?.openRouterAvailable || aiStatus?.geminiAvailable ? (
               <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-[11px] font-semibold">
                 <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-                <span>{t('ai.activeProvider', 'BizFlow AI Active')}</span>
+                <span>{t('ai.activeProvider')}</span>
               </div>
             ) : (
-              <a
-                href="https://aistudio.google.com/app/apikey"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100 text-[11px] font-semibold transition-colors cursor-pointer"
-                title="Click to get free AI Engine API Key"
-              >
-                <KeyRound size={12} className="text-amber-600" />
-                <span>{t('ai.setupRequired', 'AI Key Required')}</span>
-                <ExternalLink size={10} />
-              </a>
+              <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-600 text-[11px] font-semibold">
+                <span className="w-2 h-2 rounded-full bg-zinc-400" />
+                <span>{t('ai.activeProvider')}</span>
+              </div>
             )}
           </div>
         </div>
 
         {/* Message Stream Area */}
         <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4">
-          {aiStatus && !aiStatus.geminiAvailable && (
-            <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-950 space-y-3 shadow-xs">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <KeyRound size={16} className="text-amber-700" />
-                  <span className="text-xs font-black uppercase tracking-wider text-amber-900">
-                    BizFlow AI Setup Required
-                  </span>
-                </div>
-                <a
-                  href="https://aistudio.google.com/app/apikey"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold transition-colors cursor-pointer"
-                >
-                  <span>Get Free Key</span>
-                  <ExternalLink size={11} />
-                </a>
-              </div>
-              <p className="text-xs text-amber-800 leading-relaxed">
-                BizFlow AI Assistant delivers instant analytics insights, sales velocity calculations, and automated business recommendations.
-              </p>
-              <div className="bg-white/80 rounded-xl p-3 border border-amber-200/60 text-xs text-zinc-700 space-y-1.5 font-mono">
-                <div className="text-[11px] font-sans font-bold text-zinc-800">Quick Configuration Steps:</div>
-                <div className="text-[11px]">1. Get a free API key at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-brand-600 underline font-sans">aistudio.google.com</a></div>
-                <div className="text-[11px]">2. Add to your root <span className="font-bold text-zinc-900">.env</span> file: <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900 font-semibold">GEMINI_API_KEY=your_key_here</code></div>
-                <div className="text-[11px]">3. Restart the backend server.</div>
-              </div>
-            </div>
-          )}
-
           {messages.length === 0 ? (
             <div className="py-8 max-w-xl mx-auto text-center space-y-5">
               <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto border border-brand-200">
@@ -337,15 +296,15 @@ export const AiAssistantPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <h3 className="text-lg font-bold text-zinc-900">How can I help your business today?</h3>
+                <h3 className="text-lg font-bold text-zinc-900">{t('ai.welcomeGreeting')}</h3>
                 <p className="text-xs text-zinc-500 leading-relaxed max-w-md mx-auto">
-                  I can analyze your sales trends, margin reports, low stock items, top performing catalog products, and customer reviews.
+                  {t('ai.disclaimer')}
                 </p>
               </div>
 
               {/* Suggested Questions Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left pt-2">
-                {SUGGESTED_PROMPTS.map((prompt, idx) => (
+                {suggestedPrompts.map((prompt, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleSendMessage(prompt)}
@@ -389,17 +348,17 @@ export const AiAssistantPage: React.FC = () => {
                         <button
                           onClick={() => handleCopyMessage(msg.id, msg.content)}
                           className="text-[10px] text-zinc-400 hover:text-zinc-600 flex items-center space-x-1 cursor-pointer"
-                          title="Copy response"
+                          title={t('ai.copyResponse')}
                         >
                           {copiedMessageId === msg.id ? (
                             <>
                               <Check size={11} className="text-brand-600" />
-                              <span className="text-brand-600">Copied</span>
+                              <span className="text-brand-600">{t('common.copied')}</span>
                             </>
                           ) : (
                             <>
                               <Copy size={11} />
-                              <span>Copy</span>
+                              <span>{t('common.copy')}</span>
                             </>
                           )}
                         </button>
@@ -419,7 +378,7 @@ export const AiAssistantPage: React.FC = () => {
 
           {loading && (
             <div className="flex items-start space-x-3">
-              <AiAnalyzingIndicator message="Analyzing your business..." />
+              <AiAnalyzingIndicator message={t('ai.thinking')} />
             </div>
           )}
 
@@ -429,23 +388,6 @@ export const AiAssistantPage: React.FC = () => {
                 <AlertTriangle size={15} className="shrink-0 text-red-600" />
                 <span className="font-semibold">{error}</span>
               </div>
-              {(error.includes('API key') || error.includes('not configured')) && (
-                <div className="pt-1 text-[11px] text-red-600">
-                  <p>
-                    To enable AI functionality, get a free API key from{' '}
-                    <a
-                      href="https://aistudio.google.com/app/apikey"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline font-bold hover:text-red-800 inline-flex items-center space-x-0.5"
-                    >
-                      <span>AI Key Console</span>
-                      <ExternalLink size={10} className="inline ml-0.5" />
-                    </a>
-                    {' '}and add <code className="bg-red-100 px-1 py-0.5 rounded font-mono font-bold text-red-900">GEMINI_API_KEY=your_key</code> to your project's <code className="bg-red-100 px-1 py-0.5 rounded font-mono font-bold text-red-900">.env</code> file.
-                  </p>
-                </div>
-              )}
             </div>
           )}
 
@@ -461,7 +403,7 @@ export const AiAssistantPage: React.FC = () => {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={t('ai.promptPlaceholder', 'Ask a question about sales, inventory, or expenses (Enter to send)...')}
+              placeholder={t('ai.promptPlaceholder')}
               className="flex-1 bg-transparent border-none text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-0 resize-none py-1.5 px-2"
             />
 
@@ -469,7 +411,7 @@ export const AiAssistantPage: React.FC = () => {
               onClick={() => handleSendMessage()}
               disabled={!inputMessage.trim() || loading}
               className="p-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              title={t('ai.send', 'Ask AI')}
+              title={t('ai.send')}
             >
               <Send size={15} />
             </button>

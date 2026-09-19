@@ -247,7 +247,7 @@ export const AppLayout: React.FC = () => {
                   <div className="flex items-center space-x-1.5 mt-0.5">
                     <span className="inline-block w-1.5 h-1.5 rounded-full bg-brand-600"></span>
                     <span className="text-[10px] text-zinc-500 font-medium truncate">
-                      {business.businessType || 'Active Store'}
+                      {business.businessType || t('dashboard.activeStore', 'Active Store')}
                     </span>
                   </div>
                 </div>
@@ -305,7 +305,7 @@ export const AppLayout: React.FC = () => {
             {isOwner && (
               <div className="space-y-1 pt-2 border-t border-zinc-100">
                 <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                  {t('nav.settings', 'Administration')}
+                  {t('nav.administration', 'Administration')}
                 </div>
                 <Link
                   to="/dashboard/staff"
@@ -318,7 +318,7 @@ export const AppLayout: React.FC = () => {
                 >
                   <div className="flex items-center space-x-2.5">
                     <Users size={16} className={location.pathname.startsWith('/dashboard/staff') ? 'text-brand-600' : 'text-zinc-400'} />
-                    <span>Staff Team</span>
+                    <span>{t('nav.staff', 'Staff Team')}</span>
                   </div>
                 </Link>
 
@@ -342,7 +342,7 @@ export const AppLayout: React.FC = () => {
             {isAdmin && (
               <div className="pt-2 border-t border-zinc-100">
                 <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-700">
-                  Platform Admin
+                  {t('admin.portal', 'Platform Admin')}
                 </div>
                 <Link
                   to="/admin/dashboard"
@@ -350,7 +350,7 @@ export const AppLayout: React.FC = () => {
                   className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-brand-700 hover:bg-brand-50 transition-colors mt-1"
                 >
                   <ShieldAlert size={16} />
-                  <span>{t('nav.admin', 'Admin Portal')}</span>
+                  <span>{t('nav.adminDashboard', 'Admin Portal')}</span>
                 </Link>
               </div>
             )}
@@ -402,7 +402,7 @@ export const AppLayout: React.FC = () => {
         <header className="hidden md:flex h-16 bg-white border-b border-zinc-200 px-8 items-center justify-between sticky top-0 z-20 shadow-xs">
           <div className="flex items-center space-x-3">
             <h1 className="text-base font-bold text-zinc-900">
-              {business ? business.name : 'BizFlow Platform'}
+              {business ? business.name : t('common.platform', 'BizFlow Platform')}
             </h1>
             {business && (
               <span
@@ -421,7 +421,7 @@ export const AppLayout: React.FC = () => {
                 <Percent size={12} className="text-brand-600" />
                 <span>
                   {business.taxName || 'GST'}: {business.taxRate}%
-                  {business.taxInclusive ? ' (Incl.)' : ''}
+                  {business.taxInclusive ? ` (${t('billing.inclusive', 'Incl.')})` : ''}
                 </span>
               </div>
             )}
@@ -453,4 +453,3 @@ export const AppLayout: React.FC = () => {
     </div>
   );
 };
-

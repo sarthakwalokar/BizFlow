@@ -63,7 +63,7 @@ export const CustomerListPage: React.FC = () => {
       setTotalPages(res.totalPages);
       setTotalElements(res.totalElements);
     } catch (err: any) {
-      setErrorMessage('Failed to load customers directory.');
+      setErrorMessage(t('customers.failedToLoad', 'Failed to load customers directory.'));
     } finally {
       setLoading(false);
     }
@@ -106,7 +106,7 @@ export const CustomerListPage: React.FC = () => {
       const detail = await customersApi.getCustomerProfile(cust.id);
       setProfileCustomer(detail);
     } catch (err) {
-      setErrorMessage('Could not load detailed customer history.');
+      setErrorMessage(t('customers.historyLoadError', 'Could not load detailed customer history.'));
     }
   };
 
@@ -120,14 +120,14 @@ export const CustomerListPage: React.FC = () => {
 
     try {
       const created = await customersApi.createCustomer(formData);
-      setSuccessMessage(`Customer "${created.name}" registered successfully.`);
+      setSuccessMessage(t('customers.customerSaved', { name: created.name, defaultValue: `Customer "${created.name}" registered successfully.` }));
       setIsAddModalOpen(false);
       fetchCustomers(page);
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to create customer record.'
+        t('customers.createFailed', 'Failed to create customer record.')
       );
     } finally {
       setFormSubmitting(false);
@@ -144,14 +144,14 @@ export const CustomerListPage: React.FC = () => {
 
     try {
       const updated = await customersApi.updateCustomer(editingCustomer.id, formData);
-      setSuccessMessage(`Customer "${updated.name}" updated successfully.`);
+      setSuccessMessage(t('customers.customerUpdated', { name: updated.name, defaultValue: `Customer "${updated.name}" updated successfully.` }));
       setEditingCustomer(null);
       fetchCustomers(page);
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to update customer record.'
+        t('customers.updateFailed', 'Failed to update customer record.')
       );
     } finally {
       setFormSubmitting(false);
@@ -167,14 +167,14 @@ export const CustomerListPage: React.FC = () => {
 
     try {
       await customersApi.deleteCustomer(deletingCustomer.id);
-      setSuccessMessage(`Customer "${deletingCustomer.name}" removed.`);
+      setSuccessMessage(t('customers.customerDeleted', { name: deletingCustomer.name, defaultValue: `Customer "${deletingCustomer.name}" removed.` }));
       setDeletingCustomer(null);
       fetchCustomers(page);
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to delete customer record.'
+        t('customers.deleteFailed', 'Failed to delete customer record.')
       );
     } finally {
       setFormSubmitting(false);
@@ -281,7 +281,7 @@ export const CustomerListPage: React.FC = () => {
                           month: 'short',
                           year: 'numeric',
                         })
-                      : 'No purchases yet';
+                      : '—';
 
                     return (
                       <tr key={cust.id} className="hover:bg-zinc-50/70 transition-colors">
@@ -319,7 +319,7 @@ export const CustomerListPage: React.FC = () => {
 
                         <td className="py-3 px-4 text-zinc-700 font-semibold">
                           <span className="px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 text-[11px] font-bold">
-                            {cust.orderCount ?? 0} bills
+                            {cust.orderCount ?? 0}
                           </span>
                         </td>
 
@@ -335,7 +335,7 @@ export const CustomerListPage: React.FC = () => {
                           <button
                             onClick={() => openProfileView(cust)}
                             className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
-                            title="View Ledger & Purchase History"
+                            title={t('customers.viewProfile', 'View Ledger & Purchase History')}
                           >
                             <Eye size={14} />
                           </button>
@@ -343,7 +343,7 @@ export const CustomerListPage: React.FC = () => {
                           <button
                             onClick={() => openEditModal(cust)}
                             className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
-                            title="Edit Customer"
+                            title={t('customers.editCustomer')}
                           >
                             <Edit2 size={14} />
                           </button>
@@ -352,7 +352,7 @@ export const CustomerListPage: React.FC = () => {
                             <button
                               onClick={() => setDeletingCustomer(cust)}
                               className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                              title="Delete Customer"
+                              title={t('customers.deleteCustomer')}
                             >
                               <Trash2 size={14} />
                             </button>
@@ -370,7 +370,7 @@ export const CustomerListPage: React.FC = () => {
           {totalPages > 1 && (
             <div className="p-3.5 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
               <span>
-                Showing page {page + 1} of {totalPages} ({totalElements} total clients)
+                {t('common.showingOf', { from: page + 1, to: totalPages, total: totalElements })}
               </span>
               <div className="flex items-center space-x-1.5">
                 <button
@@ -378,14 +378,14 @@ export const CustomerListPage: React.FC = () => {
                   onClick={() => fetchCustomers(page - 1)}
                   className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold disabled:opacity-50 cursor-pointer"
                 >
-                  Previous
+                  {t('common.previous')}
                 </button>
                 <button
                   disabled={page >= totalPages - 1}
                   onClick={() => fetchCustomers(page + 1)}
                   className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold disabled:opacity-50 cursor-pointer"
                 >
-                  Next
+                  {t('common.next')}
                 </button>
               </div>
             </div>
@@ -405,7 +405,7 @@ export const CustomerListPage: React.FC = () => {
                 <div>
                   <h3 className="text-base font-bold text-zinc-900">{profileCustomer.name}</h3>
                   <p className="text-xs text-zinc-500">
-                    Client since {new Date(profileCustomer.createdAt).toLocaleDateString('en-IN')}
+                    {t('customers.customerDirectory', 'Customer')}
                   </p>
                 </div>
               </div>
@@ -420,21 +420,21 @@ export const CustomerListPage: React.FC = () => {
             {/* Profile KPI Strip */}
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200/80">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Total Lifetime Spend</span>
+                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{t('customers.totalSpent')}</span>
                 <div className="text-lg font-black text-zinc-900 mt-0.5">
                   {formatCurrency(profileCustomer.totalSpending, currency)}
                 </div>
               </div>
 
               <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200/80">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Total Bills</span>
+                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{t('customers.totalOrders')}</span>
                 <div className="text-lg font-black text-zinc-900 mt-0.5">
                   {profileCustomer.orderCount}
                 </div>
               </div>
 
               <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200/80">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Avg Bill Value</span>
+                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{t('dashboard.avgOrderValue')}</span>
                 <div className="text-lg font-black text-zinc-900 mt-0.5">
                   {formatCurrency(profileCustomer.averageOrderValue, currency)}
                 </div>
@@ -443,23 +443,23 @@ export const CustomerListPage: React.FC = () => {
 
             {/* Recent Bills Ledger */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-zinc-900 uppercase tracking-wider">Purchase History &amp; Invoices</h4>
+              <h4 className="text-xs font-bold text-zinc-900 uppercase tracking-wider">{t('orders.title')}</h4>
               <div className="border border-zinc-200 rounded-xl overflow-hidden max-h-56 overflow-y-auto">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase">
                     <tr>
-                      <th className="py-2 px-3">Invoice</th>
-                      <th className="py-2 px-3">Date</th>
-                      <th className="py-2 px-3">Method</th>
-                      <th className="py-2 px-3">Amount</th>
-                      <th className="py-2 px-3 text-right">View</th>
+                      <th className="py-2 px-3">{t('receipt.invoiceNo')}</th>
+                      <th className="py-2 px-3">{t('common.date')}</th>
+                      <th className="py-2 px-3">{t('billing.paymentMethod')}</th>
+                      <th className="py-2 px-3">{t('common.amount')}</th>
+                      <th className="py-2 px-3 text-right">{t('common.view')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-zinc-100">
                     {!profileCustomer.purchaseHistory || profileCustomer.purchaseHistory.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="py-6 text-center text-zinc-400">
-                          No prior orders recorded.
+                          {t('common.noDataFound')}
                         </td>
                       </tr>
                     ) : (
@@ -477,7 +477,7 @@ export const CustomerListPage: React.FC = () => {
                             <button
                               onClick={() => setSelectedOrderForReceipt(order)}
                               className="p-1 text-zinc-400 hover:text-emerald-600 cursor-pointer"
-                              title="View Invoice"
+                              title={t('billing.printReceipt')}
                             >
                               <Eye size={14} />
                             </button>
@@ -496,7 +496,7 @@ export const CustomerListPage: React.FC = () => {
                 onClick={() => setProfileCustomer(null)}
                 className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-bold rounded-xl cursor-pointer"
               >
-                Close
+                {t('common.close')}
               </button>
             </div>
           </div>
@@ -513,7 +513,7 @@ export const CustomerListPage: React.FC = () => {
                   <UserPlus size={16} />
                 </div>
                 <h3 className="text-sm font-bold text-zinc-900">
-                  {editingCustomer ? 'Edit Customer Details' : 'Register New Customer'}
+                  {editingCustomer ? t('customers.editCustomer') : t('customers.addCustomer')}
                 </h3>
               </div>
               <button
@@ -530,7 +530,7 @@ export const CustomerListPage: React.FC = () => {
             <form onSubmit={editingCustomer ? handleUpdateCustomer : handleCreateCustomer} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-zinc-700">
-                  Customer Name <span className="text-rose-500">*</span>
+                  {t('customers.customerName')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -543,7 +543,7 @@ export const CustomerListPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Phone Number</label>
+                <label className="text-xs font-bold text-zinc-700">{t('common.phone')}</label>
                 <input
                   type="text"
                   placeholder="+91 98765 43210"
@@ -554,7 +554,7 @@ export const CustomerListPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Email Address</label>
+                <label className="text-xs font-bold text-zinc-700">{t('common.email')}</label>
                 <input
                   type="email"
                   placeholder="rahul@example.com"
@@ -565,7 +565,7 @@ export const CustomerListPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Address / Location</label>
+                <label className="text-xs font-bold text-zinc-700">{t('common.address')}</label>
                 <input
                   type="text"
                   placeholder="e.g. Sector 4, HSR Layout"
@@ -576,10 +576,10 @@ export const CustomerListPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-700">Customer Notes (Optional)</label>
+                <label className="text-xs font-bold text-zinc-700">{t('common.notes')}</label>
                 <textarea
                   rows={2}
-                  placeholder="Preferences, allergy notes, loyalty tier, etc."
+                  placeholder="Preferences, notes, loyalty tier, etc."
                   value={formData.notes || ''}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600 resize-none"
@@ -595,7 +595,7 @@ export const CustomerListPage: React.FC = () => {
                   }}
                   className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -603,11 +603,11 @@ export const CustomerListPage: React.FC = () => {
                   className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
                 >
                   {formSubmitting ? (
-                    <ButtonSpinner text="Saving..." />
+                    <ButtonSpinner text={t('common.saving')} />
                   ) : editingCustomer ? (
-                    'Update Customer'
+                    t('common.save')
                   ) : (
-                    'Register Customer'
+                    t('customers.addCustomer')
                   )}
                 </button>
               </div>
@@ -622,11 +622,11 @@ export const CustomerListPage: React.FC = () => {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-dropdown space-y-4 border border-zinc-200">
             <div className="flex items-center space-x-2.5 text-rose-600">
               <Trash2 size={20} />
-              <h3 className="text-base font-bold text-zinc-900">Delete Customer Record</h3>
+              <h3 className="text-base font-bold text-zinc-900">{t('customers.deleteCustomer')}</h3>
             </div>
 
             <p className="text-xs text-zinc-600 leading-relaxed">
-              Are you sure you want to remove <strong className="text-zinc-900">"{deletingCustomer.name}"</strong> from your directory?
+              {t('customers.confirmDelete')}
             </p>
 
             <div className="flex justify-end space-x-2 pt-2">
@@ -635,7 +635,7 @@ export const CustomerListPage: React.FC = () => {
                 onClick={() => setDeletingCustomer(null)}
                 className="px-4 py-2 border border-zinc-200 text-zinc-700 rounded-xl text-xs font-semibold hover:bg-zinc-50 cursor-pointer"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="button"
@@ -643,7 +643,7 @@ export const CustomerListPage: React.FC = () => {
                 disabled={formSubmitting}
                 className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
               >
-                {formSubmitting ? <ButtonSpinner text="Deleting..." /> : 'Confirm Delete'}
+                {formSubmitting ? <ButtonSpinner text={t('common.deleting')} /> : t('common.delete')}
               </button>
             </div>
           </div>

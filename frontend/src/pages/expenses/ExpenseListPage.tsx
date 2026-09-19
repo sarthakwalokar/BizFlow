@@ -37,16 +37,16 @@ import {
 
 const CATEGORY_METADATA: Record<
   ExpenseCategory,
-  { label: string; icon: LucideIcon; color: string; bgColor: string }
+  { labelKey: string; defaultLabel: string; icon: LucideIcon; color: string; bgColor: string }
 > = {
-  RENT: { label: 'Rent & Lease', icon: Building, color: 'text-indigo-700', bgColor: 'bg-indigo-50 border-indigo-200' },
-  SALARY: { label: 'Payroll & Salary', icon: UsersIcon, color: 'text-emerald-700', bgColor: 'bg-emerald-50 border-emerald-200' },
-  ELECTRICITY: { label: 'Electricity & Utilities', icon: Zap, color: 'text-amber-700', bgColor: 'bg-amber-50 border-amber-200' },
-  PURCHASE: { label: 'Inventory / Purchase', icon: ShoppingBag, color: 'text-brand-700', bgColor: 'bg-brand-50 border-brand-200' },
-  TRANSPORT: { label: 'Transport & Logistics', icon: Truck, color: 'text-cyan-700', bgColor: 'bg-cyan-50 border-cyan-200' },
-  MARKETING: { label: 'Marketing & Ads', icon: Megaphone, color: 'text-flow-700', bgColor: 'bg-flow-50 border-flow-200' },
-  MAINTENANCE: { label: 'Maintenance & Repairs', icon: Wrench, color: 'text-rose-700', bgColor: 'bg-rose-50 border-rose-200' },
-  OTHER: { label: 'Other Expenses', icon: HelpCircle, color: 'text-zinc-700', bgColor: 'bg-zinc-100 border-zinc-200' },
+  RENT: { labelKey: 'expenses.catRent', defaultLabel: 'Rent & Premises', icon: Building, color: 'text-indigo-700', bgColor: 'bg-indigo-50 border-indigo-200' },
+  SALARY: { labelKey: 'expenses.catSalaries', defaultLabel: 'Staff Payroll & Wages', icon: UsersIcon, color: 'text-emerald-700', bgColor: 'bg-emerald-50 border-emerald-200' },
+  ELECTRICITY: { labelKey: 'expenses.catUtilities', defaultLabel: 'Electricity & Utilities', icon: Zap, color: 'text-amber-700', bgColor: 'bg-amber-50 border-amber-200' },
+  PURCHASE: { labelKey: 'expenses.catPurchase', defaultLabel: 'Inventory Purchase', icon: ShoppingBag, color: 'text-brand-700', bgColor: 'bg-brand-50 border-brand-200' },
+  TRANSPORT: { labelKey: 'expenses.catSupplies', defaultLabel: 'Transport & Logistics', icon: Truck, color: 'text-cyan-700', bgColor: 'bg-cyan-50 border-cyan-200' },
+  MARKETING: { labelKey: 'expenses.catMarketing', defaultLabel: 'Marketing & Promotion', icon: Megaphone, color: 'text-flow-700', bgColor: 'bg-flow-50 border-flow-200' },
+  MAINTENANCE: { labelKey: 'expenses.catMaintenance', defaultLabel: 'Repairs & Maintenance', icon: Wrench, color: 'text-rose-700', bgColor: 'bg-rose-50 border-rose-200' },
+  OTHER: { labelKey: 'expenses.catOther', defaultLabel: 'Other Operating Costs', icon: HelpCircle, color: 'text-zinc-700', bgColor: 'bg-zinc-100 border-zinc-200' },
 };
 
 export const ExpenseListPage: React.FC = () => {
@@ -128,7 +128,7 @@ export const ExpenseListPage: React.FC = () => {
       setTotalElements(listRes.totalElements);
       setSummary(summaryRes);
     } catch (err: any) {
-      setErrorMessage('Failed to load expense records.');
+      setErrorMessage(t('expenses.failedToLoad', 'Failed to load expense records.'));
     } finally {
       setLoading(false);
     }
@@ -177,14 +177,14 @@ export const ExpenseListPage: React.FC = () => {
 
     try {
       await expensesApi.createExpense(formData);
-      setSuccessMessage('Expense successfully recorded.');
+      setSuccessMessage(t('expenses.expenseSaved', 'Expense successfully recorded.'));
       setIsAddModalOpen(false);
       fetchExpenses(page);
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to log expense. Check inputs.'
+        t('expenses.saveFailed', 'Failed to log expense. Check inputs.')
       );
     } finally {
       setFormSubmitting(false);
@@ -200,14 +200,14 @@ export const ExpenseListPage: React.FC = () => {
 
     try {
       await expensesApi.updateExpense(editingExpense.id, formData);
-      setSuccessMessage('Expense successfully updated.');
+      setSuccessMessage(t('expenses.expenseSaved', 'Expense successfully updated.'));
       setEditingExpense(null);
       fetchExpenses(page);
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to update expense.'
+        t('expenses.updateFailed', 'Failed to update expense.')
       );
     } finally {
       setFormSubmitting(false);
@@ -222,11 +222,11 @@ export const ExpenseListPage: React.FC = () => {
 
     try {
       await expensesApi.deleteExpense(deletingExpense.id);
-      setSuccessMessage('Expense deleted.');
+      setSuccessMessage(t('expenses.expenseDeleted', 'Expense deleted.'));
       setDeletingExpense(null);
       fetchExpenses(page);
     } catch (err: any) {
-      setErrorMessage('Failed to delete expense.');
+      setErrorMessage(t('expenses.deleteFailed', 'Failed to delete expense.'));
     } finally {
       setFormSubmitting(false);
     }
@@ -287,7 +287,7 @@ export const ExpenseListPage: React.FC = () => {
             <div className="text-2xl font-bold text-rose-600">
               {formatCurrency(summary?.todayExpenses ?? 0, currency)}
             </div>
-            <p className="text-[11px] text-zinc-400">Current day cash &amp; bank outflows</p>
+            <p className="text-[11px] text-zinc-400">{t('analytics.today')}</p>
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
@@ -295,7 +295,7 @@ export const ExpenseListPage: React.FC = () => {
             <div className="text-2xl font-bold text-zinc-900">
               {formatCurrency(summary?.monthExpenses ?? 0, currency)}
             </div>
-            <p className="text-[11px] text-zinc-400">Total operational spend this month</p>
+            <p className="text-[11px] text-zinc-400">{t('analytics.thisMonth')}</p>
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
@@ -303,7 +303,7 @@ export const ExpenseListPage: React.FC = () => {
             <div className="text-2xl font-bold text-zinc-900">
               {formatCurrency(summary?.totalExpenses ?? 0, currency)}
             </div>
-            <p className="text-[11px] text-zinc-400">Cumulative historical expenditures</p>
+            <p className="text-[11px] text-zinc-400">{t('expenses.title')}</p>
           </div>
         </div>
       )}
@@ -343,7 +343,7 @@ export const ExpenseListPage: React.FC = () => {
               <option value="ALL">{t('common.all')} {t('expenses.category')}</option>
               {Object.entries(CATEGORY_METADATA).map(([key, meta]) => (
                 <option key={key} value={key}>
-                  {meta.label}
+                  {t(meta.labelKey, meta.defaultLabel)}
                 </option>
               ))}
             </select>
@@ -354,18 +354,18 @@ export const ExpenseListPage: React.FC = () => {
               onChange={(e) => setPaymentMethodFilter(e.target.value)}
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
-              <option value="ALL">All Payment Modes</option>
-              <option value="CASH">Cash</option>
-              <option value="UPI">UPI / Bank</option>
-              <option value="CARD">Card</option>
-              <option value="OTHER">Other</option>
+              <option value="ALL">{t('common.all')} {t('billing.paymentMethod')}</option>
+              <option value="CASH">{t('billing.cash')}</option>
+              <option value="UPI">{t('billing.upi')}</option>
+              <option value="CARD">{t('billing.card')}</option>
+              <option value="OTHER">{t('common.other', 'Other')}</option>
             </select>
 
             <button
               type="submit"
               className="px-4 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium shadow-xs transition-colors cursor-pointer"
             >
-              Filter
+              {t('common.filter')}
             </button>
           </div>
         </form>
@@ -373,7 +373,7 @@ export const ExpenseListPage: React.FC = () => {
         {datePreset === 'CUSTOM' && (
           <div className="flex items-center gap-3 pt-2 border-t border-zinc-100">
             <div className="flex items-center space-x-2">
-              <span className="text-xs text-zinc-500 font-medium">From:</span>
+              <span className="text-xs text-zinc-500 font-medium">{t('reports.from')}:</span>
               <input
                 type="date"
                 value={startDate}
@@ -382,7 +382,7 @@ export const ExpenseListPage: React.FC = () => {
               />
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-xs text-zinc-500 font-medium">To:</span>
+              <span className="text-xs text-zinc-500 font-medium">{t('reports.to')}:</span>
               <input
                 type="date"
                 value={endDate}
@@ -405,13 +405,13 @@ export const ExpenseListPage: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-zinc-50 border-b border-zinc-200 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">Description</th>
-                  <th className="py-3 px-4">Payment Method</th>
-                  <th className="py-3 px-4">Logged By</th>
-                  <th className="py-3 px-4 text-right">Amount</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4">{t('common.date')}</th>
+                  <th className="py-3 px-4">{t('expenses.category')}</th>
+                  <th className="py-3 px-4">{t('common.description')}</th>
+                  <th className="py-3 px-4">{t('billing.paymentMethod')}</th>
+                  <th className="py-3 px-4">{t('common.name')}</th>
+                  <th className="py-3 px-4 text-right">{t('common.amount')}</th>
+                  <th className="py-3 px-4 text-right">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 text-xs">
@@ -419,8 +419,8 @@ export const ExpenseListPage: React.FC = () => {
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-zinc-500 space-y-1">
                       <TrendingDown size={32} className="mx-auto text-zinc-300" />
-                      <p className="font-semibold text-zinc-700">No expenses recorded for this period</p>
-                      <p className="text-[11px] text-zinc-400">Click "Log Expense" to record daily business overheads.</p>
+                      <p className="font-semibold text-zinc-700">{t('expenses.noExpensesFound')}</p>
+                      <p className="text-[11px] text-zinc-400">{t('expenses.subtitle')}</p>
                     </td>
                   </tr>
                 ) : (
@@ -441,7 +441,7 @@ export const ExpenseListPage: React.FC = () => {
                         <td className="py-3 px-4">
                           <span className={`inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${meta.bgColor} ${meta.color}`}>
                             <Icon size={12} />
-                            <span>{meta.label}</span>
+                            <span>{t(meta.labelKey, meta.defaultLabel)}</span>
                           </span>
                         </td>
 
@@ -465,7 +465,7 @@ export const ExpenseListPage: React.FC = () => {
                           <button
                             onClick={() => openEditModal(exp)}
                             className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
-                            title="Edit Expense"
+                            title={t('expenses.editExpense')}
                           >
                             <Edit2 size={13} />
                           </button>
@@ -474,7 +474,7 @@ export const ExpenseListPage: React.FC = () => {
                             <button
                               onClick={() => setDeletingExpense(exp)}
                               className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                              title="Delete Expense"
+                              title={t('expenses.deleteExpense')}
                             >
                               <Trash2 size={13} />
                             </button>
@@ -493,7 +493,7 @@ export const ExpenseListPage: React.FC = () => {
         {!loading && totalPages > 1 && (
           <div className="p-3.5 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
             <span>
-              Showing page {page + 1} of {totalPages} ({totalElements} total expenses)
+              {t('common.showingOf', { from: page + 1, to: totalPages, total: totalElements })}
             </span>
             <div className="flex items-center space-x-1.5">
               <button
@@ -501,14 +501,14 @@ export const ExpenseListPage: React.FC = () => {
                 onClick={() => fetchExpenses(page - 1)}
                 className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-medium disabled:opacity-50 cursor-pointer"
               >
-                Previous
+                {t('common.previous')}
               </button>
               <button
                 disabled={page >= totalPages - 1}
                 onClick={() => fetchExpenses(page + 1)}
                 className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-medium disabled:opacity-50 cursor-pointer"
               >
-                Next
+                {t('common.next')}
               </button>
             </div>
           </div>
@@ -525,7 +525,7 @@ export const ExpenseListPage: React.FC = () => {
                   <TrendingDown size={15} />
                 </div>
                 <h3 className="text-sm font-semibold text-zinc-900">
-                  {editingExpense ? 'Edit Expense Record' : 'Record New Expense'}
+                  {editingExpense ? t('expenses.editExpenseModalTitle', 'Edit Expense Record') : t('expenses.newExpenseModalTitle', 'Record New Expense')}
                 </h3>
               </div>
               <button
@@ -542,7 +542,7 @@ export const ExpenseListPage: React.FC = () => {
             <form onSubmit={editingExpense ? handleUpdateExpense : handleCreateExpense} className="space-y-3.5">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-zinc-700">Category *</label>
+                  <label className="text-xs font-medium text-zinc-700">{t('expenses.category')} *</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value as ExpenseCategory })}
@@ -550,23 +550,23 @@ export const ExpenseListPage: React.FC = () => {
                   >
                     {Object.entries(CATEGORY_METADATA).map(([key, meta]) => (
                       <option key={key} value={key}>
-                        {meta.label}
+                        {t(meta.labelKey, meta.defaultLabel)}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-zinc-700">Payment Mode *</label>
+                  <label className="text-xs font-medium text-zinc-700">{t('billing.paymentMethod')} *</label>
                   <select
                     value={formData.paymentMethod}
                     onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value as PaymentMethod })}
                     className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
                   >
-                    <option value="CASH">Cash</option>
-                    <option value="UPI">UPI / Bank Transfer</option>
-                    <option value="CARD">Card</option>
-                    <option value="OTHER">Other</option>
+                    <option value="CASH">{t('billing.cash')}</option>
+                    <option value="UPI">{t('billing.upi')}</option>
+                    <option value="CARD">{t('billing.card')}</option>
+                    <option value="OTHER">{t('common.other', 'Other')}</option>
                   </select>
                 </div>
               </div>
@@ -574,7 +574,7 @@ export const ExpenseListPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-zinc-700">
-                    Amount ({currencySymbol}) <span className="text-rose-500">*</span>
+                    {t('common.amount')} ({currencySymbol}) <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -589,7 +589,7 @@ export const ExpenseListPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-zinc-700">Expense Date *</label>
+                  <label className="text-xs font-medium text-zinc-700">{t('common.date')} *</label>
                   <input
                     type="date"
                     required
@@ -601,7 +601,7 @@ export const ExpenseListPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Description</label>
+                <label className="text-xs font-medium text-zinc-700">{t('common.description')}</label>
                 <input
                   type="text"
                   placeholder="e.g. Monthly milk supply / Electrical wiring repair"
@@ -620,7 +620,7 @@ export const ExpenseListPage: React.FC = () => {
                   }}
                   className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-medium rounded-lg hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -628,11 +628,11 @@ export const ExpenseListPage: React.FC = () => {
                   className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {formSubmitting ? (
-                    <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+                    <ButtonSpinner text={t('common.saving')} />
                   ) : editingExpense ? (
-                    'Update Expense'
+                    t('common.save')
                   ) : (
-                    'Record Expense'
+                    t('expenses.recordExpense')
                   )}
                 </button>
               </div>
@@ -647,13 +647,11 @@ export const ExpenseListPage: React.FC = () => {
           <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center space-x-2.5 text-rose-600">
               <Trash2 size={18} />
-              <h3 className="text-sm font-semibold text-zinc-900">Delete Expense</h3>
+              <h3 className="text-sm font-semibold text-zinc-900">{t('expenses.deleteExpense')}</h3>
             </div>
 
             <p className="text-xs text-zinc-600 leading-relaxed">
-              Are you sure you want to delete this expense of{' '}
-              <strong className="text-zinc-900">{formatCurrency(deletingExpense.amount, currency)}</strong> (
-              {deletingExpense.category})?
+              {t('expenses.confirmDelete')}
             </p>
 
             <div className="flex justify-end space-x-2 pt-2">
@@ -662,7 +660,7 @@ export const ExpenseListPage: React.FC = () => {
                 onClick={() => setDeletingExpense(null)}
                 className="px-4 py-2 border border-zinc-200 text-zinc-700 rounded-lg text-xs font-medium hover:bg-zinc-50 cursor-pointer"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="button"
@@ -671,9 +669,9 @@ export const ExpenseListPage: React.FC = () => {
                 className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
               >
                 {formSubmitting ? (
-                  <ButtonSpinner text="Deleting..." spinnerColor="text-white" />
+                  <ButtonSpinner text={t('common.deleting')} />
                 ) : (
-                  'Confirm Delete'
+                  t('common.delete')
                 )}
               </button>
             </div>

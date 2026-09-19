@@ -20,7 +20,7 @@ import {
 
 export const UserProfilePage: React.FC = () => {
   const { user, business, updateUserLanguage } = useAuth();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [fullName, setFullName] = useState(user?.fullName || '');
   const [phone, setPhone] = useState(user?.phone || '');
@@ -90,7 +90,7 @@ export const UserProfilePage: React.FC = () => {
         fullName,
         phone: phone || undefined,
       });
-      setProfileSuccess('Profile details successfully updated!');
+      setProfileSuccess(t('profile.profileUpdated'));
     } catch (err: any) {
       setProfileError(
         err.response?.data?.error?.message ||
@@ -108,12 +108,12 @@ export const UserProfilePage: React.FC = () => {
     setPasswordError(null);
 
     if (newPassword !== confirmPassword) {
-      setPasswordError('New password and confirmation do not match.');
+      setPasswordError(t('profile.passwordMismatch'));
       return;
     }
 
     if (newPassword.length < 8) {
-      setPasswordError('New password must be at least 8 characters.');
+      setPasswordError(t('profile.passwordLengthError'));
       return;
     }
 
@@ -123,7 +123,7 @@ export const UserProfilePage: React.FC = () => {
         currentPassword,
         newPassword,
       });
-      setPasswordSuccess('Password successfully changed!');
+      setPasswordSuccess(t('profile.passwordUpdated'));
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -142,9 +142,9 @@ export const UserProfilePage: React.FC = () => {
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Account & Security</h1>
+        <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('profile.title')}</h1>
         <p className="text-xs text-zinc-500 mt-0.5">
-          Manage your personal credentials, contact details, and security passwords.
+          {t('profile.subtitle')}
         </p>
       </div>
 
@@ -156,7 +156,7 @@ export const UserProfilePage: React.FC = () => {
               <User size={15} />
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-zinc-400">User Account</span>
+              <span className="text-[10px] uppercase font-bold text-zinc-400">{t('profile.userAccount')}</span>
               <p className="text-xs font-semibold text-zinc-900 truncate">{user?.fullName}</p>
             </div>
           </div>
@@ -168,7 +168,7 @@ export const UserProfilePage: React.FC = () => {
               <Shield size={15} />
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-zinc-400">System Role</span>
+              <span className="text-[10px] uppercase font-bold text-zinc-400">{t('profile.systemRole')}</span>
               <p className="text-xs font-semibold text-zinc-900">{user?.role}</p>
             </div>
           </div>
@@ -180,7 +180,7 @@ export const UserProfilePage: React.FC = () => {
               <Building2 size={15} />
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-zinc-400">Business Unit</span>
+              <span className="text-[10px] uppercase font-bold text-zinc-400">{t('profile.businessUnit')}</span>
               <p className="text-xs font-semibold text-zinc-900 truncate">{business?.name || 'Default'}</p>
             </div>
           </div>
@@ -195,12 +195,12 @@ export const UserProfilePage: React.FC = () => {
               <Globe size={16} />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-zinc-900">Language / भाषा / भाषा</h2>
-              <p className="text-xs text-zinc-500">Choose your preferred language for BizFlow.</p>
+              <h2 className="text-sm font-semibold text-zinc-900">{t('settings.languageSection')}</h2>
+              <p className="text-xs text-zinc-500">{t('settings.languageDesc')}</p>
             </div>
           </div>
           {languageSaving && (
-            <span className="text-xs text-brand-600 font-medium animate-pulse">Saving...</span>
+            <span className="text-xs text-brand-600 font-medium animate-pulse">{t('settings.saving')}</span>
           )}
         </div>
 
@@ -217,7 +217,7 @@ export const UserProfilePage: React.FC = () => {
             onChange={handleLanguageChange}
           />
           <p className="text-[11px] text-zinc-500 mt-2">
-            Switching language will immediately update your interface, navigation, and AI business assistant data prompts across your account.
+            {t('settings.languageHint')}
           </p>
         </div>
       </div>
@@ -232,8 +232,8 @@ export const UserProfilePage: React.FC = () => {
                 <User size={16} />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-zinc-900">Personal Details</h3>
-                <p className="text-xs text-zinc-500">Your profile name and direct phone</p>
+                <h3 className="text-sm font-semibold text-zinc-900">{t('profile.personalDetails')}</h3>
+                <p className="text-xs text-zinc-500">{t('profile.personalDetailsDesc')}</p>
               </div>
             </div>
 
@@ -254,7 +254,7 @@ export const UserProfilePage: React.FC = () => {
             <form id="profileForm" onSubmit={handleUpdateProfile} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Full Name <span className="text-rose-500">*</span>
+                  {t('profile.fullName')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -267,7 +267,7 @@ export const UserProfilePage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Primary Email (Read-only)
+                  {t('profile.primaryEmail')}
                 </label>
                 <div className="relative">
                   <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -282,7 +282,7 @@ export const UserProfilePage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Direct Phone
+                  {t('profile.directPhone')}
                 </label>
                 <div className="relative">
                   <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -306,11 +306,11 @@ export const UserProfilePage: React.FC = () => {
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50"
             >
               {savingProfile ? (
-                <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+                <ButtonSpinner text={t('settings.saving')} spinnerColor="text-white" />
               ) : (
                 <>
                   <Save size={14} />
-                  <span>Update Details</span>
+                  <span>{t('profile.updateDetails')}</span>
                 </>
               )}
             </button>
@@ -325,8 +325,8 @@ export const UserProfilePage: React.FC = () => {
                 <Lock size={16} />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-zinc-900">Change Password</h3>
-                <p className="text-xs text-zinc-500">Maintain strong account security</p>
+                <h3 className="text-sm font-semibold text-zinc-900">{t('profile.changePassword')}</h3>
+                <p className="text-xs text-zinc-500">{t('profile.changePasswordDesc')}</p>
               </div>
             </div>
 
@@ -347,7 +347,7 @@ export const UserProfilePage: React.FC = () => {
             <form id="passwordForm" onSubmit={handleChangePassword} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Current Password <span className="text-rose-500">*</span>
+                  {t('profile.currentPassword')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -361,7 +361,7 @@ export const UserProfilePage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  New Password <span className="text-rose-500">*</span>
+                  {t('profile.newPassword')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -369,14 +369,14 @@ export const UserProfilePage: React.FC = () => {
                   minLength={8}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Min 8 characters"
+                  placeholder={t('profile.min8Chars')}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                 />
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Confirm New Password <span className="text-rose-500">*</span>
+                  {t('profile.confirmPassword')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -384,7 +384,7 @@ export const UserProfilePage: React.FC = () => {
                   minLength={8}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Re-type new password"
+                  placeholder={t('profile.retypePassword')}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                 />
               </div>
@@ -399,11 +399,11 @@ export const UserProfilePage: React.FC = () => {
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50"
             >
               {savingPassword ? (
-                <ButtonSpinner text="Updating..." spinnerColor="text-white" />
+                <ButtonSpinner text={t('settings.saving')} spinnerColor="text-white" />
               ) : (
                 <>
                   <ShieldCheck size={14} />
-                  <span>Change Password</span>
+                  <span>{t('profile.changePassword')}</span>
                 </>
               )}
             </button>
@@ -413,3 +413,4 @@ export const UserProfilePage: React.FC = () => {
     </div>
   );
 };
+

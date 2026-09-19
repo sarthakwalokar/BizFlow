@@ -73,7 +73,7 @@ export const ProductListPage: React.FC = () => {
       setProducts(items);
       setCategories(cats || []);
     } catch (err: any) {
-      setErrorMessage('Failed to load products and services catalog.');
+      setErrorMessage(t('products.failedToLoad', 'Failed to load products and services catalog.'));
     } finally {
       setLoading(false);
     }
@@ -143,14 +143,14 @@ export const ProductListPage: React.FC = () => {
 
     try {
       await productsApi.createProduct(payload);
-      setSuccessMessage(`"${payload.name}" added to catalog.`);
+      setSuccessMessage(t('products.itemAdded', { name: payload.name, defaultValue: `"${payload.name}" added to catalog.` }));
       setIsAddModalOpen(false);
       fetchProductsAndCategories();
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to create product item.'
+        t('products.createFailed', 'Failed to create product item.')
       );
     } finally {
       setActionLoading(false);
@@ -181,14 +181,14 @@ export const ProductListPage: React.FC = () => {
 
     try {
       await productsApi.updateProduct(editingProduct.id, payload);
-      setSuccessMessage(`"${payload.name}" updated successfully.`);
+      setSuccessMessage(t('products.itemUpdated', { name: payload.name, defaultValue: `"${payload.name}" updated successfully.` }));
       setEditingProduct(null);
       fetchProductsAndCategories();
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to update product item.'
+        t('products.updateFailed', 'Failed to update product item.')
       );
     } finally {
       setActionLoading(false);
@@ -203,14 +203,14 @@ export const ProductListPage: React.FC = () => {
 
     try {
       await productsApi.deleteProduct(deletingProduct.id);
-      setSuccessMessage(`"${deletingProduct.name}" removed from catalog.`);
+      setSuccessMessage(t('products.itemDeleted', { name: deletingProduct.name, defaultValue: `"${deletingProduct.name}" removed from catalog.` }));
       setDeletingProduct(null);
       fetchProductsAndCategories();
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to delete product.'
+        t('products.deleteFailed', 'Failed to delete product.')
       );
     } finally {
       setActionLoading(false);
@@ -380,7 +380,7 @@ export const ProductListPage: React.FC = () => {
                               ? 'bg-zinc-100 text-zinc-700 border border-zinc-200'
                               : 'bg-flow-50 text-flow-700 border border-flow-200'
                           }`}>
-                            {prod.productType}
+                            {prod.productType === 'PHYSICAL' ? t('products.physicalGoods') : t('products.serviceItem')}
                           </span>
                         </td>
 
@@ -392,7 +392,7 @@ export const ProductListPage: React.FC = () => {
                           {formatCurrency(prod.price, currency)}
                           {prod.costPrice !== undefined && prod.costPrice > 0 && (
                             <span className="block text-[10px] text-zinc-400 font-normal">
-                              Cost: {formatCurrency(prod.costPrice, currency)}
+                              {t('products.costPrice')}: {formatCurrency(prod.costPrice, currency)}
                             </span>
                           )}
                         </td>
@@ -409,10 +409,10 @@ export const ProductListPage: React.FC = () => {
                               }`}
                             >
                               {isOutOfStock
-                                ? 'Out of Stock'
+                                ? t('products.outOfStock')
                                 : isLowStock
-                                ? `Low: ${prod.stockQuantity}`
-                                : `${prod.stockQuantity} in stock`}
+                                ? `${t('products.lowStock')}: ${prod.stockQuantity}`
+                                : `${prod.stockQuantity} ${t('products.inStock')}`}
                             </span>
                           ) : (
                             <span className="text-zinc-400 text-[11px]">—</span>
@@ -427,7 +427,7 @@ export const ProductListPage: React.FC = () => {
                                 : 'bg-zinc-100 text-zinc-600'
                             }`}
                           >
-                            {prod.active ? 'Active' : 'Inactive'}
+                            {prod.active ? t('common.active') : t('common.inactive')}
                           </span>
                         </td>
 
@@ -435,7 +435,7 @@ export const ProductListPage: React.FC = () => {
                           <button
                             onClick={() => openEditModal(prod)}
                             className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
-                            title="Edit Item"
+                            title={t('products.editProduct')}
                           >
                             <Edit2 size={14} />
                           </button>
@@ -443,7 +443,7 @@ export const ProductListPage: React.FC = () => {
                           <button
                             onClick={() => setDeletingProduct(prod)}
                             className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                            title="Delete Item"
+                            title={t('products.deleteProduct')}
                           >
                             <Trash2 size={14} />
                           </button>
@@ -471,7 +471,7 @@ export const ProductListPage: React.FC = () => {
                   <h3 className="text-sm font-bold text-zinc-900">
                     {editingProduct ? t('products.editProduct') : t('products.addProduct')}
                   </h3>
-                  <p className="text-[11px] text-zinc-500">Configure item pricing and stock</p>
+                  <p className="text-[11px] text-zinc-500">{t('products.configurePricing', 'Configure item pricing and stock')}</p>
                 </div>
               </div>
               <button
@@ -524,7 +524,7 @@ export const ProductListPage: React.FC = () => {
                     onChange={(e) => setCategoryId(e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-700 focus:ring-1 focus:ring-emerald-600"
                   >
-                    <option value="">None (Uncategorized)</option>
+                    <option value="">{t('products.uncategorized', 'None (Uncategorized)')}</option>
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.name}
@@ -632,7 +632,7 @@ export const ProductListPage: React.FC = () => {
                   className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
                 >
                   {actionLoading ? (
-                    <ButtonSpinner text="Saving..." />
+                    <ButtonSpinner text={t('common.saving')} />
                   ) : editingProduct ? (
                     t('common.save')
                   ) : (
@@ -672,7 +672,7 @@ export const ProductListPage: React.FC = () => {
                 disabled={actionLoading}
                 className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
               >
-                {actionLoading ? <ButtonSpinner text="Deleting..." /> : t('common.delete')}
+                {actionLoading ? <ButtonSpinner text={t('common.deleting')} /> : t('common.delete')}
               </button>
             </div>
           </div>

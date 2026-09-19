@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { adminApi, AdminDashboardStats } from '../../api/admin';
 import { MetricCardsSkeleton, ChartSkeleton } from '../../components/common/LoadingStates';
 import {
@@ -26,6 +27,7 @@ import {
 } from 'lucide-react';
 
 export const AdminDashboardOverviewPage: React.FC = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<AdminDashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -70,13 +72,13 @@ export const AdminDashboardOverviewPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Platform Command Center</h1>
+            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('admin.title')}</h1>
             <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium border border-brand-200">
               Live Network
             </span>
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Real-time multi-tenant analytics, tenant provisioning, and platform health telemetry.
+            {t('auth.adminLoginSubtitle')}
           </p>
         </div>
 
@@ -86,7 +88,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-medium shadow-xs transition-colors cursor-pointer self-start sm:self-auto disabled:opacity-50"
         >
           <RefreshCw size={13} className={loading ? 'animate-spin text-brand-600' : 'text-zinc-400'} />
-          <span>Refresh Telemetry</span>
+          <span>{t('common.refresh')}</span>
         </button>
       </div>
 
@@ -102,19 +104,19 @@ export const AdminDashboardOverviewPage: React.FC = () => {
             {/* Total Businesses */}
             <div className="bg-white border border-zinc-200 rounded-xl p-4 shadow-xs space-y-1.5">
               <div className="flex items-center justify-between text-zinc-500 text-[11px] font-medium uppercase tracking-wider">
-                <span>Total Tenants</span>
+                <span>{t('admin.totalBusinesses')}</span>
                 <Building2 size={15} className="text-brand-600" />
               </div>
               <div className="text-2xl font-bold text-zinc-900">{stats?.totalBusinesses ?? '—'}</div>
               <div className="flex items-center gap-2 text-[11px]">
                 <span className="text-emerald-700 font-medium flex items-center gap-1">
                   <CheckCircle2 size={11} />
-                  {stats?.activeBusinesses ?? 0} Active
+                  {stats?.activeBusinesses ?? 0} {t('common.active')}
                 </span>
                 <span className="text-zinc-300">•</span>
                 <span className="text-rose-600 font-medium flex items-center gap-1">
                   <XCircle size={11} />
-                  {stats?.inactiveBusinesses ?? 0} Inactive
+                  {stats?.inactiveBusinesses ?? 0} {t('common.inactive')}
                 </span>
               </div>
             </div>
@@ -122,19 +124,19 @@ export const AdminDashboardOverviewPage: React.FC = () => {
             {/* Total Users */}
             <div className="bg-white border border-zinc-200 rounded-xl p-4 shadow-xs space-y-1.5">
               <div className="flex items-center justify-between text-zinc-500 text-[11px] font-medium uppercase tracking-wider">
-                <span>Total Accounts</span>
+                <span>{t('admin.totalUsers')}</span>
                 <Users size={15} className="text-brand-600" />
               </div>
               <div className="text-2xl font-bold text-zinc-900">{stats?.totalUsers ?? '—'}</div>
               <div className="flex items-center gap-2 text-[11px]">
                 <span className="text-amber-700 font-medium flex items-center gap-1">
                   <Briefcase size={11} />
-                  {stats?.totalOwners ?? 0} Owners
+                  {stats?.totalOwners ?? 0} {t('staff.roleOwner', 'Owners')}
                 </span>
                 <span className="text-zinc-300">•</span>
                 <span className="text-zinc-600 font-medium flex items-center gap-1">
                   <UserCheck size={11} />
-                  {stats?.totalStaff ?? 0} Staff
+                  {stats?.totalStaff ?? 0} {t('nav.staffTeam', 'Staff')}
                 </span>
               </div>
             </div>
@@ -142,21 +144,21 @@ export const AdminDashboardOverviewPage: React.FC = () => {
             {/* Platform Catalog */}
             <div className="bg-white border border-zinc-200 rounded-xl p-4 shadow-xs space-y-1.5">
               <div className="flex items-center justify-between text-zinc-500 text-[11px] font-medium uppercase tracking-wider">
-                <span>Catalog Items</span>
+                <span>{t('nav.products')}</span>
                 <Package size={15} className="text-amber-600" />
               </div>
               <div className="text-2xl font-bold text-zinc-900">{stats?.totalProducts ?? '—'}</div>
-              <p className="text-[11px] text-zinc-500">SKUs & services across tenants</p>
+              <p className="text-[11px] text-zinc-500">{t('dashboard.itemsTracked')}</p>
             </div>
 
             {/* Total Processed Bills */}
             <div className="bg-white border border-zinc-200 rounded-xl p-4 shadow-xs space-y-1.5">
               <div className="flex items-center justify-between text-zinc-500 text-[11px] font-medium uppercase tracking-wider">
-                <span>Platform Orders</span>
+                <span>{t('nav.bills')}</span>
                 <Receipt size={15} className="text-emerald-600" />
               </div>
               <div className="text-2xl font-bold text-emerald-700">{stats?.totalOrders ?? '—'}</div>
-              <p className="text-[11px] text-zinc-500">Invoices by active POS counters</p>
+              <p className="text-[11px] text-zinc-500">{t('landing.completedBills')}</p>
             </div>
           </div>
 
@@ -167,13 +169,13 @@ export const AdminDashboardOverviewPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Layers size={16} className="text-brand-600" />
-                  <h3 className="text-sm font-semibold text-zinc-900">Industry Vertical Breakdown</h3>
+                  <h3 className="text-sm font-semibold text-zinc-900">{t('auth.businessType')}</h3>
                 </div>
                 <Link
                   to="/admin/businesses"
                   className="text-xs text-brand-700 hover:text-brand-800 font-medium flex items-center gap-1"
                 >
-                  <span>Explore Directory</span>
+                  <span>{t('admin.businessDirectory')}</span>
                   <ArrowUpRight size={13} />
                 </Link>
               </div>
@@ -216,7 +218,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
               <div className="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs space-y-3">
                 <h3 className="text-sm font-semibold text-zinc-900 flex items-center gap-2">
                   <TrendingUp size={15} className="text-emerald-600" />
-                  <span>Tenant Tiers</span>
+                  <span>{t('settings.businessScale')}</span>
                 </h3>
 
                 <div className="space-y-2.5">
@@ -226,8 +228,8 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                         S
                       </div>
                       <div>
-                        <span className="text-xs font-semibold text-zinc-900">Small Business Tier</span>
-                        <p className="text-[10px] text-zinc-500">Lean single-counter stock</p>
+                        <span className="text-xs font-semibold text-zinc-900">{t('settings.smallBizTier')}</span>
+                        <p className="text-[10px] text-zinc-500">{t('settings.smallBizTierBadge')}</p>
                       </div>
                     </div>
                     <span className="text-sm font-bold text-zinc-900 font-mono">
@@ -241,8 +243,8 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                         L
                       </div>
                       <div>
-                        <span className="text-xs font-semibold text-zinc-900">Large Enterprise Tier</span>
-                        <p className="text-[10px] text-zinc-500">Multi-location supply chain</p>
+                        <span className="text-xs font-semibold text-zinc-900">{t('settings.largeBizTier')}</span>
+                        <p className="text-[10px] text-zinc-500">{t('settings.largeBizTierBadge')}</p>
                       </div>
                     </div>
                     <span className="text-sm font-bold text-zinc-900 font-mono">
@@ -254,14 +256,14 @@ export const AdminDashboardOverviewPage: React.FC = () => {
 
               {/* Quick Management Navigation */}
               <div className="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs space-y-2.5">
-                <h4 className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Administrative Modules</h4>
+                <h4 className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('nav.administration')}</h4>
                 <div className="grid grid-cols-2 gap-2">
                   <Link
                     to="/admin/businesses"
                     className="p-3 rounded-lg bg-zinc-50 hover:bg-brand-50/50 hover:border-brand-200 border border-zinc-200 text-xs font-medium text-zinc-800 transition-colors flex flex-col justify-between"
                   >
                     <Building2 size={15} className="text-brand-600 mb-2" />
-                    <span>Tenants Directory</span>
+                    <span>{t('admin.businesses')}</span>
                   </Link>
 
                   <Link
@@ -269,7 +271,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                     className="p-3 rounded-lg bg-zinc-50 hover:bg-brand-50/50 hover:border-brand-200 border border-zinc-200 text-xs font-medium text-zinc-800 transition-colors flex flex-col justify-between"
                   >
                     <Users size={15} className="text-brand-600 mb-2" />
-                    <span>Users Directory</span>
+                    <span>{t('admin.users')}</span>
                   </Link>
                 </div>
               </div>
@@ -281,7 +283,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
             <div className="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs space-y-3">
               <div className="flex items-center gap-2">
                 <Sparkles size={15} className="text-brand-600" />
-                <h3 className="text-sm font-semibold text-zinc-900">Recent Platform Events</h3>
+                <h3 className="text-sm font-semibold text-zinc-900">{t('admin.globalAnalytics')}</h3>
               </div>
 
               <div className="divide-y divide-zinc-100">
@@ -310,4 +312,5 @@ export const AdminDashboardOverviewPage: React.FC = () => {
     </div>
   );
 };
+
 

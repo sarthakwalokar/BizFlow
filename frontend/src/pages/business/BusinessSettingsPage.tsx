@@ -21,7 +21,7 @@ import {
 
 export const BusinessSettingsPage: React.FC = () => {
   const { business, user, updateBusinessState, updateUserLanguage } = useAuth();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [name, setName] = useState('');
   const [businessType, setBusinessType] = useState<BusinessType>('RETAIL');
@@ -134,7 +134,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
       const updated = await businessApi.updateMyBusiness(updateData);
       updateBusinessState(updated);
-      setSuccessMessage('Business profile and tax configuration successfully saved!');
+      setSuccessMessage(t('settings.settingsSaved'));
     } catch (err: any) {
       const msg =
         err.response?.data?.error?.message ||
@@ -157,9 +157,9 @@ export const BusinessSettingsPage: React.FC = () => {
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Business Settings</h1>
+        <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('settings.title')}</h1>
         <p className="text-xs text-zinc-500 mt-0.5">
-          Manage your organization profile, industry vertical, currency, and tax computation rules.
+          {t('settings.subtitle')}
         </p>
       </div>
 
@@ -185,12 +185,12 @@ export const BusinessSettingsPage: React.FC = () => {
               <Globe size={16} />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-zinc-900">Language / भाषा / भाषा</h2>
-              <p className="text-xs text-zinc-500">Choose your preferred language for BizFlow.</p>
+              <h2 className="text-sm font-semibold text-zinc-900">{t('settings.languageSection')}</h2>
+              <p className="text-xs text-zinc-500">{t('settings.languageDesc')}</p>
             </div>
           </div>
           {languageSaving && (
-            <span className="text-xs text-brand-600 font-medium animate-pulse">Saving...</span>
+            <span className="text-xs text-brand-600 font-medium animate-pulse">{t('settings.saving')}</span>
           )}
         </div>
 
@@ -207,7 +207,7 @@ export const BusinessSettingsPage: React.FC = () => {
             onChange={handleLanguageChange}
           />
           <p className="text-[11px] text-zinc-500 mt-2">
-            Switching language will immediately update your interface, navigation, and AI business assistant data prompts across your account.
+            {t('settings.languageHint')}
           </p>
         </div>
       </div>
@@ -220,15 +220,15 @@ export const BusinessSettingsPage: React.FC = () => {
               <Building2 size={16} />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-zinc-900">General Information & Branding</h2>
-              <p className="text-xs text-zinc-500">Legal identity, business vertical, and contact details</p>
+              <h2 className="text-sm font-semibold text-zinc-900">{t('settings.generalInfo')}</h2>
+              <p className="text-xs text-zinc-500">{t('settings.generalInfoDesc')}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                Business Name <span className="text-red-500">*</span>
+                {t('settings.businessName')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -242,7 +242,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                Business Type / Vertical <span className="text-red-500">*</span>
+                {t('settings.businessType')} <span className="text-red-500">*</span>
               </label>
               <select
                 value={businessType}
@@ -278,7 +278,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                Business Contact Email
+                {t('settings.contactEmail')}
               </label>
               <input
                 type="email"
@@ -291,7 +291,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                Business Phone
+                {t('settings.contactPhone')}
               </label>
               <input
                 type="text"
@@ -304,7 +304,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
             <div className="space-y-1 md:col-span-2">
               <label className="text-xs font-medium text-zinc-700">
-                Physical Address
+                {t('settings.physicalAddress')}
               </label>
               <textarea
                 rows={2}
@@ -317,7 +317,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
             <div className="space-y-1 md:col-span-2">
               <label className="text-xs font-medium text-zinc-700">
-                Brand Logo URL
+                {t('settings.logoUrl')}
               </label>
               <div className="flex items-center gap-3">
                 <input
@@ -353,15 +353,15 @@ export const BusinessSettingsPage: React.FC = () => {
               <Globe size={16} />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-zinc-900">Currency & Regional Standards</h2>
-              <p className="text-xs text-zinc-500">Transaction currencies and timestamp format</p>
+              <h2 className="text-sm font-semibold text-zinc-900">{t('settings.currencyAndRegional')}</h2>
+              <p className="text-xs text-zinc-500">{t('settings.currencyAndRegionalDesc')}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                Operating Currency
+                {t('settings.operatingCurrency')}
               </label>
               <select
                 value={currency}
@@ -382,7 +382,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                System Timezone
+                {t('settings.systemTimezone')}
               </label>
               <select
                 value={timezone}
@@ -411,9 +411,9 @@ export const BusinessSettingsPage: React.FC = () => {
               <Percent size={16} />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-zinc-900">Tax Settings & Invoicing Rules</h2>
+              <h2 className="text-sm font-semibold text-zinc-900">{t('settings.taxSettings')}</h2>
               <p className="text-xs text-zinc-500">
-                Configure GST / VAT / Sales Tax rates applied during invoice checkout
+                {t('settings.taxSettingsDesc')}
               </p>
             </div>
           </div>
@@ -421,7 +421,7 @@ export const BusinessSettingsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                Tax Name / Label
+                {t('settings.taxName')}
               </label>
               <input
                 type="text"
@@ -434,7 +434,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                Default Tax Rate (%)
+                {t('settings.taxRate')}
               </label>
               <input
                 type="number"
@@ -450,7 +450,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                GST / Tax Registration No.
+                {t('settings.taxNumber')}
               </label>
               <input
                 type="text"
@@ -466,13 +466,13 @@ export const BusinessSettingsPage: React.FC = () => {
           <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 flex items-center justify-between">
             <div className="space-y-0.5 pr-4">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-zinc-900">Tax Inclusive Pricing</span>
+                <span className="text-xs font-semibold text-zinc-900">{t('settings.taxInclusive')}</span>
                 <span className="px-2 py-0.5 rounded-full bg-zinc-200 text-zinc-700 text-[10px] font-medium">
-                  {taxInclusive ? 'ACTIVE' : 'EXCLUSIVE'}
+                  {taxInclusive ? t('common.active') : t('common.inactive')}
                 </span>
               </div>
               <p className="text-[11px] text-zinc-500">
-                When enabled, catalog item prices include {taxName || 'tax'}. When disabled, tax is calculated on top.
+                {t('settings.taxInclusiveDesc')}
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer shrink-0">
@@ -490,12 +490,12 @@ export const BusinessSettingsPage: React.FC = () => {
           <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-2">
             <div className="flex items-center gap-1.5 text-zinc-700 font-medium text-xs">
               <Receipt size={14} className="text-zinc-500" />
-              <span>Receipt Calculation Preview (Sample base item)</span>
+              <span>{t('settings.taxPreview')}</span>
             </div>
 
             <div className="grid grid-cols-3 gap-3 text-xs">
               <div className="p-2.5 rounded-lg bg-white border border-zinc-200">
-                <span className="text-zinc-400 block text-[10px]">Net Item Price</span>
+                <span className="text-zinc-400 block text-[10px]">{t('settings.netItemPrice')}</span>
                 <span className="font-medium text-zinc-900">
                   {formatCurrency(
                     taxInclusive ? sampleBasePrice - simulatedTaxAmount : sampleBasePrice,
@@ -514,7 +514,7 @@ export const BusinessSettingsPage: React.FC = () => {
               </div>
 
               <div className="p-2.5 rounded-lg bg-white border border-zinc-200">
-                <span className="text-zinc-400 block text-[10px]">Total Billed</span>
+                <span className="text-zinc-400 block text-[10px]">{t('settings.totalBilled')}</span>
                 <span className="font-bold text-brand-700">
                   {formatCurrency(simulatedTotalPrice, currency)}
                 </span>
@@ -530,9 +530,9 @@ export const BusinessSettingsPage: React.FC = () => {
               <Boxes size={16} />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-zinc-900">Business Scale & Inventory Control</h2>
+              <h2 className="text-sm font-semibold text-zinc-900">{t('settings.businessScale')}</h2>
               <p className="text-xs text-zinc-500">
-                Choose between streamlined single-counter stock and multi-location supply chain inventory
+                {t('settings.businessScaleDesc')}
               </p>
             </div>
           </div>
@@ -549,9 +549,9 @@ export const BusinessSettingsPage: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-zinc-900">Small Business Tier</span>
+                  <span className="text-xs font-bold text-zinc-900">{t('settings.smallBizTier')}</span>
                   <span className="px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600 text-[10px] font-medium">
-                    Lean Mode
+                    {t('settings.smallBizTierBadge')}
                   </span>
                 </div>
                 <input
@@ -563,7 +563,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 />
               </div>
               <p className="text-[11px] text-zinc-500 leading-relaxed">
-                For single-location stores, cafés, bakeries, and salons. Simplified stock tracking with current quantities, low-stock warnings, and fast on-the-fly stock adjustments.
+                {t('settings.smallBizTierDesc')}
               </p>
             </div>
 
@@ -578,9 +578,9 @@ export const BusinessSettingsPage: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-zinc-900">Large Enterprise Tier</span>
+                  <span className="text-xs font-bold text-zinc-900">{t('settings.largeBizTier')}</span>
                   <span className="px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 text-[10px] font-medium">
-                    Supply Chain
+                    {t('settings.largeBizTierBadge')}
                   </span>
                 </div>
                 <input
@@ -592,7 +592,7 @@ export const BusinessSettingsPage: React.FC = () => {
                 />
               </div>
               <p className="text-[11px] text-zinc-500 leading-relaxed">
-                Full-featured inventory management with multi-location/warehouse support, supplier procurement, purchase intake orders, audit-safe stock movements ledger, and valuation metrics.
+                {t('settings.largeBizTierDesc')}
               </p>
             </div>
           </div>
@@ -601,7 +601,7 @@ export const BusinessSettingsPage: React.FC = () => {
           <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 flex items-center justify-between">
             <div className="space-y-0.5 pr-4">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-zinc-900">Inventory Module</span>
+                <span className="text-xs font-semibold text-zinc-900">{t('settings.inventoryModule')}</span>
                 <span
                   className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
                     inventoryEnabled
@@ -609,11 +609,11 @@ export const BusinessSettingsPage: React.FC = () => {
                       : 'bg-zinc-200 text-zinc-600'
                   }`}
                 >
-                  {inventoryEnabled ? 'ENABLED' : 'DISABLED'}
+                  {inventoryEnabled ? t('common.active') : t('common.inactive')}
                 </span>
               </div>
               <p className="text-[11px] text-zinc-500">
-                When enabled, the Inventory module will appear in the navigation bar and automatically track stock on sales.
+                {t('settings.inventoryModuleDesc')}
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer shrink-0">
@@ -636,11 +636,11 @@ export const BusinessSettingsPage: React.FC = () => {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
           >
             {saving ? (
-              <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+              <ButtonSpinner text={t('settings.saving')} spinnerColor="text-white" />
             ) : (
               <>
                 <Save size={15} />
-                <span>Save Settings</span>
+                <span>{t('settings.saveSettings')}</span>
               </>
             )}
           </button>
@@ -649,5 +649,6 @@ export const BusinessSettingsPage: React.FC = () => {
     </div>
   );
 };
+
 
 

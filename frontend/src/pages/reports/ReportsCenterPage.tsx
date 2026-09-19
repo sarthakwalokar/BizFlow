@@ -82,7 +82,7 @@ export const ReportsCenterPage: React.FC = () => {
       setError(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to generate report preview.'
+        t('reports.previewFailed', 'Failed to generate report preview.')
       );
     } finally {
       setLoading(false);
@@ -104,7 +104,7 @@ export const ReportsCenterPage: React.FC = () => {
         search: search || undefined,
       });
     } catch (err: any) {
-      setError('Failed to download PDF report. Please try again.');
+      setError(t('reports.pdfExportFailed', 'Failed to download PDF report. Please try again.'));
     } finally {
       setExportingPdf(false);
     }
@@ -121,7 +121,7 @@ export const ReportsCenterPage: React.FC = () => {
         search: search || undefined,
       });
     } catch (err: any) {
-      setError('Failed to download Excel report. Please try again.');
+      setError(t('reports.csvExportFailed', 'Failed to download CSV/Excel report. Please try again.'));
     } finally {
       setExportingExcel(false);
     }
@@ -135,12 +135,12 @@ export const ReportsCenterPage: React.FC = () => {
     setEndDate(end);
   };
 
-  const reportTabs: { type: ReportType; label: string; icon: LucideIcon }[] = [
-    { type: 'SALES', label: 'Sales & Invoices', icon: Receipt },
-    { type: 'EXPENSES', label: 'Operating Expenses', icon: TrendingDown },
-    { type: 'CUSTOMERS', label: 'Customer Ledger', icon: Users },
-    { type: 'PRODUCTS', label: 'Product & Service Performance', icon: Package },
-    { type: 'REVIEWS', label: 'Review & Feedback Audit', icon: Star },
+  const reportTabs: { type: ReportType; labelKey: string; defaultLabel: string; icon: LucideIcon }[] = [
+    { type: 'SALES', labelKey: 'reports.salesReport', defaultLabel: 'Sales & Invoices', icon: Receipt },
+    { type: 'EXPENSES', labelKey: 'reports.expenseReport', defaultLabel: 'Operating Expenses', icon: TrendingDown },
+    { type: 'CUSTOMERS', labelKey: 'customers.title', defaultLabel: 'Customer Ledger', icon: Users },
+    { type: 'PRODUCTS', labelKey: 'products.title', defaultLabel: 'Product & Service Performance', icon: Package },
+    { type: 'REVIEWS', labelKey: 'reviews.title', defaultLabel: 'Review & Feedback Audit', icon: Star },
   ];
 
   // Paginated Rows Slice
@@ -156,7 +156,7 @@ export const ReportsCenterPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('reports.title')}</h1>
             <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium border border-brand-200">
-              Audit Ready
+              {t('common.active')}
             </span>
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
@@ -172,7 +172,7 @@ export const ReportsCenterPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
           >
             {exportingPdf ? (
-              <ButtonSpinner text="Generating PDF..." spinnerColor="text-zinc-600" />
+              <ButtonSpinner text={t('common.loading')} spinnerColor="text-zinc-600" />
             ) : (
               <>
                 <Download size={14} className="text-zinc-500" />
@@ -187,7 +187,7 @@ export const ReportsCenterPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
           >
             {exportingExcel ? (
-              <ButtonSpinner text="Generating Excel..." spinnerColor="text-white" />
+              <ButtonSpinner text={t('common.loading')} spinnerColor="text-white" />
             ) : (
               <>
                 <FileSpreadsheet size={14} />
@@ -221,7 +221,7 @@ export const ReportsCenterPage: React.FC = () => {
               }`}
             >
               <Icon size={14} />
-              <span>{tab.label}</span>
+              <span>{t(tab.labelKey, tab.defaultLabel)}</span>
             </button>
           );
         })}
@@ -234,7 +234,7 @@ export const ReportsCenterPage: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <div className="flex items-center gap-1.5 text-zinc-600 font-medium">
               <Calendar size={14} className="text-zinc-400" />
-              <span>Range:</span>
+              <span>{t('reports.dateRange')}:</span>
             </div>
 
             <input
@@ -243,7 +243,7 @@ export const ReportsCenterPage: React.FC = () => {
               onChange={(e) => setStartDate(e.target.value)}
               className="px-2.5 py-1.5 rounded-lg border border-zinc-200 text-xs text-zinc-800 bg-zinc-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
             />
-            <span className="text-zinc-400">to</span>
+            <span className="text-zinc-400">{t('reports.to')}</span>
             <input
               type="date"
               value={endDate}
@@ -258,21 +258,21 @@ export const ReportsCenterPage: React.FC = () => {
                 onClick={() => applyDatePreset(7)}
                 className="px-2 py-1 rounded-md bg-zinc-100 hover:bg-zinc-200 text-[11px] font-medium text-zinc-600 transition-colors cursor-pointer"
               >
-                7 Days
+                7 {t('reports.days', 'Days')}
               </button>
               <button
                 type="button"
                 onClick={() => applyDatePreset(30)}
                 className="px-2 py-1 rounded-md bg-zinc-100 hover:bg-zinc-200 text-[11px] font-medium text-zinc-600 transition-colors cursor-pointer"
               >
-                30 Days
+                30 {t('reports.days', 'Days')}
               </button>
               <button
                 type="button"
                 onClick={() => applyDatePreset(90)}
                 className="px-2 py-1 rounded-md bg-zinc-100 hover:bg-zinc-200 text-[11px] font-medium text-zinc-600 transition-colors cursor-pointer"
               >
-                90 Days
+                90 {t('reports.days', 'Days')}
               </button>
             </div>
           </div>
@@ -286,7 +286,7 @@ export const ReportsCenterPage: React.FC = () => {
                 onChange={(e) => setSelectedLocationId(e.target.value)}
                 className="text-xs font-medium text-zinc-700 bg-transparent focus:outline-none cursor-pointer"
               >
-                <option value="ALL">All Branches</option>
+                <option value="ALL">{t('common.all')} {t('inventory.locationsTab', 'Branches')}</option>
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.id}>
                     {loc.name}
@@ -305,7 +305,7 @@ export const ReportsCenterPage: React.FC = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && loadReportPreview()}
-                placeholder="Filter keywords..."
+                placeholder={t('common.search')}
                 className="w-full pl-7 pr-2.5 py-1.5 rounded-lg border border-zinc-200 text-xs bg-zinc-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
               />
             </div>
@@ -316,7 +316,7 @@ export const ReportsCenterPage: React.FC = () => {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium transition-colors cursor-pointer disabled:opacity-50"
             >
               <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
-              <span>Refresh</span>
+              <span>{t('common.refresh')}</span>
             </button>
           </div>
         </div>
@@ -349,10 +349,10 @@ export const ReportsCenterPage: React.FC = () => {
         <div className="px-4 py-3 border-b border-zinc-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Table size={15} className="text-zinc-500" />
-            <h3 className="font-semibold text-zinc-900 text-xs">{reportData?.title || 'Report Records'}</h3>
+            <h3 className="font-semibold text-zinc-900 text-xs">{reportData?.title || t('reports.reportPreview')}</h3>
           </div>
           <span className="text-xs text-zinc-400">
-            {allRows.length} {allRows.length === 1 ? 'entry' : 'entries'}
+            {t('reports.totalRecords', { count: allRows.length })}
           </span>
         </div>
 
@@ -389,8 +389,7 @@ export const ReportsCenterPage: React.FC = () => {
                       className="px-4 py-12 text-center text-zinc-400 space-y-1"
                     >
                       <FileText size={28} className="mx-auto text-zinc-300 mb-2" />
-                      <p className="font-medium text-zinc-700">No records found for selected criteria</p>
-                      <p className="text-[11px] text-zinc-400">Try adjusting your date range or filters.</p>
+                      <p className="font-medium text-zinc-700">{t('common.noDataFound')}</p>
                     </td>
                   </tr>
                 ) : (
@@ -440,8 +439,7 @@ export const ReportsCenterPage: React.FC = () => {
         {!loading && allRows.length > pageSize && (
           <div className="px-4 py-3 border-t border-zinc-100 flex items-center justify-between text-xs">
             <span className="text-zinc-500">
-              Showing {(currentPage - 1) * pageSize + 1} to{' '}
-              {Math.min(currentPage * pageSize, allRows.length)} of {allRows.length} entries
+              {t('common.showingOf', { from: (currentPage - 1) * pageSize + 1, to: Math.min(currentPage * pageSize, allRows.length), total: allRows.length })}
             </span>
 
             <div className="flex items-center gap-1.5">
@@ -451,7 +449,7 @@ export const ReportsCenterPage: React.FC = () => {
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 text-zinc-600 text-xs font-medium hover:bg-zinc-50 disabled:opacity-40 cursor-pointer"
               >
                 <ChevronLeft size={13} />
-                <span>Prev</span>
+                <span>{t('common.previous')}</span>
               </button>
               <span className="px-2 py-1 text-xs font-medium text-zinc-600">
                 {currentPage} / {totalPages}
@@ -461,7 +459,7 @@ export const ReportsCenterPage: React.FC = () => {
                 disabled={currentPage === totalPages}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 text-zinc-600 text-xs font-medium hover:bg-zinc-50 disabled:opacity-40 cursor-pointer"
               >
-                <span>Next</span>
+                <span>{t('common.next')}</span>
                 <ChevronRight size={13} />
               </button>
             </div>
@@ -471,4 +469,3 @@ export const ReportsCenterPage: React.FC = () => {
     </div>
   );
 };
-

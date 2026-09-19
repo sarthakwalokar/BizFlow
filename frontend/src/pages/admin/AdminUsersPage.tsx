@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { adminApi } from '../../api/admin';
 import { User, Role } from '../../api/auth';
 import { useAuth } from '../../context/AuthContext';
@@ -20,6 +21,7 @@ import {
 
 export const AdminUsersPage: React.FC = () => {
   const { user: currentUser } = useAuth();
+  const { t } = useTranslation();
 
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -118,13 +120,13 @@ export const AdminUsersPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Platform Users Directory</h1>
+            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('admin.users')}</h1>
             <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium border border-brand-200">
-              {totalElements} Accounts
+              {totalElements} {t('common.all', 'Total')}
             </span>
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Oversee all registered user accounts, role allocations, and access privileges across tenants.
+            {t('auth.adminLoginSubtitle')}
           </p>
         </div>
 
@@ -134,7 +136,7 @@ export const AdminUsersPage: React.FC = () => {
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-medium shadow-xs transition-colors cursor-pointer self-start sm:self-auto disabled:opacity-50"
         >
           <RefreshCw size={13} className={loading ? 'animate-spin text-brand-600' : 'text-zinc-400'} />
-          <span>Refresh</span>
+          <span>{t('common.refresh')}</span>
         </button>
       </div>
 
@@ -155,14 +157,14 @@ export const AdminUsersPage: React.FC = () => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, email, or phone..."
+              placeholder={t('admin.searchUsers')}
               className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-zinc-50 border border-zinc-200 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white"
             />
           </div>
 
           {/* Role Filter */}
           <div className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1.5">
-            <span className="text-[11px] font-medium text-zinc-500">Role:</span>
+            <span className="text-[11px] font-medium text-zinc-500">{t('staff.role')}:</span>
             <select
               value={selectedRole}
               onChange={(e) => {
@@ -171,16 +173,16 @@ export const AdminUsersPage: React.FC = () => {
               }}
               className="bg-transparent text-xs font-medium text-zinc-700 focus:outline-none cursor-pointer"
             >
-              <option value="ALL">All Roles</option>
-              <option value="OWNER">Owners</option>
-              <option value="STAFF">Staff</option>
+              <option value="ALL">{t('common.all')}</option>
+              <option value="OWNER">{t('staff.roleOwner')}</option>
+              <option value="STAFF">{t('staff.roleStaff')}</option>
               <option value="ADMIN">Platform Admins</option>
             </select>
           </div>
 
           {/* Status Filter */}
           <div className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1.5">
-            <span className="text-[11px] font-medium text-zinc-500">Status:</span>
+            <span className="text-[11px] font-medium text-zinc-500">{t('common.status')}:</span>
             <select
               value={selectedStatus}
               onChange={(e) => {
@@ -189,9 +191,9 @@ export const AdminUsersPage: React.FC = () => {
               }}
               className="bg-transparent text-xs font-medium text-zinc-700 focus:outline-none cursor-pointer"
             >
-              <option value="ALL">All</option>
-              <option value="ENABLED">Active Only</option>
-              <option value="DISABLED">Disabled Only</option>
+              <option value="ALL">{t('common.all')}</option>
+              <option value="ENABLED">{t('common.active')}</option>
+              <option value="DISABLED">{t('common.inactive')}</option>
             </select>
           </div>
 
@@ -199,7 +201,7 @@ export const AdminUsersPage: React.FC = () => {
             type="submit"
             className="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium transition-colors shadow-xs cursor-pointer"
           >
-            Apply Filters
+            {t('common.apply')}
           </button>
         </form>
       </div>
@@ -210,11 +212,11 @@ export const AdminUsersPage: React.FC = () => {
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-medium uppercase tracking-wider text-[10px]">
-                <th className="px-4 py-3">User</th>
-                <th className="px-4 py-3">Role</th>
-                <th className="px-4 py-3">Assigned Tenant</th>
-                <th className="px-4 py-3">Contact</th>
-                <th className="px-4 py-3 text-center">Status</th>
+                <th className="px-4 py-3">{t('profile.fullName')}</th>
+                <th className="px-4 py-3">{t('staff.role')}</th>
+                <th className="px-4 py-3">{t('profile.businessUnit')}</th>
+                <th className="px-4 py-3">{t('customers.phone')}</th>
+                <th className="px-4 py-3 text-center">{t('common.status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
@@ -228,8 +230,8 @@ export const AdminUsersPage: React.FC = () => {
                 <tr>
                   <td colSpan={5} className="px-4 py-12 text-center text-zinc-400 space-y-1">
                     <Users size={28} className="mx-auto text-zinc-300 mb-2" />
-                    <p className="font-medium text-zinc-700">No users found</p>
-                    <p className="text-[11px] text-zinc-400">Try adjusting your search criteria.</p>
+                    <p className="font-medium text-zinc-700">{t('common.notFound')}</p>
+                    <p className="text-[11px] text-zinc-400">{t('common.noDataFound')}</p>
                   </td>
                 </tr>
               ) : (
@@ -255,7 +257,7 @@ export const AdminUsersPage: React.FC = () => {
                                 </span>
                               )}
                             </div>
-                            <span className="text-[11px] text-zinc-400 font-mono">ID #{usr.id}</span>
+                            <span className="text-[11px] text-zinc-400 font-mono">{t('common.id')} #{usr.id}</span>
                           </div>
                         </div>
                       </td>
@@ -308,7 +310,7 @@ export const AdminUsersPage: React.FC = () => {
                           ) : (
                             <XCircle size={11} />
                           )}
-                          <span>{usr.enabled ? 'Active' : 'Disabled'}</span>
+                          <span>{usr.enabled ? t('common.active') : t('common.inactive')}</span>
                         </button>
                       </td>
                     </tr>
@@ -323,7 +325,7 @@ export const AdminUsersPage: React.FC = () => {
         {totalPages > 1 && (
           <div className="px-4 py-3 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
             <span>
-              Showing Page {page + 1} of {totalPages} ({totalElements} users)
+              {t('common.showing')} {page + 1} {t('common.of')} {totalPages} ({totalElements} users)
             </span>
 
             <div className="flex items-center gap-1.5">
@@ -333,14 +335,14 @@ export const AdminUsersPage: React.FC = () => {
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-600 disabled:opacity-40 font-medium cursor-pointer"
               >
                 <ChevronLeft size={13} />
-                <span>Previous</span>
+                <span>{t('common.previous')}</span>
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
                 disabled={page >= totalPages - 1}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-600 disabled:opacity-40 font-medium cursor-pointer"
               >
-                <span>Next</span>
+                <span>{t('common.next')}</span>
                 <ChevronRight size={13} />
               </button>
             </div>
@@ -350,4 +352,5 @@ export const AdminUsersPage: React.FC = () => {
     </div>
   );
 };
+
 

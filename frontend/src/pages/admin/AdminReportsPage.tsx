@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { adminApi, AdminPlatformReport } from '../../api/admin';
 import { MetricCardsSkeleton, ChartSkeleton } from '../../components/common/LoadingStates';
 import {
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 
 export const AdminReportsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [report, setReport] = useState<AdminPlatformReport | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -62,13 +64,13 @@ export const AdminReportsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Platform Growth & Analytics</h1>
+            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('admin.reports')}</h1>
             <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium border border-brand-200">
               Executive View
             </span>
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Tenant acquisition velocity, tier utilization, and cross-industry distribution curves.
+            {t('auth.adminLoginSubtitle')}
           </p>
         </div>
 
@@ -78,7 +80,7 @@ export const AdminReportsPage: React.FC = () => {
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-medium shadow-xs transition-colors cursor-pointer self-start sm:self-auto disabled:opacity-50"
         >
           <RefreshCw size={13} className={loading ? 'animate-spin text-brand-600' : 'text-zinc-400'} />
-          <span>Refresh Report</span>
+          <span>{t('common.refresh')}</span>
         </button>
       </div>
 
@@ -92,31 +94,31 @@ export const AdminReportsPage: React.FC = () => {
           {/* Summary KPI Highlights */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
-              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Total Tenants</span>
+              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('admin.totalBusinesses')}</span>
               <div className="text-xl font-bold text-zinc-900">{report?.totalTenants ?? 0}</div>
               <span className="text-[11px] text-brand-700 font-medium block">100% platform coverage</span>
             </div>
 
             <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
-              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Active Tenant Ratio</span>
+              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('admin.activeBusinesses')}</span>
               <div className="text-xl font-bold text-emerald-700">
                 {report?.activeTenantPercentage?.toFixed(1) ?? '0.0'}%
               </div>
               <span className="text-[11px] text-emerald-600 font-medium block">
-                {report?.activeTenants ?? 0} active operations
+                {report?.activeTenants ?? 0} {t('common.active')}
               </span>
             </div>
 
             <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
-              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Small Tier Businesses</span>
+              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('settings.smallBizTier')}</span>
               <div className="text-xl font-bold text-zinc-900">{report?.smallBusinessesCount ?? 0}</div>
-              <span className="text-[11px] text-zinc-400 block">Lean single-counter POS</span>
+              <span className="text-[11px] text-zinc-400 block">{t('settings.smallBizTierBadge')}</span>
             </div>
 
             <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
-              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Large Enterprise Tier</span>
+              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('settings.largeBizTier')}</span>
               <div className="text-xl font-bold text-brand-700">{report?.largeBusinessesCount ?? 0}</div>
-              <span className="text-[11px] text-brand-600 block">Multi-location inventory enabled</span>
+              <span className="text-[11px] text-brand-600 block">{t('settings.largeBizTierBadge')}</span>
             </div>
           </div>
 
@@ -125,9 +127,9 @@ export const AdminReportsPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <TrendingUp size={16} className="text-brand-600" />
-                <h3 className="text-sm font-semibold text-zinc-900">Tenant Onboarding Velocity (Last 6 Months)</h3>
+                <h3 className="text-sm font-semibold text-zinc-900">{t('admin.globalAnalytics')}</h3>
               </div>
-              <span className="text-xs text-zinc-500">Monthly Registrations</span>
+              <span className="text-xs text-zinc-500">{t('analytics.revenueTrend')}</span>
             </div>
 
             {/* Visual Bar Chart */}
@@ -155,7 +157,7 @@ export const AdminReportsPage: React.FC = () => {
           <div className="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs space-y-3">
             <div className="flex items-center gap-2">
               <Layers size={16} className="text-brand-600" />
-              <h3 className="text-sm font-semibold text-zinc-900">Industry Segment Breakdown</h3>
+              <h3 className="text-sm font-semibold text-zinc-900">{t('auth.businessType')}</h3>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
@@ -174,7 +176,7 @@ export const AdminReportsPage: React.FC = () => {
                         <span className="text-xs font-mono font-semibold text-brand-700">{pct}%</span>
                       </div>
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-zinc-500">Active Entities:</span>
+                        <span className="text-zinc-500">{t('common.active')}:</span>
                         <span className="font-bold text-zinc-900">{count}</span>
                       </div>
                     </div>
@@ -187,3 +189,4 @@ export const AdminReportsPage: React.FC = () => {
     </div>
   );
 };
+

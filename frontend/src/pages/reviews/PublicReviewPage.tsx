@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { reviewsApi, PublicBusinessReviewInfo, AiReviewSuggestionResponse } from '../../api/reviews';
 import { ButtonSpinner } from '../../components/common/LoadingStates';
 import {
@@ -16,14 +17,6 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 
-const RATING_LABELS: Record<number, string> = {
-  1: 'Very Disappointed 😞',
-  2: 'Needs Improvement ⚠️',
-  3: 'Average Experience ⚖️',
-  4: 'Great Service! 👍',
-  5: 'Outstanding Experience! 🌟',
-};
-
 const DEFAULT_CHIPS_BY_RATING: Record<number, string[]> = {
   5: ['Fast Service ⚡', 'Top Quality ✨', 'Friendly Staff 😊', 'Great Value 💰', 'Clean & Welcoming 🌿'],
   4: ['Good Service 👍', 'Pleasant Visit 😊', 'Fair Prices 🏷️', 'Helpful Team 🤝'],
@@ -33,6 +26,7 @@ const DEFAULT_CHIPS_BY_RATING: Record<number, string[]> = {
 };
 
 export const PublicReviewPage: React.FC = () => {
+  const { t } = useTranslation();
   const { slugOrId } = useParams<{ slugOrId: string }>();
 
   const [businessInfo, setBusinessInfo] = useState<PublicBusinessReviewInfo | null>(null);
@@ -81,7 +75,7 @@ export const PublicReviewPage: React.FC = () => {
         const data = await reviewsApi.getPublicReviewInfo(slugOrId);
         setBusinessInfo(data);
       } catch (err: any) {
-        setErrorMessage('Unable to load review form for this business.');
+        setErrorMessage(t('publicReview.loadFailed', 'Unable to load review form for this business.'));
       } finally {
         setLoading(false);
       }
@@ -125,7 +119,7 @@ export const PublicReviewPage: React.FC = () => {
       const msg =
         e.response?.data?.error?.message ||
         e.response?.data?.message ||
-        'Unable to generate AI review suggestions. Please ensure the BizFlow AI API key is configured on the backend.';
+        t('publicReview.aiGenNotice', 'Unable to generate AI review suggestions.');
       setAiError(msg);
     } finally {
       setGeneratingAi(false);
@@ -147,7 +141,7 @@ export const PublicReviewPage: React.FC = () => {
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (rating === 0) {
-      setErrorMessage('Please tap a star rating before submitting.');
+      setErrorMessage(t('publicReview.tapToRate'));
       return;
     }
 
@@ -186,7 +180,7 @@ export const PublicReviewPage: React.FC = () => {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to submit your feedback. Please try again.'
+        t('publicReview.submitFailed', 'Failed to submit your feedback. Please try again.')
       );
     } finally {
       setSubmitting(false);
@@ -213,7 +207,7 @@ export const PublicReviewPage: React.FC = () => {
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
-          <span className="text-xs font-medium text-zinc-500">Loading business review page...</span>
+          <span className="text-xs font-medium text-zinc-500">{t('common.loading')}</span>
         </div>
       </div>
     );
@@ -224,15 +218,15 @@ export const PublicReviewPage: React.FC = () => {
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
         <div className="max-w-sm w-full bg-white rounded-xl border border-zinc-200 p-6 text-center space-y-3 shadow-xs">
           <Store size={36} className="mx-auto text-zinc-400" />
-          <h2 className="text-base font-bold text-zinc-900">Review Page Unavailable</h2>
+          <h2 className="text-base font-bold text-zinc-900">{t('publicReview.unavailable', 'Review Page Unavailable')}</h2>
           <p className="text-xs text-zinc-500 leading-relaxed">
-            This business review portal is currently not active or the link has changed.
+            {t('publicReview.unavailableDesc', 'This business review portal is currently not active or the link has changed.')}
           </p>
           <Link
             to="/"
             className="inline-block px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-medium"
           >
-            Back to Home
+            {t('common.back')}
           </Link>
         </div>
       </div>
@@ -253,7 +247,7 @@ export const PublicReviewPage: React.FC = () => {
             {businessInfo.name}
           </h1>
           <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-            {businessInfo.reviewPromptMessage || 'How was your experience with us today?'}
+            {businessInfo.reviewPromptMessage || t('publicReview.rateYourExperience') + ' ' + businessInfo.name}
           </p>
         </div>
 
@@ -266,11 +260,9 @@ export const PublicReviewPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <h3 className="text-lg font-bold text-zinc-900">Thank You for Your Review!</h3>
+                <h3 className="text-lg font-bold text-zinc-900">{t('publicReview.thankYouTitle')}</h3>
                 <p className="text-xs text-zinc-600 leading-relaxed max-w-sm mx-auto">
-                  {isPositiveRating
-                    ? 'Your positive review means the world to our small business team!'
-                    : 'Your feedback has been received and shared directly with management for prompt attention.'}
+                  {t('publicReview.thankYouDesc')}
                 </p>
               </div>
 
@@ -282,7 +274,7 @@ export const PublicReviewPage: React.FC = () => {
                       <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-xs border border-brand-200 text-amber-500">
                         <Star size={14} className="fill-amber-500 text-amber-500" />
                       </div>
-                      <span className="font-bold text-xs text-brand-900">Post on Google Reviews</span>
+                      <span className="font-bold text-xs text-brand-900">{t('publicReview.leaveGoogleReview')}</span>
                     </div>
 
                     <span className="text-[11px] font-semibold text-brand-700 bg-brand-100/70 px-2.5 py-0.5 rounded-full">
@@ -293,14 +285,14 @@ export const PublicReviewPage: React.FC = () => {
                   {feedbackText.trim() && (
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between text-[11px] text-zinc-500">
-                        <span className="font-medium">Your Review (Copied to clipboard):</span>
+                        <span className="font-medium">{t('reviews.feedback')}:</span>
                         <button
                           type="button"
                           onClick={handleCopyReviewText}
                           className="inline-flex items-center space-x-1 text-brand-700 hover:text-brand-900 font-semibold cursor-pointer"
                         >
                           {copiedReview ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
-                          <span>{copiedReview ? 'Copied!' : 'Copy Again'}</span>
+                          <span>{copiedReview ? t('common.copied') : t('reviews.copyReview')}</span>
                         </button>
                       </div>
                       <div className="p-3 bg-white rounded-lg border border-brand-100 text-xs text-zinc-700 italic font-mono leading-relaxed line-clamp-3">
@@ -314,12 +306,12 @@ export const PublicReviewPage: React.FC = () => {
                       href={redirectUrl}
                       className="w-full py-2.5 px-4 rounded-lg bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold text-xs flex items-center justify-center space-x-2 shadow-sm transition-all cursor-pointer"
                     >
-                      <span>Open Google Reviews Now</span>
+                      <span>{t('publicReview.leaveGoogleReview')}</span>
                       <ExternalLink size={14} />
                     </a>
 
                     <p className="text-[10px] text-zinc-400 text-center">
-                      Simply paste (Ctrl+V) your copied review text when the Google page opens.
+                      {t('publicReview.googleReviewPrompt')}
                     </p>
                   </div>
                 </div>
@@ -337,7 +329,7 @@ export const PublicReviewPage: React.FC = () => {
               {/* Star Rating Selector */}
               <div className="text-center space-y-2.5">
                 <label className="text-xs font-bold text-zinc-700 uppercase tracking-wider block">
-                  Tap stars to rate your experience
+                  {t('publicReview.tapToRate')}
                 </label>
 
                 <div className="flex items-center justify-center space-x-2.5 py-1">
@@ -365,20 +357,6 @@ export const PublicReviewPage: React.FC = () => {
                     );
                   })}
                 </div>
-
-                {rating > 0 && (
-                  <div className="animate-fadeIn">
-                    <span
-                      className={`inline-block px-3.5 py-1 rounded-full text-xs font-semibold border ${
-                        rating >= 4
-                          ? 'bg-amber-50 text-amber-900 border-amber-200'
-                          : 'bg-zinc-100 text-zinc-800 border-zinc-200'
-                      }`}
-                    >
-                      {RATING_LABELS[rating]}
-                    </span>
-                  </div>
-                )}
               </div>
 
               {/* AI GENERATOR & SUGGESTION CARDS (Shows once star is selected) */}
@@ -387,7 +365,7 @@ export const PublicReviewPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5 text-brand-800 text-xs font-bold">
                       <Sparkles size={14} className="text-brand-600 animate-pulse" />
-                      <span>AI Review Suggestions</span>
+                      <span>{t('publicReview.aiSuggestionsTitle')}</span>
                     </div>
 
                     <button
@@ -397,7 +375,7 @@ export const PublicReviewPage: React.FC = () => {
                       className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                     >
                       <RefreshCw size={11} className={generatingAi ? 'animate-spin' : ''} />
-                      <span>{generatingAi ? 'Generating...' : 'Generate Suggestions'}</span>
+                      <span>{generatingAi ? t('common.loading') : t('common.refresh')}</span>
                     </button>
                   </div>
 
@@ -405,7 +383,7 @@ export const PublicReviewPage: React.FC = () => {
                     <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-start space-x-2">
                       <AlertCircle size={15} className="shrink-0 text-amber-600 mt-0.5" />
                       <div>
-                        <span className="font-semibold block">AI Generation Notice</span>
+                        <span className="font-semibold block">{t('common.warning')}</span>
                         <span className="text-[11px]">{aiError}</span>
                       </div>
                     </div>
@@ -415,7 +393,7 @@ export const PublicReviewPage: React.FC = () => {
                   {availableTags.length > 0 && (
                     <div className="space-y-1">
                       <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider block">
-                        Quick Aspects (Tap to include):
+                        {t('publicReview.aiSuggestionsDesc')}
                       </span>
                       <div className="flex flex-wrap gap-1.5">
                         {availableTags.map((tag) => (
@@ -439,9 +417,6 @@ export const PublicReviewPage: React.FC = () => {
                   {/* AI Suggestion Cards (3-5 suggestions) */}
                   {aiSuggestions.length > 0 && (
                     <div className="space-y-1.5 pt-1">
-                      <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider block">
-                        Pick a suggestion or edit below:
-                      </span>
                       <div className="space-y-2">
                         {aiSuggestions.map((sug, idx) => {
                           const isSelected = feedbackText === sug;
@@ -472,7 +447,7 @@ export const PublicReviewPage: React.FC = () => {
                                   setTimeout(() => setCopiedReview(false), 2000);
                                 }}
                                 className="shrink-0 p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-400 hover:text-brand-600 transition-colors"
-                                title="Copy and use this suggestion"
+                                title={t('common.copy')}
                               >
                                 <Copy size={13} />
                               </button>
@@ -489,7 +464,7 @@ export const PublicReviewPage: React.FC = () => {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-semibold text-zinc-700">
-                    {rating >= 4 ? 'Your Review' : 'Detailed Feedback (Optional)'}
+                    {t('reviews.feedback')}
                   </label>
                   {feedbackText.trim().length > 0 && (
                     <button
@@ -498,7 +473,7 @@ export const PublicReviewPage: React.FC = () => {
                       className="inline-flex items-center space-x-1 text-[11px] font-medium text-brand-700 hover:text-brand-900 cursor-pointer"
                     >
                       {copiedReview ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
-                      <span>{copiedReview ? 'Copied!' : 'Copy text'}</span>
+                      <span>{copiedReview ? t('common.copied') : t('common.copy')}</span>
                     </button>
                   )}
                 </div>
@@ -506,11 +481,7 @@ export const PublicReviewPage: React.FC = () => {
                 <div className="relative">
                   <textarea
                     rows={4}
-                    placeholder={
-                      rating > 0
-                        ? 'Tap a quick aspect above or write your own review here...'
-                        : 'Please select a star rating first...'
-                    }
+                    placeholder={t('publicReview.shareFeedbackPlaceholder')}
                     value={feedbackText}
                     onChange={(e) => setFeedbackText(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-zinc-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 resize-none leading-relaxed"
@@ -518,7 +489,7 @@ export const PublicReviewPage: React.FC = () => {
                   {generatingAi && (
                     <div className="absolute inset-0 bg-white/70 backdrop-blur-2xs rounded-xl flex items-center justify-center space-x-2 text-brand-700 font-semibold text-xs">
                       <Sparkles size={16} className="animate-spin text-brand-600" />
-                      <span>Crafting AI Review...</span>
+                      <span>{t('ai.thinking')}</span>
                     </div>
                   )}
                 </div>
@@ -527,7 +498,7 @@ export const PublicReviewPage: React.FC = () => {
               {/* Customer Contact Details */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-zinc-700">Your Name (Optional)</label>
+                  <label className="text-xs font-medium text-zinc-700">{t('publicReview.customerNamePlaceholder')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Priya Sharma"
@@ -538,7 +509,7 @@ export const PublicReviewPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-zinc-700">Phone / Email (Optional)</label>
+                  <label className="text-xs font-medium text-zinc-700">{t('publicReview.customerPhonePlaceholder')}</label>
                   <input
                     type="text"
                     placeholder="e.g. 9876543210"
@@ -554,7 +525,7 @@ export const PublicReviewPage: React.FC = () => {
                 <div className="p-3 rounded-lg bg-amber-50/60 border border-amber-200/80 flex items-start space-x-2 text-[11px] text-amber-900">
                   <Star size={14} className="text-amber-600 shrink-0 mt-0.5 fill-amber-500" />
                   <p>
-                    <strong>5-Star Boost:</strong> Submitting will automatically copy your review and direct you to Google Reviews to support <strong>{businessInfo.name}</strong>!
+                    {t('publicReview.googleReviewPrompt')}
                   </p>
                 </div>
               )}
@@ -569,16 +540,16 @@ export const PublicReviewPage: React.FC = () => {
                 }`}
               >
                 {submitting ? (
-                  <ButtonSpinner text="Submitting Review..." spinnerColor="text-white" />
+                  <ButtonSpinner text={t('publicReview.submitting')} spinnerColor="text-white" />
                 ) : isPositiveRating ? (
                   <>
-                    <span>Submit &amp; Open Google Reviews</span>
+                    <span>{t('publicReview.leaveGoogleReview')}</span>
                     <ExternalLink size={14} />
                   </>
                 ) : (
                   <>
                     <MessageSquareHeart size={14} />
-                    <span>Submit Private Feedback</span>
+                    <span>{t('publicReview.submitBtn')}</span>
                   </>
                 )}
               </button>

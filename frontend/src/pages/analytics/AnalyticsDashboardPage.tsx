@@ -56,7 +56,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
       setError(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to fetch analytics metrics.'
+        t('analytics.fetchFailed', 'Failed to fetch analytics metrics.')
       );
     } finally {
       setLoading(false);
@@ -185,7 +185,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
                 onChange={(e) => setSelectedLocationId(e.target.value)}
                 className="bg-transparent border-none text-xs font-semibold text-zinc-800 pr-2 focus:ring-0"
               >
-                <option value="ALL">All Branches &amp; Stores</option>
+                <option value="ALL">{t('common.all')} {t('inventory.locationsTab', 'Locations')}</option>
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.id}>
                     {loc.name}
@@ -250,7 +250,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
             <div className="text-2xl font-black text-zinc-950">
               {formatCurrency(overview?.revenue ?? 0, currency)}
             </div>
-            <p className="text-[11px] text-zinc-500">Total processed sales volume</p>
+            <p className="text-[11px] text-zinc-500">{t('analytics.revenue')}</p>
           </div>
 
           {/* Operating Expenses */}
@@ -264,7 +264,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
             <div className="text-2xl font-black text-rose-600">
               {formatCurrency(overview?.expenseTotal ?? 0, currency)}
             </div>
-            <p className="text-[11px] text-zinc-500">Logged business expenditures</p>
+            <p className="text-[11px] text-zinc-500">{t('expenses.title')}</p>
           </div>
 
           {/* Net Profit Margin */}
@@ -279,7 +279,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
               {formatCurrency(overview?.netRevenue ?? 0, currency)}
             </div>
             <p className="text-[11px] text-brand-700 font-semibold">
-              {`${Number(overview?.profitMarginPercentage ?? 0).toFixed(1)}% net margin`}
+              {`${Number(overview?.profitMarginPercentage ?? 0).toFixed(1)}%`}
             </p>
           </div>
 
@@ -295,7 +295,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
               {formatCurrency(overview?.averageOrderValue ?? 0, currency)}
             </div>
             <p className="text-[11px] text-zinc-500">
-              {`Across ${overview?.orderCount ?? 0} paid bills`}
+              {`${overview?.orderCount ?? 0} ${t('dashboard.orders')}`}
             </p>
           </div>
         </div>
@@ -309,10 +309,10 @@ export const AnalyticsDashboardPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-bold text-zinc-900">{t('analytics.revenueTrend')}</h3>
-              <p className="text-xs text-zinc-500">Daily sales performance trajectory</p>
+              <p className="text-xs text-zinc-500">{t('analytics.subtitle')}</p>
             </div>
             <span className="text-[10px] font-bold text-brand-700 bg-brand-50 px-2.5 py-1 rounded-full border border-brand-200">
-              Automated Calculations
+              {t('common.active')}
             </span>
           </div>
 
@@ -329,7 +329,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
               <Award className="w-4 h-4 text-brand-600" />
               <h3 className="text-sm font-bold text-zinc-900">{t('analytics.topProducts')}</h3>
             </div>
-            <span className="text-xs text-zinc-400">By Revenue</span>
+            <span className="text-xs text-zinc-400">{t('analytics.revenue')}</span>
           </div>
 
           <div className="space-y-3">
@@ -344,7 +344,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
                 </div>
               ))
             ) : !overview || overview.topProducts.length === 0 ? (
-              <div className="py-8 text-center text-zinc-400 text-xs">No sales recorded in this period.</div>
+              <div className="py-8 text-center text-zinc-400 text-xs">{t('common.noDataFound')}</div>
             ) : (
               overview.topProducts.map((p, idx) => {
                 const maxProdRev = Math.max(...overview.topProducts.map((t) => t.totalRevenue), 1);
@@ -356,7 +356,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
                       <div className="flex items-center space-x-2">
                         <span className="w-4 text-zinc-400 font-bold">{idx + 1}.</span>
                         <span className="font-bold text-zinc-900">{p.productName}</span>
-                        <span className="text-[10px] text-zinc-400">({p.quantitySold} units)</span>
+                        <span className="text-[10px] text-zinc-400">({p.quantitySold})</span>
                       </div>
                       <span className="font-black text-zinc-950">{formatCurrency(p.totalRevenue, currency)}</span>
                     </div>
@@ -376,9 +376,9 @@ export const AnalyticsDashboardPage: React.FC = () => {
           <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
             <div className="flex items-center space-x-2">
               <CreditCard className="w-4 h-4 text-brand-600" />
-              <h3 className="text-sm font-bold text-zinc-900">Payment Capture Distribution</h3>
+              <h3 className="text-sm font-bold text-zinc-900">{t('analytics.paymentDistribution')}</h3>
             </div>
-            <span className="text-xs text-zinc-400">Multi-Mode</span>
+            <span className="text-xs text-zinc-400">{t('billing.paymentMethod')}</span>
           </div>
 
           <div className="space-y-3">
@@ -393,7 +393,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
                 </div>
               ))
             ) : !overview || overview.paymentDistribution.length === 0 ? (
-              <div className="py-8 text-center text-zinc-400 text-xs">No transactions recorded.</div>
+              <div className="py-8 text-center text-zinc-400 text-xs">{t('common.noDataFound')}</div>
             ) : (
               overview.paymentDistribution.map((pm, idx) => {
                 const totalAll = overview.paymentDistribution.reduce((acc: number, x: any) => acc + x.totalAmount, 0) || 1;
@@ -406,7 +406,7 @@ export const AnalyticsDashboardPage: React.FC = () => {
                         <span className="px-2 py-0.5 rounded-md bg-zinc-100 font-bold text-[10px] text-zinc-700">
                           {pm.paymentMethod}
                         </span>
-                        <span className="text-zinc-500 text-[11px]">{pm.transactionCount} bills</span>
+                        <span className="text-zinc-500 text-[11px]">{pm.transactionCount} {t('dashboard.orders')}</span>
                       </div>
                       <div className="text-right">
                         <span className="font-black text-zinc-950">{formatCurrency(pm.totalAmount, currency)}</span>

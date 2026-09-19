@@ -40,7 +40,7 @@ export const CategoryListPage: React.FC = () => {
       const data = await categoriesApi.getCategories();
       setCategories(data);
     } catch (err: any) {
-      setErrorMessage('Failed to load categories.');
+      setErrorMessage(t('categories.failedToLoad', 'Failed to load categories.'));
     } finally {
       setLoading(false);
     }
@@ -80,14 +80,14 @@ export const CategoryListPage: React.FC = () => {
 
     try {
       await categoriesApi.createCategory(payload);
-      setSuccessMessage(`Category "${payload.name}" created.`);
+      setSuccessMessage(t('categories.categoryCreated', { name: payload.name, defaultValue: `Category "${payload.name}" created.` }));
       setIsAddModalOpen(false);
       fetchCategories();
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to create category.'
+        t('categories.createFailed', 'Failed to create category.')
       );
     } finally {
       setActionLoading(false);
@@ -110,14 +110,14 @@ export const CategoryListPage: React.FC = () => {
 
     try {
       await categoriesApi.updateCategory(editingCategory.id, payload);
-      setSuccessMessage(`Category "${payload.name}" updated.`);
+      setSuccessMessage(t('categories.categoryUpdated', { name: payload.name, defaultValue: `Category "${payload.name}" updated.` }));
       setEditingCategory(null);
       fetchCategories();
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to update category.'
+        t('categories.updateFailed', 'Failed to update category.')
       );
     } finally {
       setActionLoading(false);
@@ -132,14 +132,14 @@ export const CategoryListPage: React.FC = () => {
 
     try {
       await categoriesApi.deleteCategory(deletingCategory.id);
-      setSuccessMessage(`Category "${deletingCategory.name}" removed.`);
+      setSuccessMessage(t('categories.categoryDeleted', { name: deletingCategory.name, defaultValue: `Category "${deletingCategory.name}" removed.` }));
       setDeletingCategory(null);
       fetchCategories();
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to delete category.'
+        t('categories.deleteFailed', 'Failed to delete category.')
       );
     } finally {
       setActionLoading(false);
@@ -264,7 +264,7 @@ export const CategoryListPage: React.FC = () => {
                 <button
                   onClick={() => openEditModal(cat)}
                   className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
-                  title="Edit Category"
+                  title={t('categories.editCategory')}
                 >
                   <Edit2 size={14} />
                 </button>
@@ -272,7 +272,7 @@ export const CategoryListPage: React.FC = () => {
                 <button
                   onClick={() => setDeletingCategory(cat)}
                   className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                  title="Delete Category"
+                  title={t('categories.deleteCategory')}
                 >
                   <Trash2 size={14} />
                 </button>
@@ -359,7 +359,7 @@ export const CategoryListPage: React.FC = () => {
                   className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
                 >
                   {actionLoading ? (
-                    <ButtonSpinner text="Saving..." />
+                    <ButtonSpinner text={t('common.saving')} />
                   ) : editingCategory ? (
                     t('common.save')
                   ) : (
@@ -382,8 +382,7 @@ export const CategoryListPage: React.FC = () => {
             </div>
 
             <p className="text-xs text-zinc-600 leading-relaxed">
-              Are you sure you want to delete category{' '}
-              <strong className="text-zinc-900">"{deletingCategory.name}"</strong>?
+              {t('categories.confirmDelete')}
             </p>
 
             <div className="flex justify-end space-x-2 pt-2">
@@ -400,7 +399,7 @@ export const CategoryListPage: React.FC = () => {
                 disabled={actionLoading}
                 className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
               >
-                {actionLoading ? <ButtonSpinner text="Deleting..." /> : t('common.delete')}
+                {actionLoading ? <ButtonSpinner text={t('common.deleting')} /> : t('common.delete')}
               </button>
             </div>
           </div>

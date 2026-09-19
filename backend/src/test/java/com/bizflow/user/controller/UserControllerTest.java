@@ -99,6 +99,29 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("PUT /api/v1/users/me/language - should update preferred language")
+    void updateMyLanguage_shouldReturnOk() throws Exception {
+        com.bizflow.user.dto.LanguageUpdateRequest request = com.bizflow.user.dto.LanguageUpdateRequest.builder()
+                .language("mr")
+                .build();
+
+        UserResponse response = UserResponse.builder()
+                .id(1L)
+                .fullName("Alice Owner")
+                .preferredLanguage("mr")
+                .build();
+
+        given(userService.updateLanguage("mr")).willReturn(response);
+
+        mockMvc.perform(put("/api/v1/users/me/language")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.preferredLanguage").value("mr"));
+    }
+
+    @Test
     @DisplayName("POST /api/v1/users/me/change-password - should change password")
     void changePassword_shouldReturnOk() throws Exception {
         PasswordChangeRequest request = PasswordChangeRequest.builder()

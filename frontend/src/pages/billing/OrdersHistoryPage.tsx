@@ -58,7 +58,7 @@ export const OrdersHistoryPage: React.FC = () => {
       setTotalPages(res.totalPages);
       setTotalElements(res.totalElements);
     } catch (err: any) {
-      setErrorMessage('Failed to fetch invoice order history.');
+      setErrorMessage(t('orders.loadError', 'Failed to fetch invoice order history.'));
     } finally {
       setLoading(false);
     }
@@ -83,7 +83,7 @@ export const OrdersHistoryPage: React.FC = () => {
 
     try {
       await billingApi.cancelOrder(orderToCancel.id, cancelReason);
-      setSuccessMessage(`Invoice #${orderToCancel.invoiceNumber} has been successfully voided.`);
+      setSuccessMessage(`${t('orders.invoiceVoidSuccess', 'Invoice has been successfully voided.')} #${orderToCancel.invoiceNumber}`);
       setOrderToCancel(null);
       setCancelReason('');
       fetchOrders(page);
@@ -91,7 +91,7 @@ export const OrdersHistoryPage: React.FC = () => {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to void order.'
+        t('orders.voidError', 'Failed to void order.')
       );
     } finally {
       setCancelling(false);
@@ -102,9 +102,9 @@ export const OrdersHistoryPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('orders.title')}</h1>
+        <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('orders.title', 'Order & Sales History')}</h1>
         <p className="text-xs text-zinc-500 mt-0.5">
-          {t('orders.subtitle')}
+          {t('orders.subtitle', 'View all issued tax invoices, POS receipts, and track payment settlement statuses.')}
         </p>
       </div>
 
@@ -124,10 +124,10 @@ export const OrdersHistoryPage: React.FC = () => {
       {errorMessage && (
         <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <AlertCircle size={15} className="text-rose-600 shrink-0" />
+            <AlertCircle size={15} className="text-red-600 shrink-0" />
             <span className="font-medium">{errorMessage}</span>
           </div>
-          <button onClick={() => setErrorMessage(null)} className="text-rose-700 hover:text-rose-900 cursor-pointer">
+          <button onClick={() => setErrorMessage(null)} className="text-rose-700 hover:text-red-900 cursor-pointer">
             &times;
           </button>
         </div>
@@ -140,7 +140,7 @@ export const OrdersHistoryPage: React.FC = () => {
             <Search size={14} className="absolute left-3.5 top-2.5 text-zinc-400" />
             <input
               type="text"
-              placeholder={t('common.search')}
+              placeholder={t('orders.searchPlaceholder', 'Search by invoice #, customer name or phone...')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-3 py-1.5 bg-zinc-50 focus:bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
@@ -154,10 +154,10 @@ export const OrdersHistoryPage: React.FC = () => {
               onChange={(e) => setPaymentStatus(e.target.value)}
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
-              <option value="ALL">{t('common.all')} {t('common.status')}</option>
-              <option value="COMPLETED">Paid (Completed)</option>
-              <option value="PENDING">Pending</option>
-              <option value="CANCELLED">Cancelled / Void</option>
+              <option value="ALL">{t('common.all', 'All')} {t('orders.paymentStatus', 'Payment Status')}</option>
+              <option value="COMPLETED">{t('orders.paid', 'Paid')}</option>
+              <option value="PENDING">{t('orders.pending', 'Pending')}</option>
+              <option value="CANCELLED">{t('orders.cancelled', 'Cancelled')}</option>
             </select>
 
             {/* Order Status Filter */}
@@ -166,9 +166,9 @@ export const OrdersHistoryPage: React.FC = () => {
               onChange={(e) => setOrderStatus(e.target.value)}
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
-              <option value="ALL">{t('common.all')} Orders</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="CANCELLED">Cancelled</option>
+              <option value="ALL">{t('common.all', 'All')} {t('orders.title', 'Orders')}</option>
+              <option value="COMPLETED">{t('common.done', 'Completed')}</option>
+              <option value="CANCELLED">{t('orders.cancelled', 'Cancelled')}</option>
             </select>
 
             {/* Payment Method Filter */}
@@ -177,19 +177,19 @@ export const OrdersHistoryPage: React.FC = () => {
               onChange={(e) => setPaymentMethod(e.target.value)}
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
-              <option value="ALL">{t('common.all')} {t('billing.paymentMethod')}</option>
+              <option value="ALL">{t('common.all', 'All')} {t('billing.paymentMethod', 'Method')}</option>
               <option value="UPI">UPI</option>
               <option value="CASH">Cash</option>
               <option value="CARD">Card</option>
               <option value="CREDIT">Credit</option>
-              <option value="OTHER">Other</option>
+              <option value="OTHER">{t('common.other', 'Other')}</option>
             </select>
 
             <button
               type="submit"
               className="px-4 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium shadow-xs transition-colors cursor-pointer"
             >
-              {t('common.filter')}
+              {t('common.filter', 'Filter')}
             </button>
           </div>
         </form>
@@ -206,15 +206,15 @@ export const OrdersHistoryPage: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-zinc-50 border-b border-zinc-200 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-                  <th className="py-3 px-4">{t('orders.invoiceNumber')}</th>
-                  <th className="py-3 px-4">{t('orders.orderDate')}</th>
-                  <th className="py-3 px-4">{t('orders.customer')}</th>
-                  <th className="py-3 px-4">Cashier</th>
-                  <th className="py-3 px-4">{t('orders.itemsCount')}</th>
-                  <th className="py-3 px-4">{t('orders.paymentMethod')}</th>
-                  <th className="py-3 px-4">{t('orders.totalAmount')}</th>
-                  <th className="py-3 px-4">{t('orders.paymentStatus')}</th>
-                  <th className="py-3 px-4 text-right">{t('common.actions')}</th>
+                  <th className="py-3 px-4">{t('orders.orderNumber', 'Invoice #')}</th>
+                  <th className="py-3 px-4">{t('common.date', 'Date')}</th>
+                  <th className="py-3 px-4">{t('orders.customer', 'Customer')}</th>
+                  <th className="py-3 px-4">{t('staff.cashier', 'Cashier')}</th>
+                  <th className="py-3 px-4">{t('orders.itemsCount', 'Items')}</th>
+                  <th className="py-3 px-4">{t('billing.paymentMethod', 'Method')}</th>
+                  <th className="py-3 px-4">{t('common.total', 'Total')}</th>
+                  <th className="py-3 px-4">{t('orders.paymentStatus', 'Status')}</th>
+                  <th className="py-3 px-4 text-right">{t('common.actions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 text-xs">
@@ -222,7 +222,7 @@ export const OrdersHistoryPage: React.FC = () => {
                   <tr>
                     <td colSpan={9} className="py-12 text-center text-zinc-500 space-y-1">
                       <Receipt size={32} className="mx-auto text-zinc-300" />
-                      <p className="font-semibold text-zinc-700">{t('orders.noOrdersFound')}</p>
+                      <p className="font-semibold text-zinc-700">{t('common.noDataFound', 'No orders found')}</p>
                     </td>
                   </tr>
                 ) : (
@@ -244,7 +244,7 @@ export const OrdersHistoryPage: React.FC = () => {
 
                         <td className="py-3 px-4">
                           <span className="font-semibold text-zinc-900 block">
-                            {order.customer ? order.customer.name : 'Walk-in Customer'}
+                            {order.customer ? order.customer.name : t('pos.walkIn', 'Walk-in Customer')}
                           </span>
                           {order.customer?.phone && (
                             <span className="text-[10px] text-zinc-400 font-mono">
@@ -253,11 +253,11 @@ export const OrdersHistoryPage: React.FC = () => {
                           )}
                         </td>
 
-                        <td className="py-3 px-4 text-zinc-600">{order.createdBy || 'Counter'}</td>
+                        <td className="py-3 px-4 text-zinc-600">{order.createdBy || t('pos.counter', 'Counter')}</td>
 
                         <td className="py-3 px-4 text-zinc-600">
                           <span className="px-2 py-0.5 rounded-full bg-zinc-100 text-[10px] font-medium">
-                            {order.items?.length || 0} items
+                            {order.items?.length || 0} {t('billing.items', 'items')}
                           </span>
                         </td>
 
@@ -284,17 +284,17 @@ export const OrdersHistoryPage: React.FC = () => {
                             {order.paymentStatus === 'COMPLETED' ? (
                               <>
                                 <CheckCircle2 size={11} className="text-emerald-600" />
-                                <span>Paid</span>
+                                <span>{t('orders.paid', 'Paid')}</span>
                               </>
                             ) : order.paymentStatus === 'CANCELLED' ? (
                               <>
                                 <XCircle size={11} className="text-rose-600" />
-                                <span>Cancelled</span>
+                                <span>{t('orders.refunded', 'Cancelled')}</span>
                               </>
                             ) : (
                               <>
                                 <Clock size={11} className="text-amber-600" />
-                                <span>Pending</span>
+                                <span>{t('orders.pending', 'Pending')}</span>
                               </>
                             )}
                           </span>
@@ -304,7 +304,7 @@ export const OrdersHistoryPage: React.FC = () => {
                           <button
                             onClick={() => setSelectedOrderForView(order)}
                             className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
-                            title="View Tax Receipt"
+                            title={t('orders.viewInvoice', 'View Invoice')}
                           >
                             <Eye size={14} />
                           </button>
@@ -313,7 +313,7 @@ export const OrdersHistoryPage: React.FC = () => {
                             <button
                               onClick={() => setOrderToCancel(order)}
                               className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                              title="Void / Cancel Order"
+                              title={t('orders.voidOrder', 'Void / Cancel Order')}
                             >
                               <Ban size={14} />
                             </button>
@@ -332,7 +332,7 @@ export const OrdersHistoryPage: React.FC = () => {
         {totalPages > 1 && (
           <div className="px-4 py-3 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
             <span>
-              Showing Page {page + 1} of {totalPages} ({totalElements} orders)
+              {t('common.showing', 'Showing')} {page + 1} {t('common.of', 'of')} {totalPages} ({totalElements} {t('orders.title', 'orders')})
             </span>
 
             <div className="flex items-center gap-1.5">
@@ -342,14 +342,14 @@ export const OrdersHistoryPage: React.FC = () => {
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-600 disabled:opacity-40 font-medium cursor-pointer"
               >
                 <ChevronLeft size={13} />
-                <span>Previous</span>
+                <span>{t('common.previous', 'Previous')}</span>
               </button>
               <button
                 onClick={() => fetchOrders(Math.min(page + 1, totalPages - 1))}
                 disabled={page >= totalPages - 1 || loading}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-600 disabled:opacity-40 font-medium cursor-pointer"
               >
-                <span>Next</span>
+                <span>{t('common.next', 'Next')}</span>
                 <ChevronRight size={13} />
               </button>
             </div>
@@ -371,22 +371,19 @@ export const OrdersHistoryPage: React.FC = () => {
           <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center space-x-2.5 text-rose-600">
               <Ban size={18} />
-              <h3 className="text-sm font-semibold text-zinc-900">Void / Cancel Order</h3>
+              <h3 className="text-sm font-semibold text-zinc-900">{t('orders.voidOrder', 'Void / Cancel Order')}</h3>
             </div>
 
             <p className="text-xs text-zinc-600 leading-relaxed">
-              Are you sure you want to void invoice{' '}
-              <strong className="text-zinc-900">{orderToCancel.invoiceNumber}</strong> for{' '}
-              <strong className="text-zinc-900">{formatCurrency(orderToCancel.total, currency)}</strong>?
-              This action marks the order as cancelled and reverses stock if applicable.
+              {t('orders.confirmVoidMsg', 'Are you sure you want to void invoice')} <strong className="text-zinc-900">{orderToCancel.invoiceNumber}</strong> {t('common.for', 'for')} <strong className="text-zinc-900">{formatCurrency(orderToCancel.total, currency)}</strong>?
             </p>
 
             <form onSubmit={handleConfirmCancel} className="space-y-3">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Cancellation Reason (Optional)</label>
+                <label className="text-xs font-medium text-zinc-700">{t('orders.cancelReason', 'Cancellation Reason (Optional)')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Customer returned goods / duplicate bill"
+                  placeholder={t('orders.cancelReasonPlaceholder', 'e.g. Customer returned goods / duplicate bill')}
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -399,7 +396,7 @@ export const OrdersHistoryPage: React.FC = () => {
                   onClick={() => setOrderToCancel(null)}
                   className="px-4 py-2 border border-zinc-200 text-zinc-700 rounded-lg text-xs font-medium hover:bg-zinc-50 cursor-pointer"
                 >
-                  Go Back
+                  {t('common.back', 'Go Back')}
                 </button>
                 <button
                   type="submit"
@@ -407,9 +404,9 @@ export const OrdersHistoryPage: React.FC = () => {
                   className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {cancelling ? (
-                    <ButtonSpinner text="Voiding..." spinnerColor="text-white" />
+                    <ButtonSpinner text={t('common.processing', 'Voiding...')} spinnerColor="text-white" />
                   ) : (
-                    'Confirm Void Order'
+                    t('orders.confirmVoid', 'Confirm Void Order')
                   )}
                 </button>
               </div>

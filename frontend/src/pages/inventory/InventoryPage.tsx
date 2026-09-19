@@ -124,7 +124,7 @@ export const InventoryPage: React.FC = () => {
         }
       }
     } catch (err: any) {
-      setErrorMessage('Failed to load inventory data.');
+      setErrorMessage(t('inventory.failedToLoad', 'Failed to load inventory data.'));
     } finally {
       setLoading(false);
     }
@@ -171,14 +171,14 @@ export const InventoryPage: React.FC = () => {
         });
       }
 
-      setSuccessMessage(`Stock for "${adjustingItem.productName}" updated.`);
+      setSuccessMessage(t('inventory.adjustmentSuccess', 'Stock level adjusted successfully!'));
       setIsAdjustModalOpen(false);
       loadData();
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to adjust stock.'
+        t('inventory.adjustFailed', 'Failed to adjust stock.')
       );
     } finally {
       setActionLoading(false);
@@ -202,14 +202,14 @@ export const InventoryPage: React.FC = () => {
         notes: transferNotes || undefined,
       });
 
-      setSuccessMessage('Stock transfer executed successfully.');
+      setSuccessMessage(t('inventory.transferSuccess', 'Stock transfer executed successfully.'));
       setIsTransferModalOpen(false);
       loadData();
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to transfer stock.'
+        t('inventory.transferFailed', 'Failed to transfer stock.')
       );
     } finally {
       setActionLoading(false);
@@ -230,7 +230,7 @@ export const InventoryPage: React.FC = () => {
           phone: locationPhone.trim() || undefined,
           primary: locationPrimary,
         });
-        setSuccessMessage(`Location "${locationName}" updated.`);
+        setSuccessMessage(t('inventory.locationUpdated', { name: locationName, defaultValue: `Location "${locationName}" updated.` }));
       } else {
         await inventoryApi.createLocation({
           name: locationName.trim(),
@@ -239,14 +239,14 @@ export const InventoryPage: React.FC = () => {
           phone: locationPhone.trim() || undefined,
           primary: locationPrimary,
         });
-        setSuccessMessage(`Location "${locationName}" created.`);
+        setSuccessMessage(t('inventory.locationCreated', { name: locationName, defaultValue: `Location "${locationName}" created.` }));
       }
 
       setIsLocationModalOpen(false);
       setEditingLocation(null);
       loadData();
     } catch (err: any) {
-      setErrorMessage(err.response?.data?.message || 'Failed to save location.');
+      setErrorMessage(err.response?.data?.message || t('inventory.locationFailed', 'Failed to save location.'));
     } finally {
       setActionLoading(false);
     }
@@ -267,7 +267,7 @@ export const InventoryPage: React.FC = () => {
           address: supplierAddress.trim() || undefined,
           taxNumber: supplierTaxNumber.trim() || undefined,
         });
-        setSuccessMessage(`Supplier "${supplierName}" updated.`);
+        setSuccessMessage(t('inventory.supplierUpdated', { name: supplierName, defaultValue: `Supplier "${supplierName}" updated.` }));
       } else {
         await inventoryApi.createSupplier({
           name: supplierName.trim(),
@@ -277,14 +277,14 @@ export const InventoryPage: React.FC = () => {
           address: supplierAddress.trim() || undefined,
           taxNumber: supplierTaxNumber.trim() || undefined,
         });
-        setSuccessMessage(`Supplier "${supplierName}" registered.`);
+        setSuccessMessage(t('inventory.supplierCreated', { name: supplierName, defaultValue: `Supplier "${supplierName}" registered.` }));
       }
 
       setIsSupplierModalOpen(false);
       setEditingSupplier(null);
       loadData();
     } catch (err: any) {
-      setErrorMessage(err.response?.data?.message || 'Failed to save supplier.');
+      setErrorMessage(err.response?.data?.message || t('inventory.supplierFailed', 'Failed to save supplier.'));
     } finally {
       setActionLoading(false);
     }
@@ -315,7 +315,7 @@ export const InventoryPage: React.FC = () => {
                 ? 'bg-blue-50 text-blue-700 border-blue-200'
                 : 'bg-amber-50 text-amber-700 border-amber-200'
             }`}>
-              {isLarge ? 'Enterprise Multi-Location' : 'Lean Single-Counter'}
+              {isLarge ? t('auth.largeBusiness', 'Enterprise Multi-Location') : t('auth.smallBusiness', 'Lean Single-Counter')}
             </span>
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
@@ -335,7 +335,7 @@ export const InventoryPage: React.FC = () => {
               className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-zinc-50 text-zinc-700 text-xs font-bold border border-zinc-200 shadow-xs cursor-pointer"
             >
               <ArrowRightLeft size={14} />
-              <span>Transfer Stock</span>
+              <span>{t('inventory.transferStock', 'Transfer Stock')}</span>
             </button>
           </div>
         )}
@@ -374,7 +374,7 @@ export const InventoryPage: React.FC = () => {
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
             <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">{t('inventory.itemsTracked')}</span>
             <div className="text-2xl font-bold text-zinc-900">{summary?.totalTrackedProducts ?? stockItems.length}</div>
-            <span className="text-[10px] text-zinc-400">Physical stock items</span>
+            <span className="text-[10px] text-zinc-400">{t('products.physicalGoods')}</span>
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
@@ -382,7 +382,7 @@ export const InventoryPage: React.FC = () => {
             <div className={`text-2xl font-bold ${summary?.lowStockProducts && summary.lowStockProducts > 0 ? 'text-amber-600' : 'text-zinc-900'}`}>
               {summary?.lowStockProducts ?? 0}
             </div>
-            <span className="text-[10px] text-zinc-400">Below threshold level</span>
+            <span className="text-[10px] text-zinc-400">{t('inventory.reorderLevel')}</span>
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
@@ -390,7 +390,7 @@ export const InventoryPage: React.FC = () => {
             <div className={`text-2xl font-bold ${summary?.outOfStockProducts && summary.outOfStockProducts > 0 ? 'text-rose-600' : 'text-zinc-900'}`}>
               {summary?.outOfStockProducts ?? 0}
             </div>
-            <span className="text-[10px] text-zinc-400">Zero inventory remaining</span>
+            <span className="text-[10px] text-zinc-400">{t('inventory.outStock')}</span>
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
@@ -398,7 +398,7 @@ export const InventoryPage: React.FC = () => {
             <div className="text-2xl font-bold text-zinc-900">
               {formatCurrency(summary?.totalInventoryValuation ?? 0, currency)}
             </div>
-            <span className="text-[10px] text-zinc-400">Retail inventory asset value</span>
+            <span className="text-[10px] text-zinc-400">{t('inventory.title')}</span>
           </div>
         </div>
       )}
@@ -407,11 +407,11 @@ export const InventoryPage: React.FC = () => {
       {isLarge && (
         <div className="flex items-center space-x-2 border-b border-zinc-200 pb-2 text-xs overflow-x-auto">
           {[
-            { id: 'STOCK', label: 'Stock Levels', icon: Boxes },
-            { id: 'MOVEMENTS', label: 'Stock Movements', icon: History },
-            { id: 'SUPPLIERS', label: 'Suppliers', icon: Users },
-            { id: 'PURCHASES', label: 'Purchase Inward POs', icon: ShoppingCart },
-            { id: 'LOCATIONS', label: 'Locations & Branches', icon: Building2 },
+            { id: 'STOCK', label: t('inventory.currentStock', 'Stock Levels'), icon: Boxes },
+            { id: 'MOVEMENTS', label: t('inventory.warehouseTab', 'Stock Movements'), icon: History },
+            { id: 'SUPPLIERS', label: t('inventory.suppliersTab', 'Suppliers'), icon: Users },
+            { id: 'PURCHASES', label: t('inventory.purchaseOrdersTab', 'Purchase Inward POs'), icon: ShoppingCart },
+            { id: 'LOCATIONS', label: t('inventory.locationsTab', 'Locations & Branches'), icon: Building2 },
           ].map((tab) => {
             const Icon = tab.icon;
             const active = activeTab === tab.id;
@@ -495,15 +495,15 @@ export const InventoryPage: React.FC = () => {
                   {loading ? (
                     <tr>
                       <td colSpan={6} className="p-0">
-                        <TableSkeleton rows={6} cols={6} />
+                        <TableSkeleton rows={6} columns={6} />
                       </td>
                     </tr>
                   ) : filteredStock.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="py-12 text-center text-zinc-500 space-y-1">
                         <Boxes size={32} className="mx-auto text-zinc-300" />
-                        <p className="font-bold text-zinc-700">No stock records found</p>
-                        <p className="text-[11px] text-zinc-400">Track stock from Products &amp; Services catalog.</p>
+                        <p className="font-bold text-zinc-700">{t('common.noDataFound')}</p>
+                        <p className="text-[11px] text-zinc-400">{t('products.subtitle')}</p>
                       </td>
                     </tr>
                   ) : (
@@ -543,7 +543,7 @@ export const InventoryPage: React.FC = () => {
                                   : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                               }`}
                             >
-                              {isOutOfStock ? 'Out of Stock' : isLow ? 'Low Stock' : 'Optimal'}
+                              {isOutOfStock ? t('inventory.outOfStock') : isLow ? t('inventory.lowStock') : t('common.active')}
                             </span>
                           </td>
 
@@ -552,7 +552,7 @@ export const InventoryPage: React.FC = () => {
                               onClick={() => openAdjustModal(item)}
                               className="px-3 py-1 bg-zinc-100 hover:bg-emerald-50 hover:text-emerald-700 text-zinc-700 font-bold text-xs rounded-lg transition-colors cursor-pointer"
                             >
-                              Adjust Stock
+                              {t('inventory.stockAdjustment')}
                             </button>
                           </td>
                         </tr>
@@ -570,27 +570,26 @@ export const InventoryPage: React.FC = () => {
       {isLarge && activeTab === 'MOVEMENTS' && (
         <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden">
           <div className="p-4 border-b border-zinc-100 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-zinc-900">Audit Ledger &amp; Stock Movements</h3>
-            <span className="text-xs text-zinc-500">Auto-logged on billing, adjustments &amp; inward POs</span>
+            <h3 className="text-sm font-bold text-zinc-900">{t('inventory.warehouseTab', 'Audit Ledger & Stock Movements')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase">
                 <tr>
-                  <th className="py-3 px-4">Timestamp</th>
-                  <th className="py-3 px-4">Product</th>
-                  <th className="py-3 px-4">Type</th>
-                  <th className="py-3 px-4">Quantity</th>
-                  <th className="py-3 px-4">Balance After</th>
-                  <th className="py-3 px-4">Reason / Notes</th>
-                  <th className="py-3 px-4">User</th>
+                  <th className="py-3 px-4">{t('common.date')}</th>
+                  <th className="py-3 px-4">{t('products.productName')}</th>
+                  <th className="py-3 px-4">{t('common.type')}</th>
+                  <th className="py-3 px-4">{t('common.quantity')}</th>
+                  <th className="py-3 px-4">{t('inventory.currentStock')}</th>
+                  <th className="py-3 px-4">{t('common.notes')}</th>
+                  <th className="py-3 px-4">{t('common.name')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100">
                 {movements.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-zinc-400">
-                      No stock movements recorded yet.
+                      {t('common.noDataFound')}
                     </td>
                   </tr>
                 ) : (
@@ -643,7 +642,7 @@ export const InventoryPage: React.FC = () => {
               className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium shadow-xs cursor-pointer flex items-center space-x-1.5"
             >
               <Plus size={15} />
-              <span>Add Supplier</span>
+              <span>{t('inventory.addSupplier')}</span>
             </button>
           </div>
 
@@ -651,8 +650,7 @@ export const InventoryPage: React.FC = () => {
             {suppliers.length === 0 ? (
               <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-xl border border-zinc-200 p-8 space-y-1">
                 <Users size={32} className="mx-auto text-zinc-300" />
-                <p className="font-semibold text-zinc-700">No suppliers registered</p>
-                <p className="text-xs text-zinc-400">Add vendors and procurement partners.</p>
+                <p className="font-semibold text-zinc-700">{t('inventory.noSuppliersFound')}</p>
               </div>
             ) : (
               suppliers.map((s) => (
@@ -676,10 +674,10 @@ export const InventoryPage: React.FC = () => {
                     </button>
                   </div>
                   <div className="space-y-1 text-xs text-zinc-600">
-                    {s.contactPerson && <p>Contact: {s.contactPerson}</p>}
-                    {s.phone && <p className="font-mono">Phone: {s.phone}</p>}
-                    {s.email && <p>Email: {s.email}</p>}
-                    {s.taxNumber && <p className="text-[10px] text-zinc-400">GSTIN: {s.taxNumber}</p>}
+                    {s.contactPerson && <p>{t('common.name')}: {s.contactPerson}</p>}
+                    {s.phone && <p className="font-mono">{t('common.phone')}: {s.phone}</p>}
+                    {s.email && <p>{t('common.email')}: {s.email}</p>}
+                    {s.taxNumber && <p className="text-[10px] text-zinc-400">{t('inventory.supplierGst')}: {s.taxNumber}</p>}
                   </div>
                 </div>
               ))
@@ -692,25 +690,25 @@ export const InventoryPage: React.FC = () => {
       {isLarge && activeTab === 'PURCHASES' && (
         <div className="bg-white rounded-2xl border border-zinc-200 shadow-card overflow-hidden">
           <div className="p-4 border-b border-zinc-100 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-zinc-900">Inward Purchase Orders &amp; Supplier Invoices</h3>
+            <h3 className="text-sm font-bold text-zinc-900">{t('inventory.purchaseOrdersTab', 'Purchase Orders')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-zinc-50 border-b border-zinc-100 text-[10px] font-bold text-zinc-500 uppercase">
                 <tr>
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4">Invoice #</th>
-                  <th className="py-3 px-4">Supplier</th>
-                  <th className="py-3 px-4">Items</th>
-                  <th className="py-3 px-4">Total Cost</th>
-                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">{t('common.date')}</th>
+                  <th className="py-3 px-4">{t('inventory.poNumber')}</th>
+                  <th className="py-3 px-4">{t('inventory.supplier')}</th>
+                  <th className="py-3 px-4">{t('common.quantity')}</th>
+                  <th className="py-3 px-4">{t('common.total')}</th>
+                  <th className="py-3 px-4">{t('common.status')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100">
                 {purchases.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-zinc-400">
-                      No purchase orders recorded yet.
+                      {t('inventory.noPoFound')}
                     </td>
                   </tr>
                 ) : (
@@ -721,7 +719,7 @@ export const InventoryPage: React.FC = () => {
                       </td>
                       <td className="py-3 px-4 font-mono font-bold text-zinc-900">{p.purchaseNumber || `PO-${p.id}`}</td>
                       <td className="py-3 px-4 font-semibold text-zinc-800">{p.supplierName}</td>
-                      <td className="py-3 px-4 text-zinc-600">{p.items?.length || 0} line items</td>
+                      <td className="py-3 px-4 text-zinc-600">{p.items?.length || 0}</td>
                       <td className="py-3 px-4 font-bold text-zinc-950">{formatCurrency(p.totalAmount, currency)}</td>
                       <td className="py-3 px-4">
                         <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
@@ -754,7 +752,7 @@ export const InventoryPage: React.FC = () => {
               className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium shadow-xs cursor-pointer flex items-center space-x-1.5"
             >
               <Plus size={15} />
-              <span>Add Location</span>
+              <span>{t('inventory.addLocation', 'Add Location')}</span>
             </button>
           </div>
 
@@ -762,8 +760,7 @@ export const InventoryPage: React.FC = () => {
             {locations.length === 0 ? (
               <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-xl border border-zinc-200 p-8 space-y-1">
                 <Building2 size={32} className="mx-auto text-zinc-300" />
-                <p className="font-semibold text-zinc-700">No warehouse locations configured</p>
-                <p className="text-xs text-zinc-400">Add branch stores and central stock facilities.</p>
+                <p className="font-semibold text-zinc-700">{t('common.noDataFound')}</p>
               </div>
             ) : (
               locations.map((loc) => (
@@ -793,9 +790,9 @@ export const InventoryPage: React.FC = () => {
                     </button>
                   </div>
                   <div className="space-y-1 text-xs text-zinc-600">
-                    {loc.code && <p className="font-mono text-[11px]">Code: {loc.code}</p>}
-                    {loc.address && <p>{loc.address}</p>}
-                    {loc.phone && <p>Tel: {loc.phone}</p>}
+                    {loc.code && <p className="font-mono text-[11px]">{t('common.code')}: {loc.code}</p>}
+                    {loc.address && <p>{t('common.address')}: {loc.address}</p>}
+                    {loc.phone && <p>{t('common.phone')}: {loc.phone}</p>}
                   </div>
                 </div>
               ))
@@ -814,7 +811,7 @@ export const InventoryPage: React.FC = () => {
                   <Boxes size={15} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-900">Adjust Stock Count</h3>
+                  <h3 className="text-sm font-semibold text-zinc-900">{t('inventory.adjustStockModalTitle')}</h3>
                   <p className="text-[11px] text-zinc-500">{adjustingItem.productName}</p>
                 </div>
               </div>
@@ -828,12 +825,12 @@ export const InventoryPage: React.FC = () => {
 
             <form onSubmit={handleAdjustStock} className="space-y-4">
               <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-200 flex items-center justify-between text-xs">
-                <span className="text-zinc-500 font-medium">Current Stock in System:</span>
-                <span className="font-bold text-zinc-900 text-sm">{adjustingItem.stockQuantity} units</span>
+                <span className="text-zinc-500 font-medium">{t('inventory.currentStock')}:</span>
+                <span className="font-bold text-zinc-900 text-sm">{adjustingItem.stockQuantity}</span>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">New Total Stock Level</label>
+                <label className="text-xs font-medium text-zinc-700">{t('inventory.adjustQuantity')}</label>
                 <input
                   type="number"
                   min="0"
@@ -848,10 +845,10 @@ export const InventoryPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Reason / Audit Notes (Optional)</label>
+                <label className="text-xs font-medium text-zinc-700">{t('inventory.reason')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Physical inventory count correction / damaged goods"
+                  placeholder="e.g. Audit / Damaged goods"
                   value={adjustNotes}
                   onChange={(e) => setAdjustNotes(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -864,7 +861,7 @@ export const InventoryPage: React.FC = () => {
                   onClick={() => setIsAdjustModalOpen(false)}
                   className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-medium rounded-lg hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -872,9 +869,9 @@ export const InventoryPage: React.FC = () => {
                   className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {actionLoading ? (
-                    <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+                    <ButtonSpinner text={t('common.saving')} />
                   ) : (
-                    'Update Stock Count'
+                    t('common.save')
                   )}
                 </button>
               </div>
@@ -888,7 +885,7 @@ export const InventoryPage: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <h3 className="text-sm font-semibold text-zinc-900">Transfer Stock Between Locations</h3>
+              <h3 className="text-sm font-semibold text-zinc-900">{t('inventory.transferStock', 'Transfer Stock Between Locations')}</h3>
               <button
                 onClick={() => setIsTransferModalOpen(false)}
                 className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 cursor-pointer"
@@ -899,7 +896,7 @@ export const InventoryPage: React.FC = () => {
 
             <form onSubmit={handleTransferStock} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Product Item *</label>
+                <label className="text-xs font-medium text-zinc-700">{t('products.productName')} *</label>
                 <select
                   value={transferProductId}
                   onChange={(e) => setTransferProductId(e.target.value)}
@@ -907,7 +904,7 @@ export const InventoryPage: React.FC = () => {
                 >
                   {allProducts.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name} ({p.stockQuantity ?? 0} in stock)
+                      {p.name} ({p.stockQuantity ?? 0})
                     </option>
                   ))}
                 </select>
@@ -915,7 +912,7 @@ export const InventoryPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-zinc-700">From Location *</label>
+                  <label className="text-xs font-medium text-zinc-700">{t('inventory.fromLocation', 'From Location')} *</label>
                   <select
                     value={transferSourceLocationId}
                     onChange={(e) => setTransferSourceLocationId(e.target.value)}
@@ -930,7 +927,7 @@ export const InventoryPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-zinc-700">To Location *</label>
+                  <label className="text-xs font-medium text-zinc-700">{t('inventory.toLocation', 'To Location')} *</label>
                   <select
                     value={transferTargetLocationId}
                     onChange={(e) => setTransferTargetLocationId(e.target.value)}
@@ -946,7 +943,7 @@ export const InventoryPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Transfer Quantity *</label>
+                <label className="text-xs font-medium text-zinc-700">{t('common.quantity')} *</label>
                 <input
                   type="number"
                   min="1"
@@ -958,10 +955,10 @@ export const InventoryPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Transfer Notes (Optional)</label>
+                <label className="text-xs font-medium text-zinc-700">{t('common.notes')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Replenishing branch store inventory"
+                  placeholder="e.g. Branch store replenishment"
                   value={transferNotes}
                   onChange={(e) => setTransferNotes(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -974,7 +971,7 @@ export const InventoryPage: React.FC = () => {
                   onClick={() => setIsTransferModalOpen(false)}
                   className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-medium rounded-lg hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -982,9 +979,9 @@ export const InventoryPage: React.FC = () => {
                   className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {actionLoading ? (
-                    <ButtonSpinner text="Transferring..." spinnerColor="text-white" />
+                    <ButtonSpinner text={t('common.processing')} />
                   ) : (
-                    'Execute Transfer'
+                    t('inventory.transferStock', 'Execute Transfer')
                   )}
                 </button>
               </div>
@@ -999,7 +996,7 @@ export const InventoryPage: React.FC = () => {
           <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <h3 className="text-sm font-semibold text-zinc-900">
-                {editingLocation ? 'Edit Warehouse Location' : 'Add New Location'}
+                {editingLocation ? t('inventory.editLocation', 'Edit Warehouse Location') : t('inventory.addLocation', 'Add New Location')}
               </h3>
               <button
                 onClick={() => setIsLocationModalOpen(false)}
@@ -1011,7 +1008,7 @@ export const InventoryPage: React.FC = () => {
 
             <form onSubmit={handleSaveLocation} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Location Name *</label>
+                <label className="text-xs font-medium text-zinc-700">{t('inventory.locationName', 'Location Name')} *</label>
                 <input
                   type="text"
                   required
@@ -1023,7 +1020,7 @@ export const InventoryPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Location Code (Optional)</label>
+                <label className="text-xs font-medium text-zinc-700">{t('common.code')}</label>
                 <input
                   type="text"
                   placeholder="e.g. WH-01"
@@ -1034,7 +1031,7 @@ export const InventoryPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Address (Optional)</label>
+                <label className="text-xs font-medium text-zinc-700">{t('common.address')}</label>
                 <input
                   type="text"
                   placeholder="e.g. Industrial Area Phase 1"
@@ -1050,7 +1047,7 @@ export const InventoryPage: React.FC = () => {
                   onClick={() => setIsLocationModalOpen(false)}
                   className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-medium rounded-lg hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -1058,9 +1055,9 @@ export const InventoryPage: React.FC = () => {
                   className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {actionLoading ? (
-                    <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+                    <ButtonSpinner text={t('common.saving')} />
                   ) : (
-                    'Save Location'
+                    t('common.save')
                   )}
                 </button>
               </div>
@@ -1075,7 +1072,7 @@ export const InventoryPage: React.FC = () => {
           <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <h3 className="text-sm font-semibold text-zinc-900">
-                {editingSupplier ? 'Edit Supplier' : 'Register Supplier'}
+                {editingSupplier ? t('inventory.editSupplier', 'Edit Supplier') : t('inventory.addSupplier', 'Register Supplier')}
               </h3>
               <button
                 onClick={() => setIsSupplierModalOpen(false)}
@@ -1087,7 +1084,7 @@ export const InventoryPage: React.FC = () => {
 
             <form onSubmit={handleSaveSupplier} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Supplier / Vendor Name *</label>
+                <label className="text-xs font-medium text-zinc-700">{t('inventory.supplierName')} *</label>
                 <input
                   type="text"
                   required
@@ -1100,7 +1097,7 @@ export const InventoryPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-zinc-700">Contact Person</label>
+                  <label className="text-xs font-medium text-zinc-700">{t('common.name')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Ramesh"
@@ -1111,7 +1108,7 @@ export const InventoryPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-zinc-700">Phone</label>
+                  <label className="text-xs font-medium text-zinc-700">{t('common.phone')}</label>
                   <input
                     type="text"
                     placeholder="+91 98765 43210"
@@ -1123,7 +1120,7 @@ export const InventoryPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Email</label>
+                <label className="text-xs font-medium text-zinc-700">{t('common.email')}</label>
                 <input
                   type="email"
                   placeholder="procurement@vendor.in"
@@ -1134,7 +1131,7 @@ export const InventoryPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">GSTIN / Tax ID</label>
+                <label className="text-xs font-medium text-zinc-700">{t('inventory.supplierGst')}</label>
                 <input
                   type="text"
                   placeholder="29AAAAA0000A1Z5"
@@ -1150,7 +1147,7 @@ export const InventoryPage: React.FC = () => {
                   onClick={() => setIsSupplierModalOpen(false)}
                   className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-medium rounded-lg hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -1158,9 +1155,9 @@ export const InventoryPage: React.FC = () => {
                   className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {actionLoading ? (
-                    <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+                    <ButtonSpinner text={t('common.saving')} />
                   ) : (
-                    'Save Supplier'
+                    t('common.save')
                   )}
                 </button>
               </div>

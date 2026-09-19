@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Order } from '../../api/billing';
 import { useAuth } from '../../context/AuthContext';
 import { formatCurrency } from '../../utils/currency';
@@ -23,6 +24,7 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
   onClose,
   onNewSale,
 }) => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const receiptRef = useRef<HTMLDivElement>(null);
   const [printFormat, setPrintFormat] = useState<'RECEIPT' | 'A4'>('RECEIPT');
@@ -55,9 +57,8 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-4 overflow-y-auto receipt-modal-backdrop">
       <div
-        className={`bg-white rounded-2xl w-full shadow-dropdown my-auto overflow-hidden flex flex-col max-h-[92vh] border border-zinc-200 receipt-modal-container transition-all duration-200 ${
-          printFormat === 'A4' ? 'max-w-4xl' : 'max-w-md'
-        }`}
+        className={`bg-white rounded-2xl w-full shadow-dropdown my-auto overflow-hidden flex flex-col max-h-[92vh] border border-zinc-200 receipt-modal-container transition-all duration-200 ${printFormat === 'A4' ? 'max-w-4xl' : 'max-w-md'
+          }`}
       >
         {/* Top Header Controls (Hidden during print) */}
         <div className="px-4 sm:px-5 py-3.5 bg-zinc-900 text-white flex items-center justify-between gap-3 shrink-0 print:hidden">
@@ -66,7 +67,7 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
               <Receipt size={16} />
             </div>
             <div className="truncate">
-              <h3 className="text-sm font-bold truncate">Tax Invoice &amp; Receipt</h3>
+              <h3 className="text-sm font-bold truncate">{t('receipt.title', 'Tax Invoice & Receipt')}</h3>
               <p className="text-[11px] text-zinc-400 font-mono truncate">
                 #{order.invoiceNumber || order.id}
               </p>
@@ -78,29 +79,27 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
             <button
               type="button"
               onClick={() => setPrintFormat('RECEIPT')}
-              className={`px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                printFormat === 'RECEIPT'
-                  ? 'bg-brand-600 text-white shadow-xs'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
+              className={`px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${printFormat === 'RECEIPT'
+                ? 'bg-brand-600 text-white shadow-xs'
+                : 'text-zinc-400 hover:text-white'
+                }`}
               title="80mm Thermal Receipt format"
             >
               <Receipt size={13} />
-              <span className="hidden sm:inline">Receipt (80mm)</span>
-              <span className="sm:hidden">Receipt</span>
+              <span className="hidden sm:inline">{t('receipt.thermalReceipt', 'Receipt (80mm)')}</span>
+              <span className="sm:hidden">{t('receipt.receipt', 'Receipt')}</span>
             </button>
             <button
               type="button"
               onClick={() => setPrintFormat('A4')}
-              className={`px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                printFormat === 'A4'
-                  ? 'bg-brand-600 text-white shadow-xs'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
+              className={`px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${printFormat === 'A4'
+                ? 'bg-brand-600 text-white shadow-xs'
+                : 'text-zinc-400 hover:text-white'
+                }`}
               title="Standard Full A4 Tax Invoice format"
             >
               <FileText size={13} />
-              <span className="hidden sm:inline">Standard A4</span>
+              <span className="hidden sm:inline">{t('receipt.fullPageA4', 'Full Page (A4)')}</span>
               <span className="sm:hidden">A4</span>
             </button>
           </div>
@@ -108,454 +107,334 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
-            title="Close modal"
           >
             <X size={18} />
           </button>
         </div>
 
-        {/* Printable Bill Area - Rendered directly with 100% visible fidelity */}
-        <div
-          ref={receiptRef}
-          className={`p-4 sm:p-6 overflow-y-auto flex-1 bg-white receipt-printable-content ${
-            printFormat === 'RECEIPT' ? 'receipt-format-thermal' : 'receipt-format-a4'
-          }`}
-        >
-          {printFormat === 'RECEIPT' ? (
-            /* ==========================================================
-               THERMAL RECEIPT FORMAT (80mm)
-               ========================================================== */
-            <div className="font-mono text-xs space-y-4">
-              {/* Business Header */}
-              <div className="text-center space-y-1 pb-3 border-b border-dashed border-zinc-300 receipt-section">
-                <h2 className="font-sans text-lg font-black text-zinc-900 tracking-tight uppercase">
-                  {businessName}
-                </h2>
-                <p className="text-[11px] text-zinc-500 font-sans">{businessType}</p>
-                {businessAddress && (
-                  <p className="text-[10px] text-zinc-600 font-sans max-w-xs mx-auto leading-tight">
-                    {businessAddress}
-                  </p>
-                )}
-                <div className="text-[10px] text-zinc-500 font-sans flex items-center justify-center gap-2.5 pt-0.5 flex-wrap">
-                  {businessPhone && <span>Tel: {businessPhone}</span>}
-                  {businessEmail && <span>Email: {businessEmail}</span>}
-                </div>
-                {businessTaxNumber && (
-                  <p className="text-[10px] text-zinc-700 font-sans pt-0.5">
-                    GSTIN / Tax ID: <span className="font-bold">{businessTaxNumber}</span>
-                  </p>
-                )}
-              </div>
-
-              {/* Invoice Meta */}
-              <div className="grid grid-cols-2 gap-2 text-[11px] text-zinc-600 pb-3 border-b border-dashed border-zinc-300 receipt-section font-sans">
-                <div>
-                  <span className="text-zinc-400 block text-[10px]">Invoice No:</span>
-                  <span className="font-bold text-zinc-900 font-mono text-xs">
-                    {order.invoiceNumber}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span className="text-zinc-400 block text-[10px]">Date &amp; Time:</span>
-                  <span className="font-medium text-zinc-800 text-[10px]">{formattedDate}</span>
-                </div>
-
-                <div>
-                  <span className="text-zinc-400 block text-[10px]">Cashier / Staff:</span>
-                  <span className="font-semibold text-zinc-800">
-                    {order.createdBy || 'Counter'}
-                  </span>
-                </div>
-
-                <div className="text-right">
-                  <span className="text-zinc-400 block text-[10px]">Payment Mode:</span>
-                  <span className="font-bold text-zinc-900 uppercase">{order.paymentMethod}</span>
-                </div>
-
-                {order.customer && (
-                  <div className="col-span-2 pt-1.5 border-t border-zinc-100">
-                    <span className="text-zinc-400 block text-[10px]">Billed To Customer:</span>
-                    <span className="font-bold text-zinc-900">{order.customer.name}</span>
-                    {order.customer.phone && (
-                      <span className="text-zinc-500 text-[10px] block font-mono">
-                        {order.customer.phone}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Itemized Table */}
-              <div className="receipt-section">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b border-zinc-800 text-[10px] uppercase font-bold text-zinc-700">
-                      <th className="pb-1.5">Item</th>
-                      <th className="pb-1.5 text-center">Qty</th>
-                      <th className="pb-1.5 text-right">Price</th>
-                      <th className="pb-1.5 text-right">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-zinc-100 text-xs">
-                    {order.items.map((item, idx) => (
-                      <tr key={idx} className="py-1.5">
-                        <td className="py-1.5 font-sans">
-                          <span className="font-medium text-zinc-900 block">{item.productName}</span>
-                          <span className="text-[9px] text-zinc-400 font-mono">
-                            {item.productType}
-                          </span>
-                        </td>
-                        <td className="py-1.5 text-center font-mono text-zinc-700">
-                          {item.quantity}
-                        </td>
-                        <td className="py-1.5 text-right font-mono text-zinc-600">
-                          {formatCurrency(item.unitPrice, currency)}
-                        </td>
-                        <td className="py-1.5 text-right font-bold text-zinc-900 font-mono">
-                          {formatCurrency(item.total, currency)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Financial Totals Calculation */}
-              <div className="space-y-1.5 pt-3 border-t-2 border-zinc-800 text-xs receipt-section font-sans">
-                <div className="flex justify-between text-zinc-600">
-                  <span>Subtotal:</span>
-                  <span className="font-mono font-medium">
-                    {formatCurrency(order.subtotal, currency)}
-                  </span>
-                </div>
-
-                {order.discount > 0 && (
-                  <div className="flex justify-between text-rose-600">
-                    <span>Discount Applied:</span>
-                    <span className="font-mono font-bold">
-                      -{formatCurrency(order.discount, currency)}
-                    </span>
-                  </div>
-                )}
-
-                {order.tax > 0 && (
-                  <div className="flex justify-between text-zinc-600">
-                    <span>
-                      {order.taxName || 'GST'} ({order.taxRate}%):
-                    </span>
-                    <span className="font-mono font-medium">
-                      +{formatCurrency(order.tax, currency)}
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex justify-between text-sm font-black text-zinc-950 pt-2 border-t border-zinc-300">
-                  <span>Grand Total:</span>
-                  <span className="font-mono">{formatCurrency(order.total, currency)}</span>
-                </div>
-
-                <div className="flex justify-between text-[11px] text-zinc-600 pt-1">
-                  <span>Payment Status:</span>
-                  <span className="font-bold text-emerald-700 uppercase flex items-center gap-1">
-                    <CheckCircle2 size={12} className="text-emerald-600" />
-                    <span>{order.paymentStatus}</span>
-                  </span>
-                </div>
-              </div>
-
-              {/* Footer Note */}
-              <div className="text-center pt-4 border-t border-dashed border-zinc-300 text-[10px] text-zinc-500 space-y-1 receipt-section font-sans">
-                <p className="font-bold text-zinc-700">Thank you for your business!</p>
-                <p>Please visit again • Computer Generated Tax Invoice</p>
-              </div>
-            </div>
-          ) : (
-            /* ==========================================================
-               STANDARD A4 TAX INVOICE FORMAT
-               ========================================================== */
-            <div className="font-sans text-xs space-y-6 text-zinc-900">
-              {/* Header Top: Business Branding & Tax Invoice Banner */}
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 pb-5 border-b-2 border-zinc-900 invoice-section">
-                <div className="space-y-1.5 max-w-md">
-                  <div className="flex items-center gap-2">
-                    {business?.logo ? (
-                      <img
-                        src={business.logo}
-                        alt="Logo"
-                        className="w-10 h-10 object-contain rounded-lg border border-zinc-200"
-                        onError={(e) => {
-                          (e.target as HTMLElement).style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-xl bg-brand-600 text-white font-black text-lg flex items-center justify-center shrink-0">
-                        {businessName.charAt(0)}
-                      </div>
-                    )}
-                    <div>
-                      <h1 className="text-xl font-black tracking-tight text-zinc-950 uppercase leading-none">
-                        {businessName}
-                      </h1>
-                      <p className="text-[11px] text-zinc-500 font-semibold mt-0.5">
-                        {businessType}
-                      </p>
-                    </div>
-                  </div>
-
+        {/* =========================================================================
+            INVOICE PREVIEW / PRINT CANVAS
+           ========================================================================= */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-zinc-100 flex justify-center">
+          <div
+            ref={receiptRef}
+            id="printable-receipt-content"
+            className={`bg-white shadow-sm transition-all duration-200 text-zinc-900 ${printFormat === 'A4'
+              ? 'w-full max-w-3xl p-8 sm:p-12 rounded-xl border border-zinc-200 text-xs space-y-6'
+              : 'w-[80mm] max-w-[80mm] p-4 rounded-xl border border-zinc-200 font-mono text-[11px] leading-tight space-y-3'
+              }`}
+          >
+            {/* FORMAT 1: 80mm THERMAL RECEIPT VIEW */}
+            {printFormat === 'RECEIPT' && (
+              <div className="space-y-3">
+                {/* Store Header */}
+                <div className="text-center space-y-1 pb-2 border-b border-dashed border-zinc-300">
+                  <h2 className="font-bold text-sm text-zinc-950 uppercase tracking-tight">
+                    {businessName}
+                  </h2>
+                  <p className="text-[10px] text-zinc-500 uppercase">{businessType}</p>
                   {businessAddress && (
-                    <p className="text-xs text-zinc-600 pt-1 leading-relaxed">
-                      {businessAddress}
-                    </p>
+                    <p className="text-[10px] text-zinc-600">{businessAddress}</p>
                   )}
-
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-600 pt-0.5">
-                    {businessPhone && (
-                      <span className="flex items-center gap-1">
-                        <Phone size={11} className="text-zinc-400" />
-                        <span>{businessPhone}</span>
-                      </span>
-                    )}
-                    {businessEmail && (
-                      <span className="flex items-center gap-1">
-                        <Mail size={11} className="text-zinc-400" />
-                        <span>{businessEmail}</span>
-                      </span>
-                    )}
-                  </div>
-
+                  {businessPhone && (
+                    <p className="text-[10px] text-zinc-600">{t('common.phone', 'Tel')}: {businessPhone}</p>
+                  )}
                   {businessTaxNumber && (
-                    <p className="text-xs text-zinc-800 font-medium pt-0.5">
-                      GSTIN / Tax ID: <span className="font-bold text-zinc-950">{businessTaxNumber}</span>
+                    <p className="text-[10px] font-bold text-zinc-700">
+                      GSTIN: {businessTaxNumber}
                     </p>
                   )}
                 </div>
 
-                {/* Right: Tax Invoice Details Box */}
-                <div className="w-full sm:w-64 bg-zinc-50 rounded-xl p-3.5 border border-zinc-200 space-y-2 text-right self-stretch sm:self-auto flex flex-col justify-between">
-                  <div className="flex items-center justify-between border-b border-zinc-200 pb-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-brand-700">
-                      TAX INVOICE
-                    </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                      {order.paymentStatus}
+                {/* Receipt Metadata */}
+                <div className="text-[10px] space-y-0.5 pb-2 border-b border-dashed border-zinc-300">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">{t('receipt.invoiceNum', 'Invoice #')}:</span>
+                    <span className="font-bold text-zinc-900">{order.invoiceNumber}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">{t('common.date', 'Date')}:</span>
+                    <span className="text-zinc-700">{formattedDate}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">{t('receipt.payment', 'Payment')}:</span>
+                    <span className="font-bold text-zinc-900">
+                      {order.paymentMethod}
+                      {order.payments?.[0]?.transactionReference ? ` (${order.payments[0].transactionReference})` : ''}
                     </span>
                   </div>
-
-                  <div className="space-y-1 text-xs text-left">
+                  {order.customer && (
                     <div className="flex justify-between">
-                      <span className="text-zinc-500">Invoice No:</span>
-                      <span className="font-mono font-bold text-zinc-900">{order.invoiceNumber}</span>
+                      <span className="text-zinc-500">{t('receipt.customer', 'Customer')}:</span>
+                      <span className="font-bold text-zinc-900">{order.customer.name}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-zinc-500">Date &amp; Time:</span>
-                      <span className="font-medium text-zinc-800 text-[11px]">{formattedDate}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-zinc-500">Payment Mode:</span>
-                      <span className="font-bold text-zinc-900 uppercase">{order.paymentMethod}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-zinc-500">Billed By:</span>
-                      <span className="font-medium text-zinc-800">{order.createdBy || 'Staff'}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Billed To / Customer Section */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-2 invoice-section">
-                <div className="p-3.5 rounded-xl bg-zinc-50/80 border border-zinc-200 space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
-                    Billed To (Customer Details)
-                  </span>
-                  {order.customer ? (
-                    <div>
-                      <h4 className="font-bold text-xs text-zinc-900">{order.customer.name}</h4>
-                      {order.customer.phone && (
-                        <p className="text-xs text-zinc-600 font-mono mt-0.5">
-                          Phone: {order.customer.phone}
-                        </p>
-                      )}
-                      {order.customer.email && (
-                        <p className="text-xs text-zinc-600">{order.customer.email}</p>
-                      )}
-                      {order.customer.address && (
-                        <p className="text-xs text-zinc-500 mt-0.5">{order.customer.address}</p>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-xs font-semibold text-zinc-700">Walk-in Counter Customer</p>
                   )}
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-zinc-50/80 border border-zinc-200 space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
-                    Place of Supply &amp; Order Info
-                  </span>
-                  <p className="text-xs text-zinc-700">
-                    <span className="font-semibold">Store Register:</span> Counter POS Terminal 1
-                  </p>
-                  <p className="text-xs text-zinc-700">
-                    <span className="font-semibold">Currency:</span> {currency}
-                  </p>
-                  {order.notes && (
-                    <p className="text-xs text-zinc-600 italic">
-                      <span className="font-semibold not-italic">Notes:</span> {order.notes}
-                    </p>
-                  )}
-                </div>
-              </div>
+                {/* Items Table */}
+                <div>
+                  <div className="flex justify-between font-bold text-[10px] uppercase pb-1 border-b border-zinc-900">
+                    <span className="w-1/2">{t('receipt.item', 'Item')}</span>
+                    <span className="w-1/6 text-center">{t('receipt.qty', 'Qty')}</span>
+                    <span className="w-1/3 text-right">{t('receipt.amount', 'Amount')}</span>
+                  </div>
 
-              {/* Itemized Table */}
-              <div className="invoice-section border border-zinc-200 rounded-xl overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-zinc-100 border-b border-zinc-200 text-[11px] font-bold text-zinc-700 uppercase tracking-wider">
-                      <th className="py-2.5 px-3 w-10 text-center">#</th>
-                      <th className="py-2.5 px-3">Item Description</th>
-                      <th className="py-2.5 px-3 w-24">Type</th>
-                      <th className="py-2.5 px-3 w-16 text-center">Qty</th>
-                      <th className="py-2.5 px-3 w-28 text-right">Unit Price</th>
-                      <th className="py-2.5 px-3 w-28 text-right">Total Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-zinc-200 text-xs">
+                  <div className="divide-y divide-dashed divide-zinc-200 text-[10px] py-1">
                     {order.items.map((item, idx) => (
-                      <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-zinc-50/50'}>
-                        <td className="py-2.5 px-3 text-center text-zinc-400 font-mono text-[11px]">
-                          {idx + 1}
-                        </td>
-                        <td className="py-2.5 px-3">
-                          <span className="font-bold text-zinc-900 block">{item.productName}</span>
-                        </td>
-                        <td className="py-2.5 px-3">
-                          <span
-                            className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
-                              item.productType === 'PHYSICAL'
-                                ? 'bg-zinc-100 text-zinc-700 border border-zinc-200'
-                                : 'bg-flow-50 text-flow-700 border border-flow-200'
-                            }`}
-                          >
-                            {item.productType}
+                      <div key={idx} className="py-1">
+                        <div className="flex justify-between font-medium">
+                          <span className="w-1/2 truncate">{item.productName}</span>
+                          <span className="w-1/6 text-center">{item.quantity}</span>
+                          <span className="w-1/3 text-right font-bold">
+                            {formatCurrency(item.total, currency)}
                           </span>
-                        </td>
-                        <td className="py-2.5 px-3 text-center font-mono font-bold text-zinc-800">
-                          {item.quantity}
-                        </td>
-                        <td className="py-2.5 px-3 text-right font-mono text-zinc-600">
-                          {formatCurrency(item.unitPrice, currency)}
-                        </td>
-                        <td className="py-2.5 px-3 text-right font-bold text-zinc-950 font-mono">
-                          {formatCurrency(item.total, currency)}
-                        </td>
-                      </tr>
+                        </div>
+                        <div className="text-[9px] text-zinc-400">
+                          @{formatCurrency(item.unitPrice, currency)}/unit
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Financial Computation & Summary Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start pt-2 invoice-section">
-                {/* Left: Terms and Payment Confirmation */}
-                <div className="sm:col-span-7 space-y-2 text-xs text-zinc-600">
-                  <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 space-y-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
-                      Terms &amp; Declarations
-                    </span>
-                    <ul className="text-[10px] text-zinc-500 list-disc list-inside space-y-0.5">
-                      <li>Goods / services once provided are governed by store return policy.</li>
-                      <li>This document is a computer-generated tax invoice.</li>
-                      <li>Payment has been received in full via {order.paymentMethod}.</li>
-                    </ul>
                   </div>
                 </div>
 
-                {/* Right: Calculations Breakdown */}
-                <div className="sm:col-span-5 bg-zinc-50 rounded-xl border border-zinc-200 p-3.5 space-y-2">
-                  <div className="flex justify-between text-zinc-600 text-xs">
-                    <span>Subtotal:</span>
-                    <span className="font-mono font-semibold text-zinc-900">
-                      {formatCurrency(order.subtotal, currency)}
-                    </span>
+                {/* Subtotal, Discount, Tax & Total */}
+                <div className="pt-2 border-t border-dashed border-zinc-300 space-y-1 text-[10px]">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">{t('receipt.subtotal', 'Subtotal')}:</span>
+                    <span className="font-bold">{formatCurrency(order.subtotal, currency)}</span>
                   </div>
 
                   {order.discount > 0 && (
-                    <div className="flex justify-between text-rose-600 text-xs">
-                      <span>Discount:</span>
-                      <span className="font-mono font-bold">
-                        -{formatCurrency(order.discount, currency)}
-                      </span>
+                    <div className="flex justify-between text-rose-600">
+                      <span>{t('receipt.discount', 'Discount')}:</span>
+                      <span>-{formatCurrency(order.discount, currency)}</span>
                     </div>
                   )}
 
                   {order.tax > 0 && (
-                    <div className="flex justify-between text-zinc-600 text-xs">
-                      <span>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-500">
                         {order.taxName || 'GST'} ({order.taxRate}%):
                       </span>
-                      <span className="font-mono font-semibold text-zinc-900">
-                        +{formatCurrency(order.tax, currency)}
-                      </span>
+                      <span>{formatCurrency(order.tax, currency)}</span>
                     </div>
                   )}
 
-                  <div className="pt-2 border-t-2 border-zinc-900 flex justify-between items-baseline">
-                    <span className="font-extrabold text-zinc-900 text-sm">Grand Total:</span>
-                    <span className="font-black text-zinc-950 text-base font-mono">
-                      {formatCurrency(order.total, currency)}
+                  <div className="pt-1 border-t border-zinc-900 flex justify-between text-xs font-black">
+                    <span className="uppercase">{t('receipt.totalPayable', 'TOTAL')}:</span>
+                    <span>{formatCurrency(order.total, currency)}</span>
+                  </div>
+                </div>
+
+                {/* Footer Note */}
+                <div className="text-center pt-3 border-t border-dashed border-zinc-300 space-y-1 text-[9px] text-zinc-500">
+                  <p className="font-semibold text-zinc-800">{t('receipt.thankYou', 'Thank you for your business!')}</p>
+                  <p>{t('receipt.comeAgain', 'Please visit again.')}</p>
+                  <p className="text-[8px] text-zinc-400 pt-1">
+                    Powered by BizFlow POS SaaS
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* FORMAT 2: FULL PAGE A4 TAX INVOICE VIEW */}
+            {printFormat === 'A4' && (
+              <div className="space-y-6">
+                {/* Header Banner */}
+                <div className="flex items-start justify-between pb-6 border-b-2 border-zinc-900">
+                  <div className="space-y-1.5">
+                    <h1 className="text-2xl font-black text-zinc-950 tracking-tight">
+                      {businessName}
+                    </h1>
+                    <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">
+                      {businessType}
+                    </p>
+                    {businessAddress && (
+                      <p className="text-xs text-zinc-600 max-w-sm">{businessAddress}</p>
+                    )}
+                    <div className="flex flex-wrap gap-4 pt-1 text-xs text-zinc-600">
+                      {businessPhone && (
+                        <span className="flex items-center gap-1">
+                          <Phone size={12} className="text-zinc-400" />
+                          {businessPhone}
+                        </span>
+                      )}
+                      {businessEmail && (
+                        <span className="flex items-center gap-1">
+                          <Mail size={12} className="text-zinc-400" />
+                          {businessEmail}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="text-right space-y-1">
+                    <span className="inline-block px-3 py-1 bg-zinc-900 text-white font-bold text-xs rounded-md uppercase tracking-wider">
+                      {t('receipt.taxInvoice', 'TAX INVOICE')}
                     </span>
+                    <p className="font-mono font-bold text-sm text-zinc-900 pt-1">
+                      {order.invoiceNumber}
+                    </p>
+                    <p className="text-xs text-zinc-500">{formattedDate}</p>
+                    {businessTaxNumber && (
+                      <p className="text-xs font-bold text-zinc-800 pt-1">
+                        GSTIN: {businessTaxNumber}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Bill To & Payment Info */}
+                <div className="grid grid-cols-2 gap-6 p-4 rounded-xl bg-zinc-50 border border-zinc-200">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                      {t('receipt.billedTo', 'Billed To (Customer)')}
+                    </span>
+                    {order.customer ? (
+                      <div className="space-y-0.5">
+                        <p className="font-bold text-sm text-zinc-900">{order.customer.name}</p>
+                        {order.customer.phone && (
+                          <p className="text-xs text-zinc-600">Tel: {order.customer.phone}</p>
+                        )}
+                        {order.customer.email && (
+                          <p className="text-xs text-zinc-600">{order.customer.email}</p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="font-semibold text-xs text-zinc-700">{t('billing.walkInCustomer', 'Walk-in Retail Customer')}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1 text-right">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                      {t('receipt.paymentDetails', 'Payment Details')}
+                    </span>
+                    <p className="font-bold text-xs text-zinc-900">
+                      {t('receipt.method', 'Method')}: <span className="uppercase">{order.paymentMethod}</span>
+                    </p>
+                    <p className="text-xs text-zinc-600">
+                      {t('receipt.status', 'Status')}: <span className="font-bold text-emerald-600">{order.paymentStatus}</span>
+                    </p>
+                    {order.payments?.[0]?.transactionReference && (
+                      <p className="text-xs font-mono text-zinc-500">
+                        Txn ID: {order.payments[0].transactionReference}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Items Table */}
+                <div className="overflow-hidden rounded-xl border border-zinc-200">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-zinc-100 text-zinc-700 text-xs font-bold uppercase tracking-wider border-b border-zinc-200">
+                        <th className="p-3 w-12 text-center">#</th>
+                        <th className="p-3">{t('receipt.itemDescription', 'Item Description')}</th>
+                        <th className="p-3 w-24 text-center">{t('receipt.qty', 'Qty')}</th>
+                        <th className="p-3 w-32 text-right">{t('receipt.unitPrice', 'Unit Price')}</th>
+                        <th className="p-3 w-36 text-right">{t('receipt.total', 'Total')}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-200 text-xs">
+                      {order.items.map((item, index) => (
+                        <tr key={index} className="hover:bg-zinc-50/50">
+                          <td className="p-3 text-center text-zinc-400 font-mono">{index + 1}</td>
+                          <td className="p-3 font-semibold text-zinc-900">{item.productName}</td>
+                          <td className="p-3 text-center font-bold">{item.quantity}</td>
+                          <td className="p-3 text-right text-zinc-600 font-mono">
+                            {formatCurrency(item.unitPrice, currency)}
+                          </td>
+                          <td className="p-3 text-right font-black text-zinc-900 font-mono">
+                            {formatCurrency(item.total, currency)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Summary Totals */}
+                <div className="flex justify-end">
+                  <div className="w-72 space-y-2 text-xs">
+                    <div className="flex justify-between text-zinc-600">
+                      <span>{t('receipt.subtotal', 'Subtotal')}:</span>
+                      <span className="font-bold font-mono">{formatCurrency(order.subtotal, currency)}</span>
+                    </div>
+
+                    {order.discount > 0 && (
+                      <div className="flex justify-between text-rose-600">
+                        <span>{t('receipt.discount', 'Discount')}:</span>
+                        <span className="font-bold font-mono">-{formatCurrency(order.discount, currency)}</span>
+                      </div>
+                    )}
+
+                    {order.tax > 0 && (
+                      <div className="flex justify-between text-zinc-600">
+                        <span>
+                          {order.taxName || 'GST'} ({order.taxRate}%):
+                        </span>
+                        <span className="font-bold font-mono">{formatCurrency(order.tax, currency)}</span>
+                      </div>
+                    )}
+
+                    <div className="pt-2 border-t-2 border-zinc-900 flex justify-between text-sm font-black text-zinc-950">
+                      <span>{t('receipt.grandTotal', 'Grand Total')}:</span>
+                      <span className="font-mono">{formatCurrency(order.total, currency)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Signoff and Terms */}
+                <div className="pt-8 border-t border-zinc-200 grid grid-cols-2 gap-6 text-xs text-zinc-500">
+                  <div>
+                    <h5 className="font-bold text-zinc-800 uppercase mb-1">{t('receipt.termsConditions', 'Terms & Conditions')}</h5>
+                    <p className="text-[11px] leading-relaxed">
+                      {t('receipt.termsText', '1. Goods once sold are subject to store return policy. 2. Please preserve this invoice for any warranty claims.')}
+                    </p>
+                  </div>
+                  <div className="text-right pt-6">
+                    <div className="inline-block border-t border-zinc-400 pt-1 px-8 text-center">
+                      <span className="text-[10px] font-bold text-zinc-600 uppercase block">
+                        {t('receipt.authorizedSignatory', 'Authorized Signatory')}
+                      </span>
+                      <span className="text-[9px] text-zinc-400">{businessName}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              {/* Signatory and System Footer */}
-              <div className="pt-6 border-t border-zinc-200 flex flex-col sm:flex-row items-end justify-between gap-6 invoice-section">
-                <div className="text-[10px] text-zinc-400 space-y-0.5">
-                  <p className="font-bold text-zinc-600">Thank you for choosing {businessName}!</p>
-                  <p>BizFlow Unified Commerce • Powered by Intelligent POS</p>
-                </div>
-
-                <div className="text-center sm:text-right space-y-8 min-w-[180px]">
-                  <div className="h-10 border-b border-dashed border-zinc-400 w-44 ml-auto" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
-                    Authorized Signatory
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        {/* Modal Bottom Actions (Hidden during print) */}
-        <div className="p-3.5 sm:p-4 bg-zinc-50 border-t border-zinc-200 flex items-center justify-between gap-3 shrink-0 print:hidden">
-          {onNewSale ? (
-            <button
-              onClick={() => {
-                onClose();
-                onNewSale();
-              }}
-              className="px-3.5 sm:px-4 py-2 rounded-xl bg-zinc-200 hover:bg-zinc-300 text-zinc-800 text-xs font-bold transition-colors cursor-pointer"
-            >
-              + New Sale
-            </button>
-          ) : (
-            <div />
-          )}
+        {/* Bottom Modal Actions (Hidden during print) */}
+        <div className="p-4 bg-white border-t border-zinc-200 flex flex-wrap items-center justify-between gap-3 shrink-0 print:hidden">
+          <div className="flex items-center space-x-2 text-xs text-emerald-700 font-semibold">
+            <CheckCircle2 size={16} />
+            <span>{t('receipt.invoiceSaved', 'Invoice verified & recorded in ledger')}</span>
+          </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2.5">
+            {onNewSale && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onNewSale();
+                }}
+                className="px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold text-xs transition-colors cursor-pointer"
+              >
+                + {t('receipt.newSale', 'New Sale')}
+              </button>
+            )}
+
             <button
-              onClick={onClose}
-              className="px-3.5 sm:px-4 py-2 rounded-xl border border-zinc-200 text-zinc-700 text-xs font-bold hover:bg-white transition-colors cursor-pointer"
-            >
-              Close
-            </button>
-            <button
+              type="button"
               onClick={handlePrint}
-              className="px-4 sm:px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center space-x-1.5 cursor-pointer"
+              id="print-invoice-btn"
+              className="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center space-x-2 cursor-pointer"
             >
               <Printer size={15} />
-              <span>{printFormat === 'RECEIPT' ? 'Print Receipt' : 'Print A4 Invoice'}</span>
+              <span>{t('receipt.printReceipt', 'Print Receipt')}</span>
             </button>
           </div>
         </div>

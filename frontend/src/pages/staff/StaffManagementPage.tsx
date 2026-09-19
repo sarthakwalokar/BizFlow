@@ -235,19 +235,19 @@ export const StaffManagementPage: React.FC = () => {
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
           <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('staff.title')}</span>
           <div className="text-xl font-bold text-zinc-900 mt-1">{staffList.length}</div>
-          <span className="text-[11px] text-zinc-400">Registered employees</span>
+          <span className="text-[11px] text-zinc-400">{t('staff.registeredEmployees', 'Registered employees')}</span>
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
           <span className="text-[11px] font-medium text-brand-600 uppercase tracking-wider">{t('staff.activeStaff')}</span>
           <div className="text-xl font-bold text-brand-700 mt-1">{activeCount}</div>
-          <span className="text-[11px] text-brand-600">Can log in and operate</span>
+          <span className="text-[11px] text-brand-600">{t('staff.canLoginOperate', 'Can log in and operate')}</span>
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
           <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('common.inactive')}</span>
           <div className="text-xl font-bold text-zinc-600 mt-1">{disabledCount}</div>
-          <span className="text-[11px] text-zinc-400">Access suspended</span>
+          <span className="text-[11px] text-zinc-400">{t('staff.accessSuspended', 'Access suspended')}</span>
         </div>
       </div>
 
@@ -304,27 +304,27 @@ export const StaffManagementPage: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 text-[10px] uppercase tracking-wider font-medium">
-                <th className="px-4 py-3">Employee</th>
-                <th className="px-4 py-3">Contact</th>
-                <th className="px-4 py-3">Permissions</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th className="px-4 py-3">{t('staff.staffName', 'Employee')}</th>
+                <th className="px-4 py-3">{t('customers.phone', 'Contact')}</th>
+                <th className="px-4 py-3">{t('staff.permissions', 'Permissions')}</th>
+                <th className="px-4 py-3">{t('common.status', 'Status')}</th>
+                <th className="px-4 py-3 text-right">{t('common.actions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 text-xs">
               {loading ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-12 text-center text-zinc-400">
-                    Loading staff roster...
+                    {t('common.loading', 'Loading...')}
                   </td>
                 </tr>
               ) : filteredStaff.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-12 text-center text-zinc-500 space-y-1">
                     <Users size={28} className="mx-auto text-zinc-300 mb-2" />
-                    <p className="font-medium text-zinc-700">No staff members found</p>
+                    <p className="font-medium text-zinc-700">{t('staff.noStaffFound', 'No staff members found')}</p>
                     <p className="text-[11px] text-zinc-400">
-                      {search ? 'Try adjusting your search criteria.' : 'Click "Add Staff Member" to invite your first employee.'}
+                      {search ? t('common.notFound', 'Try adjusting your search criteria.') : t('staff.inviteStaff', 'Click "Add Team Member" to invite your first employee.')}
                     </p>
                   </td>
                 </tr>
@@ -338,7 +338,7 @@ export const StaffManagementPage: React.FC = () => {
                         </div>
                         <div>
                           <div className="font-medium text-zinc-900">{staff.fullName}</div>
-                          <div className="text-[11px] text-zinc-400">ID #{staff.id}</div>
+                          <div className="text-[11px] text-zinc-400">{t('common.id', 'ID')} #{staff.id}</div>
                         </div>
                       </div>
                     </td>
@@ -370,7 +370,7 @@ export const StaffManagementPage: React.FC = () => {
                             </span>
                           ))
                         ) : (
-                          <span className="text-xs text-zinc-400">Standard</span>
+                          <span className="text-xs text-zinc-400">{t('common.none', 'Standard')}</span>
                         )}
                       </div>
                     </td>
@@ -378,7 +378,7 @@ export const StaffManagementPage: React.FC = () => {
                     <td className="px-4 py-3">
                       <button
                         onClick={() => handleToggleStatus(staff)}
-                        title={`Click to ${staff.enabled ? 'disable' : 'enable'}`}
+                        title={staff.enabled ? t('common.inactive') : t('common.active')}
                         className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium border transition-colors cursor-pointer ${
                           staff.enabled
                             ? 'bg-brand-50 text-brand-700 border-brand-200 hover:bg-brand-100'
@@ -388,12 +388,12 @@ export const StaffManagementPage: React.FC = () => {
                         {staff.enabled ? (
                           <>
                             <CheckCircle2 size={12} className="text-brand-600" />
-                            <span>Active</span>
+                            <span>{t('common.active')}</span>
                           </>
                         ) : (
                           <>
                             <XCircle size={12} className="text-zinc-400" />
-                            <span>Disabled</span>
+                            <span>{t('common.inactive')}</span>
                           </>
                         )}
                       </button>
@@ -403,14 +403,14 @@ export const StaffManagementPage: React.FC = () => {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => openEditModal(staff)}
-                          title="Edit Profile"
+                          title={t('staff.editStaff')}
                           className="p-1.5 rounded-md text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors cursor-pointer"
                         >
                           <Edit2 size={14} />
                         </button>
                         <button
                           onClick={() => openResetPasswordModal(staff)}
-                          title="Reset Password"
+                          title={t('profile.changePassword')}
                           className="p-1.5 rounded-md text-zinc-500 hover:bg-zinc-100 hover:text-amber-600 transition-colors cursor-pointer"
                         >
                           <KeyRound size={14} />
@@ -435,8 +435,8 @@ export const StaffManagementPage: React.FC = () => {
                   <UserPlus size={16} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-900">Add New Staff Member</h3>
-                  <p className="text-xs text-zinc-500">Create an employee account for your business</p>
+                  <h3 className="text-sm font-semibold text-zinc-900">{t('staff.addStaff')}</h3>
+                  <p className="text-xs text-zinc-500">{t('staff.subtitle')}</p>
                 </div>
               </div>
               <button
@@ -450,7 +450,7 @@ export const StaffManagementPage: React.FC = () => {
             <form onSubmit={handleCreateStaff} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Full Name <span className="text-red-500">*</span>
+                  {t('profile.fullName')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <UserIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -467,7 +467,7 @@ export const StaffManagementPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Work Email <span className="text-red-500">*</span>
+                  {t('staff.email')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -484,7 +484,7 @@ export const StaffManagementPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Temporary Password <span className="text-red-500">*</span>
+                  {t('staff.password')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -492,7 +492,7 @@ export const StaffManagementPage: React.FC = () => {
                     type="password"
                     required
                     minLength={8}
-                    placeholder="Min 8 characters"
+                    placeholder={t('profile.min8Chars')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
@@ -502,7 +502,7 @@ export const StaffManagementPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Phone Number
+                  {t('staff.phone')}
                 </label>
                 <div className="relative">
                   <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -519,14 +519,14 @@ export const StaffManagementPage: React.FC = () => {
               {/* Permissions checkboxes */}
               <div className="space-y-1.5 pt-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Assigned Capabilities
+                  {t('staff.permissions')}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { id: 'pos_access', label: 'POS & Billing' },
-                    { id: 'inventory_view', label: 'View Inventory' },
-                    { id: 'billing_access', label: 'Issue Receipts' },
-                    { id: 'service_appointments', label: 'Appointments' },
+                    { id: 'pos_access', label: t('staff.permBilling', 'POS Billing Access') },
+                    { id: 'inventory_view', label: t('staff.permInventory', 'Inventory Access') },
+                    { id: 'billing_access', label: t('staff.permReports', 'Financial Reports Access') },
+                    { id: 'service_appointments', label: t('staff.permSettings', 'Settings Access') },
                   ].map((perm) => (
                     <label
                       key={perm.id}
@@ -550,14 +550,14 @@ export const StaffManagementPage: React.FC = () => {
                   onClick={() => setIsAddModalOpen(false)}
                   className="px-3.5 py-2 rounded-lg border border-zinc-200 text-zinc-600 text-xs font-medium hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
                   className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Creating...' : 'Add Staff Member'}
+                  {actionLoading ? t('settings.saving') : t('staff.addStaff')}
                 </button>
               </div>
             </form>
@@ -575,7 +575,7 @@ export const StaffManagementPage: React.FC = () => {
                   <Edit2 size={16} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-900">Edit Staff Member</h3>
+                  <h3 className="text-sm font-semibold text-zinc-900">{t('staff.editStaff')}</h3>
                   <p className="text-xs text-zinc-500">{editingStaff.email}</p>
                 </div>
               </div>
@@ -590,7 +590,7 @@ export const StaffManagementPage: React.FC = () => {
             <form onSubmit={handleUpdateStaff} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Full Name <span className="text-red-500">*</span>
+                  {t('profile.fullName')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -603,7 +603,7 @@ export const StaffManagementPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Phone Number
+                  {t('staff.phone')}
                 </label>
                 <input
                   type="text"
@@ -617,14 +617,14 @@ export const StaffManagementPage: React.FC = () => {
               {/* Permissions */}
               <div className="space-y-1.5 pt-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  Assigned Capabilities
+                  {t('staff.permissions')}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { id: 'pos_access', label: 'POS & Billing' },
-                    { id: 'inventory_view', label: 'View Inventory' },
-                    { id: 'billing_access', label: 'Issue Receipts' },
-                    { id: 'service_appointments', label: 'Appointments' },
+                    { id: 'pos_access', label: t('staff.permBilling', 'POS Billing Access') },
+                    { id: 'inventory_view', label: t('staff.permInventory', 'Inventory Access') },
+                    { id: 'billing_access', label: t('staff.permReports', 'Financial Reports Access') },
+                    { id: 'service_appointments', label: t('staff.permSettings', 'Settings Access') },
                   ].map((perm) => (
                     <label
                       key={perm.id}
@@ -648,14 +648,14 @@ export const StaffManagementPage: React.FC = () => {
                   onClick={() => setEditingStaff(null)}
                   className="px-3.5 py-2 rounded-lg border border-zinc-200 text-zinc-600 text-xs font-medium hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
                   className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Saving...' : 'Save Changes'}
+                  {actionLoading ? t('settings.saving') : t('common.save')}
                 </button>
               </div>
             </form>
@@ -673,7 +673,7 @@ export const StaffManagementPage: React.FC = () => {
                   <KeyRound size={16} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-900">Reset Staff Password</h3>
+                  <h3 className="text-sm font-semibold text-zinc-900">{t('profile.changePassword')}</h3>
                   <p className="text-xs text-zinc-500">{resetPasswordStaff.fullName}</p>
                 </div>
               </div>
@@ -688,7 +688,7 @@ export const StaffManagementPage: React.FC = () => {
             <form onSubmit={handleResetPassword} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  New Password <span className="text-red-500">*</span>
+                  {t('profile.newPassword')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -696,14 +696,14 @@ export const StaffManagementPage: React.FC = () => {
                     type="password"
                     required
                     minLength={8}
-                    placeholder="Enter new temporary password"
+                    placeholder={t('profile.min8Chars')}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
                   />
                 </div>
                 <p className="text-[11px] text-zinc-400">
-                  Minimum 8 characters. The employee can use this password immediately.
+                  {t('profile.min8Chars')}
                 </p>
               </div>
 
@@ -713,14 +713,14 @@ export const StaffManagementPage: React.FC = () => {
                   onClick={() => setResetPasswordStaff(null)}
                   className="px-3.5 py-2 rounded-lg border border-zinc-200 text-zinc-600 text-xs font-medium hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
                   className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Resetting...' : 'Confirm Reset Password'}
+                  {actionLoading ? t('settings.saving') : t('profile.changePassword')}
                 </button>
               </div>
             </form>
@@ -730,4 +730,5 @@ export const StaffManagementPage: React.FC = () => {
     </div>
   );
 };
+
 

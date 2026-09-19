@@ -6,12 +6,9 @@ import com.bizflow.billing.OrderRepository;
 import com.bizflow.billing.OrderStatus;
 import com.bizflow.business.Business;
 import com.bizflow.business.BusinessRepository;
-import com.bizflow.business.BusinessSize;
 import com.bizflow.common.exception.ResourceNotFoundException;
-import com.bizflow.customer.Customer;
 import com.bizflow.customer.CustomerRepository;
 import com.bizflow.expense.ExpenseRepository;
-import com.bizflow.payment.PaymentMethod;
 import com.bizflow.payment.PaymentStatus;
 import com.bizflow.product.Product;
 import com.bizflow.product.ProductRepository;
@@ -28,7 +25,6 @@ import java.math.RoundingMode;
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -60,6 +56,10 @@ public class AIBusinessContextService {
         Instant todayStart = today.atStartOfDay(zone).toInstant();
         Instant todayEnd = today.atTime(LocalTime.MAX).atZone(zone).toInstant();
 
+        LocalDate yesterday = today.minusDays(1);
+        Instant yesterdayStart = yesterday.atStartOfDay(zone).toInstant();
+        Instant yesterdayEnd = yesterday.atTime(LocalTime.MAX).atZone(zone).toInstant();
+
         LocalDate thisWeekMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         Instant weekStart = thisWeekMonday.atStartOfDay(zone).toInstant();
 
@@ -74,6 +74,9 @@ public class AIBusinessContextService {
         // 2. Sales & Revenue Aggregations
         BigDecimal todaySales = orderRepository.sumSalesForDateRange(businessId, todayStart, todayEnd, PaymentStatus.COMPLETED, OrderStatus.COMPLETED);
         long todayOrders = orderRepository.countOrdersForDateRange(businessId, todayStart, todayEnd, OrderStatus.COMPLETED);
+
+        BigDecimal yesterdaySales = orderRepository.sumSalesForDateRange(businessId, yesterdayStart, yesterdayEnd, PaymentStatus.COMPLETED, OrderStatus.COMPLETED);
+        long yesterdayOrders = orderRepository.countOrdersForDateRange(businessId, yesterdayStart, yesterdayEnd, OrderStatus.COMPLETED);
 
         BigDecimal weekSales = orderRepository.sumSalesForDateRange(businessId, weekStart, now, PaymentStatus.COMPLETED, OrderStatus.COMPLETED);
         long weekOrders = orderRepository.countOrdersForDateRange(businessId, weekStart, now, OrderStatus.COMPLETED);
@@ -97,7 +100,7 @@ public class AIBusinessContextService {
                     .doubleValue();
         }
 
-        // 3. Operating Expenses
+        // 3. Operating Expenses & Net Profit
         BigDecimal monthExpenses = expenseRepository.sumExpensesForDateRange(businessId, firstDayThisMonth, today);
         BigDecimal lastMonthExpenses = expenseRepository.sumExpensesForDateRange(businessId, firstDayLastMonth, lastDayLastMonth);
         BigDecimal netRevenue = monthSales.subtract(monthExpenses);
@@ -170,7 +173,7 @@ public class AIBusinessContextService {
                     r.isPositive() ? " [Public]" : " [Private Issue]"));
         }
 
-        // Assemble Final System Prompt
+        // Assemble Final System Prompt with real database data and strict instructions
         return String.format("""
                 You are BizFlow AI, an executive-level business analyst and advisor for "%s" (Business Type: %s, Currency: %s, Business Size: %s).
                 
@@ -178,6 +181,7 @@ public class AIBusinessContextService {
                 
                 --- REVENUE & SALES SNAPSHOT ---
                 - Today's Sales: %s %s across %d completed orders.
+                - Yesterday's Sales: %s %s across %d completed orders.
                 - This Week's Sales: %s %s (%d orders).
                 - This Month's Sales: %s %s (%d orders, Average Order Value: %s %s).
                 - Last Month's Sales: %s %s (%d orders).
@@ -203,16 +207,18 @@ public class AIBusinessContextService {
                 --- CUSTOMER REPUTATION & REVIEWS ---
                 %s
                 
-                --- INSTRUCTIONS ---
-                1. Always base your analysis and calculations strictly on the verified numbers provided above.
-                2. Be concise, executive, professional, and actionable.
-                3. Use clean Markdown formatting with clear section headers (###), bold numbers, bullet points, and highlight warnings (⚠️, 💡, 📊).
-                4. When recommending restocks, reference specific product names and current stock numbers from the snapshot.
-                5. Never reveal API keys, database internals, or execute destructive actions. You are strictly a read-only analytical advisor.
-                6. LANGUAGE REQUIREMENT: %s
+                --- STRICT INSTRUCTIONS ---
+                1. Always base your analysis and calculations strictly on the verified numbers provided in this snapshot.
+                2. NEVER invent sales numbers, revenue, expenses, profit, inventory, product quantities, orders, or business statistics. The database values above are the sole source of truth.
+                3. Be concise, executive, professional, and actionable.
+                4. Use clean Markdown formatting with clear section headers (###), bold numbers, bullet points, and highlight warnings (⚠️, 💡, 📊).
+                5. When recommending restocks, reference specific product names and current stock numbers from the snapshot.
+                6. Never reveal API keys, database credentials, internal exceptions, or execute destructive actions. You are strictly a read-only analytical advisor.
+                7. LANGUAGE REQUIREMENT: %s
                 """,
                 business.getName(), business.getBusinessType(), business.getCurrency(), business.getBusinessSize(),
                 business.getCurrency(), todaySales.toPlainString(), todayOrders,
+                business.getCurrency(), yesterdaySales.toPlainString(), yesterdayOrders,
                 business.getCurrency(), weekSales.toPlainString(), weekOrders,
                 business.getCurrency(), monthSales.toPlainString(), monthOrders, business.getCurrency(), monthAov.toPlainString(),
                 business.getCurrency(), lastMonthSales.toPlainString(), lastMonthOrders,
@@ -231,26 +237,28 @@ public class AIBusinessContextService {
     }
 
     private String getLanguageInstruction(String lang) {
-        if (lang == null) return "Respond in English.";
+        if (lang == null || lang.isBlank()) {
+            return "Respond only in English. Use the provided BizFlow business data. Do not invent financial information.";
+        }
         return switch (lang.toLowerCase().trim()) {
-            case "mr" -> "Respond in Marathi (मराठी). Provide natural, clear, and professional Marathi business communication while keeping real currency numbers, percentages, and dish/product names accurate and readable.";
-            case "hi" -> "Respond in Hindi (हिन्दी). Provide natural, clear, and professional Hindi business communication while keeping real currency numbers, percentages, and dish/product names accurate and readable.";
-            case "bn" -> "Respond in Bengali (বাংলা). Use the provided BizFlow business data to answer accurately.";
-            case "gu" -> "Respond in Gujarati (ગુજરાતી). Use the provided BizFlow business data to answer accurately.";
-            case "ta" -> "Respond in Tamil (தமிழ்). Use the provided BizFlow business data to answer accurately.";
-            case "te" -> "Respond in Telugu (తెలుగు). Use the provided BizFlow business data to answer accurately.";
-            case "kn" -> "Respond in Kannada (ಕನ್ನಡ). Use the provided BizFlow business data to answer accurately.";
-            case "ml" -> "Respond in Malayalam (മലയാളം). Use the provided BizFlow business data to answer accurately.";
-            case "pa" -> "Respond in Punjabi (ਪੰਜਾਬੀ). Use the provided BizFlow business data to answer accurately.";
-            case "es" -> "Respond in Spanish (Español). Use the provided BizFlow business data to answer accurately.";
-            case "fr" -> "Respond in French (Français). Use the provided BizFlow business data to answer accurately.";
-            case "de" -> "Respond in German (Deutsch). Use the provided BizFlow business data to answer accurately.";
-            case "pt" -> "Respond in Portuguese (Português). Use the provided BizFlow business data to answer accurately.";
-            case "ar" -> "Respond in Arabic (العربية). Use the provided BizFlow business data to answer accurately.";
-            case "zh" -> "Respond in Simplified Chinese (中文). Use the provided BizFlow business data to answer accurately.";
-            case "ja" -> "Respond in Japanese (日本語). Use the provided BizFlow business data to answer accurately.";
-            case "ko" -> "Respond in Korean (한국어). Use the provided BizFlow business data to answer accurately.";
-            default -> "Respond in English. Use the provided BizFlow business data to answer accurately.";
+            case "mr" -> "Respond only in Marathi (मराठी). Use the provided BizFlow business data. Do not invent financial information.";
+            case "hi" -> "Respond only in Hindi (हिन्दी). Use the provided BizFlow business data. Do not invent financial information.";
+            case "bn" -> "Respond only in Bengali (বাংলা). Use the provided BizFlow business data. Do not invent financial information.";
+            case "gu" -> "Respond only in Gujarati (ગુજરાતી). Use the provided BizFlow business data. Do not invent financial information.";
+            case "ta" -> "Respond only in Tamil (தமிழ்). Use the provided BizFlow business data. Do not invent financial information.";
+            case "te" -> "Respond only in Telugu (తెలుగు). Use the provided BizFlow business data. Do not invent financial information.";
+            case "kn" -> "Respond only in Kannada (ಕನ್ನಡ). Use the provided BizFlow business data. Do not invent financial information.";
+            case "ml" -> "Respond only in Malayalam (മലയാളം). Use the provided BizFlow business data. Do not invent financial information.";
+            case "pa" -> "Respond only in Punjabi (ਪੰਜਾਬੀ). Use the provided BizFlow business data. Do not invent financial information.";
+            case "es" -> "Respond only in Spanish (Español). Use the provided BizFlow business data. Do not invent financial information.";
+            case "fr" -> "Respond only in French (Français). Use the provided BizFlow business data. Do not invent financial information.";
+            case "de" -> "Respond only in German (Deutsch). Use the provided BizFlow business data. Do not invent financial information.";
+            case "pt" -> "Respond only in Portuguese (Português). Use the provided BizFlow business data. Do not invent financial information.";
+            case "ar" -> "Respond only in Arabic (العربية). Use the provided BizFlow business data. Do not invent financial information.";
+            case "zh" -> "Respond only in Simplified Chinese (简体中文). Use the provided BizFlow business data. Do not invent financial information.";
+            case "ja" -> "Respond only in Japanese (日本語). Use the provided BizFlow business data. Do not invent financial information.";
+            case "ko" -> "Respond only in Korean (한국어). Use the provided BizFlow business data. Do not invent financial information.";
+            default -> "Respond only in English. Use the provided BizFlow business data. Do not invent financial information.";
         };
     }
 
@@ -321,7 +329,6 @@ public class AIBusinessContextService {
 
         } catch (Exception e) {
             log.warn("Error generating dynamic suggestions: {}", e.getMessage());
-            // Fallback default suggestions
             suggestions.add(AiSuggestedQuestion.builder()
                     .id("default-sales")
                     .category("SALES")

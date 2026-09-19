@@ -87,7 +87,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         reviewEnabled: setRes.reviewEnabled,
       });
     } catch (err: any) {
-      setErrorMessage('Failed to load Review Boost dashboard data.');
+      setErrorMessage(t('reviews.failedToLoad', 'Failed to load Review Boost dashboard data.'));
     } finally {
       setLoading(false);
     }
@@ -113,14 +113,14 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         ...settingsForm,
         publicReviewUrl: cleanedUrl || undefined,
       });
-      setSuccessMessage('Review Boost configuration updated.');
+      setSuccessMessage(t('reviews.configUpdated', 'Review Boost configuration updated.'));
       setIsSettingsModalOpen(false);
       fetchDashboardData(page);
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to update review settings.'
+        t('reviews.settingsFailed', 'Failed to update review settings.')
       );
     } finally {
       setSettingsSubmitting(false);
@@ -131,12 +131,12 @@ export const ReviewBoostDashboardPage: React.FC = () => {
     if (!moderatingReview) return;
     try {
       await reviewsApi.moderateReview(moderatingReview.id, isPublic, moderationNotes);
-      setSuccessMessage(`Review visibility updated.`);
+      setSuccessMessage(t('reviews.visibilityUpdated', 'Review visibility updated.'));
       setModeratingReview(null);
       setModerationNotes('');
       fetchDashboardData(page);
     } catch (err: any) {
-      setErrorMessage('Failed to update review moderation status.');
+      setErrorMessage(t('reviews.moderateFailed', 'Failed to update review moderation status.'));
     }
   };
 
@@ -168,7 +168,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
             className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-white hover:bg-zinc-50 text-zinc-700 font-medium text-xs border border-zinc-200 shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
           >
             <Settings size={14} />
-            <span>Configure Boost</span>
+            <span>{t('reviews.configureBoost', 'Configure Boost')}</span>
           </button>
         )}
       </div>
@@ -233,7 +233,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider">
-                    Customer Review URL (QR Code)
+                    {t('reviews.shareLink')}
                   </span>
                   {qrCodeData?.reviewUrl && (
                     <a
@@ -242,7 +242,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                       rel="noopener noreferrer"
                       className="text-brand-600 hover:text-brand-700 text-xs font-semibold flex items-center gap-0.5"
                     >
-                      <span>Open</span>
+                      <span>{t('common.view')}</span>
                       <ExternalLink size={12} />
                     </a>
                   )}
@@ -263,7 +263,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                       }
                     }}
                     className="p-1.5 rounded-lg bg-white hover:bg-zinc-100 border border-zinc-200 text-zinc-700 cursor-pointer"
-                    title="Copy Customer Review Page URL"
+                    title={t('common.copy')}
                   >
                     {copiedLink ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
                   </button>
@@ -294,7 +294,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                     onClick={() => setIsSettingsModalOpen(true)}
                     className="text-brand-600 hover:text-brand-800 font-semibold cursor-pointer text-[10px]"
                   >
-                    Change
+                    {t('common.edit')}
                   </button>
                 )}
               </div>
@@ -304,7 +304,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
           {/* Rating Distribution Bars */}
           <div className="space-y-2">
             <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block mb-2">
-              Rating Breakdown
+              {t('reviews.rating')} {t('common.details')}
             </span>
             {[5, 4, 3, 2, 1].map((stars) => {
               const count = getRatingCount(stars);
@@ -336,8 +336,8 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         {/* QR Code Counter Stand Display */}
         <div className="p-5 rounded-xl bg-white border border-zinc-200 shadow-xs flex flex-col justify-between items-center text-center space-y-4">
           <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-zinc-900">Counter QR Code</h3>
-            <p className="text-xs text-zinc-500">Let customers scan at billing counter</p>
+            <h3 className="text-sm font-semibold text-zinc-900">{t('reviews.qrCodeTitle')}</h3>
+            <p className="text-xs text-zinc-500">{t('reviews.scanQr')}</p>
           </div>
 
           {/* QR Code Preview Box */}
@@ -369,7 +369,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                 className="py-2 px-3 rounded-lg bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
               >
                 <Download size={14} />
-                <span>Download</span>
+                <span>{t('common.download')}</span>
               </a>
             )}
 
@@ -378,7 +378,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               className="py-2 px-3 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             >
               <Printer size={14} />
-              <span>Print Stand</span>
+              <span>{t('reviews.printPoster')}</span>
             </button>
           </div>
         </div>
@@ -388,7 +388,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
       <div className="bg-white rounded-xl border border-zinc-200 shadow-xs overflow-hidden space-y-4">
         {/* Table Header Controls */}
         <div className="p-4 sm:p-5 border-b border-zinc-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold text-zinc-900">Customer Feedback &amp; Ratings</h3>
+          <h3 className="text-sm font-semibold text-zinc-900">{t('reviews.feedback')}</h3>
 
           <div className="flex flex-wrap items-center gap-2">
             <select
@@ -396,12 +396,12 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               onChange={(e) => setSelectedRatingFilter(e.target.value)}
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
-              <option value="ALL">All Star Ratings</option>
-              <option value="5">5 Stars Only</option>
-              <option value="4">4 Stars Only</option>
-              <option value="3">3 Stars Only</option>
-              <option value="2">2 Stars Only</option>
-              <option value="1">1 Star Only</option>
+              <option value="ALL">{t('common.all')} {t('reviews.rating')}</option>
+              <option value="5">{t('reviews.fiveStars')}</option>
+              <option value="4">{t('reviews.fourStars')}</option>
+              <option value="3">{t('reviews.threeStars')}</option>
+              <option value="2">{t('reviews.twoStars')}</option>
+              <option value="1">{t('reviews.oneStar')}</option>
             </select>
 
             <select
@@ -409,9 +409,9 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               onChange={(e) => setPositiveOnlyFilter(e.target.value)}
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
-              <option value="ALL">All Feedback</option>
-              <option value="POSITIVE">High Ratings (4-5★)</option>
-              <option value="PRIVATE">Private Concerns (&lt;4★)</option>
+              <option value="ALL">{t('common.all')}</option>
+              <option value="POSITIVE">{t('reviews.publicFeedback')}</option>
+              <option value="PRIVATE">{t('reviews.privateFeedback')}</option>
             </select>
           </div>
         </div>
@@ -436,8 +436,8 @@ export const ReviewBoostDashboardPage: React.FC = () => {
           ) : reviews.length === 0 ? (
             <div className="py-12 text-center text-zinc-500 space-y-1">
               <Star size={32} className="mx-auto text-zinc-300" />
-              <p className="font-semibold text-zinc-700 text-xs">No customer reviews yet</p>
-              <p className="text-xs text-zinc-400">Share your QR code to start collecting ratings.</p>
+              <p className="font-semibold text-zinc-700 text-xs">{t('reviews.noReviewsYet')}</p>
+              <p className="text-xs text-zinc-400">{t('reviews.qrCodeDesc')}</p>
             </div>
           ) : (
             reviews.map((rev) => (
@@ -459,7 +459,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                     </div>
 
                     <span className="text-xs font-semibold text-zinc-900">
-                      {rev.customerName || 'Anonymous Customer'}
+                      {rev.customerName || t('common.anonymous', 'Anonymous')}
                     </span>
 
                     <span className="text-[11px] text-zinc-400">
@@ -473,7 +473,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                           : 'bg-amber-50 text-amber-800 border border-amber-200'
                       }`}
                     >
-                      {rev.positive ? '5-Star Boosted' : 'Private Feedback'}
+                      {rev.positive ? t('reviews.publicFeedback') : t('reviews.privateFeedback')}
                     </span>
                   </div>
 
@@ -485,7 +485,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
 
                   {rev.customerContact && (
                     <span className="text-[10px] text-zinc-500 font-mono block">
-                      Contact: {rev.customerContact}
+                      {t('common.phone')}: {rev.customerContact}
                     </span>
                   )}
                 </div>
@@ -496,7 +496,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                       onClick={() => setModeratingReview(rev)}
                       className="px-3 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 text-zinc-700 text-xs font-medium cursor-pointer"
                     >
-                      Moderate
+                      {t('common.actions')}
                     </button>
                   </div>
                 )}
@@ -509,7 +509,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         {!loading && totalPages > 1 && (
           <div className="p-3.5 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
             <span>
-              Showing page {page + 1} of {totalPages}
+              {t('common.page')} {page + 1} {t('common.of')} {totalPages}
             </span>
             <div className="flex items-center space-x-1.5">
               <button
@@ -517,14 +517,14 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                 onClick={() => fetchDashboardData(page - 1)}
                 className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-medium disabled:opacity-50 cursor-pointer"
               >
-                Previous
+                {t('common.previous')}
               </button>
               <button
                 disabled={page >= totalPages - 1}
                 onClick={() => fetchDashboardData(page + 1)}
                 className="px-3 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-medium disabled:opacity-50 cursor-pointer"
               >
-                Next
+                {t('common.next')}
               </button>
             </div>
           </div>
@@ -540,7 +540,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                 <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
                   <Settings size={15} />
                 </div>
-                <h3 className="text-sm font-semibold text-zinc-900">Review Boost Settings</h3>
+                <h3 className="text-sm font-semibold text-zinc-900">{t('reviews.configureBoost', 'Review Boost Settings')}</h3>
               </div>
               <button
                 onClick={() => setIsSettingsModalOpen(false)}
@@ -552,7 +552,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
 
             <form onSubmit={handleSaveSettings} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Custom Review URL Slug</label>
+                <label className="text-xs font-medium text-zinc-700">{t('settings.slug', 'Custom Review URL Slug')}</label>
                 <input
                   type="text"
                   required
@@ -565,7 +565,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
 
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-zinc-700">Google Review Page URL</label>
+                  <label className="text-xs font-medium text-zinc-700">{t('settings.googleReviewUrl', 'Google Review Page URL')}</label>
                   {settingsForm.publicReviewUrl && (
                     <a
                       href={settingsForm.publicReviewUrl.startsWith('http') ? settingsForm.publicReviewUrl : `https://${settingsForm.publicReviewUrl}`}
@@ -573,7 +573,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                       rel="noopener noreferrer"
                       className="text-[11px] font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1"
                     >
-                      <span>Test Link</span>
+                      <span>{t('common.view')}</span>
                       <ExternalLink size={11} />
                     </a>
                   )}
@@ -585,13 +585,10 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                   onChange={(e) => setSettingsForm({ ...settingsForm, publicReviewUrl: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
-                <p className="text-[10px] text-zinc-400">
-                  Direct Google Maps / Google Review link. If left blank, customers giving 4-5 stars are automatically directed to Google search for your business reviews.
-                </p>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-zinc-700">Welcome Prompt Message</label>
+                <label className="text-xs font-medium text-zinc-700">{t('settings.welcomeMessage', 'Welcome Prompt Message')}</label>
                 <input
                   type="text"
                   placeholder="How was your experience with us today?"
@@ -608,7 +605,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                   onChange={(e) => setSettingsForm({ ...settingsForm, reviewEnabled: e.target.checked })}
                   className="w-4 h-4 rounded text-brand-600 focus:ring-brand-500"
                 />
-                <span className="text-xs font-medium text-zinc-800">Enable Review Boost Landing Page</span>
+                <span className="text-xs font-medium text-zinc-800">{t('common.active')}</span>
               </label>
 
               <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-100">
@@ -617,7 +614,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                   onClick={() => setIsSettingsModalOpen(false)}
                   className="px-4 py-2 border border-zinc-200 text-zinc-700 text-xs font-medium rounded-lg hover:bg-zinc-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -625,9 +622,9 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                   className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {settingsSubmitting ? (
-                    <ButtonSpinner text="Saving..." spinnerColor="text-white" />
+                    <ButtonSpinner text={t('common.saving')} />
                   ) : (
-                    'Save Settings'
+                    t('common.save')
                   )}
                 </button>
               </div>
@@ -641,7 +638,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-5 shadow-lg space-y-4 border border-zinc-200">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <h3 className="text-sm font-semibold text-zinc-900">Moderate Customer Review</h3>
+              <h3 className="text-sm font-semibold text-zinc-900">{t('reviews.feedback')}</h3>
               <button
                 onClick={() => setModeratingReview(null)}
                 className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 cursor-pointer"
@@ -651,15 +648,15 @@ export const ReviewBoostDashboardPage: React.FC = () => {
             </div>
 
             <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-200 text-xs space-y-1">
-              <div className="font-semibold text-zinc-900">{moderatingReview.customerName || 'Anonymous'}</div>
+              <div className="font-semibold text-zinc-900">{moderatingReview.customerName || t('common.anonymous')}</div>
               <p className="text-zinc-600 italic">"{moderatingReview.feedbackText}"</p>
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-medium text-zinc-700">Internal Manager Notes</label>
+              <label className="text-xs font-medium text-zinc-700">{t('common.notes')}</label>
               <input
                 type="text"
-                placeholder="e.g. Addressed customer request with discount coupon"
+                placeholder="e.g. Addressed customer request"
                 value={moderationNotes}
                 onChange={(e) => setModerationNotes(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -672,14 +669,14 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                 onClick={() => handleModerateReview(false)}
                 className="px-3.5 py-2 border border-zinc-200 text-zinc-700 hover:bg-zinc-50 rounded-lg text-xs font-medium cursor-pointer"
               >
-                Keep Private
+                {t('reviews.privateFeedback')}
               </button>
               <button
                 type="button"
                 onClick={() => handleModerateReview(true)}
                 className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium shadow-xs cursor-pointer"
               >
-                Make Public
+                {t('reviews.publicFeedback')}
               </button>
             </div>
           </div>

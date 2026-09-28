@@ -11,13 +11,15 @@ services:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
       - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
-        value: 3
+        value: 5
       - key: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
         value: 1
       - key: SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT
         value: 30000
+      - key: SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT
+        value: 600000
       - key: SPRING_DATASOURCE_HIKARI_MAX_LIFETIME
-        value: 60000
+        value: 1800000
       - key: BIZFLOW_AI_ENABLED
         value: "true"
       - key: OPENROUTER_MODEL

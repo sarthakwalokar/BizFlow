@@ -172,12 +172,16 @@ export const BusinessSettingsPage: React.FC = () => {
     });
   };
 
+  const [logoSaving, setLogoSaving] = useState(false);
+  const [logoSuccessMessage, setLogoSuccessMessage] = useState<string | null>(null);
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setLogoProcessing(true);
     setLogoError(null);
+    setLogoSuccessMessage(null);
     try {
       const dataUrl = await processImageFile(file);
       setLogo(dataUrl);
@@ -194,8 +198,47 @@ export const BusinessSettingsPage: React.FC = () => {
   const handleRemoveLogo = () => {
     setLogo('');
     setLogoError(null);
+    setLogoSuccessMessage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSaveLogoOnly = async () => {
+    setLogoSaving(true);
+    setLogoError(null);
+    setLogoSuccessMessage(null);
+
+    try {
+      const updateData: BusinessUpdateRequest = {
+        name: name || business?.name || 'My Business',
+        businessType: businessType || business?.businessType || 'RETAIL',
+        email: email || undefined,
+        phone: phone || undefined,
+        address: address || undefined,
+        logo: logo.trim(),
+        currency: currency || business?.currency || 'USD',
+        timezone: timezone || business?.timezone || 'Asia/Kolkata',
+        taxRate: Number(taxRate ?? business?.taxRate ?? 0),
+        taxName: taxName || business?.taxName || 'GST',
+        taxNumber: taxNumber || business?.taxNumber || undefined,
+        taxInclusive: taxInclusive ?? business?.taxInclusive ?? false,
+        businessSize: businessSize || business?.businessSize || 'SMALL',
+        inventoryEnabled: inventoryEnabled ?? business?.inventoryEnabled ?? true,
+      };
+
+      const updated = await businessApi.updateMyBusiness(updateData);
+      updateBusinessState(updated);
+      setLogo(updated.logo || '');
+      setLogoSuccessMessage(t('settings.logoSaved', 'Logo saved and persisted successfully!'));
+    } catch (err: any) {
+      const msg =
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        'Failed to save business logo. Please try again.';
+      setLogoError(msg);
+    } finally {
+      setLogoSaving(false);
     }
   };
 
@@ -204,6 +247,7 @@ export const BusinessSettingsPage: React.FC = () => {
     setSaving(true);
     setSuccessMessage(null);
     setErrorMessage(null);
+    setLogoSuccessMessage(null);
 
     try {
       const updateData: BusinessUpdateRequest = {
@@ -413,9 +457,9 @@ export const BusinessSettingsPage: React.FC = () => {
                 <span className="text-[10px] text-zinc-400 font-normal">PNG, JPG, WebP or SVG (Max 5MB)</span>
               </label>
 
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-3.5 rounded-xl border border-zinc-200 bg-zinc-50/60">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-xl border border-zinc-200 bg-zinc-50/70">
                 {/* Logo Preview Box */}
-                <div className="relative w-20 h-20 rounded-xl border border-zinc-200 bg-white flex items-center justify-center p-1.5 shrink-0 shadow-xs overflow-hidden group">
+                <div className="relative w-24 h-24 rounded-2xl border-2 border-dashed border-zinc-300 bg-white flex items-center justify-center p-2 shrink-0 shadow-xs overflow-hidden group">
                   {logo ? (
                     <img
                       src={logo}
@@ -425,20 +469,48 @@ export const BusinessSettingsPage: React.FC = () => {
                     />
                   ) : (
                     <div className="text-center p-2 text-zinc-400 flex flex-col items-center">
-                      <ImageIcon size={22} className="text-zinc-300 mb-0.5" />
+                      <ImageIcon size={24} className="text-zinc-300 mb-0.5" />
                       <span className="text-[9px] font-medium text-zinc-400">No Logo</span>
                     </div>
                   )}
                   {logoProcessing && (
-                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-white/85 flex flex-col items-center justify-center space-y-1">
                       <ButtonSpinner className="text-brand-600" />
+                      <span className="text-[9px] font-bold text-brand-600">Processing</span>
                     </div>
                   )}
                 </div>
 
                 {/* Actions & Inputs */}
-                <div className="flex-1 space-y-2 w-full">
-                  <div className="flex flex-wrap items-center gap-2">
+                <div className="flex-1 space-y-2.5 w-full">
+                  {/* Status Indicator */}
+                  {logo !== (business?.logo || '') ? (
+                    <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold">
+                      <AlertCircle size={12} className="text-amber-600" />
+                      <span>Unsaved logo changes • Click "Save Logo" to apply</span>
+                    </div>
+                  ) : business?.logo ? (
+                    <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
+                      <CheckCircle2 size={12} className="text-emerald-600" />
+                      <span>Saved &amp; active across all invoices and documents</span>
+                    </div>
+                  ) : null}
+
+                  {logoSuccessMessage && (
+                    <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-emerald-800 text-xs font-semibold">
+                      <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
+                      <span>{logoSuccessMessage}</span>
+                    </div>
+                  )}
+
+                  {logoError && (
+                    <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 flex items-center gap-2 text-rose-800 text-xs font-semibold">
+                      <AlertCircle size={14} className="text-rose-600 shrink-0" />
+                      <span>{logoError}</span>
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
                     <input
                       type="file"
                       ref={fileInputRef}
@@ -447,26 +519,46 @@ export const BusinessSettingsPage: React.FC = () => {
                       className="hidden"
                     />
 
+                    {/* 1. Upload / Change Logo */}
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      disabled={logoProcessing}
-                      className="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                      disabled={logoProcessing || logoSaving}
+                      className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                     >
                       <Upload size={13} />
                       <span>{logo ? t('common.changeLogo', 'Change Logo') : t('common.uploadLogo', 'Upload Logo')}</span>
                     </button>
 
+                    {/* 2. Remove Logo */}
                     {logo && (
                       <button
                         type="button"
                         onClick={handleRemoveLogo}
-                        className="px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                        disabled={logoProcessing || logoSaving}
+                        className="px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                       >
                         <Trash2 size={13} />
-                        <span>{t('common.remove', 'Remove')}</span>
+                        <span>{t('common.remove', 'Remove Logo')}</span>
                       </button>
                     )}
+
+                    {/* 3. Dedicated Save Logo Action */}
+                    <button
+                      type="button"
+                      onClick={handleSaveLogoOnly}
+                      disabled={logoSaving || logoProcessing || logo === (business?.logo || '')}
+                      className="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      {logoSaving ? (
+                        <ButtonSpinner text="Saving Logo..." spinnerColor="text-white" />
+                      ) : (
+                        <>
+                          <Save size={13} />
+                          <span>Save Logo</span>
+                        </>
+                      )}
+                    </button>
 
                     <button
                       type="button"
@@ -493,15 +585,8 @@ export const BusinessSettingsPage: React.FC = () => {
                     </div>
                   )}
 
-                  {logoError && (
-                    <p className="text-[11px] text-red-600 font-medium flex items-center gap-1">
-                      <AlertCircle size={12} />
-                      {logoError}
-                    </p>
-                  )}
-
-                  <p className="text-[11px] text-zinc-500 leading-tight">
-                    {t('settings.logoHint', 'Your logo will be automatically displayed on invoices, POS receipts, PDF reports, and customer review portals.')}
+                  <p className="text-[11px] text-zinc-500 leading-tight pt-1">
+                    {t('settings.logoHint', 'Your logo is securely stored and automatically displayed on POS receipts, tax invoices, PDF exports, and client review pages.')}
                   </p>
                 </div>
               </div>

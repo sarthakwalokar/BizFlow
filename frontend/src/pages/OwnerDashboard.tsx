@@ -553,6 +553,19 @@ export const OwnerDashboard: React.FC = () => {
                       )}
                     </div>
                     <div className="flex-1 space-y-2 w-full">
+                      {/* Logo Status Indicator */}
+                      {bizLogo !== (business?.logo || '') ? (
+                        <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-bold">
+                          <AlertCircle size={12} className="text-amber-400" />
+                          <span>Unsaved logo changes • Click "Save Settings" or "Save Logo" to apply</span>
+                        </div>
+                      ) : business?.logo ? (
+                        <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold">
+                          <CheckCircle2 size={12} className="text-emerald-400" />
+                          <span>Saved &amp; active across all invoices and documents</span>
+                        </div>
+                      ) : null}
+
                       <div className="flex flex-wrap items-center gap-2">
                         <input
                           type="file"
@@ -563,7 +576,7 @@ export const OwnerDashboard: React.FC = () => {
                             const file = e.target.files?.[0];
                             if (!file) return;
                             if (!file.type.startsWith('image/')) {
-                              setLogoError('Please select a valid image file.');
+                              setLogoError('Please select a valid image file (PNG, JPG, WebP, SVG).');
                               return;
                             }
                             if (file.size > 5 * 1024 * 1024) {
@@ -572,19 +585,70 @@ export const OwnerDashboard: React.FC = () => {
                             }
                             setLogoProcessing(true);
                             setLogoError(null);
-                            const reader = new FileReader();
-                            reader.onload = (evt) => {
-                              setBizLogo(evt.target?.result as string);
+
+                            try {
+                              if (file.type === 'image/svg+xml') {
+                                const reader = new FileReader();
+                                reader.onload = (evt) => {
+                                  setBizLogo(evt.target?.result as string);
+                                  setLogoProcessing(false);
+                                };
+                                reader.readAsDataURL(file);
+                                return;
+                              }
+
+                              const reader = new FileReader();
+                              reader.onload = (evt) => {
+                                const img = new Image();
+                                img.onload = () => {
+                                  const maxDim = 512;
+                                  let width = img.width;
+                                  let height = img.height;
+                                  if (width > maxDim || height > maxDim) {
+                                    if (width > height) {
+                                      height = Math.round((height * maxDim) / width);
+                                      width = maxDim;
+                                    } else {
+                                      width = Math.round((width * maxDim) / height);
+                                      height = maxDim;
+                                    }
+                                  }
+                                  const canvas = document.createElement('canvas');
+                                  canvas.width = width;
+                                  canvas.height = height;
+                                  const ctx = canvas.getContext('2d');
+                                  if (!ctx) {
+                                    setBizLogo(evt.target?.result as string);
+                                    setLogoProcessing(false);
+                                    return;
+                                  }
+                                  ctx.drawImage(img, 0, 0, width, height);
+                                  const dataUrl = canvas.toDataURL('image/png', 0.9);
+                                  setBizLogo(dataUrl);
+                                  setLogoProcessing(false);
+                                };
+                                img.onerror = () => {
+                                  setLogoError('Failed to parse image file.');
+                                  setLogoProcessing(false);
+                                };
+                                img.src = evt.target?.result as string;
+                              };
+                              reader.onerror = () => {
+                                setLogoError('Failed to read file.');
+                                setLogoProcessing(false);
+                              };
+                              reader.readAsDataURL(file);
+                            } catch (err: any) {
+                              setLogoError(err.message || 'Failed to process image.');
                               setLogoProcessing(false);
-                            };
-                            reader.readAsDataURL(file);
+                            }
                           }}
                         />
                         <button
                           type="button"
-                          disabled={logoProcessing}
+                          disabled={logoProcessing || savingSettings}
                           onClick={() => fileInputRef.current?.click()}
-                          className="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                          className="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                         >
                           <Upload size={13} />
                           <span>{bizLogo ? 'Change Logo' : 'Upload Logo'}</span>
@@ -592,13 +656,23 @@ export const OwnerDashboard: React.FC = () => {
                         {bizLogo && (
                           <button
                             type="button"
+                            disabled={logoProcessing || savingSettings}
                             onClick={() => setBizLogo('')}
-                            className="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                            className="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                           >
                             <Trash2 size={13} />
                             <span>Remove</span>
                           </button>
                         )}
+                        <button
+                          type="button"
+                          disabled={savingSettings || logoProcessing || bizLogo === (business?.logo || '')}
+                          onClick={handleUpdateBusiness}
+                          className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                        >
+                          <Save size={13} />
+                          <span>Save Logo</span>
+                        </button>
                       </div>
                       <input
                         id="edit-biz-logo"

@@ -36,10 +36,26 @@ public class PdfExportService {
             document.open();
 
             // 1. Top Header Banner
-            PdfPTable headerTable = new PdfPTable(2);
-            headerTable.setWidthPercentage(100);
-            headerTable.setWidths(new float[]{65, 35});
+            Image logoImg = parseLogoImage(report.getBusinessLogo());
+            PdfPTable headerTable;
+            if (logoImg != null) {
+                headerTable = new PdfPTable(3);
+                headerTable.setWidthPercentage(100);
+                headerTable.setWidths(new float[]{12, 58, 30});
+            } else {
+                headerTable = new PdfPTable(2);
+                headerTable.setWidthPercentage(100);
+                headerTable.setWidths(new float[]{65, 35});
+            }
             headerTable.setSpacingAfter(15);
+
+            // Logo Cell (if present)
+            if (logoImg != null) {
+                PdfPCell logoCell = new PdfPCell(logoImg, true);
+                logoCell.setBorder(Rectangle.NO_BORDER);
+                logoCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                headerTable.addCell(logoCell);
+            }
 
             // Left: Business & Report Title
             Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, DARK_BG);
@@ -155,5 +171,30 @@ public class PdfExportService {
             log.error("Error generating PDF report", e);
             throw new RuntimeException("Failed to generate PDF export: " + e.getMessage(), e);
         }
+    }
+
+    private Image parseLogoImage(String logoStr) {
+        if (logoStr == null || logoStr.isBlank()) {
+            return null;
+        }
+        try {
+            if (logoStr.startsWith("data:image")) {
+                int commaIndex = logoStr.indexOf(',');
+                if (commaIndex != -1) {
+                    String base64Data = logoStr.substring(commaIndex + 1);
+                    byte[] imageBytes = java.util.Base64.getDecoder().decode(base64Data);
+                    Image img = Image.getInstance(imageBytes);
+                    img.scaleToFit(55, 55);
+                    return img;
+                }
+            } else if (logoStr.startsWith("http://") || logoStr.startsWith("https://")) {
+                Image img = Image.getInstance(new java.net.URI(logoStr).toURL());
+                img.scaleToFit(55, 55);
+                return img;
+            }
+        } catch (Exception e) {
+            log.warn("Could not load logo image for PDF export: {}", e.getMessage());
+        }
+        return null;
     }
 }

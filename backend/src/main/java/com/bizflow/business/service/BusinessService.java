@@ -61,7 +61,8 @@ public class BusinessService {
             business.setEmail(request.getEmail());
         }
         if (request.getLogo() != null) {
-            business.setLogo(request.getLogo());
+            String cleanLogo = request.getLogo().trim();
+            business.setLogo(cleanLogo.isEmpty() ? null : cleanLogo);
         }
         if (request.getCurrency() != null && !request.getCurrency().isBlank()) {
             business.setCurrency(request.getCurrency());

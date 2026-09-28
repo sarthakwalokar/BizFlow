@@ -312,9 +312,20 @@ export const PublicReviewPage: React.FC = () => {
       <div className="max-w-lg mx-auto w-full space-y-5">
         {/* Business Header */}
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-2xl bg-brand-600 text-white flex items-center justify-center mx-auto shadow-md font-bold text-2xl tracking-wide">
-            {businessInfo.name.charAt(0)}
-          </div>
+          {businessInfo.logo ? (
+            <img
+              src={businessInfo.logo}
+              alt={businessInfo.name}
+              className="w-16 h-16 rounded-2xl object-cover mx-auto shadow-md border border-zinc-200 bg-white p-1"
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
+          ) : (
+            <div className="w-14 h-14 rounded-2xl bg-brand-600 text-white flex items-center justify-center mx-auto shadow-md font-bold text-2xl tracking-wide">
+              {businessInfo.name.charAt(0)}
+            </div>
+          )}
           <h1 className="text-xl font-bold text-zinc-900 tracking-tight">
             {businessInfo.name}
           </h1>

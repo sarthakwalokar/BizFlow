@@ -19,7 +19,10 @@ import {
   UserPlus, 
   DollarSign, 
   Clock,
-  X
+  X,
+  Upload,
+  Trash2,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export const OwnerDashboard: React.FC = () => {
@@ -38,6 +41,9 @@ export const OwnerDashboard: React.FC = () => {
   const [bizCurrency, setBizCurrency] = useState(business?.currency || 'USD');
   const [bizTimezone, setBizTimezone] = useState(business?.timezone || 'Asia/Kolkata');
   const [bizLogo, setBizLogo] = useState(business?.logo || '');
+  const [logoProcessing, setLogoProcessing] = useState(false);
+  const [logoError, setLogoError] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [savingSettings, setSavingSettings] = useState(false);
   const [settingsSuccess, setSettingsSuccess] = useState(false);
   const [settingsError, setSettingsError] = useState<string | null>(null);
@@ -96,11 +102,12 @@ export const OwnerDashboard: React.FC = () => {
         email: bizEmail,
         currency: bizCurrency,
         timezone: bizTimezone,
-        logo: bizLogo,
+        logo: bizLogo.trim(),
       };
 
       const updated = await businessApi.updateMyBusiness(updateData);
       updateBusinessState(updated);
+      setBizLogo(updated.logo || '');
       setSettingsSuccess(true);
       setTimeout(() => setSettingsSuccess(false), 4000);
     } catch (err: any) {
@@ -528,18 +535,87 @@ export const OwnerDashboard: React.FC = () => {
                   />
                 </div>
 
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="edit-biz-logo">
-                    Logo Image URL
+                <div className="sm:col-span-2 space-y-2">
+                  <label className="block text-xs font-semibold text-slate-300" htmlFor="edit-biz-logo">
+                    Business Logo (PNG, JPG, WebP, SVG)
                   </label>
-                  <input
-                    id="edit-biz-logo"
-                    type="url"
-                    value={bizLogo}
-                    onChange={(e) => setBizLogo(e.target.value)}
-                    placeholder="https://example.com/logo.png"
-                    className="w-full px-3.5 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-brand-500"
-                  />
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-700/80">
+                    <div className="w-16 h-16 rounded-xl border border-slate-700 bg-slate-950 flex items-center justify-center p-1 shrink-0 overflow-hidden">
+                      {bizLogo ? (
+                        <img
+                          src={bizLogo}
+                          alt="Business Logo Preview"
+                          className="w-full h-full object-contain"
+                          onError={() => setLogoError('Failed to display image.')}
+                        />
+                      ) : (
+                        <ImageIcon size={20} className="text-slate-500" />
+                      )}
+                    </div>
+                    <div className="flex-1 space-y-2 w-full">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            if (!file.type.startsWith('image/')) {
+                              setLogoError('Please select a valid image file.');
+                              return;
+                            }
+                            if (file.size > 5 * 1024 * 1024) {
+                              setLogoError('Image size must be less than 5MB.');
+                              return;
+                            }
+                            setLogoProcessing(true);
+                            setLogoError(null);
+                            const reader = new FileReader();
+                            reader.onload = (evt) => {
+                              setBizLogo(evt.target?.result as string);
+                              setLogoProcessing(false);
+                            };
+                            reader.readAsDataURL(file);
+                          }}
+                        />
+                        <button
+                          type="button"
+                          disabled={logoProcessing}
+                          onClick={() => fileInputRef.current?.click()}
+                          className="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <Upload size={13} />
+                          <span>{bizLogo ? 'Change Logo' : 'Upload Logo'}</span>
+                        </button>
+                        {bizLogo && (
+                          <button
+                            type="button"
+                            onClick={() => setBizLogo('')}
+                            className="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                          >
+                            <Trash2 size={13} />
+                            <span>Remove</span>
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        id="edit-biz-logo"
+                        type="url"
+                        value={bizLogo}
+                        onChange={(e) => {
+                          setBizLogo(e.target.value);
+                          setLogoError(null);
+                        }}
+                        placeholder="Or paste image URL (https://...)"
+                        className="w-full px-3 py-1.5 bg-slate-900/80 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:border-brand-500"
+                      />
+                      {logoError && (
+                        <p className="text-[11px] text-rose-400 font-medium">{logoError}</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 

@@ -129,6 +129,18 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
               <div className="space-y-3">
                 {/* Store Header */}
                 <div className="text-center space-y-1 pb-2 border-b border-dashed border-zinc-300">
+                  {business?.logo && (
+                    <div className="flex justify-center pb-1">
+                      <img
+                        src={business.logo}
+                        alt={businessName}
+                        className="max-h-12 max-w-[120px] object-contain mx-auto"
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
                   <h2 className="font-bold text-sm text-zinc-950 uppercase tracking-tight">
                     {businessName}
                   </h2>
@@ -241,30 +253,42 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
             {printFormat === 'A4' && (
               <div className="space-y-6">
                 {/* Header Banner */}
-                <div className="flex items-start justify-between pb-6 border-b-2 border-zinc-900">
-                  <div className="space-y-1.5">
-                    <h1 className="text-2xl font-black text-zinc-950 tracking-tight">
-                      {businessName}
-                    </h1>
-                    <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">
-                      {businessType}
-                    </p>
-                    {businessAddress && (
-                      <p className="text-xs text-zinc-600 max-w-sm">{businessAddress}</p>
+                <div className="flex items-start justify-between pb-6 border-b-2 border-zinc-900 gap-4">
+                  <div className="flex items-start gap-4">
+                    {business?.logo && (
+                      <img
+                        src={business.logo}
+                        alt={businessName}
+                        className="w-14 h-14 rounded-xl object-contain border border-zinc-200 bg-white p-1 shrink-0 shadow-xs"
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                      />
                     )}
-                    <div className="flex flex-wrap gap-4 pt-1 text-xs text-zinc-600">
-                      {businessPhone && (
-                        <span className="flex items-center gap-1">
-                          <Phone size={12} className="text-zinc-400" />
-                          {businessPhone}
-                        </span>
+                    <div className="space-y-1.5">
+                      <h1 className="text-2xl font-black text-zinc-950 tracking-tight">
+                        {businessName}
+                      </h1>
+                      <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">
+                        {businessType}
+                      </p>
+                      {businessAddress && (
+                        <p className="text-xs text-zinc-600 max-w-sm">{businessAddress}</p>
                       )}
-                      {businessEmail && (
-                        <span className="flex items-center gap-1">
-                          <Mail size={12} className="text-zinc-400" />
-                          {businessEmail}
-                        </span>
-                      )}
+                      <div className="flex flex-wrap gap-4 pt-1 text-xs text-zinc-600">
+                        {businessPhone && (
+                          <span className="flex items-center gap-1">
+                            <Phone size={12} className="text-zinc-400" />
+                            {businessPhone}
+                          </span>
+                        )}
+                        {businessEmail && (
+                          <span className="flex items-center gap-1">
+                            <Mail size={12} className="text-zinc-400" />
+                            {businessEmail}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 

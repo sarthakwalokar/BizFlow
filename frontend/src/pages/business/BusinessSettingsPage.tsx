@@ -17,6 +17,9 @@ import {
   Globe,
   Receipt,
   Boxes,
+  Upload,
+  Trash2,
+  Link as LinkIcon,
 } from 'lucide-react';
 
 export const BusinessSettingsPage: React.FC = () => {
@@ -29,6 +32,10 @@ export const BusinessSettingsPage: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [logo, setLogo] = useState('');
+  const [logoProcessing, setLogoProcessing] = useState(false);
+  const [logoError, setLogoError] = useState<string | null>(null);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [currency, setCurrency] = useState('USD');
   const [timezone, setTimezone] = useState('Asia/Kolkata');
 
@@ -108,6 +115,90 @@ export const BusinessSettingsPage: React.FC = () => {
     }
   }, [business]);
 
+  const processImageFile = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      if (!file.type.startsWith('image/')) {
+        reject(new Error(t('settings.invalidImageType', 'Please select a valid image file (PNG, JPG, WebP, SVG).')));
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        reject(new Error(t('settings.imageTooLarge', 'Image size must be less than 5MB.')));
+        return;
+      }
+
+      if (file.type === 'image/svg+xml') {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target?.result as string);
+        reader.onerror = () => reject(new Error('Failed to read SVG file.'));
+        reader.readAsDataURL(file);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 512;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            resolve(e.target?.result as string);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/png', 0.9);
+          resolve(dataUrl);
+        };
+        img.onerror = () => reject(new Error('Failed to parse image file.'));
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error('Failed to read file.'));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLogoProcessing(true);
+    setLogoError(null);
+    try {
+      const dataUrl = await processImageFile(file);
+      setLogo(dataUrl);
+    } catch (err: any) {
+      setLogoError(err.message || 'Failed to process selected image.');
+    } finally {
+      setLogoProcessing(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setLogo('');
+    setLogoError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -121,7 +212,7 @@ export const BusinessSettingsPage: React.FC = () => {
         email: email || undefined,
         phone: phone || undefined,
         address: address || undefined,
-        logo: logo || undefined,
+        logo: logo.trim(),
         currency,
         timezone,
         taxRate: Number(taxRate),
@@ -134,6 +225,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
       const updated = await businessApi.updateMyBusiness(updateData);
       updateBusinessState(updated);
+      setLogo(updated.logo || '');
       setSuccessMessage(t('settings.settingsSaved'));
     } catch (err: any) {
       const msg =
@@ -315,32 +407,103 @@ export const BusinessSettingsPage: React.FC = () => {
               />
             </div>
 
-            <div className="space-y-1 md:col-span-2">
-              <label className="text-xs font-medium text-zinc-700">
-                {t('settings.logoUrl')}
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-semibold text-zinc-700 flex items-center justify-between">
+                <span>{t('settings.logo', 'Business Brand Logo')}</span>
+                <span className="text-[10px] text-zinc-400 font-normal">PNG, JPG, WebP or SVG (Max 5MB)</span>
               </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="url"
-                  value={logo}
-                  onChange={(e) => setLogo(e.target.value)}
-                  placeholder="https://example.com/logo.png"
-                  className="flex-1 px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
-                />
-                {logo ? (
-                  <img
-                    src={logo}
-                    alt="Logo Preview"
-                    className="w-9 h-9 rounded-lg object-cover border border-zinc-200 bg-zinc-50"
-                    onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <div className="w-9 h-9 rounded-lg border border-dashed border-zinc-300 flex items-center justify-center text-zinc-400">
-                    <ImageIcon size={15} />
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-3.5 rounded-xl border border-zinc-200 bg-zinc-50/60">
+                {/* Logo Preview Box */}
+                <div className="relative w-20 h-20 rounded-xl border border-zinc-200 bg-white flex items-center justify-center p-1.5 shrink-0 shadow-xs overflow-hidden group">
+                  {logo ? (
+                    <img
+                      src={logo}
+                      alt="Business Logo Preview"
+                      className="w-full h-full object-contain"
+                      onError={() => setLogoError('Failed to display image from provided source.')}
+                    />
+                  ) : (
+                    <div className="text-center p-2 text-zinc-400 flex flex-col items-center">
+                      <ImageIcon size={22} className="text-zinc-300 mb-0.5" />
+                      <span className="text-[9px] font-medium text-zinc-400">No Logo</span>
+                    </div>
+                  )}
+                  {logoProcessing && (
+                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                      <ButtonSpinner className="text-brand-600" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions & Inputs */}
+                <div className="flex-1 space-y-2 w-full">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                      className="hidden"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={logoProcessing}
+                      className="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      <Upload size={13} />
+                      <span>{logo ? t('common.changeLogo', 'Change Logo') : t('common.uploadLogo', 'Upload Logo')}</span>
+                    </button>
+
+                    {logo && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveLogo}
+                        className="px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <Trash2 size={13} />
+                        <span>{t('common.remove', 'Remove')}</span>
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setShowUrlInput(!showUrlInput)}
+                      className="px-2.5 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-700 text-xs font-medium transition-colors cursor-pointer flex items-center gap-1"
+                    >
+                      <LinkIcon size={12} />
+                      <span>{showUrlInput ? t('settings.hideUrl', 'Hide URL') : t('settings.enterUrl', 'Paste URL')}</span>
+                    </button>
                   </div>
-                )}
+
+                  {showUrlInput && (
+                    <div className="pt-1">
+                      <input
+                        type="url"
+                        value={logo}
+                        onChange={(e) => {
+                          setLogo(e.target.value);
+                          setLogoError(null);
+                        }}
+                        placeholder="https://example.com/logo.png"
+                        className="w-full px-3 py-1.5 rounded-lg border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
+                      />
+                    </div>
+                  )}
+
+                  {logoError && (
+                    <p className="text-[11px] text-red-600 font-medium flex items-center gap-1">
+                      <AlertCircle size={12} />
+                      {logoError}
+                    </p>
+                  )}
+
+                  <p className="text-[11px] text-zinc-500 leading-tight">
+                    {t('settings.logoHint', 'Your logo will be automatically displayed on invoices, POS receipts, PDF reports, and customer review portals.')}
+                  </p>
+                </div>
               </div>
             </div>
           </div>

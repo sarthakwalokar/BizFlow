@@ -15,6 +15,7 @@ public class ReportDataResponse {
     private ReportType reportType;
     private String title;
     private String businessName;
+    private String businessLogo;
     private String currency;
     private LocalDate startDate;
     private LocalDate endDate;

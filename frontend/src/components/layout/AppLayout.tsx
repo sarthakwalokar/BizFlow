@@ -239,9 +239,20 @@ export const AppLayout: React.FC = () => {
 
             {business && (
               <div className="mt-4 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-lg bg-brand-500/20 text-cyan-400 border border-brand-500/30 flex items-center justify-center font-bold text-xs flex-shrink-0">
-                  <Store size={15} />
-                </div>
+                {business.logo ? (
+                  <img
+                    src={business.logo}
+                    alt={business.name}
+                    className="w-8 h-8 rounded-lg object-contain border border-slate-700 bg-white p-0.5 shrink-0"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-lg bg-brand-500/20 text-cyan-400 border border-brand-500/30 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                    <Store size={15} />
+                  </div>
+                )}
                 <div className="overflow-hidden flex-1 min-w-0">
                   <h4 className="text-xs font-bold text-white truncate">{business.name}</h4>
                   <div className="flex items-center space-x-1.5 mt-0.5">

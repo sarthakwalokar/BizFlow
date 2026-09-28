@@ -41,7 +41,7 @@ public class Business extends BaseEntity {
     @Column(name = "address", columnDefinition = "TEXT")
     private String address;
 
-    @Column(name = "logo", length = 255)
+    @Column(name = "logo", columnDefinition = "TEXT")
     private String logo;
 
     @Builder.Default

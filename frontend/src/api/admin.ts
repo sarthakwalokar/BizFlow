@@ -20,7 +20,45 @@ export interface AdminActivityItem {
   title: string;
   description: string;
   businessName: string;
+  actor?: string;
   timestamp: string;
+}
+
+export interface RecentUserItem {
+  id: number;
+  fullName: string;
+  email: string;
+  phone?: string;
+  role: 'OWNER' | 'STAFF' | 'ADMIN';
+  businessId?: number;
+  businessName?: string;
+  enabled: boolean;
+  createdAt: string;
+}
+
+export interface RecentBusinessItem {
+  id: number;
+  name: string;
+  businessType: BusinessType;
+  ownerName?: string;
+  email?: string;
+  phone?: string;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface AdminAlertItem {
+  id: string;
+  level: 'INFO' | 'WARNING' | 'SUCCESS' | 'ERROR';
+  title: string;
+  message: string;
+  timestamp: string;
+}
+
+export interface MonthlyGrowthPoint {
+  monthLabel: string;
+  newBusinesses: number;
+  newUsers: number;
 }
 
 export interface AdminDashboardStats {
@@ -28,14 +66,28 @@ export interface AdminDashboardStats {
   activeBusinesses: number;
   inactiveBusinesses: number;
   totalUsers: number;
+  activeUsers: number;
+  inactiveUsers: number;
   totalOwners: number;
   totalStaff: number;
+  totalAdmins: number;
   totalProducts: number;
   totalOrders: number;
+  newUsersToday: number;
+  newUsers7d: number;
+  newUsers30d: number;
+  newBusinessesToday: number;
+  newBusinesses7d: number;
+  newBusinesses30d: number;
   businessTypeDistribution: Record<string, number>;
   businessSizeDistribution: Record<string, number>;
+  monthlyGrowth?: MonthlyGrowthPoint[];
+  recentUsers?: RecentUserItem[];
+  recentBusinesses?: RecentBusinessItem[];
   recentActivity: AdminActivityItem[];
+  systemAlerts?: AdminAlertItem[];
 }
+
 
 export interface OwnerSummary {
   id: number;

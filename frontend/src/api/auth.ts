@@ -36,15 +36,19 @@ export interface User {
   role: Role;
   permissions?: string;
   businessId?: number;
+  businessName?: string;
   enabled: boolean;
   preferredLanguage?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Business {
   id: number;
   name: string;
   businessType: BusinessType;
+  ownerName?: string;
+  ownerEmail?: string;
   address?: string;
   phone?: string;
   email?: string;
@@ -55,6 +59,10 @@ export interface Business {
   taxName?: string;
   taxNumber?: string;
   taxInclusive?: boolean;
+  reviewSlug?: string;
+  publicReviewUrl?: string;
+  reviewEnabled?: boolean;
+  reviewPromptMessage?: string;
   businessSize?: 'SMALL' | 'LARGE';
   inventoryEnabled?: boolean;
   active: boolean;

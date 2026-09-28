@@ -60,10 +60,42 @@ public class AdminService {
                                                           int page,
                                                           int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        String cleanSearch = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+        String cleanSearch = (search != null && !search.trim().isEmpty()) ? search.trim().toLowerCase() : null;
 
-        Page<Business> businessPage = businessRepository.searchBusinesses(cleanSearch, businessType, active, pageable);
-        return PageResponse.from(businessPage.map(BusinessResponse::fromEntity));
+        org.springframework.data.jpa.domain.Specification<Business> spec = (root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            if (businessType != null) {
+                predicates.add(cb.equal(root.get("businessType"), businessType));
+            }
+            if (active != null) {
+                predicates.add(cb.equal(root.get("active"), active));
+            }
+            if (cleanSearch != null) {
+                String pattern = "%" + cleanSearch + "%";
+                jakarta.persistence.criteria.Predicate nameMatch = cb.like(cb.lower(root.get("name")), pattern);
+                jakarta.persistence.criteria.Predicate emailMatch = cb.like(cb.lower(root.get("email")), pattern);
+                jakarta.persistence.criteria.Predicate phoneMatch = cb.like(root.get("phone"), pattern);
+                predicates.add(cb.or(nameMatch, emailMatch, phoneMatch));
+            }
+
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        Page<Business> businessPage = businessRepository.findAll(spec, pageable);
+
+        Map<Long, User> ownerByBusinessMap = userRepository.findByRole(Role.OWNER).stream()
+                .filter(u -> u.getBusinessId() != null)
+                .collect(Collectors.toMap(User::getBusinessId, u -> u, (u1, u2) -> u1));
+
+        Page<BusinessResponse> mapped = businessPage.map(b -> {
+            User owner = ownerByBusinessMap.get(b.getId());
+            String ownerName = owner != null ? owner.getFullName() : "—";
+            String ownerEmail = owner != null ? owner.getEmail() : (b.getEmail() != null ? b.getEmail() : "—");
+            return BusinessResponse.fromEntity(b, ownerName, ownerEmail);
+        });
+
+        return PageResponse.from(mapped);
     }
 
     @Transactional(readOnly = true)
@@ -143,9 +175,29 @@ public class AdminService {
                                                   int page,
                                                   int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        String cleanSearch = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+        String cleanSearch = (search != null && !search.trim().isEmpty()) ? search.trim().toLowerCase() : null;
 
-        Page<User> userPage = userRepository.searchUsers(cleanSearch, role, enabled, pageable);
+        org.springframework.data.jpa.domain.Specification<User> spec = (root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            if (role != null) {
+                predicates.add(cb.equal(root.get("role"), role));
+            }
+            if (enabled != null) {
+                predicates.add(cb.equal(root.get("enabled"), enabled));
+            }
+            if (cleanSearch != null) {
+                String pattern = "%" + cleanSearch + "%";
+                jakarta.persistence.criteria.Predicate nameMatch = cb.like(cb.lower(root.get("fullName")), pattern);
+                jakarta.persistence.criteria.Predicate emailMatch = cb.like(cb.lower(root.get("email")), pattern);
+                jakarta.persistence.criteria.Predicate phoneMatch = cb.like(root.get("phone"), pattern);
+                predicates.add(cb.or(nameMatch, emailMatch, phoneMatch));
+            }
+
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        Page<User> userPage = userRepository.findAll(spec, pageable);
         return PageResponse.from(userPage.map(UserResponse::fromEntity));
     }
 
@@ -179,11 +231,28 @@ public class AdminService {
         long inactiveBusinesses = totalBusinesses - activeBusinesses;
 
         long totalUsers = allUsers.size();
+        long activeUsers = allUsers.stream().filter(User::isEnabled).count();
+        long inactiveUsers = totalUsers - activeUsers;
         long totalOwners = allUsers.stream().filter(u -> u.getRole() == Role.OWNER).count();
         long totalStaff = allUsers.stream().filter(u -> u.getRole() == Role.STAFF).count();
+        long totalAdmins = allUsers.stream().filter(u -> u.getRole() == Role.ADMIN).count();
 
         long totalProducts = productRepository.count();
         long totalOrders = orderRepository.count();
+
+        // Registration Velocity
+        ZoneId zone = ZoneId.systemDefault();
+        Instant todayStart = java.time.LocalDate.now(zone).atStartOfDay(zone).toInstant();
+        Instant sevenDaysAgo = Instant.now().minus(7, java.time.temporal.ChronoUnit.DAYS);
+        Instant thirtyDaysAgo = Instant.now().minus(30, java.time.temporal.ChronoUnit.DAYS);
+
+        long newUsersToday = allUsers.stream().filter(u -> u.getCreatedAt() != null && u.getCreatedAt().isAfter(todayStart)).count();
+        long newUsers7d = allUsers.stream().filter(u -> u.getCreatedAt() != null && u.getCreatedAt().isAfter(sevenDaysAgo)).count();
+        long newUsers30d = allUsers.stream().filter(u -> u.getCreatedAt() != null && u.getCreatedAt().isAfter(thirtyDaysAgo)).count();
+
+        long newBusinessesToday = allBusinesses.stream().filter(b -> b.getCreatedAt() != null && b.getCreatedAt().isAfter(todayStart)).count();
+        long newBusinesses7d = allBusinesses.stream().filter(b -> b.getCreatedAt() != null && b.getCreatedAt().isAfter(sevenDaysAgo)).count();
+        long newBusinesses30d = allBusinesses.stream().filter(b -> b.getCreatedAt() != null && b.getCreatedAt().isAfter(thirtyDaysAgo)).count();
 
         // Business Type distribution
         Map<String, Long> typeMap = new LinkedHashMap<>();
@@ -199,32 +268,171 @@ public class AdminService {
             sizeMap.put(bs.name(), count);
         }
 
-        // Recent activity feed
-        List<AdminDashboardStatsResponse.AdminActivityItem> activities = new ArrayList<>();
-        allBusinesses.stream()
+        // Monthly Growth Trend (last 6 months)
+        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMM yyyy");
+        YearMonth currentMonth = YearMonth.now();
+        List<AdminDashboardStatsResponse.MonthlyGrowthPoint> growthTrend = new ArrayList<>();
+        for (int i = 5; i >= 0; i--) {
+            YearMonth targetMonth = currentMonth.minusMonths(i);
+            String label = targetMonth.format(monthFormatter);
+
+            long bCount = allBusinesses.stream().filter(b -> {
+                if (b.getCreatedAt() == null) return false;
+                return YearMonth.from(b.getCreatedAt().atZone(zone)).equals(targetMonth);
+            }).count();
+
+            long uCount = allUsers.stream().filter(u -> {
+                if (u.getCreatedAt() == null) return false;
+                return YearMonth.from(u.getCreatedAt().atZone(zone)).equals(targetMonth);
+            }).count();
+
+            growthTrend.add(new AdminDashboardStatsResponse.MonthlyGrowthPoint(label, bCount, uCount));
+        }
+
+        Map<Long, Business> businessMap = allBusinesses.stream()
+                .collect(Collectors.toMap(Business::getId, b -> b, (b1, b2) -> b1));
+        Map<Long, User> ownerByBusinessMap = allUsers.stream()
+                .filter(u -> u.getRole() == Role.OWNER && u.getBusinessId() != null)
+                .collect(Collectors.toMap(User::getBusinessId, u -> u, (u1, u2) -> u1));
+
+        // Recent Users (last 6)
+        List<AdminDashboardStatsResponse.RecentUserItem> recentUsers = allUsers.stream()
+                .sorted(Comparator.comparing(User::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .limit(6)
+                .map(u -> {
+                    Business b = u.getBusinessId() != null ? businessMap.get(u.getBusinessId()) : null;
+                    return AdminDashboardStatsResponse.RecentUserItem.builder()
+                            .id(u.getId())
+                            .fullName(u.getFullName())
+                            .email(u.getEmail())
+                            .phone(u.getPhone())
+                            .role(u.getRole())
+                            .businessId(u.getBusinessId())
+                            .businessName(b != null ? b.getName() : "Platform Administrator")
+                            .enabled(u.isEnabled())
+                            .createdAt(u.getCreatedAt())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // Recent Businesses (last 6)
+        List<AdminDashboardStatsResponse.RecentBusinessItem> recentBusinesses = allBusinesses.stream()
                 .sorted(Comparator.comparing(Business::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
-                .limit(5)
-                .forEach(b -> activities.add(AdminDashboardStatsResponse.AdminActivityItem.builder()
-                        .id("reg-" + b.getId())
-                        .type("TENANT_REGISTERED")
-                        .title("New Business Registered")
-                        .description(String.format("%s registered as %s tier", b.getName(), b.getBusinessType()))
-                        .businessName(b.getName())
-                        .timestamp(b.getCreatedAt())
-                        .build()));
+                .limit(6)
+                .map(b -> {
+                    User owner = ownerByBusinessMap.get(b.getId());
+                    return AdminDashboardStatsResponse.RecentBusinessItem.builder()
+                            .id(b.getId())
+                            .name(b.getName())
+                            .businessType(b.getBusinessType())
+                            .ownerName(owner != null ? owner.getFullName() : "—")
+                            .email(b.getEmail())
+                            .phone(b.getPhone())
+                            .active(b.isActive())
+                            .createdAt(b.getCreatedAt())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // Recent Platform Activity Feed (from real database events)
+        List<AdminDashboardStatsResponse.AdminActivityItem> activities = new ArrayList<>();
+        allBusinesses.forEach(b -> activities.add(AdminDashboardStatsResponse.AdminActivityItem.builder()
+                .id("biz-reg-" + b.getId())
+                .type("BUSINESS_REGISTERED")
+                .title("New Business Registered")
+                .description(String.format("%s registered as %s tier", b.getName(), b.getBusinessType()))
+                .businessName(b.getName())
+                .actor("Business Owner")
+                .timestamp(b.getCreatedAt())
+                .build()));
+
+        allUsers.forEach(u -> {
+            Business b = u.getBusinessId() != null ? businessMap.get(u.getBusinessId()) : null;
+            String bName = b != null ? b.getName() : "BizFlow Admin";
+            activities.add(AdminDashboardStatsResponse.AdminActivityItem.builder()
+                    .id("usr-reg-" + u.getId())
+                    .type("USER_REGISTERED")
+                    .title("New User Account")
+                    .description(String.format("%s registered as %s", u.getFullName(), u.getRole()))
+                    .businessName(bName)
+                    .actor(u.getFullName())
+                    .timestamp(u.getCreatedAt())
+                    .build());
+        });
+
+        // Top 10 most recent activities
+        List<AdminDashboardStatsResponse.AdminActivityItem> topActivities = activities.stream()
+                .filter(a -> a.getTimestamp() != null)
+                .sorted(Comparator.comparing(AdminDashboardStatsResponse.AdminActivityItem::getTimestamp, Comparator.reverseOrder()))
+                .limit(10)
+                .collect(Collectors.toList());
+
+        // Platform System Alerts
+        List<AdminDashboardStatsResponse.AdminAlertItem> alerts = new ArrayList<>();
+        var aiStatus = aiGatewayService.getAiStatus();
+        alerts.add(AdminDashboardStatsResponse.AdminAlertItem.builder()
+                .id("alert-ai")
+                .level("SUCCESS")
+                .title("AI Gateway Operational")
+                .message("BizFlow AI operating with active provider: " + aiStatus.getActiveProvider())
+                .timestamp(Instant.now())
+                .build());
+
+        if (inactiveBusinesses > 0) {
+            alerts.add(AdminDashboardStatsResponse.AdminAlertItem.builder()
+                    .id("alert-inactive-biz")
+                    .level("WARNING")
+                    .title("Inactive Business Accounts")
+                    .message(String.format("%d business account(s) are currently inactive or suspended.", inactiveBusinesses))
+                    .timestamp(Instant.now())
+                    .build());
+        }
+
+        if (inactiveUsers > 0) {
+            alerts.add(AdminDashboardStatsResponse.AdminAlertItem.builder()
+                    .id("alert-inactive-usr")
+                    .level("INFO")
+                    .title("Disabled User Accounts")
+                    .message(String.format("%d user account(s) are currently disabled.", inactiveUsers))
+                    .timestamp(Instant.now())
+                    .build());
+        }
+
+        if (maintenanceMode) {
+            alerts.add(AdminDashboardStatsResponse.AdminAlertItem.builder()
+                    .id("alert-maint")
+                    .level("ERROR")
+                    .title("Maintenance Mode Active")
+                    .message("Platform maintenance mode is enabled. Non-admin operations may be restricted.")
+                    .timestamp(Instant.now())
+                    .build());
+        }
 
         return AdminDashboardStatsResponse.builder()
                 .totalBusinesses(totalBusinesses)
                 .activeBusinesses(activeBusinesses)
                 .inactiveBusinesses(inactiveBusinesses)
                 .totalUsers(totalUsers)
+                .activeUsers(activeUsers)
+                .inactiveUsers(inactiveUsers)
                 .totalOwners(totalOwners)
                 .totalStaff(totalStaff)
+                .totalAdmins(totalAdmins)
                 .totalProducts(totalProducts)
                 .totalOrders(totalOrders)
+                .newUsersToday(newUsersToday)
+                .newUsers7d(newUsers7d)
+                .newUsers30d(newUsers30d)
+                .newBusinessesToday(newBusinessesToday)
+                .newBusinesses7d(newBusinesses7d)
+                .newBusinesses30d(newBusinesses30d)
                 .businessTypeDistribution(typeMap)
                 .businessSizeDistribution(sizeMap)
-                .recentActivity(activities)
+                .monthlyGrowth(growthTrend)
+                .recentUsers(recentUsers)
+                .recentBusinesses(recentBusinesses)
+                .recentActivity(topActivities)
+                .systemAlerts(alerts)
                 .build();
     }
 

@@ -111,13 +111,15 @@ export const SignupPage: React.FC = () => {
 
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <Link to="/" className="inline-flex items-center group bg-slate-950 px-5 py-2.5 rounded-2xl border border-slate-800 shadow-md hover:scale-105 transition-all">
-            <img
-              src="/Bizflow-logo-dark.png"
-              alt="BizFlow"
-              className="h-8 sm:h-9 w-auto max-w-[160px] object-contain"
-            />
-          </Link>
+          <div className="flex justify-center">
+            <Link to="/" className="inline-flex items-center group py-2 hover:opacity-90 transition-opacity">
+              <img
+                src="/Bizflow-logo.png"
+                alt="BizFlow"
+                className="h-9 sm:h-10 w-auto max-w-[180px] object-contain"
+              />
+            </Link>
+          </div>
           <h2 className="text-2xl font-bold tracking-tight text-zinc-950">
             {t('auth.signupTitle', 'Register your business with BizFlow')}
           </h2>
@@ -130,9 +132,20 @@ export const SignupPage: React.FC = () => {
         <div className="bg-white rounded-2xl p-6 sm:p-10 border border-zinc-200 shadow-card space-y-8">
 
           {error && (
-            <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-start space-x-3 text-xs text-red-700">
-              <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-              <span>{error}</span>
+            <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-red-700 animate-in fade-in">
+              <div className="flex items-start space-x-3">
+                <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                <span className="font-medium">{error}</span>
+              </div>
+              {error.toLowerCase().includes('already exists') && (
+                <Link
+                  to="/login"
+                  className="inline-flex items-center gap-1 font-semibold text-brand-700 bg-white hover:bg-brand-50 px-3 py-1.5 rounded-lg border border-brand-200 shadow-2xs transition-colors shrink-0 text-xs"
+                >
+                  <span>{t('auth.loginButton', 'Sign in here')}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              )}
             </div>
           )}
 
@@ -332,11 +345,23 @@ export const SignupPage: React.FC = () => {
                       type="email"
                       required
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (error) setError(null);
+                      }}
                       placeholder={t('auth.emailPlaceholder', 'owner@mybusiness.in')}
-                      className="w-full pl-10 pr-3.5 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
+                      className={`w-full pl-10 pr-3.5 py-2.5 bg-white border rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-1 ${
+                        error && error.toLowerCase().includes('already exists')
+                          ? 'border-red-400 focus:border-red-500 focus:ring-red-400'
+                          : 'border-zinc-200 focus:border-brand-600 focus:ring-brand-600'
+                      }`}
                     />
                   </div>
+                  {error && error.toLowerCase().includes('already exists') && (
+                    <p className="text-[11px] text-red-600 mt-1 font-medium">
+                      {t('auth.duplicateEmailHint', 'This email is already in use. Please enter a different email or sign in.')}
+                    </p>
+                  )}
                 </div>
 
                 <div>

@@ -111,10 +111,14 @@ public class BusinessService {
     @Transactional
     public UserResponse createStaff(StaffCreateRequest request) {
         Long businessId = SecurityUtils.getCurrentBusinessId();
-        String email = request.getEmail().toLowerCase().trim();
+        String email = request.getEmail() != null ? request.getEmail().toLowerCase().trim() : "";
 
-        if (userRepository.existsByEmail(email)) {
-            throw new DuplicateResourceException("User", "email", email);
+        if (email.isBlank()) {
+            throw new BadRequestException("Staff email address is required.");
+        }
+
+        if (userRepository.existsByEmailIgnoreCase(email)) {
+            throw new DuplicateResourceException("An account with this email address (" + email + ") already exists. Please choose a different email.");
         }
 
         Business business = businessRepository.findById(businessId)

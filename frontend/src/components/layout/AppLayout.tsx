@@ -59,10 +59,38 @@ export const AppLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('bizflow_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
   const [alerts, setAlerts] = useState<InventoryAlert[]>([]);
   const [loadingAlerts, setLoadingAlerts] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('bizflow_sidebar_collapsed', String(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const isOwner = user?.role === 'OWNER';
   const isAdmin = user?.role === 'ADMIN';
@@ -294,11 +322,15 @@ export const AppLayout: React.FC = () => {
 
       {/* Sidebar Navigation - Sleek Minimalist Navy / Clay Accent */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-slate-950 text-slate-300 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 md:static md:inset-auto md:min-h-screen shadow-2xl md:shadow-none border-r border-slate-800/80 ${
-          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-40 bg-slate-950 text-slate-300 flex flex-col justify-between transition-all duration-300 ease-in-out md:static md:inset-auto md:min-h-screen shadow-2xl md:shadow-none border-r border-slate-800/80 ${
+          mobileMenuOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0'
+        } ${
+          sidebarCollapsed
+            ? 'md:w-0 md:opacity-0 md:-translate-x-full md:border-r-0 md:pointer-events-none md:overflow-hidden'
+            : 'w-64 md:w-64 md:opacity-100'
         }`}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full w-64 min-w-[16rem]">
           {/* Logo & Business Brand Badge */}
           <div className="p-4 border-b border-slate-800/80">
             <Link to="/dashboard" className="flex items-center group py-1">
@@ -509,8 +541,22 @@ export const AppLayout: React.FC = () => {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#F4F6FB]">
         {/* Top Header - Minimalist Claymorphic Surface */}
         <header className="hidden md:flex h-16 bg-white border-b border-slate-200/80 px-6 sm:px-8 items-center justify-between sticky top-0 z-20 shadow-xs">
-          {/* Left: Business Branding Header */}
-          <div className="flex items-center space-x-3">
+          {/* Left: Sidebar Toggle + Business Branding Header */}
+          <div className="flex items-center space-x-3.5">
+            {/* Sidebar Hide / Unhide Toggle Button - Three Line Menu Icon */}
+            <button
+              onClick={toggleSidebar}
+              title={sidebarCollapsed ? "Show sidebar (Ctrl+B)" : "Hide sidebar (Ctrl+B)"}
+              className={`p-2 rounded-xl transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center ${
+                sidebarCollapsed
+                  ? 'bg-slate-100 text-slate-800 hover:bg-slate-200 ring-1 ring-slate-300 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+              aria-label={sidebarCollapsed ? "Show sidebar" : "Hide sidebar"}
+            >
+              <Menu size={19} />
+            </button>
+
             <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-cyan-500 text-white flex items-center justify-center font-bold text-xs shadow-xs">
               <Store size={15} />
             </div>

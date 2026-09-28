@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { billingApi, BillingSummary, Order } from '../../api/billing';
 import { expensesApi, ExpenseSummaryResponse } from '../../api/expenses';
 import { reviewsApi, ReviewAnalytics, Review } from '../../api/reviews';
+import { analyticsApi } from '../../api/analytics';
 import { InvoiceReceiptModal } from '../../components/billing/InvoiceReceiptModal';
 import { MetricCardsSkeleton } from '../../components/common/LoadingStates';
 import { formatCurrency } from '../../utils/currency';
@@ -29,9 +30,74 @@ import {
 
 interface PerformanceDataPoint {
   date: string;
+  fullDate: string;
+  displayDate: string;
   revenue: number;
   expense: number;
+  orderCount?: number;
+  expenseCount?: number;
 }
+
+const formatLocalDate = (d: Date): string => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getDateRangeForFilter = (range: '7D' | '30D' | '90D') => {
+  const now = new Date();
+  const endDate = formatLocalDate(now);
+  const daysAgo = range === '7D' ? 6 : range === '30D' ? 29 : 89;
+  const startObj = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysAgo);
+  const startDate = formatLocalDate(startObj);
+  return { startDate, endDate };
+};
+
+const generateFallbackPoints = (range: '7D' | '30D' | '90D'): PerformanceDataPoint[] => {
+  const count = range === '7D' ? 7 : range === '30D' ? 30 : 90;
+  const points: PerformanceDataPoint[] = [];
+  const now = new Date();
+
+  for (let i = count - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    const dateStr = formatLocalDate(d);
+    const label = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+    const displayDate = d.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+    points.push({
+      date: label,
+      fullDate: dateStr,
+      displayDate,
+      revenue: 0,
+      expense: 0,
+      orderCount: 0,
+      expenseCount: 0,
+    });
+  }
+  return points;
+};
+
+const getNiceMax = (rawMax: number): number => {
+  if (rawMax <= 0) return 1000;
+  const target = rawMax * 1.15;
+  const power = Math.floor(Math.log10(target));
+  const magnitude = Math.pow(10, power);
+  const factor = target / magnitude;
+
+  let niceFactor = 10;
+  if (factor <= 1.25) niceFactor = 1.25;
+  else if (factor <= 2) niceFactor = 2;
+  else if (factor <= 2.5) niceFactor = 2.5;
+  else if (factor <= 5) niceFactor = 5;
+  else if (factor <= 7.5) niceFactor = 7.5;
+
+  return Math.max(niceFactor * magnitude, 500);
+};
 
 export const DashboardHomePage: React.FC = () => {
   const { user, business } = useAuth();
@@ -44,7 +110,9 @@ export const DashboardHomePage: React.FC = () => {
   const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState<Order | null>(null);
   const [activeFeedTab, setActiveFeedTab] = useState<'INVOICES' | 'EXPENSES'>('INVOICES');
   const [timeRange, setTimeRange] = useState<'7D' | '30D' | '90D'>('7D');
-  const [hoveredPoint, setHoveredPoint] = useState<PerformanceDataPoint | null>(null);
+  const [performanceData, setPerformanceData] = useState<PerformanceDataPoint[]>([]);
+  const [performanceLoading, setPerformanceLoading] = useState<boolean>(true);
+  const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -93,43 +161,92 @@ export const DashboardHomePage: React.FC = () => {
     fetchDashboardData();
   }, []);
 
+  // Fetch Live Performance Chart Data on TimeRange change
+  useEffect(() => {
+    let isMounted = true;
+    const fetchPerformance = async () => {
+      setPerformanceLoading(true);
+      try {
+        const { startDate, endDate } = getDateRangeForFilter(timeRange);
+        const overview = await analyticsApi.getOverview({
+          timeRange: 'CUSTOM',
+          startDate,
+          endDate,
+        });
+
+        if (!isMounted) return;
+
+        if (overview && overview.salesTrend && overview.salesTrend.length > 0) {
+          const expenseMap = new Map<string, { amount: number; count: number }>();
+          (overview.expenseTrend || []).forEach((e) => {
+            expenseMap.set(e.date, {
+              amount: Number(e.amount) || 0,
+              count: e.expenseCount || 0,
+            });
+          });
+
+          const mapped: PerformanceDataPoint[] = overview.salesTrend.map((s) => {
+            const exp = expenseMap.get(s.date) || { amount: 0, count: 0 };
+            let displayDate = s.label;
+            try {
+              const parts = s.date.split('-');
+              if (parts.length === 3) {
+                const dt = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+                displayDate = dt.toLocaleDateString('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              }
+            } catch {
+              // fallback
+            }
+
+            return {
+              date: s.label,
+              fullDate: s.date,
+              displayDate,
+              revenue: Number(s.revenue) || 0,
+              expense: exp.amount,
+              orderCount: s.orderCount || 0,
+              expenseCount: exp.count,
+            };
+          });
+
+          setPerformanceData(mapped);
+        } else {
+          setPerformanceData(generateFallbackPoints(timeRange));
+        }
+      } catch (err) {
+        console.error('Failed to load performance analytics', err);
+        if (isMounted) {
+          setPerformanceData(generateFallbackPoints(timeRange));
+        }
+      } finally {
+        if (isMounted) {
+          setPerformanceLoading(false);
+        }
+      }
+    };
+
+    fetchPerformance();
+    return () => {
+      isMounted = false;
+    };
+  }, [timeRange]);
+
   const currency = business?.currency || summary?.currency || 'INR';
 
   // Metrics with exact fallback to reference values
-  const todaySalesValue = summary && summary.todaySales > 0 ? summary.todaySales : 320.25;
+  const todaySalesValue = summary && summary.todaySales > 0 ? summary.todaySales : 976.50;
   const ordersCountValue = summary && summary.todayOrdersCount > 0 ? summary.todayOrdersCount : 1;
   const operatingExpensesValue = summary && summary.todayExpenses > 0 ? summary.todayExpenses : 0.00;
   const customerRatingValue = reviewAnalytics?.averageRating ? Number(reviewAnalytics.averageRating).toFixed(1) : '4.5';
 
   const todayRevenueDisplay = formatCurrency(todaySalesValue, currency);
-  const monthlyRevenueValue = summary && summary.monthSales > 0 ? summary.monthSales : 5554.50;
+  const monthlyRevenueValue = summary && summary.monthSales > 0 ? summary.monthSales : 6210.75;
   const netMarginValue = summary && summary.monthNetRevenue > 0 ? summary.monthNetRevenue : 5145.50;
-
-  // Chart Dataset (Revenue vs Expense)
-  const performanceData: Record<'7D' | '30D' | '90D', PerformanceDataPoint[]> = {
-    '7D': [
-      { date: 'Mar 22', revenue: 240.00, expense: 80.00 },
-      { date: 'Mar 23', revenue: 410.50, expense: 120.00 },
-      { date: 'Mar 24', revenue: 380.00, expense: 95.00 },
-      { date: 'Mar 25', revenue: 520.75, expense: 110.00 },
-      { date: 'Mar 26', revenue: 490.00, expense: 140.00 },
-      { date: 'Mar 27', revenue: 680.00, expense: 130.00 },
-      { date: 'Mar 28', revenue: 320.25, expense: 0.00 },
-    ],
-    '30D': [
-      { date: 'Week 1', revenue: 1420.00, expense: 380.00 },
-      { date: 'Week 2', revenue: 1680.50, expense: 410.00 },
-      { date: 'Week 3', revenue: 1240.00, expense: 290.00 },
-      { date: 'Week 4', revenue: 1214.00, expense: 320.00 },
-    ],
-    '90D': [
-      { date: 'Jan', revenue: 4800.00, expense: 1200.00 },
-      { date: 'Feb', revenue: 5120.00, expense: 1350.00 },
-      { date: 'Mar', revenue: 5554.50, expense: 1409.00 },
-    ],
-  };
-
-  const currentChartData = performanceData[timeRange];
 
   // Static review items matching reference with live fallback
   const fallbackReviews = [
@@ -158,14 +275,16 @@ export const DashboardHomePage: React.FC = () => {
 
   // SVG Chart Calculation
   const renderRevenueChart = () => {
-    const data = currentChartData;
-    const maxVal = Math.max(...data.map((d) => Math.max(d.revenue, d.expense)), 500) * 1.15;
-    const width = 640;
-    const height = 210;
-    const padLeft = 45;
+    const data = performanceData.length > 0 ? performanceData : generateFallbackPoints(timeRange);
+    const rawMax = Math.max(...data.map((d) => Math.max(d.revenue, d.expense)), 0);
+    const maxVal = getNiceMax(rawMax);
+
+    const width = 680;
+    const height = 220;
+    const padLeft = 60;
     const padRight = 20;
     const padTop = 20;
-    const padBottom = 30;
+    const padBottom = 35;
 
     const chartW = width - padLeft - padRight;
     const chartH = height - padTop - padBottom;
@@ -185,13 +304,13 @@ export const DashboardHomePage: React.FC = () => {
     // Helper for smooth Bezier curve
     const getCurvePath = (points: { x: number; y: number }[]) => {
       if (points.length === 0) return '';
-      if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
-      let d = `M ${points[0].x} ${points[0].y}`;
+      if (points.length === 1) return `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+      let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
       for (let i = 0; i < points.length - 1; i++) {
         const p0 = points[i];
         const p1 = points[i + 1];
         const cpX = (p0.x + p1.x) / 2;
-        d += ` C ${cpX} ${p0.y}, ${cpX} ${p1.y}, ${p1.x} ${p1.y}`;
+        d += ` C ${cpX.toFixed(1)} ${p0.y.toFixed(1)}, ${cpX.toFixed(1)} ${p1.y.toFixed(1)}, ${p1.x.toFixed(1)} ${p1.y.toFixed(1)}`;
       }
       return d;
     };
@@ -200,28 +319,67 @@ export const DashboardHomePage: React.FC = () => {
     const expLine = getCurvePath(expPoints);
 
     const revArea = revPoints.length
-      ? `${revLine} L ${revPoints[revPoints.length - 1].x} ${padTop + chartH} L ${revPoints[0].x} ${padTop + chartH} Z`
+      ? `${revLine} L ${revPoints[revPoints.length - 1].x.toFixed(1)} ${(padTop + chartH).toFixed(1)} L ${revPoints[0].x.toFixed(1)} ${(padTop + chartH).toFixed(1)} Z`
       : '';
 
+    // Calculate which X-axis labels to show
+    const visibleLabelIndices = (() => {
+      if (data.length <= 7) {
+        return new Set(Array.from({ length: data.length }, (_, i) => i));
+      }
+      const indices = new Set<number>();
+      const step = Math.ceil(data.length / 6);
+      for (let i = 0; i < data.length; i += step) {
+        indices.add(i);
+      }
+      indices.add(data.length - 1);
+      return indices;
+    })();
+
+    const activeHoverPoint = hoveredPointIndex !== null && revPoints[hoveredPointIndex]
+      ? {
+          rev: revPoints[hoveredPointIndex],
+          exp: expPoints[hoveredPointIndex],
+          data: data[hoveredPointIndex],
+        }
+      : null;
+
     return (
-      <div className="w-full relative">
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-52 overflow-visible">
+      <div className="w-full relative select-none">
+        {/* Loading overlay indicator */}
+        {performanceLoading && (
+          <div className="absolute inset-0 bg-white/40 backdrop-blur-xs flex items-center justify-center z-20 rounded-xl">
+            <div className="flex items-center space-x-2 px-3 py-1.5 bg-white/90 shadow-xs rounded-lg text-xs font-semibold text-brand-600 border border-brand-100 animate-pulse">
+              <span>Loading trend data...</span>
+            </div>
+          </div>
+        )}
+
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          className="w-full h-56 overflow-visible"
+          onMouseLeave={() => setHoveredPointIndex(null)}
+        >
           <defs>
             <linearGradient id="clayRevAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1D4ED8" stopOpacity="0.16" />
-              <stop offset="60%" stopColor="#06B6D4" stopOpacity="0.04" />
+              <stop offset="0%" stopColor="#1D4ED8" stopOpacity="0.18" />
+              <stop offset="60%" stopColor="#06B6D4" stopOpacity="0.05" />
               <stop offset="100%" stopColor="#06B6D4" stopOpacity="0.0" />
             </linearGradient>
             <linearGradient id="clayExpAreaGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#0D9488" stopOpacity="0.12" />
               <stop offset="100%" stopColor="#0D9488" stopOpacity="0.0" />
             </linearGradient>
+            <filter id="clayDotGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#1D4ED8" floodOpacity="0.35" />
+            </filter>
           </defs>
 
           {/* Horizontal Grid lines */}
           {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
             const y = padTop + chartH - ratio * chartH;
-            const gridVal = (ratio * maxVal).toFixed(0);
+            const gridVal = Number((ratio * maxVal).toFixed(0));
+            const formattedVal = gridVal >= 100000 ? `${(gridVal / 1000).toFixed(0)}k` : gridVal.toLocaleString('en-IN');
             return (
               <g key={idx}>
                 <line
@@ -234,14 +392,14 @@ export const DashboardHomePage: React.FC = () => {
                   strokeWidth="1"
                 />
                 <text
-                  x={padLeft - 8}
+                  x={padLeft - 10}
                   y={y + 3.5}
                   textAnchor="end"
-                  fontSize="9.5"
+                  fontSize="10"
                   fontWeight="600"
                   fill="#94A3B8"
                 >
-                  ₹{gridVal}
+                  ₹{formattedVal}
                 </text>
               </g>
             );
@@ -267,64 +425,147 @@ export const DashboardHomePage: React.FC = () => {
             strokeLinecap="round"
           />
 
-          {/* Data Points with interactive hover */}
-          {revPoints.map((p, idx) => (
-            <g
-              key={`rev-${idx}`}
-              className="cursor-pointer group"
-              onMouseEnter={() => setHoveredPoint(p.data)}
-              onMouseLeave={() => setHoveredPoint(null)}
-            >
-              <circle
-                cx={p.x}
-                cy={p.y}
-                r="4.5"
-                fill="#FFFFFF"
-                stroke="#1D4ED8"
-                strokeWidth="2.5"
-                className="transition-transform group-hover:scale-125"
-              />
-              {/* X Axis Label */}
+          {/* X-Axis Milestone Labels */}
+          {revPoints.map((p, idx) => {
+            if (!visibleLabelIndices.has(idx)) return null;
+            return (
               <text
+                key={`label-${idx}`}
                 x={p.x}
                 y={height - 8}
                 textAnchor="middle"
-                fontSize="10"
+                fontSize="10.5"
                 fontWeight="600"
                 fill="#64748B"
               >
                 {p.data.date}
               </text>
-            </g>
-          ))}
+            );
+          })}
 
-          {expPoints.map((p, idx) => (
-            <g
-              key={`exp-${idx}`}
-              className="cursor-pointer group"
-              onMouseEnter={() => setHoveredPoint(p.data)}
-              onMouseLeave={() => setHoveredPoint(null)}
-            >
+          {/* Regular Data Point Dots (Visible indices for 30D/90D, or all for 7D) */}
+          {revPoints.map((p, idx) => {
+            if (!visibleLabelIndices.has(idx) && data.length > 14) return null;
+            return (
               <circle
+                key={`rev-dot-${idx}`}
+                cx={p.x}
+                cy={p.y}
+                r="4"
+                fill="#FFFFFF"
+                stroke="#1D4ED8"
+                strokeWidth="2.5"
+                className="transition-transform pointer-events-none"
+              />
+            );
+          })}
+
+          {expPoints.map((p, idx) => {
+            if (!visibleLabelIndices.has(idx) && data.length > 14) return null;
+            return (
+              <circle
+                key={`exp-dot-${idx}`}
                 cx={p.x}
                 cy={p.y}
                 r="3.5"
                 fill="#FFFFFF"
                 stroke="#0D9488"
                 strokeWidth="2"
-                className="transition-transform group-hover:scale-125"
+                className="transition-transform pointer-events-none"
               />
-            </g>
-          ))}
+            );
+          })}
+
+          {/* Vertical Crosshair Line when Active */}
+          {activeHoverPoint && (
+            <line
+              x1={activeHoverPoint.rev.x}
+              y1={padTop}
+              x2={activeHoverPoint.rev.x}
+              y2={padTop + chartH}
+              stroke="#64748B"
+              strokeDasharray="3 3"
+              strokeWidth="1.5"
+              className="pointer-events-none transition-all duration-75"
+            />
+          )}
+
+          {/* Highlighted Dots on Active Hover */}
+          {activeHoverPoint && (
+            <>
+              <circle
+                cx={activeHoverPoint.rev.x}
+                cy={activeHoverPoint.rev.y}
+                r="6"
+                fill="#FFFFFF"
+                stroke="#1D4ED8"
+                strokeWidth="3.5"
+                filter="url(#clayDotGlow)"
+                className="pointer-events-none"
+              />
+              <circle
+                cx={activeHoverPoint.exp.x}
+                cy={activeHoverPoint.exp.y}
+                r="5"
+                fill="#FFFFFF"
+                stroke="#0D9488"
+                strokeWidth="3"
+                className="pointer-events-none"
+              />
+            </>
+          )}
+
+          {/* Invisible Interactive Hit Boxes for Butter-smooth Hover */}
+          {revPoints.map((p, idx) => {
+            const stepW = chartW / Math.max(data.length - 1, 1);
+            const sliceX = Math.max(padLeft, p.x - stepW / 2);
+            const sliceW = idx === 0 || idx === data.length - 1 ? stepW / 2 + 5 : stepW;
+
+            return (
+              <rect
+                key={`hit-${idx}`}
+                x={sliceX}
+                y={padTop}
+                width={sliceW}
+                height={chartH + 20}
+                fill="transparent"
+                className="cursor-pointer"
+                onMouseEnter={() => setHoveredPointIndex(idx)}
+                onTouchStart={() => setHoveredPointIndex(idx)}
+              />
+            );
+          })}
         </svg>
 
-        {/* Hover Tooltip Overlay */}
-        {hoveredPoint && (
-          <div className="absolute top-2 right-4 clay-card px-3.5 py-2 text-xs space-y-1 shadow-lg pointer-events-none">
-            <p className="font-bold text-slate-900 border-b border-slate-100 pb-1">{hoveredPoint.date}</p>
-            <div className="flex items-center space-x-3 text-[11px]">
-              <span className="text-brand-600 font-bold">Revenue: {formatCurrency(hoveredPoint.revenue, currency)}</span>
-              <span className="text-teal-600 font-bold">Expense: {formatCurrency(hoveredPoint.expense, currency)}</span>
+        {/* Hover Tooltip Card */}
+        {activeHoverPoint && (
+          <div className="absolute top-2 right-4 clay-card px-4 py-2.5 text-xs space-y-1.5 shadow-xl border border-slate-200/90 bg-white/95 backdrop-blur-md pointer-events-none z-30 transition-all duration-100">
+            <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-1.5">
+              <span className="font-extrabold text-slate-900">{activeHoverPoint.data.displayDate || activeHoverPoint.data.date}</span>
+              <span className="text-[10px] text-slate-400 font-mono font-medium">{activeHoverPoint.data.fullDate}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
+              <div className="flex items-center justify-between space-x-2">
+                <span className="text-slate-500 font-medium">Revenue:</span>
+                <span className="text-brand-600 font-extrabold">
+                  {formatCurrency(activeHoverPoint.data.revenue, currency)}
+                  {activeHoverPoint.data.orderCount ? ` (${activeHoverPoint.data.orderCount} order${activeHoverPoint.data.orderCount > 1 ? 's' : ''})` : ''}
+                </span>
+              </div>
+              <div className="flex items-center justify-between space-x-2">
+                <span className="text-slate-500 font-medium">Expense:</span>
+                <span className="text-teal-600 font-extrabold">
+                  {formatCurrency(activeHoverPoint.data.expense, currency)}
+                  {activeHoverPoint.data.expenseCount ? ` (${activeHoverPoint.data.expenseCount} exp)` : ''}
+                </span>
+              </div>
+              <div className="flex items-center justify-between space-x-2 col-span-2 pt-1 border-t border-slate-100">
+                <span className="text-slate-500 font-medium">Net Profit:</span>
+                <span className={`font-black ${activeHoverPoint.data.revenue - activeHoverPoint.data.expense >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                  {activeHoverPoint.data.revenue - activeHoverPoint.data.expense >= 0 ? '+' : ''}
+                  {formatCurrency(activeHoverPoint.data.revenue - activeHoverPoint.data.expense, currency)}
+                </span>
+              </div>
             </div>
           </div>
         )}

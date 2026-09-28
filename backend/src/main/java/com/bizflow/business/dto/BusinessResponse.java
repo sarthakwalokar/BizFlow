@@ -32,10 +32,16 @@ public class BusinessResponse {
     private BusinessSize businessSize;
     private boolean inventoryEnabled;
     private boolean active;
+    private String ownerName;
+    private String ownerEmail;
     private Instant createdAt;
     private Instant updatedAt;
 
     public static BusinessResponse fromEntity(Business business) {
+        return fromEntity(business, null, null);
+    }
+
+    public static BusinessResponse fromEntity(Business business, String ownerName, String ownerEmail) {
         if (business == null) return null;
         return BusinessResponse.builder()
                 .id(business.getId())
@@ -54,8 +60,11 @@ public class BusinessResponse {
                 .businessSize(business.getBusinessSize() != null ? business.getBusinessSize() : BusinessSize.SMALL)
                 .inventoryEnabled(business.isInventoryEnabled())
                 .active(business.isActive())
+                .ownerName(ownerName)
+                .ownerEmail(ownerEmail)
                 .createdAt(business.getCreatedAt())
                 .updatedAt(business.getUpdatedAt())
                 .build();
     }
 }
+

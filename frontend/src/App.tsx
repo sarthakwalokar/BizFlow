@@ -939,11 +939,13 @@ export const App: React.FC = () => {
               </ProtectedRoute>
             }
           >
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="dashboard" element={<AdminDashboardOverviewPage />} />
             <Route path="businesses" element={<AdminBusinessesPage />} />
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="reports" element={<AdminReportsPage />} />
             <Route path="config" element={<AdminSystemConfigPage />} />
+            <Route path="settings" element={<Navigate to="/admin/config" replace />} />
           </Route>
 
           {/* 404 Fallback */}

@@ -20,14 +20,22 @@ public class UserResponse {
     private String phone;
     private Role role;
     private Long businessId;
+    private String businessName;
     private String permissions;
     private boolean enabled;
     private boolean active;
     private String preferredLanguage;
     private Instant createdAt;
+    private Instant updatedAt;
 
     public static UserResponse fromEntity(User user) {
         if (user == null) return null;
+        String bName = null;
+        try {
+            if (user.getBusiness() != null) {
+                bName = user.getBusiness().getName();
+            }
+        } catch (Exception ignored) {}
         return UserResponse.builder()
                 .id(user.getId())
                 .fullName(user.getFullName())
@@ -35,11 +43,14 @@ public class UserResponse {
                 .phone(user.getPhone())
                 .role(user.getRole())
                 .businessId(user.getBusinessId())
+                .businessName(bName)
                 .permissions(user.getPermissions())
                 .enabled(user.isEnabled())
                 .active(user.isActive())
                 .preferredLanguage(user.getPreferredLanguage() != null ? user.getPreferredLanguage() : "en")
                 .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 }
+

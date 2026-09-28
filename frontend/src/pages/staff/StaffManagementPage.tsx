@@ -41,6 +41,7 @@ export const StaffManagementPage: React.FC = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [addModalError, setAddModalError] = useState<string | null>(null);
 
   const fetchStaff = async () => {
     try {
@@ -64,6 +65,7 @@ export const StaffManagementPage: React.FC = () => {
     setPassword('');
     setPhone('');
     setPermissions(['pos_access']);
+    setAddModalError(null);
     setIsAddModalOpen(true);
   };
 
@@ -103,14 +105,16 @@ export const StaffManagementPage: React.FC = () => {
       };
       await businessApi.createStaff(data);
       setSuccessMessage(`Staff member "${fullName}" was successfully onboarded!`);
+      setAddModalError(null);
       setIsAddModalOpen(false);
       fetchStaff();
     } catch (err: any) {
-      setErrorMessage(
+      const msg =
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to add staff member.'
-      );
+        'Failed to add staff member.';
+      setErrorMessage(msg);
+      setAddModalError(msg);
     } finally {
       setActionLoading(false);
     }
@@ -447,6 +451,13 @@ export const StaffManagementPage: React.FC = () => {
               </button>
             </div>
 
+            {addModalError && (
+              <div className="p-3 rounded-lg bg-red-50 border border-red-200 flex items-start gap-2.5 text-red-700 text-xs animate-in fade-in">
+                <AlertCircle size={15} className="text-red-600 shrink-0 mt-0.5" />
+                <span className="font-medium">{addModalError}</span>
+              </div>
+            )}
+
             <form onSubmit={handleCreateStaff} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
@@ -476,10 +487,22 @@ export const StaffManagementPage: React.FC = () => {
                     required
                     placeholder="john@business.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (addModalError) setAddModalError(null);
+                    }}
+                    className={`w-full pl-8 pr-3 py-2 rounded-lg border text-xs focus:outline-none ${
+                      addModalError && (addModalError.toLowerCase().includes('already exists') || addModalError.toLowerCase().includes('email'))
+                        ? 'border-red-400 focus:ring-2 focus:ring-red-500/20 focus:border-red-500'
+                        : 'border-zinc-200 focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500'
+                    }`}
                   />
                 </div>
+                {addModalError && (addModalError.toLowerCase().includes('already exists') || addModalError.toLowerCase().includes('email')) && (
+                  <p className="text-[11px] text-red-600 font-medium mt-0.5">
+                    This email is already registered. Please choose a different email address.
+                  </p>
+                )}
               </div>
 
               <div className="space-y-1">

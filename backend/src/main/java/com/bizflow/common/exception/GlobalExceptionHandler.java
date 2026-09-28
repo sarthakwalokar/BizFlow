@@ -143,6 +143,31 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrityViolationException(
+            org.springframework.dao.DataIntegrityViolationException ex,
+            HttpServletRequest request) {
+        log.warn("Data integrity violation at {}: {}", request.getRequestURI(), ex.getMessage());
+
+        String message = "A record with this information already exists.";
+        String exMsg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+        if (exMsg.contains("email") || exMsg.contains("users_email") || exMsg.contains("uq_users_email") || exMsg.contains("idx_users_email")) {
+            message = "An account with this email address already exists. Please sign in or use a different email.";
+        } else if (exMsg.contains("sku") || exMsg.contains("products_sku")) {
+            message = "A product with this SKU already exists.";
+        }
+
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.CONFLICT.value())
+                .error(HttpStatus.CONFLICT.getReasonPhrase())
+                .message(message)
+                .path(request.getRequestURI())
+                .timestamp(Instant.now())
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler({UnauthorizedException.class, BadCredentialsException.class, AuthenticationException.class})
     public ResponseEntity<ApiError> handleAuthenticationException(
             Exception ex,

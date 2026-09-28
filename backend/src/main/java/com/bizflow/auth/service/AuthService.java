@@ -46,7 +46,7 @@ public class AuthService {
         log.info("Registering new business owner with email: {}", cleanEmail);
 
         if (userRepository.existsByEmailIgnoreCase(cleanEmail)) {
-            throw new DuplicateResourceException("User", "email", cleanEmail);
+            throw new DuplicateResourceException("An account with this email address (" + cleanEmail + ") already exists. Please sign in or use a different email.");
         }
 
         // 1. Create and persist Business entity

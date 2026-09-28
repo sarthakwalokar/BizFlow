@@ -9,10 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
 import java.util.*;
 
 @Slf4j
@@ -25,75 +27,110 @@ public class GeminiProvider implements AiProvider {
 
     @Override
     public String getProviderName() {
-        String model = getFreeTierModelName();
-        return "Gemini Free Tier (" + model + ")";
+        String model = getEffectiveModelName();
+        return "Gemini (" + model + ")";
     }
 
     @Override
     public boolean isConfigured() {
-        return aiProperties.getGemini().isConfigured();
+        return aiProperties.getGemini() != null && aiProperties.getGemini().isConfigured();
     }
 
-    public String getFreeTierModelName() {
+    public String getEffectiveModelName() {
         String rawModel = aiProperties.getGemini().getEffectiveModel("gemini-1.5-flash");
-        String cleaned = rawModel.trim().replace("models/", "").toLowerCase();
-        // Prevent accidental paid model configuration
-        if (cleaned.contains("pro") || cleaned.contains("ultra") || cleaned.contains("advanced")) {
-            log.warn("Configured Gemini model '{}' is not a free-tier model. Defaulting to free-tier 'gemini-1.5-flash'.", cleaned);
-            return "gemini-1.5-flash";
-        }
-        return cleaned;
+        return rawModel.trim().replace("models/", "").toLowerCase();
     }
 
     @Override
     public String generateCompletion(String systemPrompt, List<AiMessageDto> history, String userPrompt) {
         AiProperties.ProviderConfig config = aiProperties.getGemini();
-        if (!config.isConfigured()) {
+        if (!isConfigured()) {
             throw new IllegalStateException("Gemini API key is missing or not configured. Set the GEMINI_API_KEY environment variable.");
         }
 
         String apiKey = config.getEffectiveApiKey();
-        String primaryModel = getFreeTierModelName();
+        String primaryModel = getEffectiveModelName();
+        int timeoutMs = config.getTimeoutMs() > 0 ? config.getTimeoutMs() : 20000;
 
         List<String> modelsToTry = new ArrayList<>();
-        modelsToTry.add(primaryModel);
+        if (!primaryModel.equals("gemini-pro") && !primaryModel.isEmpty()) {
+            modelsToTry.add(primaryModel);
+        }
         if (!modelsToTry.contains("gemini-1.5-flash")) modelsToTry.add("gemini-1.5-flash");
         if (!modelsToTry.contains("gemini-2.0-flash")) modelsToTry.add("gemini-2.0-flash");
+        if (!modelsToTry.contains("gemini-2.5-flash")) modelsToTry.add("gemini-2.5-flash");
         if (!modelsToTry.contains("gemini-1.5-flash-8b")) modelsToTry.add("gemini-1.5-flash-8b");
+        if (!modelsToTry.contains("gemini-1.5-pro")) modelsToTry.add("gemini-1.5-pro");
+
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofMillis(timeoutMs));
+        requestFactory.setReadTimeout(Duration.ofMillis(timeoutMs));
 
         RestClient restClient = RestClient.builder()
+                .requestFactory(requestFactory)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader("x-goog-api-key", apiKey)
                 .build();
 
-        // Construct Gemini request body
-        Map<String, Object> requestBody = new HashMap<>();
-
-        if (systemPrompt != null && !systemPrompt.trim().isEmpty()) {
-            requestBody.put("system_instruction", Map.of(
-                    "parts", List.of(Map.of("text", systemPrompt))
-            ));
-        }
-
+        // Construct normalized Gemini contents with strict user/model alternation
         List<Map<String, Object>> contents = new ArrayList<>();
+        String currentRole = null;
+        StringBuilder currentPartText = new StringBuilder();
 
-        // Add conversation history if present
-        if (history != null && !history.isEmpty()) {
+        // Process conversation history
+        if (history != null) {
             for (AiMessageDto msg : history) {
+                if (msg.getContent() == null || msg.getContent().isBlank()) continue;
                 String role = msg.getRole() == AiRole.USER ? "user" : "model";
-                contents.add(Map.of(
-                        "role", role,
-                        "parts", List.of(Map.of("text", msg.getContent()))
-                ));
+
+                if (currentRole == null) {
+                    if ("model".equals(role)) {
+                        // Gemini requires the conversation to start with a user message
+                        continue;
+                    }
+                    currentRole = role;
+                    currentPartText.append(msg.getContent().trim());
+                } else if (currentRole.equals(role)) {
+                    // Combine consecutive messages from the same role
+                    currentPartText.append("\n\n").append(msg.getContent().trim());
+                } else {
+                    contents.add(Map.of(
+                            "role", currentRole,
+                            "parts", List.of(Map.of("text", currentPartText.toString()))
+                    ));
+                    currentRole = role;
+                    currentPartText = new StringBuilder(msg.getContent().trim());
+                }
             }
         }
 
         // Add current user prompt
-        contents.add(Map.of(
-                "role", "user",
-                "parts", List.of(Map.of("text", userPrompt))
-        ));
+        String sanitizedUserPrompt = (userPrompt != null && !userPrompt.isBlank()) ? userPrompt.trim() : "Please provide a business update.";
+        if (currentRole == null || !"user".equals(currentRole)) {
+            if (currentRole != null) {
+                contents.add(Map.of(
+                        "role", currentRole,
+                        "parts", List.of(Map.of("text", currentPartText.toString()))
+                ));
+            }
+            contents.add(Map.of(
+                    "role", "user",
+                    "parts", List.of(Map.of("text", sanitizedUserPrompt))
+            ));
+        } else {
+            currentPartText.append("\n\n").append(sanitizedUserPrompt);
+            contents.add(Map.of(
+                    "role", "user",
+                    "parts", List.of(Map.of("text", currentPartText.toString()))
+            ));
+        }
 
+        Map<String, Object> requestBody = new HashMap<>();
+        if (systemPrompt != null && !systemPrompt.trim().isEmpty()) {
+            requestBody.put("systemInstruction", Map.of(
+                    "parts", List.of(Map.of("text", systemPrompt.trim()))
+            ));
+        }
         requestBody.put("contents", contents);
         requestBody.put("generationConfig", Map.of(
                 "temperature", 0.3,
@@ -105,7 +142,7 @@ public class GeminiProvider implements AiProvider {
         for (String model : modelsToTry) {
             try {
                 String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + apiKey;
-                log.debug("Attempting Gemini Free Tier completion with model: {}", model);
+                log.debug("Attempting Gemini completion with model: {}", model);
 
                 String responseJson = restClient.post()
                         .uri(url)
@@ -118,12 +155,29 @@ public class GeminiProvider implements AiProvider {
                 }
 
                 JsonNode root = objectMapper.readTree(responseJson);
+
+                if (root.has("error")) {
+                    String errorMsg = root.path("error").path("message").asText();
+                    log.warn("Gemini API returned error for model {}: {}", model, errorMsg);
+                    lastException = new RuntimeException("Gemini API error: " + errorMsg);
+                    continue;
+                }
+
                 JsonNode candidates = root.path("candidates");
                 if (candidates.isArray() && !candidates.isEmpty()) {
                     JsonNode parts = candidates.get(0).path("content").path("parts");
                     if (parts.isArray() && !parts.isEmpty()) {
-                        log.info("Gemini Free Tier completion succeeded with model: {}", model);
-                        return parts.get(0).path("text").asText();
+                        StringBuilder textBuilder = new StringBuilder();
+                        for (JsonNode part : parts) {
+                            if (part.has("text")) {
+                                textBuilder.append(part.path("text").asText());
+                            }
+                        }
+                        String responseText = textBuilder.toString().trim();
+                        if (!responseText.isEmpty()) {
+                            log.info("Gemini completion succeeded with model: {}", model);
+                            return responseText;
+                        }
                     }
                 }
             } catch (HttpStatusCodeException e) {
@@ -136,23 +190,11 @@ public class GeminiProvider implements AiProvider {
                     throw new IllegalStateException("The configured Gemini API key is invalid or unauthorized.");
                 }
             } catch (Exception e) {
-                log.warn("Gemini Free Tier completion failed for model {}: {}", model, e.getMessage());
+                log.warn("Gemini completion failed for model {}: {}", model, e.getMessage());
                 lastException = e;
             }
         }
 
         throw new RuntimeException("Gemini generation error: " + (lastException != null ? lastException.getMessage() : "All Gemini models unavailable"), lastException);
-    }
-
-    private String extractErrorMessage(String json) {
-        if (json == null || json.isBlank()) return null;
-        try {
-            JsonNode root = objectMapper.readTree(json);
-            JsonNode messageNode = root.path("error").path("message");
-            if (!messageNode.isMissingNode()) {
-                return messageNode.asText();
-            }
-        } catch (Exception ignored) {}
-        return null;
     }
 }

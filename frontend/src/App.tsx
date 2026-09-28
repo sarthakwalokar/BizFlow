@@ -81,7 +81,7 @@ const LandingPage: React.FC = () => {
 
                 {/* Supporting Description */}
                 <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed font-normal">
-                  The all-in-one business management platform built for retail stores, services, and growing enterprises. High-speed POS billing, real-time inventory, expense tracking, invoice management, Review Boost, and grounded AI analytics.
+                  The all-in-one business management platform built for retail stores, services, and growing enterprises. High-speed POS billing, real-time inventory, expense tracking, invoice management, Customer Reviews, and grounded AI analytics.
                 </p>
 
                 {/* CTA Buttons (NO SEARCH BAR) */}
@@ -195,7 +195,7 @@ const LandingPage: React.FC = () => {
                           </div>
                           <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white">
                             <Star className="w-3 h-3 shrink-0" />
-                            <span className="truncate">Review Boost</span>
+                            <span className="truncate">Reviews</span>
                           </div>
                           <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white">
                             <Sparkles className="w-3 h-3 shrink-0" />
@@ -253,9 +253,9 @@ const LandingPage: React.FC = () => {
                           <span className="text-[8px] text-emerald-300 font-semibold">80.8% Profit</span>
                         </div>
 
-                        {/* Review Boost */}
+                        {/* Reviews */}
                         <div className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80">
-                          <span className="text-[9px] text-slate-400 font-medium block">Review Boost</span>
+                          <span className="text-[9px] text-slate-400 font-medium block">Reviews</span>
                           <span className="text-sm sm:text-base font-extrabold text-amber-400 block mt-0.5">4.9 ★</span>
                           <span className="text-[8px] text-amber-300 font-semibold">QR Standee</span>
                         </div>
@@ -412,12 +412,12 @@ const LandingPage: React.FC = () => {
                 </p>
               </div>
 
-              {/* Feature 8: Review Boost */}
+              {/* Feature 8: Customer Reviews */}
               <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all hover:-translate-y-1 group">
                 <div className="w-12 h-12 rounded-xl bg-yellow-50 border border-yellow-100 text-yellow-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Star className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">Review Boost</h3>
+                <h3 className="text-base font-bold text-slate-900 mb-2">Customer Reviews</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                   Custom QR code generation for counter standees and thermal receipts that prompts happy customers to leave 5-star Google reviews and boost local store ranking.
                 </p>
@@ -714,9 +714,9 @@ const LandingPage: React.FC = () => {
         </section>
 
         {/* =========================================================================
-            5. REVIEW BOOST SECTION (Normal Light Theme)
+            5. CUSTOMER REVIEWS SECTION (Normal Light Theme)
            ========================================================================= */}
-        <section id="review-boost" className="py-20 bg-white border-b border-slate-200/80">
+        <section id="reviews" className="py-20 bg-white border-b border-slate-200/80">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               
@@ -724,7 +724,7 @@ const LandingPage: React.FC = () => {
               <div className="lg:col-span-6 space-y-6 text-left">
                 <span className="text-xs font-bold text-amber-600 tracking-widest uppercase font-mono flex items-center gap-2">
                   <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  REVIEW BOOST SYSTEM
+                  CUSTOMER REVIEWS & REPUTATION
                 </span>
 
                 <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight leading-tight">
@@ -732,7 +732,7 @@ const LandingPage: React.FC = () => {
                 </h2>
 
                 <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                  Review Boost gives your store a dedicated QR reputation system. Capture customer feedback right at the counter or through thermal receipts, and channel positive ratings directly to your public reputation.
+                  Reviews give your store a dedicated QR reputation system. Capture customer feedback right at the counter or through thermal receipts, and channel positive ratings directly to your public reputation.
                 </p>
 
                 {/* 3 Step QR Flow */}
@@ -773,7 +773,7 @@ const LandingPage: React.FC = () => {
                     to="/signup"
                     className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-400 text-white font-semibold text-xs shadow-md shadow-amber-500/20 transition-all hover:shadow-lg"
                   >
-                    <span>Activate Review Boost</span>
+                    <span>Get Started with Reviews</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>

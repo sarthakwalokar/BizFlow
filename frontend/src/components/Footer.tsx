@@ -61,9 +61,9 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
-                <a href="#review-boost" className="hover:text-cyan-400 transition-colors flex items-center gap-2">
+                <a href="#reviews" className="hover:text-cyan-400 transition-colors flex items-center gap-2">
                   <QrCode className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Review Boost (QR Reputation)</span>
+                  <span>Reviews (QR Reputation)</span>
                 </a>
               </li>
             </ul>

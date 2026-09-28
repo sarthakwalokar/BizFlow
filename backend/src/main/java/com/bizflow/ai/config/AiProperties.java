@@ -14,6 +14,7 @@ public class AiProperties {
     private boolean enabled = true;
     private ProviderConfig openrouter = new ProviderConfig("meta-llama/llama-3.3-70b-instruct", "https://openrouter.ai/api/v1", 20000);
     private ProviderConfig gemini = new ProviderConfig("gemini-1.5-flash", "https://generativelanguage.googleapis.com/v1beta", 20000);
+    private ProviderConfig groq = new ProviderConfig("llama-3.3-70b-versatile", "https://api.groq.com/openai/v1", 20000);
 
     @Getter
     @Setter
@@ -33,17 +34,17 @@ public class AiProperties {
         }
 
         public String getEffectiveApiKey() {
-            if (apiKey != null && !apiKey.trim().isEmpty() && !apiKey.startsWith("<") && !apiKey.equalsIgnoreCase("your_gemini_api_key_here")) {
+            if (apiKey != null && !apiKey.trim().isEmpty() && !apiKey.startsWith("<") && !apiKey.equalsIgnoreCase("your_gemini_api_key_here") && !apiKey.equalsIgnoreCase("your_groq_api_key_here") && !apiKey.equalsIgnoreCase("your_openrouter_api_key_here")) {
                 return apiKey.trim();
             }
-            if (model != null && (model.startsWith("sk-or-v1-") || model.startsWith("AIzaSy"))) {
+            if (model != null && (model.startsWith("sk-or-v1-") || model.startsWith("AIzaSy") || model.startsWith("gsk_"))) {
                 return model.trim();
             }
             return "";
         }
 
         public String getEffectiveModel(String defaultModel) {
-            if (model != null && !model.isBlank() && !model.startsWith("sk-or-v1-") && !model.startsWith("AIzaSy")) {
+            if (model != null && !model.isBlank() && !model.startsWith("sk-or-v1-") && !model.startsWith("AIzaSy") && !model.startsWith("gsk_")) {
                 return model.trim();
             }
             return defaultModel;

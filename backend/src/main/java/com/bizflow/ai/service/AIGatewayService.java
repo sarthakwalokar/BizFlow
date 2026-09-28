@@ -25,14 +25,13 @@ public class AIGatewayService {
 
     public GenerationResult generateResponse(String systemPrompt, List<AiMessageDto> history, String userPrompt) {
         if (!aiProperties.isEnabled()) {
-            throw new IllegalStateException("AI Assistant is temporarily unavailable. Please try again.");
+            throw new IllegalStateException("AI Assistant is currently disabled in system configuration.");
         }
 
-        Exception openRouterException = null;
-        Exception geminiException = null;
+        StringBuilder failureDiagnostics = new StringBuilder();
 
         // 1. PRIMARY: OpenRouter
-        if (openRouterProvider.isConfigured()) {
+        if (openRouterProvider != null && openRouterProvider.isConfigured()) {
             try {
                 log.info("Attempting AI generation with primary provider: {}", openRouterProvider.getProviderName());
                 String reply = openRouterProvider.generateCompletion(systemPrompt, history, userPrompt);
@@ -44,16 +43,18 @@ public class AIGatewayService {
                             estimateTokens(systemPrompt, userPrompt, reply)
                     );
                 }
+                failureDiagnostics.append("OpenRouter returned an empty response. ");
             } catch (Exception e) {
-                log.warn("Primary AI provider (OpenRouter) failed: {}. Falling back to Gemini Free Tier.", e.getMessage());
-                openRouterException = e;
+                log.warn("Primary AI provider (OpenRouter) failed: {}. Continuing to Gemini fallback.", e.getMessage());
+                failureDiagnostics.append("OpenRouter error: ").append(e.getMessage()).append(". ");
             }
         } else {
-            log.debug("OpenRouter is not configured. Skipping to Gemini Free Tier fallback.");
+            log.info("Primary AI provider (OpenRouter) is not configured with an API key. Attempting Gemini fallback.");
+            failureDiagnostics.append("OpenRouter API key is not configured. ");
         }
 
-        // 2. FALLBACK: Gemini Free Tier (gemini-2.5-flash-lite)
-        if (geminiProvider.isConfigured()) {
+        // 2. LAST FALLBACK: Google Gemini
+        if (geminiProvider != null && geminiProvider.isConfigured()) {
             try {
                 log.info("Attempting AI generation with fallback provider: {}", geminiProvider.getProviderName());
                 String reply = geminiProvider.generateCompletion(systemPrompt, history, userPrompt);
@@ -65,51 +66,26 @@ public class AIGatewayService {
                             estimateTokens(systemPrompt, userPrompt, reply)
                     );
                 }
+                failureDiagnostics.append("Gemini returned an empty response. ");
             } catch (Exception e) {
-                log.warn("Fallback AI provider (Gemini Free Tier) failed: {}", e.getMessage());
-                geminiException = e;
+                log.error("Fallback AI provider (Gemini) failed: {}", e.getMessage());
+                failureDiagnostics.append("Gemini error: ").append(e.getMessage()).append(". ");
             }
         } else {
-            log.debug("Gemini Free Tier is not configured.");
+            log.warn("Fallback AI provider (Gemini) is not configured with an API key.");
+            failureDiagnostics.append("Gemini API key is not configured. ");
         }
 
-        // 3. Both failed or unconfigured -> Provide grounded analytics response from real-time business telemetry
-        log.warn("External AI providers unavailable (OpenRouter: {}, Gemini: {}). Serving grounded business analytics response.",
-                openRouterException != null ? openRouterException.getMessage() : "Not configured",
-                geminiException != null ? geminiException.getMessage() : "Not configured");
-
-        String fallbackReply = buildGroundedFallbackReply(systemPrompt, userPrompt);
-        return new GenerationResult(
-                fallbackReply,
-                "BizFlow Analytics Engine (Offline Fallback)",
-                estimateTokens(systemPrompt, userPrompt, fallbackReply)
-        );
-    }
-
-    private String buildGroundedFallbackReply(String systemPrompt, String userPrompt) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Here is the latest live business intelligence summary for your store:\n\n");
-
-        if (systemPrompt != null && systemPrompt.contains("###")) {
-            // Extract key summary metrics from system prompt
-            String[] sections = systemPrompt.split("###");
-            for (String section : sections) {
-                String trimmed = section.trim();
-                if (trimmed.startsWith("1. Business Profile") || trimmed.startsWith("2. Financial Performance") || trimmed.startsWith("3. Product & Inventory Status") || trimmed.startsWith("4. Customer Engagement")) {
-                    sb.append("### ").append(trimmed).append("\n\n");
-                }
-            }
-        } else {
-            sb.append("• **Real-Time Data Sync Active**: All transactions and inventory movements are safely recorded.\n");
-            sb.append("• **AI Assistant Tip**: To get in-depth LLM recommendations, please ensure your OpenRouter or Gemini API keys are active in business settings.\n");
-        }
-
-        return sb.toString().trim();
+        // 3. BOTH FAILED: Throw clear, actionable AI service error (no static/mock responses)
+        String finalErrorMessage = "AI Assistant service is currently unavailable. " + failureDiagnostics.toString().trim()
+                + " Please check your OpenRouter / Gemini API key configuration and network connectivity.";
+        log.error(finalErrorMessage);
+        throw new RuntimeException(finalErrorMessage);
     }
 
     public AiStatusResponse getAiStatus() {
-        boolean openRouterAvail = openRouterProvider.isConfigured();
-        boolean geminiAvail = geminiProvider.isConfigured();
+        boolean openRouterAvail = openRouterProvider != null && openRouterProvider.isConfigured();
+        boolean geminiAvail = geminiProvider != null && geminiProvider.isConfigured();
 
         List<String> available = new ArrayList<>();
         if (openRouterAvail) available.add(openRouterProvider.getProviderName());
@@ -121,7 +97,7 @@ public class AIGatewayService {
         } else if (geminiAvail) {
             activeProvider = geminiProvider.getProviderName();
         } else {
-            activeProvider = "AI Unavailable (Configuration Required)";
+            activeProvider = "None (Requires OPENROUTER_API_KEY or GEMINI_API_KEY)";
         }
 
         return AiStatusResponse.builder()
@@ -131,7 +107,7 @@ public class AIGatewayService {
                 .openRouterAvailable(openRouterAvail)
                 .geminiAvailable(geminiAvail)
                 .groqAvailable(false)
-                .fallbackAvailable(geminiAvail)
+                .fallbackAvailable(false)
                 .build();
     }
 

@@ -290,7 +290,7 @@ public class ReviewService {
         String slug = business.getReviewSlug() != null ? business.getReviewSlug() : String.valueOf(business.getId());
         String reviewBoostUrl = buildDirectReviewUrl(slug);
 
-        // QR encodes the BizFlow Review Boost page URL
+        // QR encodes the BizFlow Reviews page URL
         String qrCodeDataUrl = generateQrCodeBase64(reviewBoostUrl, 380, 380);
 
         return QrCodeResponse.builder()
@@ -427,7 +427,7 @@ public class ReviewService {
                 rawResponse = openRouterProvider.generateCompletion(systemPrompt, List.of(), userPrompt);
                 log.info("AI review generation succeeded with OpenRouter for business {}", bizName);
             } catch (Exception e) {
-                log.warn("OpenRouter review generation failed, falling back to Gemini: {}", e.getMessage());
+                log.warn("OpenRouter review generation failed, continuing cascade: {}", e.getMessage());
             }
         }
 

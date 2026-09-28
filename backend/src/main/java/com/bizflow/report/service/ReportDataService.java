@@ -442,12 +442,12 @@ public class ReportDataService {
                 ReportColumn.builder().key("rating").label("Score").type("BADGE").align("CENTER").build(),
                 ReportColumn.builder().key("feedbackText").label("Feedback & Comments").type("STRING").align("LEFT").build(),
                 ReportColumn.builder().key("positive").label("Sentiment").type("BADGE").align("CENTER").build(),
-                ReportColumn.builder().key("redirected").label("Review Boost Action").type("STRING").align("LEFT").build()
+                ReportColumn.builder().key("redirected").label("Review Action").type("STRING").align("LEFT").build()
         );
 
         return ReportDataResponse.builder()
                 .reportType(ReportType.REVIEWS)
-                .title("Customer Feedback & Review Boost Audit")
+                .title("Customer Feedback & Reviews Audit")
                 .businessName(business.getName())
                 .currency(currency)
                 .startDate(startDate)

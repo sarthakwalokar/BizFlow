@@ -9,6 +9,8 @@ import com.bizflow.business.BusinessRepository;
 import com.bizflow.common.exception.ResourceNotFoundException;
 import com.bizflow.customer.CustomerRepository;
 import com.bizflow.expense.ExpenseRepository;
+import com.bizflow.inventory.repository.PurchaseRepository;
+import com.bizflow.inventory.repository.SupplierRepository;
 import com.bizflow.payment.PaymentStatus;
 import com.bizflow.product.Product;
 import com.bizflow.product.ProductRepository;
@@ -39,6 +41,8 @@ public class AIBusinessContextService {
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
     private final ReviewRepository reviewRepository;
+    private final PurchaseRepository purchaseRepository;
+    private final SupplierRepository supplierRepository;
 
     public String buildSystemPromptForBusiness(Long businessId) {
         return buildSystemPromptForBusiness(businessId, "en");
@@ -101,6 +105,7 @@ public class AIBusinessContextService {
         }
 
         // 3. Operating Expenses & Net Profit
+        BigDecimal todayExpenses = expenseRepository.sumExpensesForDateRange(businessId, today, today);
         BigDecimal monthExpenses = expenseRepository.sumExpensesForDateRange(businessId, firstDayThisMonth, today);
         BigDecimal lastMonthExpenses = expenseRepository.sumExpensesForDateRange(businessId, firstDayLastMonth, lastDayLastMonth);
         BigDecimal netRevenue = monthSales.subtract(monthExpenses);
@@ -147,7 +152,12 @@ public class AIBusinessContextService {
             lowStockStr.append("  - All tracked inventory levels are currently healthy and above threshold.\n");
         }
 
-        // 5. Customer Metrics
+        // 5. Purchases & Suppliers
+        BigDecimal totalPurchaseSpend = purchaseRepository.sumTotalPurchaseSpend(businessId);
+        long totalPurchasesCount = purchaseRepository.countByBusinessId(businessId);
+        long activeSuppliersCount = supplierRepository.countByBusinessIdAndActiveTrue(businessId);
+
+        // 6. Customer Metrics
         long totalCustomers = customerRepository.countByBusinessId(businessId);
         List<Object[]> customerSpendingList = orderRepository.findCustomerSpendingSummaryByBusinessId(businessId);
         long activeCustomersCount = customerSpendingList.size();
@@ -156,7 +166,7 @@ public class AIBusinessContextService {
                 .count();
         double repeatRate = totalCustomers > 0 ? ((double) repeatCustomers / totalCustomers) * 100.0 : 0.0;
 
-        // 6. Review & Reputation Metrics
+        // 7. Review & Reputation Metrics
         Double avgRating = reviewRepository.getAverageRating(businessId);
         long totalReviews = reviewRepository.countByBusinessIdAndHiddenFalse(businessId);
         long positiveReviews = reviewRepository.countPositiveReviews(businessId);
@@ -188,6 +198,7 @@ public class AIBusinessContextService {
                 - Month-over-Month Growth: %.1f%% (%s).
                 
                 --- OPERATING EXPENSES & NET PROFIT ---
+                - Today's Expenses: %s %s.
                 - Total Expenses This Month: %s %s (Last Month: %s %s).
                 - Net Revenue This Month: %s %s.
                 - Estimated Profit Margin: %.1f%%.
@@ -199,6 +210,11 @@ public class AIBusinessContextService {
                 - Tracked Catalog Items: %d products.
                 - Items Below Reorder Threshold (%d critical):
                 %s
+                --- PURCHASES & SUPPLIER RELATIONSHIPS ---
+                - Total Purchase Orders: %d orders.
+                - Total Spend on Received Inventory: %s %s.
+                - Active Registered Suppliers: %d suppliers.
+                
                 --- CUSTOMER ACTIVITY & RETENTION ---
                 - Total Registered Customer Base: %d.
                 - Active Customers This Month: %d.
@@ -212,9 +228,10 @@ public class AIBusinessContextService {
                 2. NEVER invent sales numbers, revenue, expenses, profit, inventory, product quantities, orders, or business statistics. The database values above are the sole source of truth.
                 3. Be concise, executive, professional, and actionable.
                 4. Use clean Markdown formatting with clear section headers (###), bold numbers, bullet points, and highlight warnings (⚠️, 💡, 📊).
-                5. When recommending restocks, reference specific product names and current stock numbers from the snapshot.
-                6. Never reveal API keys, database credentials, internal exceptions, or execute destructive actions. You are strictly a read-only analytical advisor.
-                7. LANGUAGE REQUIREMENT: %s
+                5. When answering questions like "How are my sales today?", "What was my revenue this month?", "Which products are selling the most?", "What are my biggest expenses?", or "Which products have low stock?", directly cite the figures above.
+                6. When recommending restocks, reference specific product names and current stock numbers from the snapshot.
+                7. Never reveal API keys, database credentials, internal exceptions, or execute destructive actions. You are strictly a read-only analytical advisor.
+                8. LANGUAGE REQUIREMENT: %s
                 """,
                 business.getName(), business.getBusinessType(), business.getCurrency(), business.getBusinessSize(),
                 business.getCurrency(), todaySales.toPlainString(), todayOrders,
@@ -223,6 +240,7 @@ public class AIBusinessContextService {
                 business.getCurrency(), monthSales.toPlainString(), monthOrders, business.getCurrency(), monthAov.toPlainString(),
                 business.getCurrency(), lastMonthSales.toPlainString(), lastMonthOrders,
                 salesGrowthPct, salesGrowthPct >= 0 ? "Growth" : "Decline",
+                business.getCurrency(), todayExpenses.toPlainString(),
                 business.getCurrency(), monthExpenses.toPlainString(), business.getCurrency(), lastMonthExpenses.toPlainString(),
                 business.getCurrency(), netRevenue.toPlainString(),
                 profitMargin,
@@ -230,6 +248,7 @@ public class AIBusinessContextService {
                 topProductsStr,
                 allProducts.size(), lowStockProducts.size(),
                 lowStockStr,
+                totalPurchasesCount, business.getCurrency(), totalPurchaseSpend.toPlainString(), activeSuppliersCount,
                 totalCustomers, activeCustomersCount, repeatRate, repeatCustomers,
                 reviewSummaryStr,
                 getLanguageInstruction(preferredLanguage)

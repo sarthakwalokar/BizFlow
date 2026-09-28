@@ -87,7 +87,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         reviewEnabled: setRes.reviewEnabled,
       });
     } catch (err: any) {
-      setErrorMessage(t('reviews.failedToLoad', 'Failed to load Review Boost dashboard data.'));
+      setErrorMessage(t('reviews.failedToLoad', 'Failed to load reviews dashboard data.'));
     } finally {
       setLoading(false);
     }
@@ -113,7 +113,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
         ...settingsForm,
         publicReviewUrl: cleanedUrl || undefined,
       });
-      setSuccessMessage(t('reviews.configUpdated', 'Review Boost configuration updated.'));
+      setSuccessMessage(t('reviews.configUpdated', 'Review configuration updated.'));
       setIsSettingsModalOpen(false);
       fetchDashboardData(page);
     } catch (err: any) {
@@ -168,7 +168,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
             className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-white hover:bg-zinc-50 text-zinc-700 font-medium text-xs border border-zinc-200 shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
           >
             <Settings size={14} />
-            <span>{t('reviews.configureBoost', 'Configure Boost')}</span>
+            <span>{t('reviews.configureBoost', 'Configure Reviews')}</span>
           </button>
         )}
       </div>
@@ -229,7 +229,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
 
             {/* Quick URL Cards */}
             <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200 space-y-2.5 max-w-sm w-full">
-              {/* BizFlow Review Boost Landing Page */}
+              {/* BizFlow Customer Reviews Landing Page */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider">
@@ -540,7 +540,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                 <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
                   <Settings size={15} />
                 </div>
-                <h3 className="text-sm font-semibold text-zinc-900">{t('reviews.configureBoost', 'Review Boost Settings')}</h3>
+                <h3 className="text-sm font-semibold text-zinc-900">{t('reviews.configureBoost', 'Review Settings')}</h3>
               </div>
               <button
                 onClick={() => setIsSettingsModalOpen(false)}

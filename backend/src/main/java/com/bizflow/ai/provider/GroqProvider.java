@@ -9,13 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientResponseException;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,43 +19,35 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OpenRouterProvider implements AiProvider {
+public class GroqProvider implements AiProvider {
 
     private final AiProperties aiProperties;
     private final ObjectMapper objectMapper;
 
     @Override
     public String getProviderName() {
-        return "OpenRouter (" + aiProperties.getOpenrouter().getEffectiveModel("meta-llama/llama-3.3-70b-instruct") + ")";
+        return "Groq (" + aiProperties.getGroq().getEffectiveModel("llama-3.3-70b-versatile") + ")";
     }
 
     @Override
     public boolean isConfigured() {
-        return aiProperties.getOpenrouter() != null && aiProperties.getOpenrouter().isConfigured();
+        return aiProperties.getGroq() != null && aiProperties.getGroq().isConfigured();
     }
 
     @Override
     public String generateCompletion(String systemPrompt, List<AiMessageDto> history, String userPrompt) {
-        AiProperties.ProviderConfig config = aiProperties.getOpenrouter();
+        AiProperties.ProviderConfig config = aiProperties.getGroq();
         if (!isConfigured()) {
-            throw new IllegalStateException("OpenRouter API key is not configured.");
+            throw new IllegalStateException("Groq API key is not configured.");
         }
 
         String apiKey = config.getEffectiveApiKey();
-        String model = config.getEffectiveModel("meta-llama/llama-3.3-70b-instruct");
-        int timeoutMs = config.getTimeoutMs() > 0 ? config.getTimeoutMs() : 20000;
+        String model = config.getEffectiveModel("llama-3.3-70b-versatile");
 
         try {
-            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-            requestFactory.setConnectTimeout(Duration.ofMillis(timeoutMs));
-            requestFactory.setReadTimeout(Duration.ofMillis(timeoutMs));
-
             RestClient restClient = RestClient.builder()
-                    .requestFactory(requestFactory)
                     .baseUrl(config.getBaseUrl())
                     .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
-                    .defaultHeader("HTTP-Referer", "https://bizflow.app")
-                    .defaultHeader("X-Title", "BizFlow AI Business Assistant")
                     .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .build();
 
@@ -89,8 +77,6 @@ public class OpenRouterProvider implements AiProvider {
                     "max_tokens", 2048
             );
 
-            log.info("Dispatching completion request to OpenRouter (Model: {}, BaseURL: {})", model, config.getBaseUrl());
-
             String responseJson = restClient.post()
                     .uri("/chat/completions")
                     .body(requestBody)
@@ -98,17 +84,10 @@ public class OpenRouterProvider implements AiProvider {
                     .body(String.class);
 
             if (responseJson == null || responseJson.isBlank()) {
-                throw new RuntimeException("Empty response received from OpenRouter API.");
+                throw new RuntimeException("Empty response received from Groq API.");
             }
 
             JsonNode root = objectMapper.readTree(responseJson);
-
-            if (root.has("error")) {
-                String errorMsg = root.path("error").path("message").asText();
-                log.warn("OpenRouter API returned error payload: {}", errorMsg);
-                throw new RuntimeException("OpenRouter API error: " + errorMsg);
-            }
-
             JsonNode choices = root.path("choices");
             if (choices.isArray() && !choices.isEmpty()) {
                 JsonNode messageNode = choices.get(0).path("message");
@@ -118,14 +97,10 @@ public class OpenRouterProvider implements AiProvider {
                 }
             }
 
-            throw new RuntimeException("Unexpected response format from OpenRouter API: " + responseJson);
-        } catch (RestClientResponseException e) {
-            String responseBody = e.getResponseBodyAsString();
-            log.warn("OpenRouter HTTP error (Status {}): {}", e.getStatusCode(), responseBody);
-            throw new RuntimeException("OpenRouter HTTP " + e.getStatusCode() + ": " + responseBody, e);
+            throw new RuntimeException("Unexpected response format from Groq API: " + responseJson);
         } catch (Exception e) {
-            log.warn("OpenRouter AI completion failed: {}", e.getMessage());
-            throw new RuntimeException("OpenRouter generation error: " + e.getMessage(), e);
+            log.warn("Groq AI completion failed: {}", e.getMessage());
+            throw new RuntimeException("Groq generation error: " + e.getMessage(), e);
         }
     }
 }

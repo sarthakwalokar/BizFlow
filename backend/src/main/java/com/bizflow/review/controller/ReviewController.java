@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
-@Tag(name = "Review Boost", description = "Review Boost Management & Analytics APIs")
+@Tag(name = "Reviews", description = "Customer Reviews Management & Analytics APIs")
 @SecurityRequirement(name = "bearerAuth")
 public class ReviewController {
 
@@ -38,7 +38,7 @@ public class ReviewController {
 
     @GetMapping("/analytics")
     @PreAuthorize("hasAnyRole('OWNER', 'STAFF')")
-    @Operation(summary = "Get Review Boost analytics, average rating, and distribution")
+    @Operation(summary = "Get review analytics, average rating, and distribution")
     public ResponseEntity<ApiResponse<ReviewAnalyticsResponse>> getReviewAnalytics() {
         ReviewAnalyticsResponse response = reviewService.getReviewAnalytics();
         return ResponseEntity.ok(ApiResponse.ok("Review analytics retrieved successfully", response));
@@ -46,7 +46,7 @@ public class ReviewController {
 
     @GetMapping("/settings")
     @PreAuthorize("hasAnyRole('OWNER', 'STAFF')")
-    @Operation(summary = "Get Review Boost settings and public review URL")
+    @Operation(summary = "Get review settings and public review URL")
     public ResponseEntity<ApiResponse<ReviewSettingsResponse>> getReviewSettings() {
         ReviewSettingsResponse response = reviewService.getReviewSettings();
         return ResponseEntity.ok(ApiResponse.ok("Review settings retrieved successfully", response));
@@ -54,7 +54,7 @@ public class ReviewController {
 
     @PutMapping("/settings")
     @PreAuthorize("hasRole('OWNER')")
-    @Operation(summary = "Update Review Boost settings (Owner only)")
+    @Operation(summary = "Update review settings (Owner only)")
     public ResponseEntity<ApiResponse<ReviewSettingsResponse>> updateReviewSettings(
             @Valid @RequestBody ReviewSettingsRequest request) {
         ReviewSettingsResponse response = reviewService.updateReviewSettings(request);

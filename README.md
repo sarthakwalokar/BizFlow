@@ -13,8 +13,7 @@ BizFlow is an enterprise-grade, multi-tenant Business Management and Point-of-Sa
 - **Fast POS Billing Terminal**: Barcode scanning, category filters, quick cash/card/UPI tender, automated invoice generation, and tax calculations (inclusive/exclusive).
 - **Customer CRM & Ledger**: Customer transaction history, loyalty metrics, total spend tracking, and purchase frequency.
 - **Expense & Margin Tracking**: Operating expense categorization (Rent, Payroll, Utilities, Supplies) and net margin analytics.
-- **Review Boost Reputation Engine**: Public review landing pages (`/review/:slugOrId`), QR code generation, automated high-rating redirection (Google, Yelp, TripAdvisor), and private feedback collection for lower ratings.
-- **AI Business Assistant**: Multi-provider fallback cascade (**Google Gemini** &rarr; **Groq Llama 3.3** &rarr; **OpenRouter**) querying tenant-scoped operational data for insights and forecasting without data leakage or destructive actions.
+- **AI Business Assistant**: Multi-provider fallback cascade (**OpenRouter** &rarr; **Google Gemini**) querying tenant-scoped operational data for grounded insights, stock alerts, and financial forecasting without data leakage or destructive actions.
 - **Dedicated Platform Administration**: Super-admin governance portal (`/admin/*`) for global tenant oversight, business activation/suspension, user status management, and platform analytics.
 
 ---
@@ -63,7 +62,7 @@ BizzFlow/
 │   │   ├── payment/                      # Offline/Cash, Card, UPI & payment tracking
 │   │   ├── product/                      # Product and category catalog
 │   │   ├── report/                       # PDF & Excel export generators
-│   │   ├── review/                       # Review Boost public pages & feedback
+│   │   ├── review/                       # Customer Reviews public pages & feedback
 │   │   ├── security/                     # JwtTokenProvider, JwtFilter, UserPrincipal
 │   │   └── user/                         # User management & role authorization
 │   ├── src/main/resources/
@@ -198,7 +197,7 @@ When testing locally, you can use these initial accounts or register a new busin
 cd backend
 mvn test
 ```
-*Executes all 73 automated tests covering Security, Multi-Tenant Isolation, Billing, Inventory, Review Boost, AI Gateway, Reports, and Admin governance.*
+*Executes all 73 automated tests covering Security, Multi-Tenant Isolation, Billing, Inventory, Reviews, AI Gateway, Reports, and Admin governance.*
 
 ### Run Frontend Production Build Check
 
@@ -218,7 +217,7 @@ npm run build
 4. **Information Disclosure Prevention**: `GlobalExceptionHandler` masks unhandled server exceptions into clean `ApiError` envelopes without leaking database structures or internal stack traces.
 5. **Robust Transactions**: `@Transactional` boundaries maintain absolute consistency across orders, inventory deductions, stock ledger movements, and purchase receiving.
 6. **SQL Injection Defense**: 100% parameterized JPQL and named query bindings via Spring Data JPA.
-7. **AI Provider Fallback Cascade**: High-availability AI query execution across Gemini &rarr; Groq &rarr; OpenRouter with zero client-side credential exposure.
+7. **AI Provider Fallback Cascade**: High-availability AI query execution across OpenRouter (Primary) &rarr; Gemini (Fallback) with zero client-side credential exposure.
 
 ---
 

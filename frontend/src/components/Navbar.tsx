@@ -20,7 +20,7 @@ export const Navbar: React.FC = () => {
     { label: t('nav.features', 'Features'), href: '#features' },
     { label: t('nav.aiAssistant', 'AI Assistant'), href: '#ai-assistant' },
     { label: t('nav.analytics', 'Analytics'), href: '#analytics' },
-    { label: t('nav.reviewBoost', 'Review Boost'), href: '#review-boost' },
+    { label: t('nav.reviews', 'Reviews'), href: '#reviews' },
   ];
 
   return (

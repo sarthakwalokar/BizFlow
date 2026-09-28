@@ -276,12 +276,12 @@ export const AiAssistantPage: React.FC = () => {
             {aiStatus?.openRouterAvailable || aiStatus?.geminiAvailable ? (
               <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-[11px] font-semibold">
                 <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-                <span>{t('ai.activeProvider')}</span>
+                <span>{aiStatus?.activeProvider || t('ai.activeProvider')}</span>
               </div>
             ) : (
               <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-600 text-[11px] font-semibold">
                 <span className="w-2 h-2 rounded-full bg-zinc-400" />
-                <span>{t('ai.activeProvider')}</span>
+                <span>{aiStatus?.activeProvider || t('ai.activeProvider')}</span>
               </div>
             )}
           </div>

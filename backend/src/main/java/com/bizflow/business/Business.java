@@ -68,7 +68,7 @@ public class Business extends BaseEntity {
     @Column(name = "tax_inclusive", nullable = false)
     private boolean taxInclusive = false;
 
-    // Review Boost Configuration
+    // Reviews Configuration
     @Column(name = "review_slug", length = 150, unique = true)
     private String reviewSlug;
 

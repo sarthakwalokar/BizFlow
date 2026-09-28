@@ -128,7 +128,7 @@ export const AppLayout: React.FC = () => {
           roles: ['OWNER', 'STAFF'],
         },
         {
-          label: t('nav.reviews', 'Review Boost'),
+          label: t('nav.reviews', 'Reviews'),
           path: '/dashboard/reviews',
           icon: Star,
           roles: ['OWNER', 'STAFF'],

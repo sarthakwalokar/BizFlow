@@ -26,7 +26,7 @@ public class GroqProvider implements AiProvider {
 
     @Override
     public String getProviderName() {
-        return "Groq (" + aiProperties.getGroq().getEffectiveModel("llama-3.3-70b-versatile") + ")";
+        return "BizFlow AI";
     }
 
     @Override

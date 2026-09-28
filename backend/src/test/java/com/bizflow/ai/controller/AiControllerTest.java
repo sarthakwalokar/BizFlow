@@ -166,8 +166,8 @@ class AiControllerTest {
     void testGetStatus() throws Exception {
         AiStatusResponse status = AiStatusResponse.builder()
                 .enabled(true)
-                .activeProvider("OpenRouter (meta-llama/llama-3.3-70b-instruct)")
-                .availableProviders(List.of("OpenRouter (meta-llama/llama-3.3-70b-instruct)"))
+                .activeProvider("BizFlow AI")
+                .availableProviders(List.of("BizFlow AI"))
                 .openRouterAvailable(true)
                 .geminiAvailable(false)
                 .groqAvailable(false)
@@ -179,7 +179,7 @@ class AiControllerTest {
         mockMvc.perform(get("/api/v1/ai/status"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.activeProvider").value("OpenRouter (meta-llama/llama-3.3-70b-instruct)"))
+                .andExpect(jsonPath("$.data.activeProvider").value("BizFlow AI"))
                 .andExpect(jsonPath("$.data.openRouterAvailable").value(true));
     }
 }

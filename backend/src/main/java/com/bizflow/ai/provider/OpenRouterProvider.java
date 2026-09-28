@@ -30,7 +30,7 @@ public class OpenRouterProvider implements AiProvider {
 
     @Override
     public String getProviderName() {
-        return "OpenRouter (" + aiProperties.getOpenrouter().getEffectiveModel("meta-llama/llama-3.3-70b-instruct") + ")";
+        return "BizFlow AI";
     }
 
     @Override

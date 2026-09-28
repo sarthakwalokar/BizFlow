@@ -27,8 +27,7 @@ public class GeminiProvider implements AiProvider {
 
     @Override
     public String getProviderName() {
-        String model = getEffectiveModelName();
-        return "Gemini (" + model + ")";
+        return "BizFlow AI";
     }
 
     @Override

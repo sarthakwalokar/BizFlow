@@ -342,7 +342,7 @@ const LandingPage: React.FC = () => {
                 </div>
                 <h3 className="text-base font-bold text-slate-900 mb-2">AI Business Assistant</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Grounded AI intelligence answering live queries on sales trends, low inventory, and margin optimization with OpenRouter primary and Gemini fallback across 18 languages.
+                  Grounded AI intelligence answering live queries on sales trends, low inventory, and margin optimization powered by BizFlow AI across 18 languages.
                 </p>
               </div>
 
@@ -481,8 +481,8 @@ const LandingPage: React.FC = () => {
                       ✓
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">Dual-Provider Resilience</h4>
-                      <p className="text-xs text-slate-600">Powered by OpenRouter as primary with seamless Google Gemini fallback for uninterrupted intelligence.</p>
+                      <h4 className="text-sm font-semibold text-slate-900">Enterprise High-Availability</h4>
+                      <p className="text-xs text-slate-600">Powered by the BizFlow AI engine with automated intelligent failover for uninterrupted intelligence.</p>
                     </div>
                   </div>
 
@@ -536,7 +536,7 @@ const LandingPage: React.FC = () => {
                     </div>
                   </div>
                   <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-1 rounded-full border border-slate-700 font-mono">
-                    OpenRouter + Gemini
+                    BizFlow AI
                   </span>
                 </div>
 

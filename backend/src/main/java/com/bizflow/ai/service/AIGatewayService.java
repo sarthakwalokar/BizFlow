@@ -77,28 +77,19 @@ public class AIGatewayService {
         }
 
         // 3. BOTH FAILED: Throw clear, actionable AI service error (no static/mock responses)
-        String finalErrorMessage = "AI Assistant service is currently unavailable. " + failureDiagnostics.toString().trim()
-                + " Please check your OpenRouter / Gemini API key configuration and network connectivity.";
-        log.error(finalErrorMessage);
+        String finalErrorMessage = "BizFlow AI Assistant is currently unavailable. "
+                + "Please verify that the AI service is configured and reachable.";
+        log.error("AI Generation failed across all providers: {}", failureDiagnostics.toString().trim());
         throw new RuntimeException(finalErrorMessage);
     }
 
     public AiStatusResponse getAiStatus() {
         boolean openRouterAvail = openRouterProvider != null && openRouterProvider.isConfigured();
         boolean geminiAvail = geminiProvider != null && geminiProvider.isConfigured();
+        boolean aiEnabled = aiProperties.isEnabled() && (openRouterAvail || geminiAvail);
 
-        List<String> available = new ArrayList<>();
-        if (openRouterAvail) available.add(openRouterProvider.getProviderName());
-        if (geminiAvail) available.add(geminiProvider.getProviderName());
-
-        String activeProvider;
-        if (openRouterAvail) {
-            activeProvider = openRouterProvider.getProviderName();
-        } else if (geminiAvail) {
-            activeProvider = geminiProvider.getProviderName();
-        } else {
-            activeProvider = "None (Requires OPENROUTER_API_KEY or GEMINI_API_KEY)";
-        }
+        List<String> available = aiEnabled ? List.of("BizFlow AI") : List.of();
+        String activeProvider = aiEnabled ? "BizFlow AI" : "BizFlow AI (Offline)";
 
         return AiStatusResponse.builder()
                 .enabled(aiProperties.isEnabled())

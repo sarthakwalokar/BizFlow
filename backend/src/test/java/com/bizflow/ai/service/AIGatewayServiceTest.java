@@ -35,7 +35,7 @@ class AIGatewayServiceTest {
     void testOpenRouterPrimary_Success() {
         when(aiProperties.isEnabled()).thenReturn(true);
         when(openRouterProvider.isConfigured()).thenReturn(true);
-        when(openRouterProvider.getProviderName()).thenReturn("OpenRouter (meta-llama/llama-3.3-70b-instruct)");
+        when(openRouterProvider.getProviderName()).thenReturn("BizFlow AI");
         when(openRouterProvider.generateCompletion(anyString(), anyList(), anyString()))
                 .thenReturn("Primary AI response: Sales are up 15%.");
 
@@ -45,7 +45,7 @@ class AIGatewayServiceTest {
 
         assertNotNull(result);
         assertEquals("Primary AI response: Sales are up 15%.", result.reply());
-        assertEquals("OpenRouter (meta-llama/llama-3.3-70b-instruct)", result.providerUsed());
+        assertEquals("BizFlow AI", result.providerUsed());
         verify(openRouterProvider, times(1)).generateCompletion(anyString(), anyList(), anyString());
         verify(geminiProvider, never()).generateCompletion(anyString(), anyList(), anyString());
     }
@@ -54,12 +54,11 @@ class AIGatewayServiceTest {
     void testOpenRouterFailure_FallsBackToGemini() {
         when(aiProperties.isEnabled()).thenReturn(true);
         when(openRouterProvider.isConfigured()).thenReturn(true);
-        when(openRouterProvider.getProviderName()).thenReturn("OpenRouter (meta-llama/llama-3.3-70b-instruct)");
         when(openRouterProvider.generateCompletion(anyString(), anyList(), anyString()))
                 .thenThrow(new RuntimeException("OpenRouter 503 Overloaded"));
 
         when(geminiProvider.isConfigured()).thenReturn(true);
-        when(geminiProvider.getProviderName()).thenReturn("Gemini (gemini-1.5-flash)");
+        when(geminiProvider.getProviderName()).thenReturn("BizFlow AI");
         when(geminiProvider.generateCompletion(anyString(), anyList(), anyString()))
                 .thenReturn("Fallback Gemini AI response: Sales are up 15%.");
 
@@ -69,7 +68,7 @@ class AIGatewayServiceTest {
 
         assertNotNull(result);
         assertEquals("Fallback Gemini AI response: Sales are up 15%.", result.reply());
-        assertEquals("Gemini (gemini-1.5-flash)", result.providerUsed());
+        assertEquals("BizFlow AI", result.providerUsed());
         verify(openRouterProvider, times(1)).generateCompletion(anyString(), anyList(), anyString());
         verify(geminiProvider, times(1)).generateCompletion(anyString(), anyList(), anyString());
     }
@@ -78,21 +77,17 @@ class AIGatewayServiceTest {
     void testBothProvidersFail_ThrowsClearException() {
         when(aiProperties.isEnabled()).thenReturn(true);
         when(openRouterProvider.isConfigured()).thenReturn(true);
-        when(openRouterProvider.getProviderName()).thenReturn("OpenRouter (meta-llama/llama-3.3-70b-instruct)");
         when(openRouterProvider.generateCompletion(anyString(), anyList(), anyString()))
                 .thenThrow(new RuntimeException("OpenRouter 401 Unauthorized"));
 
         when(geminiProvider.isConfigured()).thenReturn(true);
-        when(geminiProvider.getProviderName()).thenReturn("Gemini (gemini-1.5-flash)");
         when(geminiProvider.generateCompletion(anyString(), anyList(), anyString()))
                 .thenThrow(new RuntimeException("Gemini quota exceeded"));
 
         RuntimeException ex = assertThrows(RuntimeException.class, () ->
                 aiGatewayService.generateResponse("System prompt", List.of(), "Summarize sales"));
 
-        assertTrue(ex.getMessage().contains("AI Assistant service is currently unavailable"));
-        assertTrue(ex.getMessage().contains("OpenRouter error"));
-        assertTrue(ex.getMessage().contains("Gemini error"));
+        assertTrue(ex.getMessage().contains("BizFlow AI Assistant is currently unavailable"));
     }
 
     @Test
@@ -104,18 +99,14 @@ class AIGatewayServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class, () ->
                 aiGatewayService.generateResponse("System prompt", List.of(), "Summarize sales"));
 
-        assertTrue(ex.getMessage().contains("AI Assistant service is currently unavailable"));
-        assertTrue(ex.getMessage().contains("OpenRouter API key is not configured"));
-        assertTrue(ex.getMessage().contains("Gemini API key is not configured"));
+        assertTrue(ex.getMessage().contains("BizFlow AI Assistant is currently unavailable"));
     }
 
     @Test
     void testGetAiStatus_WhenOpenRouterConfigured() {
         when(aiProperties.isEnabled()).thenReturn(true);
         when(openRouterProvider.isConfigured()).thenReturn(true);
-        when(openRouterProvider.getProviderName()).thenReturn("OpenRouter (meta-llama/llama-3.3-70b-instruct)");
         when(geminiProvider.isConfigured()).thenReturn(true);
-        when(geminiProvider.getProviderName()).thenReturn("Gemini (gemini-1.5-flash)");
 
         AiStatusResponse status = aiGatewayService.getAiStatus();
 
@@ -123,6 +114,7 @@ class AIGatewayServiceTest {
         assertTrue(status.isEnabled());
         assertTrue(status.isOpenRouterAvailable());
         assertTrue(status.isGeminiAvailable());
-        assertEquals("OpenRouter (meta-llama/llama-3.3-70b-instruct)", status.getActiveProvider());
+        assertEquals("BizFlow AI", status.getActiveProvider());
+        assertEquals(List.of("BizFlow AI"), status.getAvailableProviders());
     }
 }

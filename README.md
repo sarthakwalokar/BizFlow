@@ -13,7 +13,7 @@ BizFlow is an enterprise-grade, multi-tenant Business Management and Point-of-Sa
 - **Fast POS Billing Terminal**: Barcode scanning, category filters, quick cash/card/UPI tender, automated invoice generation, and tax calculations (inclusive/exclusive).
 - **Customer CRM & Ledger**: Customer transaction history, loyalty metrics, total spend tracking, and purchase frequency.
 - **Expense & Margin Tracking**: Operating expense categorization (Rent, Payroll, Utilities, Supplies) and net margin analytics.
-- **AI Business Assistant**: Multi-provider fallback cascade (**OpenRouter** &rarr; **Google Gemini**) querying tenant-scoped operational data for grounded insights, stock alerts, and financial forecasting without data leakage or destructive actions.
+- **AI Business Assistant**: Proprietary **BizFlow AI** grounded intelligence engine querying tenant-scoped operational data for grounded insights, stock alerts, and financial forecasting without data leakage or destructive actions.
 - **Dedicated Platform Administration**: Super-admin governance portal (`/admin/*`) for global tenant oversight, business activation/suspension, user status management, and platform analytics.
 
 ---
@@ -217,7 +217,7 @@ npm run build
 4. **Information Disclosure Prevention**: `GlobalExceptionHandler` masks unhandled server exceptions into clean `ApiError` envelopes without leaking database structures or internal stack traces.
 5. **Robust Transactions**: `@Transactional` boundaries maintain absolute consistency across orders, inventory deductions, stock ledger movements, and purchase receiving.
 6. **SQL Injection Defense**: 100% parameterized JPQL and named query bindings via Spring Data JPA.
-7. **AI Provider Fallback Cascade**: High-availability AI query execution across OpenRouter (Primary) &rarr; Gemini (Fallback) with zero client-side credential exposure.
+7. **BizFlow AI Grounded Intelligence**: High-availability AI query execution engine with zero client-side credential exposure and strict tenant data isolation.
 
 ---
 

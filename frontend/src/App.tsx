@@ -19,6 +19,7 @@ import { ProductListPage } from './pages/products/ProductListPage';
 import { CategoryListPage } from './pages/products/CategoryListPage';
 import { StaffManagementPage } from './pages/staff/StaffManagementPage';
 import { BusinessSettingsPage } from './pages/business/BusinessSettingsPage';
+import { OnboardingPage } from './pages/business/OnboardingPage';
 import { UserProfilePage } from './pages/profile/UserProfilePage';
 import { POSBillingPage } from './pages/billing/POSBillingPage';
 import { OrdersHistoryPage } from './pages/billing/OrdersHistoryPage';
@@ -30,6 +31,18 @@ import { InventoryPage } from './pages/inventory/InventoryPage';
 import { AnalyticsDashboardPage } from './pages/analytics/AnalyticsDashboardPage';
 import { ReportsCenterPage } from './pages/reports/ReportsCenterPage';
 import { AiAssistantPage } from './pages/ai/AiAssistantPage';
+// Specialized Business Modules
+import { RestaurantTablesPage } from './pages/modules/restaurant/RestaurantTablesPage';
+import { RestaurantKotPage } from './pages/modules/restaurant/RestaurantKotPage';
+import { SalonAppointmentsPage } from './pages/modules/salon/SalonAppointmentsPage';
+import { SalonServicesPage } from './pages/modules/salon/SalonServicesPage';
+import { ElectronicsSerialsPage } from './pages/modules/electronics/ElectronicsSerialsPage';
+import { WarrantyLookupPage } from './pages/modules/electronics/WarrantyLookupPage';
+import { RepairJobCardsPage } from './pages/modules/repair/RepairJobCardsPage';
+import { RepairTrackingPage } from './pages/modules/repair/RepairTrackingPage';
+import { EduStudentsPage } from './pages/modules/education/EduStudentsPage';
+import { EduCoursesBatchesPage } from './pages/modules/education/EduCoursesBatchesPage';
+import { EduFeeManagementPage } from './pages/modules/education/EduFeeManagementPage';
 import { 
   Receipt,
   Package,
@@ -902,6 +915,16 @@ export const App: React.FC = () => {
           {/* Public Customer Review Link */}
           <Route path="/review/:slug" element={<PublicReviewPage />} />
 
+          {/* Protected Onboarding Flow (Fresh Business Registration) */}
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute allowedRoles={['OWNER']}>
+                <OnboardingPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Protected Business Dashboard (Owner & Staff) */}
           <Route
             path="/dashboard"
@@ -912,6 +935,7 @@ export const App: React.FC = () => {
             }
           >
             <Route index element={<DashboardHomePage />} />
+            <Route path="onboarding" element={<OnboardingPage />} />
             <Route path="products" element={<ProductListPage />} />
             <Route path="categories" element={<CategoryListPage />} />
             <Route path="pos" element={<POSBillingPage />} />
@@ -928,6 +952,28 @@ export const App: React.FC = () => {
             <Route path="staff" element={<StaffManagementPage />} />
             <Route path="settings" element={<BusinessSettingsPage />} />
             <Route path="profile" element={<UserProfilePage />} />
+
+            {/* Specialized Modules: Restaurant */}
+            <Route path="restaurant/tables" element={<RestaurantTablesPage />} />
+            <Route path="restaurant/kot" element={<RestaurantKotPage />} />
+
+            {/* Specialized Modules: Salon */}
+            <Route path="salon/appointments" element={<SalonAppointmentsPage />} />
+            <Route path="salon/services" element={<SalonServicesPage />} />
+
+            {/* Specialized Modules: Electronics */}
+            <Route path="electronics/serials" element={<ElectronicsSerialsPage />} />
+            <Route path="electronics/warranty-lookup" element={<WarrantyLookupPage />} />
+
+            {/* Specialized Modules: Repair & Service */}
+            <Route path="repairs/job-cards" element={<RepairJobCardsPage />} />
+            <Route path="repairs/tracking" element={<RepairTrackingPage />} />
+
+            {/* Specialized Modules: Education & Coaching */}
+            <Route path="education/students" element={<EduStudentsPage />} />
+            <Route path="education/courses" element={<EduCoursesBatchesPage />} />
+            <Route path="education/fees" element={<EduFeeManagementPage />} />
+            <Route path="education/attendance" element={<Navigate to="/dashboard/education/students" replace />} />
           </Route>
 
           {/* Protected Admin Portal */}

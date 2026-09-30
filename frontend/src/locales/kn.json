@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "ಚಿಲ್ಲರೆ ಅಂಗಡಿ / ರಿಟೇಲ್ ಸ್ಟೋರ್",
+    "typeGrocery": "ಕಿರಾಣಿ ಅಂಗಡಿ",
+    "typeSupermarket": "ಸೂಪರ್‌ಮಾರ್ಕೆಟ್",
+    "typeRestaurant": "ರೆಸ್ಟೋರೆಂಟ್ / ಉಪಹಾರ ಗೃಹ",
+    "typeCafe": "ಕೆಫೆ ಮತ್ತು ಬಿಸ್ಟ್ರೋ",
+    "typeBakery": "ಬೇಕರಿ ಮತ್ತು ಪೇಸ್ಟ್ರಿ",
+    "typeSweetShop": "ಸಿಹಿ ತಿನಿಸುಗಳ ಅಂಗಡಿ",
+    "typeSalon": "ಸಲೂನ್ ಮತ್ತು ಹೇರ್ ಸ್ಟುಡಿಯೋ",
+    "typeBeautyParlour": "ಬ್ಯೂಟಿ ಪಾರ್ಲರ್ ಮತ್ತು ಸ್ಪಾ",
+    "typeClothing": "ಬಟ್ಟೆ ಅಂಗಡಿ / ಬೂಟಿಕ್",
+    "typeElectronics": "ಎಲೆಕ್ಟ್ರಾನಿಕ್ಸ್ ಮತ್ತು ಉಪಕರಣಗಳು",
+    "typePharmacy": "ಫಾರ್ಮಸಿ ಮತ್ತು ಮೆಡಿಕಲ್ ಸ್ಟೋರ್",
+    "typeHardware": "ಹಾರ್ಡ್‌ವೇರ್ ಮತ್ತು ಎಲೆಕ್ಟ್ರಿಕಲ್",
+    "typeFurniture": "ಫರ್ನಿಚರ್ ಮತ್ತು ಹೋಮ್ ಡೆಕೋರ್",
+    "typeStationery": "ಸ್ಟೇಷನರಿ ಮತ್ತು ಪುಸ್ತಕ ಮಳಿಗೆ",
+    "typeMobileStore": "ಮೊಬೈಲ್ ಸ್ಟೋರ್ ಮತ್ತು ಟೆಕ್ ಹಬ್",
+    "typeRepair": "ದುರಸ್ತಿ ಮತ್ತು ಸೇವಾ ಕೇಂದ್ರ",
+    "typeFitness": "ಜಿಮ್ ಮತ್ತು ಫಿಟ್‌ನೆಸ್ ಸ್ಟುಡಿಯೋ",
+    "typeHotel": "ಹೋಟೆಲ್ ಮತ್ತು ಹಾಸ್ಪಿಟಾಲಿಟಿ",
+    "typeCatering": "ಕ್ಯಾಟರಿಂಗ್ ಮತ್ತು ಈವೆಂಟ್ ಸೇವೆಗಳು",
+    "typeService": "ವೃತ್ತಿಪರ ಸೇವೆಗಳು",
+    "typeConsultancy": "ಕನ್ಸಲ್ಟೆನ್ಸಿ ಮತ್ತು ಏಜೆನ್ಸಿ",
+    "typeEducation": "ಶಿಕ್ಷಣ ಮತ್ತು ತರಬೇತಿ ಸಂಸ್ಥೆ",
+    "typeOther": "ಇತರ ವಾಣಿಜ್ಯ ಸಂಸ್ಥೆ"
   }
 }

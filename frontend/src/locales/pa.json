@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "ਪਰਚੂਨ ਦੁਕਾਨ / ਰਿਟੇਲ ਸਟੋਰ",
+    "typeGrocery": "ਕਰਿਆਨਾ ਸਟੋਰ",
+    "typeSupermarket": "ਸੁਪਰਮਾਰਕੀਟ / ਹਾਈਪਰਮਾਰਕੀਟ",
+    "typeRestaurant": "ਰੈਸਟੋਰੈਂਟ / ਢਾਬਾ",
+    "typeCafe": "ਕੈਫੇ ਅਤੇ ਬਿਸਟਰੋ",
+    "typeBakery": "ਬੇਕਰੀ ਅਤੇ ਪੈਟਿਸਰੀ",
+    "typeSweetShop": "ਮਠਿਆਈ ਦੀ ਦੁਕਾਨ / ਹਲਵਾਈ",
+    "typeSalon": "ਸੈਲੂਨ ਅਤੇ ਹੇਅਰ ਸਟੂਡੀਓ",
+    "typeBeautyParlour": "ਬਿਊਟੀ ਪਾਰਲਰ ਅਤੇ ਸਪਾ",
+    "typeClothing": "ਕੱਪੜੇ ਅਤੇ ਬੁਟੀਕ",
+    "typeElectronics": "ਇਲੈਕਟ੍ਰਾਨਿਕਸ ਅਤੇ ਉਪਕਰਣ",
+    "typePharmacy": "ਫਾਰਮੇਸੀ ਅਤੇ ਮੈਡੀਕਲ ਸਟੋਰ",
+    "typeHardware": "ਹਾਰਡਵੇਅਰ ਅਤੇ ਇਲੈਕਟ੍ਰੀਕਲ",
+    "typeFurniture": "ਫਰਨੀਚਰ ਅਤੇ ਘਰੇਲੂ ਸਜਾਵਟ",
+    "typeStationery": "ਸਟੇਸ਼ਨਰੀ ਅਤੇ ਕਿਤਾਬਾਂ ਦੀ ਦੁਕਾਨ",
+    "typeMobileStore": "ਮੋਬਾਈਲ ਸਟੋਰ ਅਤੇ ਟੈਕ ਹੱਬ",
+    "typeRepair": "ਮੁਰੰਮਤ ਅਤੇ ਸਰਵਿਸ ਸੈਂਟਰ",
+    "typeFitness": "ਜਿਮ ਅਤੇ ਫਿਟਨੈਸ ਸਟੂਡੀਓ",
+    "typeHotel": "ਹੋਟਲ ਅਤੇ ਪ੍ਰਾਹੁਣਚਾਰੀ",
+    "typeCatering": "ਕੈਟਰਿੰਗ ਅਤੇ ਇਵੈਂਟ ਸੇਵਾਵਾਂ",
+    "typeService": "ਪੇਸ਼ੇਵਰ ਸੇਵਾਵਾਂ",
+    "typeConsultancy": "ਸਲਾਹਕਾਰ ਅਤੇ ਏਜੰਸੀ",
+    "typeEducation": "ਸਿੱਖਿਆ ਅਤੇ ਕੋਚਿੰਗ ਸੰਸਥਾਨ",
+    "typeOther": "ਹੋਰ ਵਪਾਰਕ ਅਦਾਰਾ"
   }
 }

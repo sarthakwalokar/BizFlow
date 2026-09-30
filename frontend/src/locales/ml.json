@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "റീട്ടെയിൽ സ്റ്റോർ / കട",
+    "typeGrocery": "പലചരക്ക് കട",
+    "typeSupermarket": "സൂപ്പർമാർക്കറ്റ്",
+    "typeRestaurant": "റെസ്റ്റോറന്റ്",
+    "typeCafe": "കഫേ & ബിസ്ട്രോ",
+    "typeBakery": "ബേക്കറി & പാറ്റിസ്സേരി",
+    "typeSweetShop": "മധുരപലഹാര കട",
+    "typeSalon": "സലൂൺ & ഹെയർ സ്റ്റുഡിയോ",
+    "typeBeautyParlour": "ബ്യൂട്ടി പാർലർ & സ്പാ",
+    "typeClothing": "വസ്ത്രശാല / ബോട്ടിക്",
+    "typeElectronics": "ഇലക്ട്രോണിക്സ് ഉപകരണങ്ങൾ",
+    "typePharmacy": "ഫാർമസി & മെഡിക്കൽ സ്റ്റോർ",
+    "typeHardware": "ഹാർഡ്‌വെയർ & ഇലക്ട്രിക്കൽ",
+    "typeFurniture": "ഫർണിച്ചർ & ഹോം ഡെക്കോർ",
+    "typeStationery": "സ്റ്റേഷനറി & പുസ്തകശാല",
+    "typeMobileStore": "മൊബൈൽ സ്റ്റോർ & ടെക് ഹബ്",
+    "typeRepair": "റിപ്പയറിംഗ് & സർവീസ് സെന്റർ",
+    "typeFitness": "ജിം & ഫിറ്റ്നസ് സ്റ്റുഡിയോ",
+    "typeHotel": "ഹോട്ടൽ & ഹോസ്പിറ്റാലിറ്റി",
+    "typeCatering": "കാറ്ററിംഗ് & ഇവന്റ് സർവീസസ്",
+    "typeService": "പ്രൊഫഷണൽ സേവനങ്ങൾ",
+    "typeConsultancy": "കൺസൾട്ടൻസി & ഏജൻസി",
+    "typeEducation": "വിദ്യാഭ്യാസ സ്ഥാപനം",
+    "typeOther": "മറ്റ് വാണിജ്യ സ്ഥാപനങ്ങൾ"
   }
 }

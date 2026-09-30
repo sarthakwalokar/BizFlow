@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   aiApi,
@@ -22,7 +23,12 @@ import { AiAnalyzingIndicator, SkeletonBlock } from '../../components/common/Loa
 import { RichAiMessage } from '../../components/ai/RichAiMessage';
 
 export const AiAssistantPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, business } = useAuth();
+
+  if (business?.businessType?.toUpperCase() === 'EDUCATION') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   const { t } = useTranslation();
   const [conversations, setConversations] = useState<AiConversationSummary[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<number | null>(null);

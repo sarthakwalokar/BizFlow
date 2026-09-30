@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "சில்லறை கடை / ரீடெய்ல் ஸ்டோர்",
+    "typeGrocery": "மளிகை கடை",
+    "typeSupermarket": "சூப்பர் மார்க்கெட்",
+    "typeRestaurant": "உணவகம் / ரெஸ்டாரன்ட்",
+    "typeCafe": "கஃபே & பிஸ்ட்ரோ",
+    "typeBakery": "பேக்கரி & பேஸ்ட்ரி",
+    "typeSweetShop": "இனிப்பகம் / ஸ்வீட் ஸ்டால்",
+    "typeSalon": "சலூன் & ஹேர் ஸ்டுடியோ",
+    "typeBeautyParlour": "பியூட்டி பார்லர் & ஸ்பா",
+    "typeClothing": "ஆடை மற்றும் ஜவுளி கடை / பூட்டிக்",
+    "typeElectronics": "எலக்ட்ரானிக்ஸ் & உபகரணங்கள்",
+    "typePharmacy": "மருந்தகம் / மெடிக்கல் ஸ்டோர்",
+    "typeHardware": "ஹார்டுவேர் & எலக்ட்ரிக்கல்",
+    "typeFurniture": "மரச்சாமான்கள் & ஹோம் டெக்கோர்",
+    "typeStationery": "ஸ்டேஷனரி & புத்தகக் கடை",
+    "typeMobileStore": "மொபைல் ஸ்டோர் & டெக் ஹப்",
+    "typeRepair": "பழுதுபார்ப்பு & சேவை மையம்",
+    "typeFitness": "ஜிம் & ஃபிட்னஸ் ஸ்டுடியோ",
+    "typeHotel": "ஹோட்டல் & விருந்தோம்பல்",
+    "typeCatering": "கேட்டரிங் & நிகழ்வு சேவைகள்",
+    "typeService": "தொழில்முறை சேவைகள்",
+    "typeConsultancy": "ஆலோசனை & ஏஜென்சி",
+    "typeEducation": "கல்வி & பயிற்சி மையம்",
+    "typeOther": "பிற வணிக நிறுவனம்"
   }
 }

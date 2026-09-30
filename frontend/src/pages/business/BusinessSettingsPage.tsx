@@ -20,11 +20,13 @@ import {
   Upload,
   Trash2,
   Link as LinkIcon,
+  GraduationCap,
 } from 'lucide-react';
 
 export const BusinessSettingsPage: React.FC = () => {
   const { business, user, updateBusinessState, updateUserLanguage } = useAuth();
   const { t, i18n } = useTranslation();
+  const isEducation = business?.businessType?.toUpperCase() === 'EDUCATION';
 
   const [name, setName] = useState('');
   const [businessType, setBusinessType] = useState<BusinessType>('RETAIL');
@@ -82,7 +84,7 @@ export const BusinessSettingsPage: React.FC = () => {
     }
   };
 
-  // Tax settings
+  // Tax settings / Fee Receipt settings
   const [taxRate, setTaxRate] = useState<number>(0);
   const [taxName, setTaxName] = useState('GST');
   const [taxNumber, setTaxNumber] = useState('');
@@ -99,7 +101,7 @@ export const BusinessSettingsPage: React.FC = () => {
   useEffect(() => {
     if (business) {
       setName(business.name || '');
-      setBusinessType(business.businessType || 'RETAIL');
+      setBusinessType(business.businessType || (isEducation ? 'EDUCATION' : 'RETAIL'));
       setEmail(business.email || '');
       setPhone(business.phone || '');
       setAddress(business.address || '');
@@ -107,13 +109,13 @@ export const BusinessSettingsPage: React.FC = () => {
       setCurrency(business.currency || 'USD');
       setTimezone(business.timezone || 'Asia/Kolkata');
       setTaxRate(business.taxRate ?? 0);
-      setTaxName(business.taxName || 'GST');
+      setTaxName(business.taxName || (isEducation ? 'Fee Receipt' : 'GST'));
       setTaxNumber(business.taxNumber || '');
       setTaxInclusive(business.taxInclusive ?? false);
       setBusinessSize(business.businessSize || 'SMALL');
-      setInventoryEnabled(business.inventoryEnabled ?? true);
+      setInventoryEnabled(business.inventoryEnabled ?? (isEducation ? false : true));
     }
-  }, [business]);
+  }, [business, isEducation]);
 
   const processImageFile = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -211,8 +213,8 @@ export const BusinessSettingsPage: React.FC = () => {
 
     try {
       const updateData: BusinessUpdateRequest = {
-        name: name || business?.name || 'My Business',
-        businessType: businessType || business?.businessType || 'RETAIL',
+        name: name || business?.name || (isEducation ? 'My Coaching Institute' : 'My Business'),
+        businessType: businessType || business?.businessType || (isEducation ? 'EDUCATION' : 'RETAIL'),
         email: email || undefined,
         phone: phone || undefined,
         address: address || undefined,
@@ -220,17 +222,21 @@ export const BusinessSettingsPage: React.FC = () => {
         currency: currency || business?.currency || 'USD',
         timezone: timezone || business?.timezone || 'Asia/Kolkata',
         taxRate: Number(taxRate ?? business?.taxRate ?? 0),
-        taxName: taxName || business?.taxName || 'GST',
+        taxName: taxName || business?.taxName || (isEducation ? 'Fee Receipt' : 'GST'),
         taxNumber: taxNumber || business?.taxNumber || undefined,
         taxInclusive: taxInclusive ?? business?.taxInclusive ?? false,
         businessSize: businessSize || business?.businessSize || 'SMALL',
-        inventoryEnabled: inventoryEnabled ?? business?.inventoryEnabled ?? true,
+        inventoryEnabled: inventoryEnabled ?? business?.inventoryEnabled ?? false,
       };
 
       const updated = await businessApi.updateMyBusiness(updateData);
       updateBusinessState(updated);
       setLogo(updated.logo || '');
-      setLogoSuccessMessage(t('settings.logoSaved', 'Logo saved and persisted successfully!'));
+      setLogoSuccessMessage(
+        isEducation
+          ? 'Institute logo saved and active across all fee receipts and reports!'
+          : t('settings.logoSaved', 'Logo saved and persisted successfully!')
+      );
     } catch (err: any) {
       const msg =
         err.response?.data?.error?.message ||
@@ -260,30 +266,32 @@ export const BusinessSettingsPage: React.FC = () => {
         currency,
         timezone,
         taxRate: Number(taxRate),
-        taxName: taxName || 'GST',
+        taxName: taxName || (isEducation ? 'Fee Receipt' : 'GST'),
         taxNumber: taxNumber || undefined,
         taxInclusive,
         businessSize,
-        inventoryEnabled,
+        inventoryEnabled: isEducation ? false : inventoryEnabled,
       };
 
       const updated = await businessApi.updateMyBusiness(updateData);
       updateBusinessState(updated);
       setLogo(updated.logo || '');
-      setSuccessMessage(t('settings.settingsSaved'));
+      setSuccessMessage(
+        isEducation ? 'Institute settings saved successfully!' : t('settings.settingsSaved')
+      );
     } catch (err: any) {
       const msg =
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to save business settings. Please try again.';
+        'Failed to save settings. Please try again.';
       setErrorMessage(msg);
     } finally {
       setSaving(false);
     }
   };
 
-  // Tax simulation calculation for a sample 100 unit item
-  const sampleBasePrice = 100;
+  // Fee / Tax simulation calculation for a sample 1000 unit tuition fee
+  const sampleBasePrice = isEducation ? 1000 : 100;
   const simulatedTaxAmount = taxInclusive
     ? sampleBasePrice - sampleBasePrice / (1 + Number(taxRate) / 100)
     : (sampleBasePrice * Number(taxRate)) / 100;
@@ -293,9 +301,21 @@ export const BusinessSettingsPage: React.FC = () => {
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('settings.title')}</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">
+            {isEducation ? 'Institute Settings' : t('settings.title')}
+          </h1>
+          {isEducation && (
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 flex items-center gap-1">
+              <GraduationCap size={13} className="text-emerald-600" />
+              <span>Coaching &amp; Academy</span>
+            </span>
+          )}
+        </div>
         <p className="text-xs text-zinc-500 mt-0.5">
-          {t('settings.subtitle')}
+          {isEducation
+            ? 'Configure your coaching institute profile, branding logo, campus location, contact info and fee receipt settings'
+            : t('settings.subtitle')}
         </p>
       </div>
 
@@ -353,38 +373,45 @@ export const BusinessSettingsPage: React.FC = () => {
         <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs space-y-5">
           <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-100">
             <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center font-bold">
-              <Building2 size={16} />
+              {isEducation ? <GraduationCap size={16} /> : <Building2 size={16} />}
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-zinc-900">{t('settings.generalInfo')}</h2>
-              <p className="text-xs text-zinc-500">{t('settings.generalInfoDesc')}</p>
+              <h2 className="text-sm font-semibold text-zinc-900">
+                {isEducation ? 'Institute Profile & Branding' : t('settings.generalInfo')}
+              </h2>
+              <p className="text-xs text-zinc-500">
+                {isEducation
+                  ? 'Coaching academy details, center address and official contact coordinates'
+                  : t('settings.generalInfoDesc')}
+              </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {t('settings.businessName')} <span className="text-red-500">*</span>
+                {isEducation ? 'Institute / Coaching Class Name' : t('settings.businessName')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Apex Coffee & Bistro"
+                placeholder={isEducation ? 'e.g. Apex Tutorials & Computer Academy' : 'e.g. Apex Coffee & Bistro'}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {t('settings.businessType')} <span className="text-red-500">*</span>
+                {isEducation ? 'Organization Type' : t('settings.businessType')} <span className="text-red-500">*</span>
               </label>
               <select
                 value={businessType}
                 onChange={(e) => setBusinessType(e.target.value as BusinessType)}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs bg-white text-zinc-800"
               >
+                <option value="EDUCATION">Education & Coaching Center</option>
                 <option value="RETAIL">Retail Store / Shop</option>
                 <option value="GROCERY">Grocery & Kirana Store</option>
                 <option value="SUPERMARKET">Supermarket / Hypermarket</option>
@@ -407,27 +434,26 @@ export const BusinessSettingsPage: React.FC = () => {
                 <option value="CATERING">Catering & Event Services</option>
                 <option value="SERVICE">Professional & Trade Services</option>
                 <option value="CONSULTANCY">Consultancy & Agency</option>
-                <option value="EDUCATION">Education & Coaching Center</option>
                 <option value="OTHER">Other Commercial Enterprise</option>
               </select>
             </div>
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {t('settings.contactEmail')}
+                {isEducation ? 'Institute Office Email' : t('settings.contactEmail')}
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="contact@business.com"
+                placeholder={isEducation ? 'contact@apextutorials.com' : 'contact@business.com'}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {t('settings.contactPhone')}
+                {isEducation ? 'Institute Helpline / Phone' : t('settings.contactPhone')}
               </label>
               <input
                 type="text"
@@ -440,20 +466,25 @@ export const BusinessSettingsPage: React.FC = () => {
 
             <div className="space-y-1 md:col-span-2">
               <label className="text-xs font-medium text-zinc-700">
-                {t('settings.physicalAddress')}
+                {isEducation ? 'Institute Campus / Center Address' : t('settings.physicalAddress')}
               </label>
               <textarea
                 rows={2}
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="Floor 2, Tech Park, Outer Ring Road, Bengaluru, Karnataka 560103"
+                placeholder={
+                  isEducation
+                    ? '2nd Floor, Knowledge Park, Main Road, Pune, Maharashtra 411001'
+                    : 'Floor 2, Tech Park, Outer Ring Road, Bengaluru, Karnataka 560103'
+                }
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
 
+            {/* Logo Section */}
             <div className="space-y-2 md:col-span-2">
               <label className="text-xs font-semibold text-zinc-700 flex items-center justify-between">
-                <span>{t('settings.logo', 'Business Brand Logo')}</span>
+                <span>{isEducation ? 'Institute Logo & Letterhead Branding' : t('settings.logo', 'Business Brand Logo')}</span>
                 <span className="text-[10px] text-zinc-400 font-normal">PNG, JPG, WebP or SVG (Max 5MB)</span>
               </label>
 
@@ -463,7 +494,7 @@ export const BusinessSettingsPage: React.FC = () => {
                   {logo ? (
                     <img
                       src={logo}
-                      alt="Business Logo Preview"
+                      alt="Institute Logo Preview"
                       className="w-full h-full object-contain"
                       onError={() => setLogoError('Failed to display image from provided source.')}
                     />
@@ -492,7 +523,11 @@ export const BusinessSettingsPage: React.FC = () => {
                   ) : business?.logo ? (
                     <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
                       <CheckCircle2 size={12} className="text-emerald-600" />
-                      <span>Saved &amp; active across all invoices and documents</span>
+                      <span>
+                        {isEducation
+                          ? 'Saved & active across all fee receipts, admission cards, and reports'
+                          : 'Saved & active across all invoices and documents'}
+                      </span>
                     </div>
                   ) : null}
 
@@ -586,7 +621,9 @@ export const BusinessSettingsPage: React.FC = () => {
                   )}
 
                   <p className="text-[11px] text-zinc-500 leading-tight pt-1">
-                    {t('settings.logoHint', 'Your logo is securely stored and automatically displayed on POS receipts, tax invoices, PDF exports, and client review pages.')}
+                    {isEducation
+                      ? 'Your institute logo will be printed on student fee receipts, admission cards, and coaching reports.'
+                      : t('settings.logoHint', 'Your logo is securely stored and automatically displayed on POS receipts, tax invoices, PDF exports, and client review pages.')}
                   </p>
                 </div>
               </div>
@@ -609,7 +646,7 @@ export const BusinessSettingsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {t('settings.operatingCurrency')}
+                {isEducation ? 'Fee Currency' : t('settings.operatingCurrency')}
               </label>
               <select
                 value={currency}
@@ -652,16 +689,20 @@ export const BusinessSettingsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Tax Configuration & Simulation */}
+        {/* Fee & Receipt Configuration */}
         <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs space-y-5">
           <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-100">
             <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
-              <Percent size={16} />
+              {isEducation ? <Receipt size={16} /> : <Percent size={16} />}
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-zinc-900">{t('settings.taxSettings')}</h2>
+              <h2 className="text-sm font-semibold text-zinc-900">
+                {isEducation ? 'Fee & Receipt Settings' : t('settings.taxSettings')}
+              </h2>
               <p className="text-xs text-zinc-500">
-                {t('settings.taxSettingsDesc')}
+                {isEducation
+                  ? 'Customize receipt headers, applicable tax or government levy rate, and institute registration code'
+                  : t('settings.taxSettingsDesc')}
               </p>
             </div>
           </div>
@@ -669,20 +710,20 @@ export const BusinessSettingsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {t('settings.taxName')}
+                {isEducation ? 'Receipt / Tax Title' : t('settings.taxName')}
               </label>
               <input
                 type="text"
                 value={taxName}
                 onChange={(e) => setTaxName(e.target.value)}
-                placeholder="e.g. GST, VAT, Sales Tax"
+                placeholder={isEducation ? 'e.g. Fee Receipt / GST' : 'e.g. GST, VAT, Sales Tax'}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {t('settings.taxRate')}
+                {isEducation ? 'Tax / Levy Rate (%)' : t('settings.taxRate')}
               </label>
               <input
                 type="number"
@@ -691,36 +732,40 @@ export const BusinessSettingsPage: React.FC = () => {
                 max="100"
                 value={taxRate}
                 onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
-                placeholder="e.g. 18.0"
+                placeholder="0.0 (or 18.0 if applicable)"
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs font-semibold"
               />
             </div>
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {t('settings.taxNumber')}
+                {isEducation ? 'Institute Reg / GST Number' : t('settings.taxNumber')}
               </label>
               <input
                 type="text"
                 value={taxNumber}
                 onChange={(e) => setTaxNumber(e.target.value)}
-                placeholder="e.g. 29AAAAA0000A1Z5"
+                placeholder={isEducation ? 'e.g. MH/PUN/EDU/2026/89 or GSTIN' : 'e.g. 29AAAAA0000A1Z5'}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
           </div>
 
-          {/* Tax Inclusive Toggle */}
+          {/* Tax / Fee Inclusive Toggle */}
           <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 flex items-center justify-between">
             <div className="space-y-0.5 pr-4">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-zinc-900">{t('settings.taxInclusive')}</span>
+                <span className="text-xs font-semibold text-zinc-900">
+                  {isEducation ? 'Fees are Inclusive of Taxes' : t('settings.taxInclusive')}
+                </span>
                 <span className="px-2 py-0.5 rounded-full bg-zinc-200 text-zinc-700 text-[10px] font-medium">
                   {taxInclusive ? t('common.active') : t('common.inactive')}
                 </span>
               </div>
               <p className="text-[11px] text-zinc-500">
-                {t('settings.taxInclusiveDesc')}
+                {isEducation
+                  ? 'When enabled, the course total fee quoted to students already includes all taxes and levies.'
+                  : t('settings.taxInclusiveDesc')}
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer shrink-0">
@@ -734,16 +779,18 @@ export const BusinessSettingsPage: React.FC = () => {
             </label>
           </div>
 
-          {/* Live Tax Simulation Box */}
+          {/* Live Receipt / Fee Simulation Box */}
           <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-2">
             <div className="flex items-center gap-1.5 text-zinc-700 font-medium text-xs">
               <Receipt size={14} className="text-zinc-500" />
-              <span>{t('settings.taxPreview')}</span>
+              <span>{isEducation ? 'Sample Fee Receipt Breakdown' : t('settings.taxPreview')}</span>
             </div>
 
             <div className="grid grid-cols-3 gap-3 text-xs">
               <div className="p-2.5 rounded-lg bg-white border border-zinc-200">
-                <span className="text-zinc-400 block text-[10px]">{t('settings.netItemPrice')}</span>
+                <span className="text-zinc-400 block text-[10px]">
+                  {isEducation ? 'Base Tuition Fee' : t('settings.netItemPrice')}
+                </span>
                 <span className="font-medium text-zinc-900">
                   {formatCurrency(
                     taxInclusive ? sampleBasePrice - simulatedTaxAmount : sampleBasePrice,
@@ -762,7 +809,9 @@ export const BusinessSettingsPage: React.FC = () => {
               </div>
 
               <div className="p-2.5 rounded-lg bg-white border border-zinc-200">
-                <span className="text-zinc-400 block text-[10px]">{t('settings.totalBilled')}</span>
+                <span className="text-zinc-400 block text-[10px]">
+                  {isEducation ? 'Total Receipt Amount' : t('settings.totalBilled')}
+                </span>
                 <span className="font-bold text-brand-700">
                   {formatCurrency(simulatedTotalPrice, currency)}
                 </span>
@@ -771,110 +820,112 @@ export const BusinessSettingsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Business Scale Tier & Inventory Control */}
-        <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs space-y-5">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-100">
-            <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center font-bold">
-              <Boxes size={16} />
+        {/* Business Scale Tier & Inventory Control - Hidden for Education */}
+        {!isEducation && (
+          <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs space-y-5">
+            <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-100">
+              <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center font-bold">
+                <Boxes size={16} />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-zinc-900">{t('settings.businessScale')}</h2>
+                <p className="text-xs text-zinc-500">
+                  {t('settings.businessScaleDesc')}
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-sm font-semibold text-zinc-900">{t('settings.businessScale')}</h2>
-              <p className="text-xs text-zinc-500">
-                {t('settings.businessScaleDesc')}
-              </p>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Small Business Option Card */}
-            <div
-              onClick={() => setBusinessSize('SMALL')}
-              className={`p-4 rounded-xl border cursor-pointer transition-colors ${
-                businessSize === 'SMALL'
-                  ? 'border-brand-600 bg-brand-50/30 ring-1 ring-brand-600'
-                  : 'border-zinc-200 hover:border-zinc-300 bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1.5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Small Business Option Card */}
+              <div
+                onClick={() => setBusinessSize('SMALL')}
+                className={`p-4 rounded-xl border cursor-pointer transition-colors ${
+                  businessSize === 'SMALL'
+                    ? 'border-brand-600 bg-brand-50/30 ring-1 ring-brand-600'
+                    : 'border-zinc-200 hover:border-zinc-300 bg-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-zinc-900">{t('settings.smallBizTier')}</span>
+                    <span className="px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600 text-[10px] font-medium">
+                      {t('settings.smallBizTierBadge')}
+                    </span>
+                  </div>
+                  <input
+                    type="radio"
+                    name="businessSize"
+                    checked={businessSize === 'SMALL'}
+                    onChange={() => setBusinessSize('SMALL')}
+                    className="w-3.5 h-3.5 text-brand-600 focus:ring-brand-500"
+                  />
+                </div>
+                <p className="text-[11px] text-zinc-500 leading-relaxed">
+                  {t('settings.smallBizTierDesc')}
+                </p>
+              </div>
+
+              {/* Large Business Option Card */}
+              <div
+                onClick={() => setBusinessSize('LARGE')}
+                className={`p-4 rounded-xl border cursor-pointer transition-colors ${
+                  businessSize === 'LARGE'
+                    ? 'border-brand-600 bg-brand-50/30 ring-1 ring-brand-600'
+                    : 'border-zinc-200 hover:border-zinc-300 bg-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-zinc-900">{t('settings.largeBizTier')}</span>
+                    <span className="px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 text-[10px] font-medium">
+                      {t('settings.largeBizTierBadge')}
+                    </span>
+                  </div>
+                  <input
+                    type="radio"
+                    name="businessSize"
+                    checked={businessSize === 'LARGE'}
+                    onChange={() => setBusinessSize('LARGE')}
+                    className="w-3.5 h-3.5 text-brand-600 focus:ring-brand-500"
+                  />
+                </div>
+                <p className="text-[11px] text-zinc-500 leading-relaxed">
+                  {t('settings.largeBizTierDesc')}
+                </p>
+              </div>
+            </div>
+
+            {/* Master Inventory Enable/Disable Toggle */}
+            <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 flex items-center justify-between">
+              <div className="space-y-0.5 pr-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-zinc-900">{t('settings.smallBizTier')}</span>
-                  <span className="px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600 text-[10px] font-medium">
-                    {t('settings.smallBizTierBadge')}
+                  <span className="text-xs font-semibold text-zinc-900">{t('settings.inventoryModule')}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                      inventoryEnabled
+                        ? 'bg-brand-100 text-brand-700'
+                        : 'bg-zinc-200 text-zinc-600'
+                    }`}
+                  >
+                    {inventoryEnabled ? t('common.active') : t('common.inactive')}
                   </span>
                 </div>
-                <input
-                  type="radio"
-                  name="businessSize"
-                  checked={businessSize === 'SMALL'}
-                  onChange={() => setBusinessSize('SMALL')}
-                  className="w-3.5 h-3.5 text-brand-600 focus:ring-brand-500"
-                />
+                <p className="text-[11px] text-zinc-500">
+                  {t('settings.inventoryModuleDesc')}
+                </p>
               </div>
-              <p className="text-[11px] text-zinc-500 leading-relaxed">
-                {t('settings.smallBizTierDesc')}
-              </p>
-            </div>
-
-            {/* Large Business Option Card */}
-            <div
-              onClick={() => setBusinessSize('LARGE')}
-              className={`p-4 rounded-xl border cursor-pointer transition-colors ${
-                businessSize === 'LARGE'
-                  ? 'border-brand-600 bg-brand-50/30 ring-1 ring-brand-600'
-                  : 'border-zinc-200 hover:border-zinc-300 bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-zinc-900">{t('settings.largeBizTier')}</span>
-                  <span className="px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 text-[10px] font-medium">
-                    {t('settings.largeBizTierBadge')}
-                  </span>
-                </div>
+              <label className="relative inline-flex items-center cursor-pointer shrink-0">
                 <input
-                  type="radio"
-                  name="businessSize"
-                  checked={businessSize === 'LARGE'}
-                  onChange={() => setBusinessSize('LARGE')}
-                  className="w-3.5 h-3.5 text-brand-600 focus:ring-brand-500"
+                  type="checkbox"
+                  checked={inventoryEnabled}
+                  onChange={(e) => setInventoryEnabled(e.target.checked)}
+                  className="sr-only peer"
                 />
-              </div>
-              <p className="text-[11px] text-zinc-500 leading-relaxed">
-                {t('settings.largeBizTierDesc')}
-              </p>
+                <div className="w-10 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
+              </label>
             </div>
           </div>
-
-          {/* Master Inventory Enable/Disable Toggle */}
-          <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 flex items-center justify-between">
-            <div className="space-y-0.5 pr-4">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-zinc-900">{t('settings.inventoryModule')}</span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                    inventoryEnabled
-                      ? 'bg-brand-100 text-brand-700'
-                      : 'bg-zinc-200 text-zinc-600'
-                  }`}
-                >
-                  {inventoryEnabled ? t('common.active') : t('common.inactive')}
-                </span>
-              </div>
-              <p className="text-[11px] text-zinc-500">
-                {t('settings.inventoryModuleDesc')}
-              </p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer shrink-0">
-              <input
-                type="checkbox"
-                checked={inventoryEnabled}
-                onChange={(e) => setInventoryEnabled(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-10 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
-            </label>
-          </div>
-        </div>
+        )}
 
         {/* Submit Actions */}
         <div className="flex items-center justify-end gap-3 pt-2">
@@ -888,7 +939,7 @@ export const BusinessSettingsPage: React.FC = () => {
             ) : (
               <>
                 <Save size={15} />
-                <span>{t('settings.saveSettings')}</span>
+                <span>{isEducation ? 'Save Institute Settings' : t('settings.saveSettings')}</span>
               </>
             )}
           </button>
@@ -897,6 +948,3 @@ export const BusinessSettingsPage: React.FC = () => {
     </div>
   );
 };
-
-
-

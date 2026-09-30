@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "খুচরা দোকান / রিটেল শপ",
+    "typeGrocery": "মুদি ও কিরানা দোকান",
+    "typeSupermarket": "সুপারমার্কেট / হাইপারমার্কেট",
+    "typeRestaurant": "রেস্তোরাঁ / ফাইন ডাইনিং",
+    "typeCafe": "ক্যাফে ও বিস্ট্রো",
+    "typeBakery": "বেকারি ও পেস্ট্রি শপ",
+    "typeSweetShop": "মিষ্টির দোকান",
+    "typeSalon": "সেলুন ও হেয়ার স্টুডিও",
+    "typeBeautyParlour": "বিউটি পার্লার ও স্পা",
+    "typeClothing": "পোশাক ও বুটিক",
+    "typeElectronics": "ইলেকট্রনিক্স ও যন্ত্রপাতি",
+    "typePharmacy": "ফার্মেসি ও ওষুধের দোকান",
+    "typeHardware": "হার্ডওয়্যার ও ইলেকট্রিক্যাল",
+    "typeFurniture": "আসবাবপত্র ও হোম ডেকোর",
+    "typeStationery": "স্টেশনারি ও বইয়ের দোকান",
+    "typeMobileStore": "মোবাইল স্টোর ও টেক হাব",
+    "typeRepair": "মেরামত ও সার্ভিস সেন্টার",
+    "typeFitness": "জিম ও ফিটনেস স্টুডিও",
+    "typeHotel": "হোটেল ও হসপিটালিটি",
+    "typeCatering": "ক্যাটারিং ও ইভেন্ট সার্ভিস",
+    "typeService": "পেশাদার পরিষেবা",
+    "typeConsultancy": "পরামর্শ ও এজেন্সি",
+    "typeEducation": "শিক্ষা ও কোচিং ইনস্টিটিউট",
+    "typeOther": "অন্যান্য বাণিজ্যিক প্রতিষ্ঠান"
   }
 }

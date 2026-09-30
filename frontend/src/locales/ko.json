@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "소매점 / 상점",
+    "typeGrocery": "식료품점 / 마트",
+    "typeSupermarket": "대형마트 / 슈퍼마켓",
+    "typeRestaurant": "레스토랑 / 음식점",
+    "typeCafe": "카페 & 비스트로",
+    "typeBakery": "베이커리 & 제과점",
+    "typeSweetShop": "디저트 & 제과점",
+    "typeSalon": "헤어살롱 / 미용실",
+    "typeBeautyParlour": "피부관리실 & 스파",
+    "typeClothing": "의류 & 패션 부티크",
+    "typeElectronics": "전자제품 & 가전",
+    "typePharmacy": "약국 & 의료용품",
+    "typeHardware": "철물 & 전기자재",
+    "typeFurniture": "가구 & 인테리어",
+    "typeStationery": "문구점 & 서점",
+    "typeMobileStore": "휴대폰 매장 & IT기기",
+    "typeRepair": "수리 & 서비스 센터",
+    "typeFitness": "헬스장 & 피트니스 스튜디오",
+    "typeHotel": "호텔 & 숙박업",
+    "typeCatering": "케이터링 & 이벤트 서비스",
+    "typeService": "전문 서비스업",
+    "typeConsultancy": "컨설팅 & 에이전시",
+    "typeEducation": "교육 & 학원",
+    "typeOther": "기타 사업체"
   }
 }

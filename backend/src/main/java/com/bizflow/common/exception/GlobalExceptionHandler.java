@@ -149,12 +149,27 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
         log.warn("Data integrity violation at {}: {}", request.getRequestURI(), ex.getMessage());
 
-        String message = "A record with this information already exists.";
+        String message = "A database constraint violation occurred.";
         String exMsg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
-        if (exMsg.contains("email") || exMsg.contains("users_email") || exMsg.contains("uq_users_email") || exMsg.contains("idx_users_email")) {
+        String rootMsg = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage().toLowerCase() : "";
+        String fullMsg = exMsg + " " + rootMsg;
+
+        if (fullMsg.contains("users_email") || fullMsg.contains("uq_users_email") || fullMsg.contains("idx_users_email") || fullMsg.contains("idx_users_email_lower") || (fullMsg.contains("users") && fullMsg.contains("email") && fullMsg.contains("unique"))) {
             message = "An account with this email address already exists. Please sign in or use a different email.";
-        } else if (exMsg.contains("sku") || exMsg.contains("products_sku")) {
+        } else if (fullMsg.contains("sku") || fullMsg.contains("products_sku")) {
             message = "A product with this SKU already exists.";
+        } else if (fullMsg.contains("chk_business_type")) {
+            message = "Invalid or unsupported business type selected.";
+        } else if (fullMsg.contains("chk_product_type")) {
+            message = "Invalid product type selected.";
+        } else if (fullMsg.contains("uq_category_business_name")) {
+            message = "A category with this name already exists in your business.";
+        } else if (fullMsg.contains("review_slug")) {
+            message = "A business with this review handle already exists.";
+        } else {
+            message = ex.getMostSpecificCause() != null && !ex.getMostSpecificCause().getMessage().isBlank()
+                    ? ex.getMostSpecificCause().getMessage()
+                    : "A record with this information already exists.";
         }
 
         ApiError apiError = ApiError.builder()

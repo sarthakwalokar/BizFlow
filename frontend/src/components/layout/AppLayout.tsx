@@ -30,7 +30,17 @@ import {
   AlertCircle,
   CheckCircle2,
   RefreshCw,
-  LucideIcon
+  LucideIcon,
+  UtensilsCrossed,
+  ChefHat,
+  CalendarCheck,
+  Scissors,
+  Smartphone,
+  ShieldCheck,
+  Wrench,
+  Activity,
+  GraduationCap,
+  BookOpen
 } from 'lucide-react';
 
 export interface InventoryAlert {
@@ -156,7 +166,159 @@ export const AppLayout: React.FC = () => {
     navigate('/login');
   };
 
-  const navGroups: NavGroup[] = [
+  const getSpecializedNavGroup = (): NavGroup | null => {
+    const bType = business?.businessType?.toUpperCase();
+
+    if (bType === 'RESTAURANT' || bType === 'CAFE') {
+      return {
+        groupTitle: 'Dining & Tables',
+        items: [
+          {
+            label: 'Tables & Orders',
+            path: '/dashboard/restaurant/tables',
+            icon: UtensilsCrossed,
+            roles: ['OWNER', 'STAFF'],
+          },
+          {
+            label: 'Kitchen KOT',
+            path: '/dashboard/restaurant/kot',
+            icon: ChefHat,
+            roles: ['OWNER', 'STAFF'],
+          },
+        ],
+      };
+    }
+
+    if (bType === 'SALON' || bType === 'BEAUTY_PARLOUR') {
+      return {
+        groupTitle: 'Salon Management',
+        items: [
+          {
+            label: 'Appointments',
+            path: '/dashboard/salon/appointments',
+            icon: CalendarCheck,
+            roles: ['OWNER', 'STAFF'],
+          },
+          {
+            label: 'Service Catalog',
+            path: '/dashboard/salon/services',
+            icon: Scissors,
+            roles: ['OWNER', 'STAFF'],
+          },
+        ],
+      };
+    }
+
+    if (bType === 'ELECTRONICS' || bType === 'MOBILE_STORE') {
+      return {
+        groupTitle: 'Electronics & Warranty',
+        items: [
+          {
+            label: 'Serial & IMEI Tracker',
+            path: '/dashboard/electronics/serials',
+            icon: Smartphone,
+            roles: ['OWNER', 'STAFF'],
+          },
+          {
+            label: 'Warranty Lookup',
+            path: '/dashboard/electronics/warranty-lookup',
+            icon: ShieldCheck,
+            roles: ['OWNER', 'STAFF'],
+          },
+        ],
+      };
+    }
+
+    if (bType === 'REPAIR' || bType === 'SERVICE') {
+      return {
+        groupTitle: 'Repairs & Service',
+        items: [
+          {
+            label: 'Job Cards',
+            path: '/dashboard/repairs/job-cards',
+            icon: Wrench,
+            roles: ['OWNER', 'STAFF'],
+          },
+          {
+            label: 'Repair Tracking',
+            path: '/dashboard/repairs/tracking',
+            icon: Activity,
+            roles: ['OWNER', 'STAFF'],
+          },
+        ],
+      };
+    }
+
+    if (bType === 'EDUCATION') {
+      return null;
+    }
+
+    return null;
+  };
+
+  const isEducation = business?.businessType?.toUpperCase() === 'EDUCATION';
+  const isRestaurant = business?.businessType?.toUpperCase() === 'RESTAURANT' || business?.businessType?.toUpperCase() === 'CAFE';
+  const specializedGroup = getSpecializedNavGroup();
+
+  const educationNavGroups: NavGroup[] = [
+    {
+      items: [
+        {
+          label: t('nav.overview', 'Dashboard'),
+          path: '/dashboard',
+          icon: LayoutDashboard,
+          roles: ['OWNER', 'STAFF'],
+        },
+      ],
+    },
+    {
+      groupTitle: 'STUDENTS',
+      items: [
+        {
+          label: 'Students',
+          path: '/dashboard/education/students',
+          icon: GraduationCap,
+          roles: ['OWNER', 'STAFF'],
+        },
+        {
+          label: 'Courses & Batches',
+          path: '/dashboard/education/courses',
+          icon: BookOpen,
+          roles: ['OWNER', 'STAFF'],
+        },
+      ],
+    },
+    {
+      groupTitle: 'FEES',
+      items: [
+        {
+          label: 'Fee Management',
+          path: '/dashboard/education/fees',
+          icon: CircleDollarSign,
+          roles: ['OWNER', 'STAFF'],
+        },
+      ],
+    },
+    {
+      groupTitle: 'INSIGHTS',
+      items: [
+        {
+          label: t('nav.analytics', 'Analytics'),
+          path: '/dashboard/analytics',
+          icon: BarChart3,
+          roles: ['OWNER', 'STAFF'],
+        },
+        {
+          label: t('nav.reports', 'Reports'),
+          path: '/dashboard/reports',
+          icon: FileText,
+          roles: ['OWNER', 'STAFF'],
+        },
+      ],
+    },
+  ];
+
+  const baseNavGroups: NavGroup[] = [
     {
       items: [
         {
@@ -193,12 +355,16 @@ export const AppLayout: React.FC = () => {
     {
       groupTitle: t('nav.operations', 'Operations'),
       items: [
-        {
-          label: t('nav.pos', 'POS Billing'),
-          path: '/dashboard/pos',
-          icon: Receipt,
-          roles: ['OWNER', 'STAFF'],
-        },
+        ...(isRestaurant
+          ? []
+          : [
+              {
+                label: t('nav.pos', 'POS Billing'),
+                path: '/dashboard/pos',
+                icon: Receipt,
+                roles: ['OWNER', 'STAFF'] as ('OWNER' | 'STAFF' | 'ADMIN')[],
+              },
+            ]),
         {
           label: t('nav.bills', 'Invoices & Orders'),
           path: '/dashboard/bills',
@@ -220,6 +386,7 @@ export const AppLayout: React.FC = () => {
         },
       ],
     },
+    ...(specializedGroup ? [specializedGroup] : []),
     {
       groupTitle: t('nav.insights', 'Insights'),
       items: [
@@ -256,15 +423,18 @@ export const AppLayout: React.FC = () => {
     },
   ];
 
+  const navGroups = isEducation ? educationNavGroups : baseNavGroups;
+
+
   const getBusinessTypeBadgeColor = (type?: string) => {
     switch (type) {
       case 'RETAIL':
         return 'bg-brand-50 text-brand-700 border-brand-200';
       case 'RESTAURANT':
-        return 'bg-amber-50 text-amber-800 border-amber-200';
       case 'CAFE':
         return 'bg-amber-50 text-amber-800 border-amber-200';
       case 'BAKERY':
+      case 'SWEET_SHOP':
         return 'bg-orange-50 text-orange-800 border-orange-200';
       case 'SALON':
       case 'BEAUTY_PARLOUR':
@@ -272,8 +442,11 @@ export const AppLayout: React.FC = () => {
       case 'MOBILE_STORE':
       case 'ELECTRONICS':
         return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+      case 'REPAIR':
       case 'SERVICE':
-        return 'bg-brand-50 text-brand-700 border-brand-200';
+        return 'bg-cyan-50 text-cyan-700 border-cyan-200';
+      case 'EDUCATION':
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       default:
         return 'bg-slate-100 text-slate-700 border-slate-200';
     }
@@ -434,7 +607,7 @@ export const AppLayout: React.FC = () => {
                 >
                   <div className="flex items-center space-x-2.5">
                     <Users size={16} className={location.pathname.startsWith('/dashboard/staff') ? 'text-white' : 'text-slate-400'} />
-                    <span>{t('nav.staff', 'Staff Team')}</span>
+                    <span>{isEducation ? 'Staff Management' : t('nav.staff', 'Staff Team')}</span>
                   </div>
                 </Link>
 
@@ -449,7 +622,7 @@ export const AppLayout: React.FC = () => {
                 >
                   <div className="flex items-center space-x-2.5">
                     <Settings size={16} className={location.pathname.startsWith('/dashboard/settings') ? 'text-white' : 'text-slate-400'} />
-                    <span>{t('nav.settings', 'Business Settings')}</span>
+                    <span>{isEducation ? 'Institute Settings' : t('nav.settings', 'Business Settings')}</span>
                   </div>
                 </Link>
               </div>
@@ -472,30 +645,32 @@ export const AppLayout: React.FC = () => {
             )}
           </nav>
 
-          {/* Bottom AI Callout: Grow Your Business */}
-          <div className="p-3 border-t border-slate-800/80">
-            <div className="p-3.5 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 shadow-md space-y-2.5">
-              <div className="flex items-center space-x-2">
-                <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-brand-600 to-cyan-400 text-white flex items-center justify-center shadow-xs">
-                  <Sparkles size={14} />
+          {/* Bottom AI Callout: Grow Your Business (Hidden for Education) */}
+          {!isEducation && (
+            <div className="p-3 border-t border-slate-800/80">
+              <div className="p-3.5 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 shadow-md space-y-2.5">
+                <div className="flex items-center space-x-2">
+                  <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-brand-600 to-cyan-400 text-white flex items-center justify-center shadow-xs">
+                    <Sparkles size={14} />
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-bold text-white leading-tight">Grow Your Business</h5>
+                    <span className="text-[10px] text-cyan-400 font-medium">BizFlow AI</span>
+                  </div>
                 </div>
-                <div>
-                  <h5 className="text-xs font-bold text-white leading-tight">Grow Your Business</h5>
-                  <span className="text-[10px] text-cyan-400 font-medium">BizFlow AI</span>
-                </div>
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  Smart recommendations grounded in your store data.
+                </p>
+                <Link
+                  to="/dashboard/ai-assistant"
+                  className="w-full py-1.5 px-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 text-[11px] font-bold border border-cyan-500/30 transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                >
+                  <span>Ask AI</span>
+                  <ChevronRight size={12} />
+                </Link>
               </div>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                Smart recommendations grounded in your store data.
-              </p>
-              <Link
-                to="/dashboard/ai-assistant"
-                className="w-full py-1.5 px-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 text-[11px] font-bold border border-cyan-500/30 transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
-              >
-                <span>Ask AI</span>
-                <ChevronRight size={12} />
-              </Link>
             </div>
-          </div>
+          )}
 
           {/* User Profile & Logout Bottom Bar */}
           <div className="p-3 border-t border-slate-800/80 bg-slate-950">

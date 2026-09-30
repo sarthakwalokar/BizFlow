@@ -1209,5 +1209,31 @@
     "viewReceipt": "पावती पहा",
     "title": "POS बिलिंग",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "किरकोळ विक्री दुकान / रिटेल शॉप",
+    "typeGrocery": "किराणा आणि जनरल स्टोअर",
+    "typeSupermarket": "सुपरमार्केट / हायपरमार्केट",
+    "typeRestaurant": "रेस्टॉरंट / भोजनालय",
+    "typeCafe": "कॅफे आणि बिस्ट्रो",
+    "typeBakery": "बेकरी आणि पॅटिसरी",
+    "typeSweetShop": "मिठाईचे दुकान",
+    "typeSalon": "सलून आणि हेअर स्टुडिओ",
+    "typeBeautyParlour": "ब्युटी पार्लर आणि स्पा",
+    "typeClothing": "कपडे आणि गारमेंट्स / बुटीक",
+    "typeElectronics": "इलेक्ट्रॉनिक्स आणि उपकरणे",
+    "typePharmacy": "फार्मसी आणि मेडिकल स्टोअर",
+    "typeHardware": "हार्डवेअर आणि इलेक्ट्रिकल",
+    "typeFurniture": "फर्निचर आणि होम डेकोर",
+    "typeStationery": "स्टेशनरी आणि पुस्तक दुकान",
+    "typeMobileStore": "मोबाईल स्टोअर आणि टेक हब",
+    "typeRepair": "दुरुस्ती आणि सर्व्हिस सेंटर",
+    "typeFitness": "जिम आणि फिटनेस स्टुडिओ",
+    "typeHotel": "हॉटेल आणि हॉस्पिटॅलिटी",
+    "typeCatering": "कॅटरिंग आणि इव्हेंट सर्व्हिसेस",
+    "typeService": "व्यावसायिक सेवा",
+    "typeConsultancy": "कन्सल्टन्सी आणि एजन्सी",
+    "typeEducation": "शिक्षण आणि कोचिंग संस्था",
+    "typeOther": "इतर व्यावसायिक प्रतिष्ठाने"
   }
 }

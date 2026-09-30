@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import { businessApi, StaffCreateRequest, StaffUpdateRequest } from '../../api/business';
+import { educationApi, EduCourse, EduBatch } from '../../api/modules';
 import { User } from '../../api/auth';
 import {
   Users,
@@ -16,14 +18,23 @@ import {
   Phone,
   User as UserIcon,
   Search,
+  GraduationCap,
+  BookOpen,
 } from 'lucide-react';
 
 export const StaffManagementPage: React.FC = () => {
   const { t } = useTranslation();
+  const { business } = useAuth();
+  const isEducation = business?.businessType?.toUpperCase() === 'EDUCATION';
+
   const [staffList, setStaffList] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'DISABLED'>('ALL');
+
+  // Education state: Courses & Batches for assignment
+  const [courses, setCourses] = useState<EduCourse[]>([]);
+  const [batches, setBatches] = useState<EduBatch[]>([]);
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -57,14 +68,18 @@ export const StaffManagementPage: React.FC = () => {
 
   useEffect(() => {
     fetchStaff();
-  }, []);
+    if (isEducation) {
+      educationApi.getCourses().then(setCourses).catch(() => {});
+      educationApi.getBatches().then(setBatches).catch(() => {});
+    }
+  }, [isEducation]);
 
   const openAddModal = () => {
     setFullName('');
     setEmail('');
     setPassword('');
     setPhone('');
-    setPermissions(['pos_access']);
+    setPermissions(isEducation ? ['TEACHER_FACULTY'] : ['pos_access']);
     setAddModalError(null);
     setIsAddModalOpen(true);
   };
@@ -73,7 +88,13 @@ export const StaffManagementPage: React.FC = () => {
     setEditingStaff(staff);
     setFullName(staff.fullName);
     setPhone(staff.phone || '');
-    setPermissions(staff.permissions ? staff.permissions.split(',') : ['pos_access']);
+    setPermissions(
+      staff.permissions
+        ? staff.permissions.split(',').filter(Boolean)
+        : isEducation
+        ? ['TEACHER_FACULTY']
+        : ['pos_access']
+    );
   };
 
   const openResetPasswordModal = (staff: User) => {
@@ -104,7 +125,11 @@ export const StaffManagementPage: React.FC = () => {
         permissions: permissions.join(','),
       };
       await businessApi.createStaff(data);
-      setSuccessMessage(`Staff member "${fullName}" was successfully onboarded!`);
+      setSuccessMessage(
+        isEducation
+          ? `Faculty member "${fullName}" was successfully registered!`
+          : `Staff member "${fullName}" was successfully onboarded!`
+      );
       setAddModalError(null);
       setIsAddModalOpen(false);
       fetchStaff();
@@ -112,7 +137,7 @@ export const StaffManagementPage: React.FC = () => {
       const msg =
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to add staff member.';
+        (isEducation ? 'Failed to add teacher/staff member.' : 'Failed to add staff member.');
       setErrorMessage(msg);
       setAddModalError(msg);
     } finally {
@@ -134,7 +159,11 @@ export const StaffManagementPage: React.FC = () => {
         permissions: permissions.join(','),
       };
       await businessApi.updateStaff(editingStaff.id, data);
-      setSuccessMessage(`Staff details for "${fullName}" updated!`);
+      setSuccessMessage(
+        isEducation
+          ? `Faculty details for "${fullName}" updated!`
+          : `Staff details for "${fullName}" updated!`
+      );
       setEditingStaff(null);
       fetchStaff();
     } catch (err: any) {
@@ -153,7 +182,9 @@ export const StaffManagementPage: React.FC = () => {
       const updated = await businessApi.updateStaffStatus(staff.id, !staff.enabled);
       setStaffList(staffList.map((s) => (s.id === staff.id ? updated : s)));
       setSuccessMessage(
-        `Staff account "${staff.fullName}" is now ${updated.enabled ? 'Enabled' : 'Disabled'}.`
+        isEducation
+          ? `Teacher/Staff profile "${staff.fullName}" is now ${updated.enabled ? 'Active' : 'Inactive'}.`
+          : `Staff account "${staff.fullName}" is now ${updated.enabled ? 'Enabled' : 'Disabled'}.`
       );
     } catch (err: any) {
       setErrorMessage('Failed to update staff account status.');
@@ -199,14 +230,46 @@ export const StaffManagementPage: React.FC = () => {
   const activeCount = staffList.filter((s) => s.enabled).length;
   const disabledCount = staffList.filter((s) => !s.enabled).length;
 
+  const getEducationRoleBadge = (perm: string) => {
+    if (perm === 'TEACHER_FACULTY') return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+    if (perm === 'TUITION_TEACHER') return 'bg-blue-50 text-blue-800 border-blue-200';
+    if (perm === 'BATCH_COORDINATOR') return 'bg-indigo-50 text-indigo-800 border-indigo-200';
+    if (perm === 'FRONT_DESK') return 'bg-purple-50 text-purple-800 border-purple-200';
+    if (perm === 'LAB_ASSISTANT') return 'bg-cyan-50 text-cyan-800 border-cyan-200';
+    if (perm.startsWith('Course:')) return 'bg-indigo-50 text-indigo-700 border-indigo-200 font-semibold';
+    if (perm.startsWith('Batch:')) return 'bg-amber-50 text-amber-800 border-amber-200 font-semibold';
+    return 'bg-zinc-100 text-zinc-700 border-zinc-200';
+  };
+
+  const formatEducationPermLabel = (perm: string) => {
+    if (perm === 'TEACHER_FACULTY') return 'Teacher / Instructor';
+    if (perm === 'TUITION_TEACHER') return 'Tuition Faculty';
+    if (perm === 'BATCH_COORDINATOR') return 'Batch Coordinator';
+    if (perm === 'FRONT_DESK') return 'Front Desk / Fees';
+    if (perm === 'LAB_ASSISTANT') return 'Lab Assistant';
+    return perm;
+  };
+
   return (
     <div className="space-y-6 max-w-7xl">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('staff.title')}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">
+              {isEducation ? 'Teacher & Staff Management' : t('staff.title')}
+            </h1>
+            {isEducation && (
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 flex items-center gap-1">
+                <GraduationCap size={13} className="text-emerald-600" />
+                <span>Institute Faculty</span>
+              </span>
+            )}
+          </div>
           <p className="text-xs text-zinc-500 mt-0.5">
-            {t('staff.subtitle')}
+            {isEducation
+              ? 'Manage teachers, instructors, assigned courses & batches, and institute administrative staff'
+              : t('staff.subtitle')}
           </p>
         </div>
 
@@ -215,14 +278,14 @@ export const StaffManagementPage: React.FC = () => {
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer shrink-0"
         >
           <UserPlus size={15} />
-          <span>{t('staff.addStaff')}</span>
+          <span>{isEducation ? 'Add Teacher / Staff' : t('staff.addStaff')}</span>
         </button>
       </div>
 
       {/* Notifications */}
       {successMessage && (
-        <div className="p-3.5 rounded-lg bg-brand-50 border border-brand-200 flex items-center gap-2.5 text-brand-800 text-xs">
-          <CheckCircle2 size={16} className="text-brand-600 shrink-0" />
+        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center gap-2.5 text-emerald-800 text-xs">
+          <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
           <span className="font-medium">{successMessage}</span>
         </div>
       )}
@@ -237,21 +300,33 @@ export const StaffManagementPage: React.FC = () => {
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
-          <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('staff.title')}</span>
+          <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+            {isEducation ? 'Total Teachers & Staff' : t('staff.title')}
+          </span>
           <div className="text-xl font-bold text-zinc-900 mt-1">{staffList.length}</div>
-          <span className="text-[11px] text-zinc-400">{t('staff.registeredEmployees', 'Registered employees')}</span>
+          <span className="text-[11px] text-zinc-400">
+            {isEducation ? 'Registered institute faculty & staff' : t('staff.registeredEmployees', 'Registered employees')}
+          </span>
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
-          <span className="text-[11px] font-medium text-brand-600 uppercase tracking-wider">{t('staff.activeStaff')}</span>
+          <span className="text-[11px] font-medium text-brand-600 uppercase tracking-wider">
+            {isEducation ? 'Active Faculty' : t('staff.activeStaff')}
+          </span>
           <div className="text-xl font-bold text-brand-700 mt-1">{activeCount}</div>
-          <span className="text-[11px] text-brand-600">{t('staff.canLoginOperate', 'Can log in and operate')}</span>
+          <span className="text-[11px] text-brand-600">
+            {isEducation ? 'Currently taking courses & batches' : t('staff.canLoginOperate', 'Can log in and operate')}
+          </span>
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
-          <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('common.inactive')}</span>
+          <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+            {t('common.inactive')}
+          </span>
           <div className="text-xl font-bold text-zinc-600 mt-1">{disabledCount}</div>
-          <span className="text-[11px] text-zinc-400">{t('staff.accessSuspended', 'Access suspended')}</span>
+          <span className="text-[11px] text-zinc-400">
+            {isEducation ? 'On leave / Inactive' : t('staff.accessSuspended', 'Access suspended')}
+          </span>
         </div>
       </div>
 
@@ -261,7 +336,7 @@ export const StaffManagementPage: React.FC = () => {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
           <input
             type="text"
-            placeholder={t('common.search')}
+            placeholder={isEducation ? 'Search by teacher name, email, phone...' : t('common.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs bg-zinc-50 focus:bg-white"
@@ -308,9 +383,9 @@ export const StaffManagementPage: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 text-[10px] uppercase tracking-wider font-medium">
-                <th className="px-4 py-3">{t('staff.staffName', 'Employee')}</th>
+                <th className="px-4 py-3">{isEducation ? 'Teacher / Staff Member' : t('staff.staffName', 'Employee')}</th>
                 <th className="px-4 py-3">{t('customers.phone', 'Contact')}</th>
-                <th className="px-4 py-3">{t('staff.permissions', 'Permissions')}</th>
+                <th className="px-4 py-3">{isEducation ? 'Role & Assigned Courses/Batches' : t('staff.permissions', 'Permissions')}</th>
                 <th className="px-4 py-3">{t('common.status', 'Status')}</th>
                 <th className="px-4 py-3 text-right">{t('common.actions', 'Actions')}</th>
               </tr>
@@ -326,9 +401,15 @@ export const StaffManagementPage: React.FC = () => {
                 <tr>
                   <td colSpan={5} className="px-4 py-12 text-center text-zinc-500 space-y-1">
                     <Users size={28} className="mx-auto text-zinc-300 mb-2" />
-                    <p className="font-medium text-zinc-700">{t('staff.noStaffFound', 'No staff members found')}</p>
+                    <p className="font-medium text-zinc-700">
+                      {isEducation ? 'No teachers or staff members found' : t('staff.noStaffFound', 'No staff members found')}
+                    </p>
                     <p className="text-[11px] text-zinc-400">
-                      {search ? t('common.notFound', 'Try adjusting your search criteria.') : t('staff.inviteStaff', 'Click "Add Team Member" to invite your first employee.')}
+                      {search
+                        ? t('common.notFound', 'Try adjusting your search criteria.')
+                        : isEducation
+                        ? 'Click "Add Teacher / Staff" to register your faculty members.'
+                        : t('staff.inviteStaff', 'Click "Add Team Member" to invite your first employee.')}
                     </p>
                   </td>
                 </tr>
@@ -337,12 +418,18 @@ export const StaffManagementPage: React.FC = () => {
                   <tr key={staff.id} className="hover:bg-zinc-50/70 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 font-semibold flex items-center justify-center text-xs border border-zinc-200">
+                        <div className={`w-8 h-8 rounded-lg font-semibold flex items-center justify-center text-xs border ${
+                          isEducation
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-zinc-100 text-zinc-700 border-zinc-200'
+                        }`}>
                           {staff.fullName.charAt(0).toUpperCase()}
                         </div>
                         <div>
                           <div className="font-medium text-zinc-900">{staff.fullName}</div>
-                          <div className="text-[11px] text-zinc-400">{t('common.id', 'ID')} #{staff.id}</div>
+                          <div className="text-[11px] text-zinc-400">
+                            {isEducation ? 'Staff ID' : t('common.id', 'ID')} #{staff.id}
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -365,16 +452,22 @@ export const StaffManagementPage: React.FC = () => {
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
                         {staff.permissions ? (
-                          staff.permissions.split(',').map((perm) => (
+                          staff.permissions.split(',').filter(Boolean).map((perm) => (
                             <span
                               key={perm}
-                              className="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-700 text-[10px] font-medium border border-zinc-200"
+                              className={`px-2 py-0.5 rounded-md text-[10px] font-medium border ${
+                                isEducation
+                                  ? getEducationRoleBadge(perm)
+                                  : 'bg-zinc-100 text-zinc-700 border-zinc-200'
+                              }`}
                             >
-                              {perm}
+                              {isEducation ? formatEducationPermLabel(perm) : perm}
                             </span>
                           ))
                         ) : (
-                          <span className="text-xs text-zinc-400">{t('common.none', 'Standard')}</span>
+                          <span className="text-xs text-zinc-400">
+                            {isEducation ? 'General Faculty' : t('common.none', 'Standard')}
+                          </span>
                         )}
                       </div>
                     </td>
@@ -385,13 +478,13 @@ export const StaffManagementPage: React.FC = () => {
                         title={staff.enabled ? t('common.inactive') : t('common.active')}
                         className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium border transition-colors cursor-pointer ${
                           staff.enabled
-                            ? 'bg-brand-50 text-brand-700 border-brand-200 hover:bg-brand-100'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
                             : 'bg-zinc-100 text-zinc-600 border-zinc-200 hover:bg-zinc-200'
                         }`}
                       >
                         {staff.enabled ? (
                           <>
-                            <CheckCircle2 size={12} className="text-brand-600" />
+                            <CheckCircle2 size={12} className="text-emerald-600" />
                             <span>{t('common.active')}</span>
                           </>
                         ) : (
@@ -407,7 +500,7 @@ export const StaffManagementPage: React.FC = () => {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => openEditModal(staff)}
-                          title={t('staff.editStaff')}
+                          title={isEducation ? 'Edit Teacher/Staff' : t('staff.editStaff')}
                           className="p-1.5 rounded-md text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors cursor-pointer"
                         >
                           <Edit2 size={14} />
@@ -432,15 +525,19 @@ export const StaffManagementPage: React.FC = () => {
       {/* Add Staff Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl space-y-5">
+          <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-bold">
-                  <UserPlus size={16} />
+                  {isEducation ? <GraduationCap size={16} /> : <UserPlus size={16} />}
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-900">{t('staff.addStaff')}</h3>
-                  <p className="text-xs text-zinc-500">{t('staff.subtitle')}</p>
+                  <h3 className="text-sm font-semibold text-zinc-900">
+                    {isEducation ? 'Add Teacher / Staff Member' : t('staff.addStaff')}
+                  </h3>
+                  <p className="text-xs text-zinc-500">
+                    {isEducation ? 'Register a faculty teacher, instructor or admin staff' : t('staff.subtitle')}
+                  </p>
                 </div>
               </div>
               <button
@@ -461,14 +558,14 @@ export const StaffManagementPage: React.FC = () => {
             <form onSubmit={handleCreateStaff} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  {t('profile.fullName')} <span className="text-red-500">*</span>
+                  {isEducation ? 'Teacher / Staff Full Name' : t('profile.fullName')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <UserIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
                   <input
                     type="text"
                     required
-                    placeholder="e.g. John Doe"
+                    placeholder={isEducation ? 'e.g. Prof. Arvind Sharma' : 'e.g. John Doe'}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
@@ -478,14 +575,14 @@ export const StaffManagementPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  {t('staff.email')} <span className="text-red-500">*</span>
+                  {isEducation ? 'Official Email Address' : t('staff.email')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
                   <input
                     type="email"
                     required
-                    placeholder="john@business.com"
+                    placeholder={isEducation ? 'teacher@institute.com' : 'john@business.com'}
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
@@ -498,11 +595,6 @@ export const StaffManagementPage: React.FC = () => {
                     }`}
                   />
                 </div>
-                {addModalError && (addModalError.toLowerCase().includes('already exists') || addModalError.toLowerCase().includes('email')) && (
-                  <p className="text-[11px] text-red-600 font-medium mt-0.5">
-                    This email is already registered. Please choose a different email address.
-                  </p>
-                )}
               </div>
 
               <div className="space-y-1">
@@ -525,7 +617,7 @@ export const StaffManagementPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  {t('staff.phone')}
+                  {isEducation ? 'Contact Mobile / Phone' : t('staff.phone')}
                 </label>
                 <div className="relative">
                   <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -539,33 +631,130 @@ export const StaffManagementPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Permissions checkboxes */}
-              <div className="space-y-1.5 pt-1">
-                <label className="text-xs font-medium text-zinc-700">
-                  {t('staff.permissions')}
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { id: 'pos_access', label: t('staff.permBilling', 'POS Billing Access') },
-                    { id: 'inventory_view', label: t('staff.permInventory', 'Inventory Access') },
-                    { id: 'billing_access', label: t('staff.permReports', 'Financial Reports Access') },
-                    { id: 'service_appointments', label: t('staff.permSettings', 'Settings Access') },
-                  ].map((perm) => (
-                    <label
-                      key={perm.id}
-                      className="flex items-center gap-2 p-2 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer text-xs text-zinc-700"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={permissions.includes(perm.id)}
-                        onChange={() => handleTogglePermission(perm.id)}
-                        className="rounded text-brand-600 focus:ring-brand-500 h-3.5 w-3.5"
-                      />
-                      <span>{perm.label}</span>
+              {/* Education Roles & Assigned Courses / Batches */}
+              {isEducation ? (
+                <div className="space-y-3 pt-1 border-t border-zinc-100">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+                      <GraduationCap size={14} className="text-emerald-600" />
+                      <span>Institute Role / Designation</span>
                     </label>
-                  ))}
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'TEACHER_FACULTY', label: 'Teacher / Instructor' },
+                        { id: 'TUITION_TEACHER', label: 'Tuition Faculty' },
+                        { id: 'BATCH_COORDINATOR', label: 'Batch Coordinator' },
+                        { id: 'FRONT_DESK', label: 'Front Desk / Fees' },
+                        { id: 'LAB_ASSISTANT', label: 'Lab Assistant' },
+                      ].map((r) => (
+                        <label
+                          key={r.id}
+                          className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer text-xs transition-colors ${
+                            permissions.includes(r.id)
+                              ? 'border-emerald-500 bg-emerald-50/60 text-emerald-900 font-semibold'
+                              : 'border-zinc-200 hover:bg-zinc-50 text-zinc-700'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={permissions.includes(r.id)}
+                            onChange={() => handleTogglePermission(r.id)}
+                            className="rounded text-emerald-600 focus:ring-emerald-500 h-3.5 w-3.5"
+                          />
+                          <span>{r.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Assigned Courses / Batches */}
+                  {courses.length > 0 && (
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+                        <BookOpen size={14} className="text-indigo-600" />
+                        <span>Assigned Courses / Subject Specialization</span>
+                      </label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {courses.map((c) => {
+                          const tag = `Course: ${c.name}`;
+                          const isSelected = permissions.includes(tag);
+                          return (
+                            <button
+                              type="button"
+                              key={c.id}
+                              onClick={() => handleTogglePermission(tag)}
+                              className={`px-2.5 py-1 rounded-lg text-xs border font-medium cursor-pointer transition-colors ${
+                                isSelected
+                                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
+                                  : 'bg-zinc-50 hover:bg-zinc-100 text-zinc-700 border-zinc-200'
+                              }`}
+                            >
+                              {c.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {batches.length > 0 && (
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+                        <Users size={14} className="text-amber-600" />
+                        <span>Assigned Batches</span>
+                      </label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {batches.map((b) => {
+                          const tag = `Batch: ${b.batchName}`;
+                          const isSelected = permissions.includes(tag);
+                          return (
+                            <button
+                              type="button"
+                              key={b.id}
+                              onClick={() => handleTogglePermission(tag)}
+                              className={`px-2.5 py-1 rounded-lg text-xs border font-medium cursor-pointer transition-colors ${
+                                isSelected
+                                  ? 'bg-amber-600 text-white border-amber-600 shadow-2xs'
+                                  : 'bg-zinc-50 hover:bg-zinc-100 text-zinc-700 border-zinc-200'
+                              }`}
+                            >
+                              {b.batchName} ({b.schedule})
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
+              ) : (
+                /* Permissions checkboxes for standard business */
+                <div className="space-y-1.5 pt-1">
+                  <label className="text-xs font-medium text-zinc-700">
+                    {t('staff.permissions')}
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'pos_access', label: t('staff.permBilling', 'POS Billing Access') },
+                      { id: 'inventory_view', label: t('staff.permInventory', 'Inventory Access') },
+                      { id: 'billing_access', label: t('staff.permReports', 'Financial Reports Access') },
+                      { id: 'service_appointments', label: t('staff.permSettings', 'Settings Access') },
+                    ].map((perm) => (
+                      <label
+                        key={perm.id}
+                        className="flex items-center gap-2 p-2 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer text-xs text-zinc-700"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={permissions.includes(perm.id)}
+                          onChange={() => handleTogglePermission(perm.id)}
+                          className="rounded text-brand-600 focus:ring-brand-500 h-3.5 w-3.5"
+                        />
+                        <span>{perm.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-zinc-100">
                 <button
@@ -580,7 +769,7 @@ export const StaffManagementPage: React.FC = () => {
                   disabled={actionLoading}
                   className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? t('settings.saving') : t('staff.addStaff')}
+                  {actionLoading ? t('settings.saving') : isEducation ? 'Register Teacher/Staff' : t('staff.addStaff')}
                 </button>
               </div>
             </form>
@@ -591,14 +780,16 @@ export const StaffManagementPage: React.FC = () => {
       {/* Edit Staff Modal */}
       {editingStaff && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl space-y-5">
+          <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center font-bold">
-                  <Edit2 size={16} />
+                  {isEducation ? <GraduationCap size={16} /> : <Edit2 size={16} />}
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-900">{t('staff.editStaff')}</h3>
+                  <h3 className="text-sm font-semibold text-zinc-900">
+                    {isEducation ? 'Edit Teacher / Staff Profile' : t('staff.editStaff')}
+                  </h3>
                   <p className="text-xs text-zinc-500">{editingStaff.email}</p>
                 </div>
               </div>
@@ -613,7 +804,7 @@ export const StaffManagementPage: React.FC = () => {
             <form onSubmit={handleUpdateStaff} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  {t('profile.fullName')} <span className="text-red-500">*</span>
+                  {isEducation ? 'Teacher / Staff Full Name' : t('profile.fullName')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -626,7 +817,7 @@ export const StaffManagementPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  {t('staff.phone')}
+                  {isEducation ? 'Contact Mobile / Phone' : t('staff.phone')}
                 </label>
                 <input
                   type="text"
@@ -637,33 +828,129 @@ export const StaffManagementPage: React.FC = () => {
                 />
               </div>
 
-              {/* Permissions */}
-              <div className="space-y-1.5 pt-1">
-                <label className="text-xs font-medium text-zinc-700">
-                  {t('staff.permissions')}
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { id: 'pos_access', label: t('staff.permBilling', 'POS Billing Access') },
-                    { id: 'inventory_view', label: t('staff.permInventory', 'Inventory Access') },
-                    { id: 'billing_access', label: t('staff.permReports', 'Financial Reports Access') },
-                    { id: 'service_appointments', label: t('staff.permSettings', 'Settings Access') },
-                  ].map((perm) => (
-                    <label
-                      key={perm.id}
-                      className="flex items-center gap-2 p-2 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer text-xs text-zinc-700"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={permissions.includes(perm.id)}
-                        onChange={() => handleTogglePermission(perm.id)}
-                        className="rounded text-brand-600 focus:ring-brand-500 h-3.5 w-3.5"
-                      />
-                      <span>{perm.label}</span>
+              {/* Education Roles & Assigned Courses / Batches */}
+              {isEducation ? (
+                <div className="space-y-3 pt-1 border-t border-zinc-100">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+                      <GraduationCap size={14} className="text-emerald-600" />
+                      <span>Institute Role / Designation</span>
                     </label>
-                  ))}
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'TEACHER_FACULTY', label: 'Teacher / Instructor' },
+                        { id: 'TUITION_TEACHER', label: 'Tuition Faculty' },
+                        { id: 'BATCH_COORDINATOR', label: 'Batch Coordinator' },
+                        { id: 'FRONT_DESK', label: 'Front Desk / Fees' },
+                        { id: 'LAB_ASSISTANT', label: 'Lab Assistant' },
+                      ].map((r) => (
+                        <label
+                          key={r.id}
+                          className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer text-xs transition-colors ${
+                            permissions.includes(r.id)
+                              ? 'border-emerald-500 bg-emerald-50/60 text-emerald-900 font-semibold'
+                              : 'border-zinc-200 hover:bg-zinc-50 text-zinc-700'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={permissions.includes(r.id)}
+                            onChange={() => handleTogglePermission(r.id)}
+                            className="rounded text-emerald-600 focus:ring-emerald-500 h-3.5 w-3.5"
+                          />
+                          <span>{r.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {courses.length > 0 && (
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+                        <BookOpen size={14} className="text-indigo-600" />
+                        <span>Assigned Courses / Subject Specialization</span>
+                      </label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {courses.map((c) => {
+                          const tag = `Course: ${c.name}`;
+                          const isSelected = permissions.includes(tag);
+                          return (
+                            <button
+                              type="button"
+                              key={c.id}
+                              onClick={() => handleTogglePermission(tag)}
+                              className={`px-2.5 py-1 rounded-lg text-xs border font-medium cursor-pointer transition-colors ${
+                                isSelected
+                                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
+                                  : 'bg-zinc-50 hover:bg-zinc-100 text-zinc-700 border-zinc-200'
+                              }`}
+                            >
+                              {c.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {batches.length > 0 && (
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+                        <Users size={14} className="text-amber-600" />
+                        <span>Assigned Batches</span>
+                      </label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {batches.map((b) => {
+                          const tag = `Batch: ${b.batchName}`;
+                          const isSelected = permissions.includes(tag);
+                          return (
+                            <button
+                              type="button"
+                              key={b.id}
+                              onClick={() => handleTogglePermission(tag)}
+                              className={`px-2.5 py-1 rounded-lg text-xs border font-medium cursor-pointer transition-colors ${
+                                isSelected
+                                  ? 'bg-amber-600 text-white border-amber-600 shadow-2xs'
+                                  : 'bg-zinc-50 hover:bg-zinc-100 text-zinc-700 border-zinc-200'
+                              }`}
+                            >
+                              {b.batchName} ({b.schedule})
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
+              ) : (
+                /* Permissions for standard business */
+                <div className="space-y-1.5 pt-1">
+                  <label className="text-xs font-medium text-zinc-700">
+                    {t('staff.permissions')}
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'pos_access', label: t('staff.permBilling', 'POS Billing Access') },
+                      { id: 'inventory_view', label: t('staff.permInventory', 'Inventory Access') },
+                      { id: 'billing_access', label: t('staff.permReports', 'Financial Reports Access') },
+                      { id: 'service_appointments', label: t('staff.permSettings', 'Settings Access') },
+                    ].map((perm) => (
+                      <label
+                        key={perm.id}
+                        className="flex items-center gap-2 p-2 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer text-xs text-zinc-700"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={permissions.includes(perm.id)}
+                          onChange={() => handleTogglePermission(perm.id)}
+                          className="rounded text-brand-600 focus:ring-brand-500 h-3.5 w-3.5"
+                        />
+                        <span>{perm.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-zinc-100">
                 <button
@@ -753,5 +1040,3 @@ export const StaffManagementPage: React.FC = () => {
     </div>
   );
 };
-
-

@@ -50,7 +50,7 @@ public class AuthService {
         }
 
         // 1. Create and persist Business entity
-        Business business = Business.builder()
+        Business.BusinessBuilder businessBuilder = Business.builder()
                 .name(request.getBusinessName().trim())
                 .businessType(request.getBusinessType())
                 .address(request.getBusinessAddress())
@@ -58,10 +58,16 @@ public class AuthService {
                 .email(request.getBusinessEmail() != null ? request.getBusinessEmail() : cleanEmail)
                 .currency("INR")
                 .timezone("Asia/Kolkata")
-                .active(true)
-                .build();
+                .active(true);
 
-        Business savedBusiness = businessRepository.save(business);
+        if (request.getBusinessSize() != null) {
+            businessBuilder.businessSize(request.getBusinessSize());
+        }
+        if (request.getTaxNumber() != null && !request.getTaxNumber().isBlank()) {
+            businessBuilder.taxNumber(request.getTaxNumber().trim());
+        }
+
+        Business savedBusiness = businessRepository.save(businessBuilder.build());
 
         String prefLang = (request.getPreferredLanguage() != null && !request.getPreferredLanguage().isBlank())
                 ? request.getPreferredLanguage().trim().toLowerCase()

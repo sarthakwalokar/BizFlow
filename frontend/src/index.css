@@ -345,7 +345,7 @@ input[type="search"] {
 }
 
 /* ==========================================================================
-   Print Optimization for Thermal Receipts & A4 Invoices
+   Print Optimization for Thermal Receipts & A4 Invoices (All Business Types)
    ========================================================================== */
 @media print {
   @page {
@@ -360,7 +360,7 @@ input[type="search"] {
     background: #FFFFFF !important;
     color: #18181B !important;
     height: auto !important;
-    min-height: auto !important;
+    min-height: 0 !important;
     overflow: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -374,7 +374,7 @@ input[type="search"] {
     display: none !important;
   }
 
-  /* Print Isolation: Hide all application background UI when invoice modal is open */
+  /* Print Isolation: Hide background UI when any receipt modal or printable card is open */
   body.receipt-modal-open *,
   body:has(.receipt-modal-backdrop) * {
     visibility: hidden;
@@ -393,7 +393,7 @@ input[type="search"] {
     top: 0 !important;
     width: 100% !important;
     height: auto !important;
-    min-height: auto !important;
+    min-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
     background: transparent !important;
@@ -414,6 +414,7 @@ input[type="search"] {
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
+    min-height: 0 !important;
     max-height: none !important;
     overflow: visible !important;
     background: #FFFFFF !important;
@@ -426,12 +427,14 @@ input[type="search"] {
     margin: 0 !important;
     overflow: visible !important;
     height: auto !important;
+    min-height: 0 !important;
     max-height: none !important;
     background: #FFFFFF !important;
   }
 
   /* Format: Thermal Receipt (80mm / 3 inch) */
-  .receipt-format-thermal {
+  .receipt-format-thermal,
+  #printable-receipt-content.receipt-format-thermal {
     width: 80mm !important;
     max-width: 80mm !important;
     margin: 0 auto !important;
@@ -446,7 +449,8 @@ input[type="search"] {
   }
 
   /* Format: Standard A4 Tax Invoice */
-  .receipt-format-a4 {
+  .receipt-format-a4,
+  #printable-receipt-content.receipt-format-a4 {
     width: 100% !important;
     max-width: 190mm !important;
     margin: 0 auto !important;

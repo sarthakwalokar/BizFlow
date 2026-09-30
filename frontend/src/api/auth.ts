@@ -85,9 +85,11 @@ export interface SignupRequest {
   phone?: string;
   businessName: string;
   businessType: BusinessType;
+  businessSize?: 'SMALL' | 'LARGE';
   businessAddress?: string;
   businessPhone?: string;
   businessEmail?: string;
+  taxNumber?: string;
   preferredLanguage?: string;
 }
 

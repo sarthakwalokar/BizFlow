@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "చిల్లర దుకాణం / రిటైల్ స్టోర్",
+    "typeGrocery": "కిరాణా మరియు జనరల్ స్టోర్",
+    "typeSupermarket": "సూపర్‌మార్కెట్ / హైపర్‌మార్కెట్",
+    "typeRestaurant": "రెస్టారెంట్ / భోజనశాల",
+    "typeCafe": "కేఫ్ & బిస్ట్రో",
+    "typeBakery": "బేకరీ & పాటిస్సేరీ",
+    "typeSweetShop": "స్వీట్ షాప్ / మిఠాయి దుకాణం",
+    "typeSalon": "సెలూన్ & హెయిర్ స్టూడియో",
+    "typeBeautyParlour": "బ్యూటీ పార్లర్ & స్పా",
+    "typeClothing": "దుస్తులు & వస్త్ర దుకాణం / బోటిక్",
+    "typeElectronics": "ఎలక్ట్రానిక్స్ & ఉపకరణాలు",
+    "typePharmacy": "ఫార్మసీ & మెడికల్ స్టోర్",
+    "typeHardware": "హార్డ్‌వేర్ & ఎలక్ట్రికల్",
+    "typeFurniture": "ఫర్నిచర్ & హోమ్ డెకర్",
+    "typeStationery": "స్టేషనరీ & పుస్తకాల దుకాణం",
+    "typeMobileStore": "మొబైల్ స్టోర్ & టెక్ హబ్",
+    "typeRepair": "రిపేర్ & సర్వీస్ సెంటర్",
+    "typeFitness": "జిమ్ & ఫిట్‌నెస్ స్టూడియో",
+    "typeHotel": "హోటల్ & హాస్పిటాలిటీ",
+    "typeCatering": "కేటరింగ్ & ఈవెంట్ సర్వీసెస్",
+    "typeService": "వృత్తిపరమైన సేవలు",
+    "typeConsultancy": "కన్సల్టెన్సీ & ఏజెన్సీ",
+    "typeEducation": "విద్య & కోచింగ్ ఇన్స్టిట్యూట్",
+    "typeOther": "ఇతర వాణిజ్య వ్యాపారం"
   }
 }

@@ -8,6 +8,7 @@ import { analyticsApi } from '../../api/analytics';
 import { InvoiceReceiptModal } from '../../components/billing/InvoiceReceiptModal';
 import { MetricCardsSkeleton } from '../../components/common/LoadingStates';
 import { formatCurrency } from '../../utils/currency';
+import { EduDashboardView } from './EduDashboardView';
 import {
   TrendingUp,
   TrendingDown,
@@ -25,7 +26,8 @@ import {
   XCircle,
   FileText,
   Calendar,
-  ChevronRight
+  ChevronRight,
+  ArrowRight,
 } from 'lucide-react';
 
 interface PerformanceDataPoint {
@@ -102,6 +104,10 @@ const getNiceMax = (rawMax: number): number => {
 export const DashboardHomePage: React.FC = () => {
   const { user, business } = useAuth();
 
+  if (business?.businessType?.toUpperCase() === 'EDUCATION') {
+    return <EduDashboardView />;
+  }
+
   const [summary, setSummary] = useState<BillingSummary | null>(null);
   const [expenseSummary, setExpenseSummary] = useState<ExpenseSummaryResponse | null>(null);
   const [reviewAnalytics, setReviewAnalytics] = useState<ReviewAnalytics | null>(null);
@@ -113,6 +119,9 @@ export const DashboardHomePage: React.FC = () => {
   const [performanceData, setPerformanceData] = useState<PerformanceDataPoint[]>([]);
   const [performanceLoading, setPerformanceLoading] = useState<boolean>(true);
   const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null);
+  const [onboardingDismissed, setOnboardingDismissed] = useState<boolean>(() => {
+    return localStorage.getItem('bizflow_onboarding_dismissed') === 'true';
+  });
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -238,40 +247,17 @@ export const DashboardHomePage: React.FC = () => {
 
   const currency = business?.currency || summary?.currency || 'INR';
 
-  // Metrics with exact fallback to reference values
-  const todaySalesValue = summary && summary.todaySales > 0 ? summary.todaySales : 976.50;
-  const ordersCountValue = summary && summary.todayOrdersCount > 0 ? summary.todayOrdersCount : 1;
-  const operatingExpensesValue = summary && summary.todayExpenses > 0 ? summary.todayExpenses : 0.00;
-  const customerRatingValue = reviewAnalytics?.averageRating ? Number(reviewAnalytics.averageRating).toFixed(1) : '4.5';
+  // Live metrics directly bound to database state (0 if no transactions)
+  const todaySalesValue = summary?.todaySales ?? 0;
+  const ordersCountValue = summary?.todayOrdersCount ?? 0;
+  const operatingExpensesValue = summary?.todayExpenses ?? 0;
+  const customerRatingValue = reviewAnalytics && reviewAnalytics.totalReviews > 0
+    ? Number(reviewAnalytics.averageRating).toFixed(1)
+    : '0.0';
 
   const todayRevenueDisplay = formatCurrency(todaySalesValue, currency);
-  const monthlyRevenueValue = summary && summary.monthSales > 0 ? summary.monthSales : 6210.75;
-  const netMarginValue = summary && summary.monthNetRevenue > 0 ? summary.monthNetRevenue : 5145.50;
-
-  // Static review items matching reference with live fallback
-  const fallbackReviews = [
-    {
-      id: 1,
-      customerName: 'Aarav Sharma',
-      rating: 5,
-      comment: 'Amazing ambiance and delicious authentic food. The service was top notch!',
-      timeAgo: '2 hours ago',
-    },
-    {
-      id: 2,
-      customerName: 'Priya Patel',
-      rating: 4,
-      comment: 'Great food quality and quick billing. Loved the paneer butter masala.',
-      timeAgo: 'Yesterday',
-    },
-    {
-      id: 3,
-      customerName: 'Rohan Mehta',
-      rating: 5,
-      comment: 'Outstanding service and very hygienic dining experience. Will visit again!',
-      timeAgo: '3 days ago',
-    },
-  ];
+  const monthlyRevenueValue = summary?.monthSales ?? 0;
+  const netMarginValue = summary?.monthNetRevenue ?? 0;
 
   // SVG Chart Calculation
   const renderRevenueChart = () => {
@@ -611,6 +597,47 @@ export const DashboardHomePage: React.FC = () => {
         </div>
       </section>
 
+      {/* 1.5 SETUP PROGRESS BANNER (For Quick Workspace Onboarding Access) */}
+      {!onboardingDismissed && (
+        <section className="clay-card p-4 sm:p-5 bg-gradient-to-r from-blue-50/90 via-cyan-50/50 to-white border border-blue-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start space-x-3.5">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-950 flex items-center gap-2">
+                <span>Workspace Setup Guide</span>
+                <span className="text-[10px] font-extrabold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded-full">
+                  Quick Start
+                </span>
+              </h3>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Complete your business profile, add catalogue items, test POS billing, and activate customer review QR codes.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <button
+              type="button"
+              onClick={() => {
+                setOnboardingDismissed(true);
+                localStorage.setItem('bizflow_onboarding_dismissed', 'true');
+              }}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            >
+              Dismiss
+            </button>
+            <Link
+              to="/onboarding"
+              className="clay-btn-primary px-4 py-1.5 text-xs inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            >
+              <span>Continue Setup</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* 2. BUSINESS SNAPSHOT (4 Minimalist Claymorphic Cards) */}
       <section>
         {loading ? (
@@ -631,10 +658,10 @@ export const DashboardHomePage: React.FC = () => {
                 {todayRevenueDisplay}
               </div>
               <div className="flex items-center space-x-2 text-xs pt-1 border-t border-slate-100">
-                <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md text-[11px] flex items-center gap-0.5">
-                  ↑ 12.8%
+                <span className="font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md text-[11px] flex items-center gap-0.5">
+                  Live
                 </span>
-                <span className="text-slate-500 font-medium">vs. yesterday</span>
+                <span className="text-slate-500 font-medium">Billed today</span>
               </div>
             </div>
 
@@ -652,10 +679,10 @@ export const DashboardHomePage: React.FC = () => {
                 {ordersCountValue}
               </div>
               <div className="flex items-center space-x-2 text-xs pt-1 border-t border-slate-100">
-                <span className="font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md text-[11px] flex items-center gap-0.5">
-                  ↑ 0.0%
+                <span className="font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md text-[11px] flex items-center gap-0.5">
+                  {ordersCountValue} {ordersCountValue === 1 ? 'order' : 'orders'}
                 </span>
-                <span className="text-slate-500 font-medium">vs. yesterday</span>
+                <span className="text-slate-500 font-medium">processed today</span>
               </div>
             </div>
 
@@ -673,10 +700,10 @@ export const DashboardHomePage: React.FC = () => {
                 {formatCurrency(operatingExpensesValue, currency)}
               </div>
               <div className="flex items-center space-x-2 text-xs pt-1 border-t border-slate-100">
-                <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md text-[11px] flex items-center gap-0.5">
-                  ↓ 100%
+                <span className="font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md text-[11px] flex items-center gap-0.5">
+                  {expenseSummary?.recentExpenses?.length ?? 0}
                 </span>
-                <span className="text-slate-500 font-medium">vs. yesterday</span>
+                <span className="text-slate-500 font-medium">expenses logged</span>
               </div>
             </div>
 
@@ -695,10 +722,10 @@ export const DashboardHomePage: React.FC = () => {
                 <span className="text-amber-500 text-xl">★</span>
               </div>
               <div className="flex items-center space-x-2 text-xs pt-1 border-t border-slate-100">
-                <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md text-[11px] flex items-center gap-0.5">
-                  ↑ 0.2
+                <span className="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md text-[11px] flex items-center gap-0.5">
+                  {reviewAnalytics?.totalReviews ?? 0} reviews
                 </span>
-                <span className="text-slate-500 font-medium">vs. last month</span>
+                <span className="text-slate-500 font-medium">total feedback</span>
               </div>
             </div>
           </div>
@@ -754,8 +781,8 @@ export const DashboardHomePage: React.FC = () => {
                 <div className="text-lg font-black text-slate-900">
                   {todayRevenueDisplay}
                 </div>
-                <span className="inline-block text-[10px] font-bold text-emerald-600">
-                  ↑ 12.8%
+                <span className="inline-block text-[10px] font-bold text-brand-600">
+                  {summary && summary.todayOrdersCount > 0 ? `${summary.todayOrdersCount} orders` : 'Live daily billing'}
                 </span>
               </div>
 
@@ -768,7 +795,7 @@ export const DashboardHomePage: React.FC = () => {
                   {formatCurrency(monthlyRevenueValue, currency)}
                 </div>
                 <span className="inline-block text-[10px] font-bold text-emerald-600">
-                  ↑ 8.4%
+                  {summary && summary.monthSales > 0 ? 'Current month sales' : 'MTD gross revenue'}
                 </span>
               </div>
 
@@ -780,8 +807,8 @@ export const DashboardHomePage: React.FC = () => {
                 <div className="text-lg font-black text-slate-900">
                   {formatCurrency(netMarginValue, currency)}
                 </div>
-                <span className="inline-block text-[10px] font-bold text-emerald-600">
-                  ↑ 6.2%
+                <span className="inline-block text-[10px] font-bold text-teal-600">
+                  {summary && summary.monthNetRevenue !== 0 ? 'Revenue minus expenses' : 'Profit calculation'}
                 </span>
               </div>
             </div>
@@ -1033,7 +1060,13 @@ export const DashboardHomePage: React.FC = () => {
             </div>
 
             <p className="text-xs font-semibold text-slate-700 leading-relaxed">
-              Your monthly expenses are higher than revenue.
+              {summary && summary.monthSales === 0 && summary.monthExpenses === 0
+                ? 'Welcome to BizFlow! Create your first invoice or log an expense to activate real-time financial insights.'
+                : summary && summary.monthExpenses > summary.monthSales
+                ? 'Your monthly expenses are higher than revenue. Review operating overheads to improve margins.'
+                : summary && summary.monthSales > 0
+                ? 'Your business is operating at a positive net margin this month. Keep up the momentum!'
+                : 'Track your revenue and expenses daily for real-time AI financial diagnostics.'}
             </p>
 
             <Link
@@ -1120,68 +1153,85 @@ export const DashboardHomePage: React.FC = () => {
                     <span>{customerRatingValue}</span>
                     <span className="text-amber-500 text-xl">★</span>
                   </div>
-                  <span className="text-[10px] text-slate-500 font-semibold">Overall Rating</span>
+                  <span className="text-[10px] text-slate-500 font-semibold">
+                    {reviewAnalytics?.totalReviews ? `${reviewAnalytics.totalReviews} Total Reviews` : 'Overall Rating'}
+                  </span>
                 </div>
                 <div className="flex items-center space-x-0.5 text-amber-500 text-sm">
-                  {'★★★★★'.split('').map((s, i) => (
-                    <span key={i}>{s}</span>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      className={
+                        reviewAnalytics && reviewAnalytics.totalReviews > 0 && star <= Math.round(Number(reviewAnalytics.averageRating))
+                          ? 'text-amber-500'
+                          : 'text-slate-300'
+                      }
+                    >
+                      ★
+                    </span>
                   ))}
                 </div>
               </div>
 
-              {/* Star Rating Breakdown Bars */}
+              {/* Star Rating Breakdown Bars (100% Dynamic from Database) */}
               <div className="space-y-1 text-[10px] font-semibold text-slate-600 pt-1 border-t border-slate-200/60">
-                {[
-                  { star: '5 ★', pct: '75%' },
-                  { star: '4 ★', pct: '18%' },
-                  { star: '3 ★', pct: '5%' },
-                  { star: '2 ★', pct: '1%' },
-                  { star: '1 ★', pct: '1%' },
-                ].map((row) => (
-                  <div key={row.star} className="flex items-center space-x-2">
-                    <span className="w-5 text-slate-500">{row.star}</span>
-                    <div className="flex-1 h-1.5 rounded-full bg-slate-200/80 overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-amber-400"
-                        style={{ width: row.pct }}
-                      ></div>
+                {[5, 4, 3, 2, 1].map((star) => {
+                  const dist = Array.isArray(reviewAnalytics?.ratingDistribution)
+                    ? reviewAnalytics.ratingDistribution.find((d) => d.stars === star)
+                    : null;
+                  const count = dist?.count ?? 0;
+                  const total = reviewAnalytics?.totalReviews ?? 0;
+                  const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+
+                  return (
+                    <div key={star} className="flex items-center space-x-2">
+                      <span className="w-5 text-slate-500">{star} ★</span>
+                      <div className="flex-1 h-1.5 rounded-full bg-slate-200/80 overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-amber-400 transition-all"
+                          style={{ width: `${pct}%` }}
+                        ></div>
+                      </div>
+                      <span className="w-6 text-right text-slate-400">{pct}%</span>
                     </div>
-                    <span className="w-6 text-right text-slate-400">{row.pct}</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
-            {/* Individual Reviews List */}
+            {/* Individual Reviews List (100% Real Live Reviews or Empty State) */}
             <div className="space-y-3 pt-1">
-              {(liveReviews.length > 0
-                ? liveReviews.slice(0, 3).map((r) => ({
-                    id: r.id,
-                    customerName: r.customerName || 'Verified Guest',
-                    rating: r.rating,
-                    comment: r.feedbackText || 'Great experience and service!',
-                    timeAgo: new Date(r.createdAt).toLocaleDateString('en-IN'),
-                  }))
-                : fallbackReviews
-              ).map((rev) => (
-                <div
-                  key={rev.id}
-                  className="p-3 rounded-2xl bg-white border border-slate-100 shadow-2xs space-y-1.5"
-                >
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-900">{rev.customerName}</span>
-                    <span className="text-[10px] text-slate-400 font-medium">{rev.timeAgo}</span>
-                  </div>
-                  <div className="flex items-center space-x-1 text-amber-500 text-xs">
-                    {Array.from({ length: rev.rating }).map((_, i) => (
-                      <span key={i}>★</span>
-                    ))}
-                  </div>
-                  <p className="text-[11px] text-slate-600 leading-relaxed font-normal">
-                    "{rev.comment}"
+              {liveReviews.length === 0 ? (
+                <div className="py-6 text-center text-slate-400 space-y-1">
+                  <MessageSquarePlus size={22} className="mx-auto text-slate-300 mb-1" />
+                  <p className="font-bold text-slate-700 text-xs">No customer reviews yet</p>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Share your review QR code or link to collect verified customer feedback.
                   </p>
                 </div>
-              ))}
+              ) : (
+                liveReviews.slice(0, 3).map((r) => (
+                  <div
+                    key={r.id}
+                    className="p-3 rounded-2xl bg-white border border-slate-100 shadow-2xs space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900">{r.customerName || 'Verified Guest'}</span>
+                      <span className="text-[10px] text-slate-400 font-medium">
+                        {r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-IN') : 'Recent'}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-0.5 text-amber-500 text-xs">
+                      {Array.from({ length: r.rating || 5 }).map((_, i) => (
+                        <span key={i}>★</span>
+                      ))}
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed font-normal">
+                      "{r.feedbackText || 'Great service!'}"
+                    </p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

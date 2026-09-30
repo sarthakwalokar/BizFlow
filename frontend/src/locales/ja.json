@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "小売店 / ショップ",
+    "typeGrocery": "食料品店 / スーパー",
+    "typeSupermarket": "大型スーパーマーケット",
+    "typeRestaurant": "レストラン / 飲食店",
+    "typeCafe": "カフェ & ビストロ",
+    "typeBakery": "ベーカリー & 洋菓子店",
+    "typeSweetShop": "和洋菓子店 / スイーツ店",
+    "typeSalon": "ヘアサロン / 美容室",
+    "typeBeautyParlour": "エステティック & スパ",
+    "typeClothing": "アパレル / ブティック",
+    "typeElectronics": "家電 & デジタル機器",
+    "typePharmacy": "薬局 / ドラッグストア",
+    "typeHardware": "金物 & 電気設備",
+    "typeFurniture": "家具 & インテリア",
+    "typeStationery": "文房具 & 書店",
+    "typeMobileStore": "携帯ショップ & ガジェット",
+    "typeRepair": "修理 & サービスセンター",
+    "typeFitness": "ジム & フィットネススタジオ",
+    "typeHotel": "ホテル & 宿泊業",
+    "typeCatering": "ケータリング & イベント事業",
+    "typeService": "専門サービス業",
+    "typeConsultancy": "コンサルティング & 代理店",
+    "typeEducation": "教育 & 学習塾",
+    "typeOther": "その他の事業所"
   }
 }

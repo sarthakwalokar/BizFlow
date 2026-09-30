@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "متجر بيع بالتجزئة / محل",
+    "typeGrocery": "بقالة ومتجر مواد غذائية",
+    "typeSupermarket": "سوبرماركت / هايبرماركت",
+    "typeRestaurant": "مطعم",
+    "typeCafe": "مقهى وبيسترو",
+    "typeBakery": "مخبز وحلويات",
+    "typeSweetShop": "متجر حلويات",
+    "typeSalon": "صالون حلاقة وتصفيف شعر",
+    "typeBeautyParlour": "مركز تجميل وسبا",
+    "typeClothing": "ملابس وأزياء / بوتيك",
+    "typeElectronics": "إلكترونيات وأجهزة منزلية",
+    "typePharmacy": "صيدلية",
+    "typeHardware": "أدوات ومعدات كهربائية",
+    "typeFurniture": "أثاث وديكور منزلي",
+    "typeStationery": "قرطاسية ومكتبة",
+    "typeMobileStore": "متجر هواتف وتكنولوجيا",
+    "typeRepair": "مركز صيانة وخدمات",
+    "typeFitness": "نادي رياضي وللياقة البدنية",
+    "typeHotel": "فندق وضيافة",
+    "typeCatering": "خدمات تموين وحفلات",
+    "typeService": "خدمات مهنية وتجارية",
+    "typeConsultancy": "استشارات ووكالة",
+    "typeEducation": "تعليم ومعهد تدريب",
+    "typeOther": "مؤسسة تجارية أخرى"
   }
 }

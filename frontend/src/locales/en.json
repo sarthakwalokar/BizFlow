@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "Retail Store / Shop",
+    "typeGrocery": "Grocery & Kirana Store",
+    "typeSupermarket": "Supermarket / Hypermarket",
+    "typeRestaurant": "Restaurant / Fine Dining",
+    "typeCafe": "Café & Bistro",
+    "typeBakery": "Bakery & Patisserie",
+    "typeSweetShop": "Sweet Shop / Confectionery",
+    "typeSalon": "Salon & Hair Studio",
+    "typeBeautyParlour": "Beauty Parlour & Spa",
+    "typeClothing": "Clothing & Apparel / Boutique",
+    "typeElectronics": "Electronics & Appliances",
+    "typePharmacy": "Pharmacy & Medical Store",
+    "typeHardware": "Hardware & Electrical",
+    "typeFurniture": "Furniture & Home Decor",
+    "typeStationery": "Stationery & Book Store",
+    "typeMobileStore": "Mobile Store & Tech Hub",
+    "typeRepair": "Repair & Service Center",
+    "typeFitness": "Fitness & Gym Studio",
+    "typeHotel": "Hotel & Hospitality",
+    "typeCatering": "Catering & Event Services",
+    "typeService": "Professional & Trade Services",
+    "typeConsultancy": "Consultancy & Agency",
+    "typeEducation": "Education & Coaching Institute",
+    "typeOther": "Other Commercial Enterprise"
   }
 }

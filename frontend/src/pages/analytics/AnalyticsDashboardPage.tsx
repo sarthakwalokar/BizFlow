@@ -15,10 +15,15 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '../../utils/currency';
 import { MetricCardsSkeleton, ChartSkeleton, SkeletonBlock } from '../../components/common/LoadingStates';
+import { EduAnalyticsView } from './EduAnalyticsView';
 
 export const AnalyticsDashboardPage: React.FC = () => {
   const { t } = useTranslation();
   const { business } = useAuth();
+
+  if (business?.businessType?.toUpperCase() === 'EDUCATION') {
+    return <EduAnalyticsView />;
+  }
 
   const [timeRange, setTimeRange] = useState<TimeRange>('THIS_MONTH');
   const [selectedLocationId, setSelectedLocationId] = useState<string>('ALL');

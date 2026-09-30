@@ -69,3 +69,7 @@ Thumbs.db
 #logo
 Bizflow-logo.png
 
+# Vite / Temp
+*.timestamp-*.mjs
+scratch/
+

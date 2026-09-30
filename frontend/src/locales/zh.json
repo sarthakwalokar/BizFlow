@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "零售商店 / 专卖店",
+    "typeGrocery": "杂货店 / 便利店",
+    "typeSupermarket": "大型超市 / 卖场",
+    "typeRestaurant": "餐厅 / 美食料理",
+    "typeCafe": "咖啡馆 & 小酒馆",
+    "typeBakery": "烘焙坊 & 糕点店",
+    "typeSweetShop": "糖果甜品店",
+    "typeSalon": "美发沙龙",
+    "typeBeautyParlour": "美容水疗中心",
+    "typeClothing": "服装服饰 / 精品店",
+    "typeElectronics": "数码电子 & 家电",
+    "typePharmacy": "药店 / 医疗用品",
+    "typeHardware": "五金机电 & 建材",
+    "typeFurniture": "家具 & 家居软装",
+    "typeStationery": "文具 & 书店",
+    "typeMobileStore": "手机数码专营店",
+    "typeRepair": "维修 & 售后服务中心",
+    "typeFitness": "健身房 & 运动中心",
+    "typeHotel": "酒店 & 住宿餐饮",
+    "typeCatering": "餐饮定制 & 活动承办",
+    "typeService": "专业商务服务",
+    "typeConsultancy": "咨询顾问 & 中介机构",
+    "typeEducation": "教育培训机构",
+    "typeOther": "其他商业企业"
   }
 }

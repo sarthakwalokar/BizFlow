@@ -1,5 +1,6 @@
 package com.bizflow.auth.dto;
 
+import com.bizflow.business.BusinessSize;
 import com.bizflow.business.BusinessType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -39,12 +40,17 @@ public class SignupRequest {
     @NotNull(message = "Business type is required (RETAIL, RESTAURANT, CAFE, BAKERY, SALON, SERVICE, OTHER)")
     private BusinessType businessType;
 
+    private BusinessSize businessSize;
+
     @Size(max = 500, message = "Business address must not exceed 500 characters")
     private String businessAddress;
 
     private String businessPhone;
 
     private String businessEmail;
+
+    @Size(max = 50, message = "GSTIN/Tax number must not exceed 50 characters")
+    private String taxNumber;
 
     @Size(max = 20, message = "Preferred language code must not exceed 20 characters")
     private String preferredLanguage;

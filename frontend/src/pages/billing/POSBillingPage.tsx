@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { productsApi, Product, ProductType } from '../../api/products';
 import { categoriesApi, Category } from '../../api/categories';
@@ -39,6 +40,10 @@ interface CartItem {
 export const POSBillingPage: React.FC = () => {
   const { t } = useTranslation();
   const { business } = useAuth();
+
+  if (business?.businessType?.toUpperCase() === 'RESTAURANT' || business?.businessType?.toUpperCase() === 'CAFE') {
+    return <Navigate to="/dashboard/restaurant/tables" replace />;
+  }
 
   // Catalog State
   const [products, setProducts] = useState<Product[]>([]);

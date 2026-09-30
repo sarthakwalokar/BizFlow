@@ -33,6 +33,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>, JpaSp
            "(c.phone IS NOT NULL AND c.phone LIKE CONCAT('%', :search, '%')))")
     List<Customer> quickSearch(@Param("businessId") Long businessId, @Param("search") String search);
 
+    @Query("SELECT c FROM Customer c WHERE c.business.id = :businessId AND c.phone = :phone")
+    Optional<Customer> findByBusinessIdAndPhone(@Param("businessId") Long businessId, @Param("phone") String phone);
+
     @Query("SELECT COUNT(c) > 0 FROM Customer c WHERE c.business.id = :businessId AND c.phone = :phone")
     boolean existsByBusinessIdAndPhone(@Param("businessId") Long businessId, @Param("phone") String phone);
 

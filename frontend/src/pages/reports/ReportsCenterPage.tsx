@@ -5,6 +5,7 @@ import { reportsApi, ReportType, ReportDataResponse } from '../../api/reports';
 import { inventoryApi, Location } from '../../api/inventory';
 import { formatCurrency } from '../../utils/currency';
 import { ButtonSpinner, TableSkeleton, MetricCardsSkeleton } from '../../components/common/LoadingStates';
+import { EduReportsView } from './EduReportsView';
 import {
   LucideIcon,
   FileText,
@@ -28,6 +29,10 @@ import {
 export const ReportsCenterPage: React.FC = () => {
   const { t } = useTranslation();
   const { business } = useAuth();
+
+  if (business?.businessType?.toUpperCase() === 'EDUCATION') {
+    return <EduReportsView />;
+  }
   const currency = business?.currency || 'USD';
 
   const [activeReport, setActiveReport] = useState<ReportType>('SALES');

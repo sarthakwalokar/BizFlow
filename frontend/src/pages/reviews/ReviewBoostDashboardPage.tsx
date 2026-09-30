@@ -140,8 +140,8 @@ export const ReviewBoostDashboardPage: React.FC = () => {
     }
   };
 
-  const avgRating = analytics?.averageRating ?? 5.0;
   const totalRevCount = analytics?.totalReviews ?? 0;
+  const avgRating = totalRevCount > 0 ? (analytics?.averageRating ?? 0) : 0;
 
   const getRatingCount = (star: number) => {
     if (Array.isArray(analytics?.ratingDistribution)) {
@@ -216,7 +216,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                       key={star}
                       size={18}
                       className={
-                        star <= Math.round(avgRating)
+                        totalRevCount > 0 && star <= Math.round(avgRating)
                           ? 'fill-amber-500 text-amber-500'
                           : 'text-zinc-200'
                       }

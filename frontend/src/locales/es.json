@@ -1209,5 +1209,31 @@
     "viewReceipt": "View Receipt",
     "title": "POS Billing",
     "quickBilling": "Fast POS checkout and invoice generation"
+  },
+  "business": {
+    "typeRetail": "Tienda minorista / Comercio",
+    "typeGrocery": "Tienda de comestibles / Ultramarinos",
+    "typeSupermarket": "Supermercado / Hipermercado",
+    "typeRestaurant": "Restaurante",
+    "typeCafe": "Cafetería y Bistro",
+    "typeBakery": "Panadería y Pastelería",
+    "typeSweetShop": "Confitería / Dulcería",
+    "typeSalon": "Salón de belleza y Peluquería",
+    "typeBeautyParlour": "Centro de estética y Spa",
+    "typeClothing": "Ropa y Moda / Boutique",
+    "typeElectronics": "Electrónica y Electrodomésticos",
+    "typePharmacy": "Farmacia",
+    "typeHardware": "Ferretería y Electricidad",
+    "typeFurniture": "Muebles y Decoración",
+    "typeStationery": "Papelería y Librería",
+    "typeMobileStore": "Tienda de móviles y Tecnología",
+    "typeRepair": "Taller de reparación y Servicios",
+    "typeFitness": "Gimnasio y Fitness",
+    "typeHotel": "Hotel y Hospedaje",
+    "typeCatering": "Catering y Eventos",
+    "typeService": "Servicios profesionales",
+    "typeConsultancy": "Consultoría y Agencia",
+    "typeEducation": "Educación y Academia",
+    "typeOther": "Otro comercio / Empresa"
   }
 }

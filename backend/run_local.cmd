@@ -1,6 +1,6 @@
 @echo off
-set "DB_URL=jdbc:postgresql://db.zwhhljorbjwueldcewmt.supabase.co:5432/postgres?sslmode=require"
-set "DB_USERNAME=postgres"
+set "DB_URL=jdbc:postgresql://aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0"
+set "DB_USERNAME=postgres.zwhhljorbjwueldcewmt"
 set "DB_PASSWORD=BizFlow@2006"
 set "SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=5"
 set "SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1"

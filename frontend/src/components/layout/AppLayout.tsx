@@ -751,7 +751,7 @@ export const AppLayout: React.FC = () => {
             <div className="relative" ref={notificationRef}>
               <button
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
-                title="Notifications"
+                title={t('nav.notifications', 'Notifications')}
                 className="relative p-2 rounded-xl clay-btn-secondary text-slate-600 hover:text-brand-600 transition-colors cursor-pointer flex items-center justify-center"
               >
                 <Bell size={17} />

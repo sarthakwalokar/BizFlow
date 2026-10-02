@@ -492,7 +492,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Class 10th Math & Science Intensive"
+                  placeholder={t('placeholders.courseTitleExample', 'e.g. Class 10th Math & Science Intensive')}
                   value={courseName}
                   onChange={(e) => setCourseName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium"
@@ -504,7 +504,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('education.courseCode', 'Course Code')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. MTH-10"
+                    placeholder={t('placeholders.courseCodeExample', 'e.g. MTH-10')}
                     value={courseCode}
                     onChange={(e) => setCourseCode(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono"
@@ -514,7 +514,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('education.duration', 'Duration')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. 6 Months, 1 Year"
+                    placeholder={t('placeholders.durationExample', 'e.g. 6 Months, 1 Year')}
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -605,7 +605,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Morning Batch A (2026)"
+                  placeholder={t('placeholders.batchNameExample', 'e.g. Morning Batch A (2026)')}
                   value={batchName}
                   onChange={(e) => setBatchName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium"
@@ -616,7 +616,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
                 <label className="font-semibold text-slate-700">{t('education.weeklySchedule', 'Weekly Schedule / Timings')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Mon, Wed, Fri 04:00 PM - 06:00 PM"
+                  placeholder={t('placeholders.scheduleExample', 'e.g. Mon, Wed, Fri 04:00 PM - 06:00 PM')}
                   value={schedule}
                   onChange={(e) => setSchedule(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"

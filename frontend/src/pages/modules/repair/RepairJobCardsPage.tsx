@@ -247,7 +247,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
               }`}
             >
-              {st === 'ALL' ? t('common.all', 'ALL') : st}
+              {st === 'ALL' ? t('common.all', 'ALL') : t(`repair.status.${st}`, st)}
             </button>
           ))}
         </div>
@@ -293,7 +293,7 @@ export const RepairJobCardsPage: React.FC = () => {
                           ? 'bg-amber-100 text-amber-800'
                           : 'bg-slate-100 text-slate-600'
                       }`}>
-                        {job.priority}
+                        {t(`repair.priority.${job.priority}`, job.priority)}
                       </span>
                     </td>
 
@@ -316,7 +316,7 @@ export const RepairJobCardsPage: React.FC = () => {
                       <span className={`text-[9px] font-bold ${
                         job.paymentStatus === 'PAID' ? 'text-emerald-600' : 'text-amber-600'
                       }`}>
-                        {job.paymentStatus}
+                        {t(`repair.paymentStatus.${job.paymentStatus}`, job.paymentStatus)}
                       </span>
                     </td>
 
@@ -334,7 +334,7 @@ export const RepairJobCardsPage: React.FC = () => {
                             : 'bg-amber-50 text-amber-700 border border-amber-200'
                         }`}
                       >
-                        {job.status}
+                        {t(`repair.status.${job.status}`, job.status)}
                       </span>
                     </td>
 
@@ -383,7 +383,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('repair.customerNameOpt', 'Customer Name (Optional)')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. Vikram Joshi"
+                    placeholder={t('placeholders.customerNameExample', 'e.g. Vikram Joshi')}
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -394,7 +394,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('repair.customerPhoneOpt', 'Customer Phone (Optional)')}</label>
                   <input
                     type="tel"
-                    placeholder="e.g. 9812345678"
+                    placeholder={t('placeholders.phoneExample', 'e.g. 9812345678')}
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -407,7 +407,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('repair.customerEmailOpt', 'Customer Email (Optional)')}</label>
                   <input
                     type="email"
-                    placeholder="e.g. customer@example.com"
+                    placeholder={t('placeholders.emailExample', 'e.g. customer@example.com')}
                     value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -418,7 +418,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('repair.customerAddressOpt', 'Customer Address (Optional)')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. 45 Park Avenue, City"
+                    placeholder={t('placeholders.addressExample', 'e.g. 45 Park Avenue, City')}
                     value={customerAddress}
                     onChange={(e) => setCustomerAddress(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -431,7 +431,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('repair.itemType', 'Item Type')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. Laptop, Phone"
+                    placeholder={t('placeholders.itemTypeExample', 'e.g. Laptop, Phone')}
                     value={itemType}
                     onChange={(e) => setItemType(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -441,7 +441,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('repair.brand', 'Brand')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. HP, Sony"
+                    placeholder={t('placeholders.brandExample', 'e.g. HP, Sony')}
                     value={brand}
                     onChange={(e) => setBrand(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -451,7 +451,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('repair.model', 'Model')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. Pavilion 15"
+                    placeholder={t('placeholders.modelExample', 'e.g. Pavilion 15')}
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -463,7 +463,7 @@ export const RepairJobCardsPage: React.FC = () => {
                 <label className="font-semibold text-slate-700">{t('repair.serialOrImeiOpt', 'Serial Number / IMEI (Optional)')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. 5CD1234XYZ"
+                  placeholder={t('placeholders.serialExample', 'e.g. 5CD1234XYZ')}
                   value={serialOrImei}
                   onChange={(e) => setSerialOrImei(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono"
@@ -499,7 +499,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('repair.assignTechnician', 'Assign Technician')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. Rajesh Kumar"
+                    placeholder={t('placeholders.technicianExample', 'e.g. Rajesh Kumar')}
                     value={technician}
                     onChange={(e) => setTechnician(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -578,12 +578,12 @@ export const RepairJobCardsPage: React.FC = () => {
                   onChange={(e) => setEditStatus(e.target.value as any)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold"
                 >
-                  <option value="RECEIVED">RECEIVED (Intake)</option>
-                  <option value="DIAGNOSING">DIAGNOSING (Bench Testing)</option>
-                  <option value="REPAIRING">REPAIRING (In Progress)</option>
-                  <option value="READY">READY (Ready for Pickup)</option>
-                  <option value="DELIVERED">DELIVERED (Handed over)</option>
-                  <option value="CANCELLED">CANCELLED</option>
+                  <option value="RECEIVED">{t('repair.statusOpt.RECEIVED', 'RECEIVED (Intake)')}</option>
+                  <option value="DIAGNOSING">{t('repair.statusOpt.DIAGNOSING', 'DIAGNOSING (Bench Testing)')}</option>
+                  <option value="REPAIRING">{t('repair.statusOpt.REPAIRING', 'REPAIRING (In Progress)')}</option>
+                  <option value="READY">{t('repair.statusOpt.READY', 'READY (Ready for Pickup)')}</option>
+                  <option value="DELIVERED">{t('repair.statusOpt.DELIVERED', 'DELIVERED (Handed over)')}</option>
+                  <option value="CANCELLED">{t('repair.statusOpt.CANCELLED', 'CANCELLED')}</option>
                 </select>
               </div>
 

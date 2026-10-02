@@ -65,7 +65,10 @@ i18n
     resources,
     lng: savedLanguage,
     fallbackLng: DEFAULT_LANGUAGE,
-    parseMissingKeyHandler: (key: string) => {
+    parseMissingKeyHandler: (key: string, defaultValue?: string) => {
+      if (defaultValue && typeof defaultValue === 'string' && defaultValue.trim()) {
+        return defaultValue;
+      }
       return formatFallbackKey(key);
     },
     interpolation: {

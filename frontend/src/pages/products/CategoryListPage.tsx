@@ -314,7 +314,7 @@ export const CategoryListPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Hot Beverages, Desserts, Spa Services"
+                  placeholder={t('placeholders.categoryNameExample', 'e.g. Hot Beverages, Desserts, Spa Services')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600"
@@ -325,7 +325,7 @@ export const CategoryListPage: React.FC = () => {
                 <label className="text-xs font-bold text-zinc-700">{t('common.description')}</label>
                 <textarea
                   rows={3}
-                  placeholder="Brief summary of items in this category..."
+                  placeholder={t('placeholders.categoryDescExample', 'Brief summary of items in this category...')}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600 resize-none"

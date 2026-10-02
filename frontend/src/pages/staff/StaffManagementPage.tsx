@@ -60,7 +60,7 @@ export const StaffManagementPage: React.FC = () => {
       const list = await businessApi.getStaff();
       setStaffList(list);
     } catch (err: any) {
-      setErrorMessage('Failed to load staff roster.');
+      setErrorMessage(t('staff.fetchError', 'Failed to load staff roster.'));
     } finally {
       setLoading(false);
     }
@@ -127,8 +127,8 @@ export const StaffManagementPage: React.FC = () => {
       await businessApi.createStaff(data);
       setSuccessMessage(
         isEducation
-          ? `Faculty member "${fullName}" was successfully registered!`
-          : `Staff member "${fullName}" was successfully onboarded!`
+          ? t('education.staff.facultyRegistered', 'Faculty member "{{name}}" was successfully registered!', { name: fullName })
+          : t('staff.staffRegistered', 'Staff member "{{name}}" was successfully onboarded!', { name: fullName })
       );
       setAddModalError(null);
       setIsAddModalOpen(false);
@@ -137,7 +137,7 @@ export const StaffManagementPage: React.FC = () => {
       const msg =
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        (isEducation ? 'Failed to add teacher/staff member.' : 'Failed to add staff member.');
+        (isEducation ? t('education.staff.addError', 'Failed to add teacher/staff member.') : t('staff.addError', 'Failed to add staff member.'));
       setErrorMessage(msg);
       setAddModalError(msg);
     } finally {
@@ -161,8 +161,8 @@ export const StaffManagementPage: React.FC = () => {
       await businessApi.updateStaff(editingStaff.id, data);
       setSuccessMessage(
         isEducation
-          ? `Faculty details for "${fullName}" updated!`
-          : `Staff details for "${fullName}" updated!`
+          ? t('education.staff.facultyUpdated', 'Faculty details for "{{name}}" updated!', { name: fullName })
+          : t('staff.staffUpdated', 'Staff details for "{{name}}" updated!', { name: fullName })
       );
       setEditingStaff(null);
       fetchStaff();
@@ -170,7 +170,7 @@ export const StaffManagementPage: React.FC = () => {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to update staff member.'
+        t('staff.updateError', 'Failed to update staff member.')
       );
     } finally {
       setActionLoading(false);
@@ -183,11 +183,17 @@ export const StaffManagementPage: React.FC = () => {
       setStaffList(staffList.map((s) => (s.id === staff.id ? updated : s)));
       setSuccessMessage(
         isEducation
-          ? `Teacher/Staff profile "${staff.fullName}" is now ${updated.enabled ? 'Active' : 'Inactive'}.`
-          : `Staff account "${staff.fullName}" is now ${updated.enabled ? 'Enabled' : 'Disabled'}.`
+          ? t('education.staff.facultyStatusChanged', 'Teacher/Staff profile "{{name}}" is now {{status}}.', {
+              name: staff.fullName,
+              status: updated.enabled ? t('common.active') : t('common.inactive'),
+            })
+          : t('staff.statusChanged', 'Staff account "{{name}}" is now {{status}}.', {
+              name: staff.fullName,
+              status: updated.enabled ? t('common.active') : t('common.inactive'),
+            })
       );
     } catch (err: any) {
-      setErrorMessage('Failed to update staff account status.');
+      setErrorMessage(t('staff.statusUpdateError', 'Failed to update staff account status.'));
     }
   };
 
@@ -200,13 +206,13 @@ export const StaffManagementPage: React.FC = () => {
 
     try {
       await businessApi.resetStaffPassword(resetPasswordStaff.id, { newPassword });
-      setSuccessMessage(`Password for "${resetPasswordStaff.fullName}" was successfully updated.`);
+      setSuccessMessage(t('staff.passwordUpdated', 'Password for "{{name}}" was successfully updated.', { name: resetPasswordStaff.fullName }));
       setResetPasswordStaff(null);
     } catch (err: any) {
       setErrorMessage(
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to reset staff password.'
+        t('staff.resetError', 'Failed to reset staff password.')
       );
     } finally {
       setActionLoading(false);
@@ -242,11 +248,11 @@ export const StaffManagementPage: React.FC = () => {
   };
 
   const formatEducationPermLabel = (perm: string) => {
-    if (perm === 'TEACHER_FACULTY') return 'Teacher / Instructor';
-    if (perm === 'TUITION_TEACHER') return 'Tuition Faculty';
-    if (perm === 'BATCH_COORDINATOR') return 'Batch Coordinator';
-    if (perm === 'FRONT_DESK') return 'Front Desk / Fees';
-    if (perm === 'LAB_ASSISTANT') return 'Lab Assistant';
+    if (perm === 'TEACHER_FACULTY') return t('education.roles.teacherFaculty', 'Teacher / Instructor');
+    if (perm === 'TUITION_TEACHER') return t('education.roles.tuitionTeacher', 'Tuition Faculty');
+    if (perm === 'BATCH_COORDINATOR') return t('education.roles.batchCoordinator', 'Batch Coordinator');
+    if (perm === 'FRONT_DESK') return t('education.roles.frontDesk', 'Front Desk / Fees');
+    if (perm === 'LAB_ASSISTANT') return t('education.roles.labAssistant', 'Lab Assistant');
     return perm;
   };
 
@@ -257,18 +263,18 @@ export const StaffManagementPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-zinc-900 tracking-tight">
-              {isEducation ? 'Teacher & Staff Management' : t('staff.title')}
+              {isEducation ? t('education.staff.title', 'Teacher & Staff Management') : t('staff.title')}
             </h1>
             {isEducation && (
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 flex items-center gap-1">
                 <GraduationCap size={13} className="text-emerald-600" />
-                <span>Institute Faculty</span>
+                <span>{t('education.staff.instituteFacultyBadge', 'Institute Faculty')}</span>
               </span>
             )}
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
             {isEducation
-              ? 'Manage teachers, instructors, assigned courses & batches, and institute administrative staff'
+              ? t('education.staff.subtitle', 'Manage teachers, instructors, assigned courses & batches, and institute administrative staff')
               : t('staff.subtitle')}
           </p>
         </div>
@@ -278,7 +284,7 @@ export const StaffManagementPage: React.FC = () => {
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer shrink-0"
         >
           <UserPlus size={15} />
-          <span>{isEducation ? 'Add Teacher / Staff' : t('staff.addStaff')}</span>
+          <span>{isEducation ? t('education.staff.addTeacherBtn', 'Add Teacher / Staff') : t('staff.addStaff')}</span>
         </button>
       </div>
 
@@ -301,21 +307,21 @@ export const StaffManagementPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
           <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
-            {isEducation ? 'Total Teachers & Staff' : t('staff.title')}
+            {isEducation ? t('education.staff.totalFaculty', 'Total Teachers & Staff') : t('staff.title')}
           </span>
           <div className="text-xl font-bold text-zinc-900 mt-1">{staffList.length}</div>
           <span className="text-[11px] text-zinc-400">
-            {isEducation ? 'Registered institute faculty & staff' : t('staff.registeredEmployees', 'Registered employees')}
+            {isEducation ? t('education.staff.registeredFaculty', 'Registered institute faculty & staff') : t('staff.registeredEmployees', 'Registered employees')}
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs">
           <span className="text-[11px] font-medium text-brand-600 uppercase tracking-wider">
-            {isEducation ? 'Active Faculty' : t('staff.activeStaff')}
+            {isEducation ? t('education.staff.activeFaculty', 'Active Faculty') : t('staff.activeStaff')}
           </span>
           <div className="text-xl font-bold text-brand-700 mt-1">{activeCount}</div>
           <span className="text-[11px] text-brand-600">
-            {isEducation ? 'Currently taking courses & batches' : t('staff.canLoginOperate', 'Can log in and operate')}
+            {isEducation ? t('education.staff.activeCoursesBatches', 'Currently taking courses & batches') : t('staff.canLoginOperate', 'Can log in and operate')}
           </span>
         </div>
 
@@ -325,7 +331,7 @@ export const StaffManagementPage: React.FC = () => {
           </span>
           <div className="text-xl font-bold text-zinc-600 mt-1">{disabledCount}</div>
           <span className="text-[11px] text-zinc-400">
-            {isEducation ? 'On leave / Inactive' : t('staff.accessSuspended', 'Access suspended')}
+            {isEducation ? t('education.staff.onLeaveInactive', 'On leave / Inactive') : t('staff.accessSuspended', 'Access suspended')}
           </span>
         </div>
       </div>
@@ -336,7 +342,7 @@ export const StaffManagementPage: React.FC = () => {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
           <input
             type="text"
-            placeholder={isEducation ? 'Search by teacher name, email, phone...' : t('common.search')}
+            placeholder={isEducation ? t('education.staff.searchPlaceholder', 'Search by teacher name, email, phone...') : t('common.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs bg-zinc-50 focus:bg-white"
@@ -383,9 +389,9 @@ export const StaffManagementPage: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 text-[10px] uppercase tracking-wider font-medium">
-                <th className="px-4 py-3">{isEducation ? 'Teacher / Staff Member' : t('staff.staffName', 'Employee')}</th>
+                <th className="px-4 py-3">{isEducation ? t('education.staff.teacherMember', 'Teacher / Staff Member') : t('staff.staffName', 'Employee')}</th>
                 <th className="px-4 py-3">{t('customers.phone', 'Contact')}</th>
-                <th className="px-4 py-3">{isEducation ? 'Role & Assigned Courses/Batches' : t('staff.permissions', 'Permissions')}</th>
+                <th className="px-4 py-3">{isEducation ? t('education.staff.roleAndBatches', 'Role & Assigned Courses/Batches') : t('staff.permissions', 'Permissions')}</th>
                 <th className="px-4 py-3">{t('common.status', 'Status')}</th>
                 <th className="px-4 py-3 text-right">{t('common.actions', 'Actions')}</th>
               </tr>
@@ -402,13 +408,13 @@ export const StaffManagementPage: React.FC = () => {
                   <td colSpan={5} className="px-4 py-12 text-center text-zinc-500 space-y-1">
                     <Users size={28} className="mx-auto text-zinc-300 mb-2" />
                     <p className="font-medium text-zinc-700">
-                      {isEducation ? 'No teachers or staff members found' : t('staff.noStaffFound', 'No staff members found')}
+                      {isEducation ? t('education.staff.noFacultyFound', 'No teachers or staff members found') : t('staff.noStaffFound', 'No staff members found')}
                     </p>
                     <p className="text-[11px] text-zinc-400">
                       {search
                         ? t('common.notFound', 'Try adjusting your search criteria.')
                         : isEducation
-                        ? 'Click "Add Teacher / Staff" to register your faculty members.'
+                        ? t('education.staff.clickAddFaculty', 'Click "Add Teacher / Staff" to register your faculty members.')
                         : t('staff.inviteStaff', 'Click "Add Team Member" to invite your first employee.')}
                     </p>
                   </td>
@@ -428,7 +434,7 @@ export const StaffManagementPage: React.FC = () => {
                         <div>
                           <div className="font-medium text-zinc-900">{staff.fullName}</div>
                           <div className="text-[11px] text-zinc-400">
-                            {isEducation ? 'Staff ID' : t('common.id', 'ID')} #{staff.id}
+                            {isEducation ? t('education.staff.staffId', 'Staff ID') : t('common.id', 'ID')} #{staff.id}
                           </div>
                         </div>
                       </div>
@@ -533,10 +539,10 @@ export const StaffManagementPage: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-zinc-900">
-                    {isEducation ? 'Add Teacher / Staff Member' : t('staff.addStaff')}
+                    {isEducation ? t('education.staff.addTeacherTitle', 'Add Teacher / Staff Member') : t('staff.addStaff')}
                   </h3>
                   <p className="text-xs text-zinc-500">
-                    {isEducation ? 'Register a faculty teacher, instructor or admin staff' : t('staff.subtitle')}
+                    {isEducation ? t('education.staff.addTeacherSubtitle', 'Register a faculty teacher, instructor or admin staff') : t('staff.subtitle')}
                   </p>
                 </div>
               </div>
@@ -558,14 +564,14 @@ export const StaffManagementPage: React.FC = () => {
             <form onSubmit={handleCreateStaff} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  {isEducation ? 'Teacher / Staff Full Name' : t('profile.fullName')} <span className="text-red-500">*</span>
+                  {isEducation ? t('education.staff.teacherFullName', 'Teacher / Staff Full Name') : t('profile.fullName')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <UserIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
                   <input
                     type="text"
                     required
-                    placeholder={isEducation ? 'e.g. Prof. Arvind Sharma' : 'e.g. John Doe'}
+                    placeholder={isEducation ? t('education.staff.namePlaceholder', 'e.g. Prof. Arvind Sharma') : t('staff.namePlaceholder', 'e.g. John Doe')}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     className="w-full pl-8 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
@@ -575,7 +581,7 @@ export const StaffManagementPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  {isEducation ? 'Official Email Address' : t('staff.email')} <span className="text-red-500">*</span>
+                  {isEducation ? t('education.staff.officialEmail', 'Official Email Address') : t('staff.email')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -617,7 +623,7 @@ export const StaffManagementPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  {isEducation ? 'Contact Mobile / Phone' : t('staff.phone')}
+                  {isEducation ? t('education.staff.contactMobile', 'Contact Mobile / Phone') : t('staff.phone')}
                 </label>
                 <div className="relative">
                   <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -637,15 +643,15 @@ export const StaffManagementPage: React.FC = () => {
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
                       <GraduationCap size={14} className="text-emerald-600" />
-                      <span>Institute Role / Designation</span>
+                      <span>{t('education.staff.instituteRole', 'Institute Role / Designation')}</span>
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { id: 'TEACHER_FACULTY', label: 'Teacher / Instructor' },
-                        { id: 'TUITION_TEACHER', label: 'Tuition Faculty' },
-                        { id: 'BATCH_COORDINATOR', label: 'Batch Coordinator' },
-                        { id: 'FRONT_DESK', label: 'Front Desk / Fees' },
-                        { id: 'LAB_ASSISTANT', label: 'Lab Assistant' },
+                        { id: 'TEACHER_FACULTY', label: t('education.roles.teacherFaculty', 'Teacher / Instructor') },
+                        { id: 'TUITION_TEACHER', label: t('education.roles.tuitionTeacher', 'Tuition Faculty') },
+                        { id: 'BATCH_COORDINATOR', label: t('education.roles.batchCoordinator', 'Batch Coordinator') },
+                        { id: 'FRONT_DESK', label: t('education.roles.frontDesk', 'Front Desk / Fees') },
+                        { id: 'LAB_ASSISTANT', label: t('education.roles.labAssistant', 'Lab Assistant') },
                       ].map((r) => (
                         <label
                           key={r.id}
@@ -672,7 +678,7 @@ export const StaffManagementPage: React.FC = () => {
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
                         <BookOpen size={14} className="text-indigo-600" />
-                        <span>Assigned Courses / Subject Specialization</span>
+                        <span>{t('education.staff.assignedCourses', 'Assigned Courses / Subject Specialization')}</span>
                       </label>
                       <div className="flex flex-wrap gap-1.5">
                         {courses.map((c) => {
@@ -701,7 +707,7 @@ export const StaffManagementPage: React.FC = () => {
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
                         <Users size={14} className="text-amber-600" />
-                        <span>Assigned Batches</span>
+                        <span>{t('education.staff.assignedBatches', 'Assigned Batches')}</span>
                       </label>
                       <div className="flex flex-wrap gap-1.5">
                         {batches.map((b) => {
@@ -769,7 +775,7 @@ export const StaffManagementPage: React.FC = () => {
                   disabled={actionLoading}
                   className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? t('settings.saving') : isEducation ? 'Register Teacher/Staff' : t('staff.addStaff')}
+                  {actionLoading ? t('settings.saving') : isEducation ? t('education.staff.registerBtn', 'Register Teacher/Staff') : t('staff.addStaff')}
                 </button>
               </div>
             </form>
@@ -788,7 +794,7 @@ export const StaffManagementPage: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-zinc-900">
-                    {isEducation ? 'Edit Teacher / Staff Profile' : t('staff.editStaff')}
+                    {isEducation ? t('education.staff.editTeacherTitle', 'Edit Teacher / Staff Profile') : t('staff.editStaff')}
                   </h3>
                   <p className="text-xs text-zinc-500">{editingStaff.email}</p>
                 </div>
@@ -804,7 +810,7 @@ export const StaffManagementPage: React.FC = () => {
             <form onSubmit={handleUpdateStaff} className="space-y-3.5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  {isEducation ? 'Teacher / Staff Full Name' : t('profile.fullName')} <span className="text-red-500">*</span>
+                  {isEducation ? t('education.staff.teacherFullName', 'Teacher / Staff Full Name') : t('profile.fullName')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -817,7 +823,7 @@ export const StaffManagementPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-zinc-700">
-                  {isEducation ? 'Contact Mobile / Phone' : t('staff.phone')}
+                  {isEducation ? t('education.staff.contactMobile', 'Contact Mobile / Phone') : t('staff.phone')}
                 </label>
                 <input
                   type="text"
@@ -834,15 +840,15 @@ export const StaffManagementPage: React.FC = () => {
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
                       <GraduationCap size={14} className="text-emerald-600" />
-                      <span>Institute Role / Designation</span>
+                      <span>{t('education.staff.instituteRole', 'Institute Role / Designation')}</span>
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { id: 'TEACHER_FACULTY', label: 'Teacher / Instructor' },
-                        { id: 'TUITION_TEACHER', label: 'Tuition Faculty' },
-                        { id: 'BATCH_COORDINATOR', label: 'Batch Coordinator' },
-                        { id: 'FRONT_DESK', label: 'Front Desk / Fees' },
-                        { id: 'LAB_ASSISTANT', label: 'Lab Assistant' },
+                        { id: 'TEACHER_FACULTY', label: t('education.roles.teacherFaculty', 'Teacher / Instructor') },
+                        { id: 'TUITION_TEACHER', label: t('education.roles.tuitionTeacher', 'Tuition Faculty') },
+                        { id: 'BATCH_COORDINATOR', label: t('education.roles.batchCoordinator', 'Batch Coordinator') },
+                        { id: 'FRONT_DESK', label: t('education.roles.frontDesk', 'Front Desk / Fees') },
+                        { id: 'LAB_ASSISTANT', label: t('education.roles.labAssistant', 'Lab Assistant') },
                       ].map((r) => (
                         <label
                           key={r.id}
@@ -868,7 +874,7 @@ export const StaffManagementPage: React.FC = () => {
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
                         <BookOpen size={14} className="text-indigo-600" />
-                        <span>Assigned Courses / Subject Specialization</span>
+                        <span>{t('education.staff.assignedCourses', 'Assigned Courses / Subject Specialization')}</span>
                       </label>
                       <div className="flex flex-wrap gap-1.5">
                         {courses.map((c) => {
@@ -897,7 +903,7 @@ export const StaffManagementPage: React.FC = () => {
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
                         <Users size={14} className="text-amber-600" />
-                        <span>Assigned Batches</span>
+                        <span>{t('education.staff.assignedBatches', 'Assigned Batches')}</span>
                       </label>
                       <div className="flex flex-wrap gap-1.5">
                         {batches.map((b) => {

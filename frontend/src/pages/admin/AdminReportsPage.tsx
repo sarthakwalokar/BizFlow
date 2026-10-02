@@ -96,7 +96,7 @@ export const AdminReportsPage: React.FC = () => {
             <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">
               <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t('admin.totalBusinesses')}</span>
               <div className="text-xl font-bold text-zinc-900">{report?.totalTenants ?? 0}</div>
-              <span className="text-[11px] text-brand-700 font-medium block">100% platform coverage</span>
+              <span className="text-[11px] text-brand-700 font-medium block">{t('admin.reports.platformCoverage', '100% platform coverage')}</span>
             </div>
 
             <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-xs space-y-1">

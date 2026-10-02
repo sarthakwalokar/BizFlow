@@ -584,7 +584,7 @@ export const PublicReviewPage: React.FC = () => {
                   <label className="text-xs font-medium text-zinc-700">{t('publicReview.customerNamePlaceholder')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. Priya Sharma"
+                    placeholder={t('placeholders.customerNameExample', 'e.g. Priya Sharma')}
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     className="w-full px-3.5 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -595,7 +595,7 @@ export const PublicReviewPage: React.FC = () => {
                   <label className="text-xs font-medium text-zinc-700">{t('publicReview.customerPhonePlaceholder')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. 9876543210"
+                    placeholder={t('placeholders.phoneExample', 'e.g. 9876543210')}
                     value={customerContact}
                     onChange={(e) => setCustomerContact(e.target.value)}
                     className="w-full px-3.5 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -643,7 +643,7 @@ export const PublicReviewPage: React.FC = () => {
         {/* Footer */}
         <div className="text-center text-[11px] text-zinc-400 space-y-1 flex items-center justify-center space-x-1.5">
           <ShieldCheck size={13} className="text-zinc-400" />
-          <span>Verified Customer Review Portal &bull; Powered by BizFlow</span>
+          <span>{t('publicReview.portalFooter', 'Verified Customer Review Portal • Powered by BizFlow')}</span>
         </div>
       </div>
     </div>

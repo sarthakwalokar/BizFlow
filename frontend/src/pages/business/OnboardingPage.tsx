@@ -559,7 +559,7 @@ export const OnboardingPage: React.FC = () => {
                   type="text"
                   value={taxNumber}
                   onChange={(e) => setTaxNumber(e.target.value.toUpperCase())}
-                  placeholder="e.g. 27AAAAA0000A1Z5"
+                  placeholder={t('placeholders.gstinExample', 'e.g. 27AAAAA0000A1Z5')}
                   className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm uppercase"
                 />
                 <p className="text-[10px] text-slate-400 mt-1">{t('onboarding.gstinHelp', 'Printed on formal GST invoices')}</p>
@@ -573,7 +573,7 @@ export const OnboardingPage: React.FC = () => {
                   rows={2}
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Shop / Unit #, Street, City, State, PIN"
+                  placeholder={t('onboarding.addressPlaceholder', 'Shop / Unit #, Street, City, State, PIN')}
                   className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm"
                 />
               </div>
@@ -599,7 +599,7 @@ export const OnboardingPage: React.FC = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="contact@store.in"
+                    placeholder={t('placeholders.storeEmailExample', 'contact@store.in')}
                     className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm"
                   />
                 </div>
@@ -655,7 +655,7 @@ export const OnboardingPage: React.FC = () => {
                   required
                   value={prodName}
                   onChange={(e) => setProdName(e.target.value)}
-                  placeholder="e.g. Arabica Roast Coffee, Cotton Shirt, Consultation"
+                  placeholder={t('onboarding.prodNamePlaceholder', 'e.g. Arabica Roast Coffee, Cotton Shirt, Consultation')}
                   className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm"
                 />
               </div>
@@ -785,7 +785,7 @@ export const OnboardingPage: React.FC = () => {
                   type="text"
                   value={reviewPrompt}
                   onChange={(e) => setReviewPrompt(e.target.value)}
-                  placeholder="Thank you for shopping with us! How was your visit?"
+                  placeholder={t('placeholders.reviewPromptExample', 'Thank you for shopping with us! How was your visit?')}
                   className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm"
                 />
               </div>

@@ -149,13 +149,13 @@ export const AdminBusinessesPage: React.FC = () => {
   };
 
   const businessTypes: { type: BusinessType; label: string }[] = [
-    { type: 'RETAIL', label: 'Retail Store' },
-    { type: 'RESTAURANT', label: 'Restaurant' },
-    { type: 'CAFE', label: 'Café & Beverage' },
-    { type: 'BAKERY', label: 'Artisan Bakery' },
-    { type: 'SALON', label: 'Salon & Spa' },
-    { type: 'SERVICE', label: 'Services' },
-    { type: 'OTHER', label: 'Other Business' },
+    { type: 'RETAIL', label: t('admin.bizTypes.retail', 'Retail Store') },
+    { type: 'RESTAURANT', label: t('admin.bizTypes.restaurant', 'Restaurant') },
+    { type: 'CAFE', label: t('admin.bizTypes.cafe', 'Café & Beverage') },
+    { type: 'BAKERY', label: t('admin.bizTypes.bakery', 'Artisan Bakery') },
+    { type: 'SALON', label: t('admin.bizTypes.salon', 'Salon & Spa') },
+    { type: 'SERVICE', label: t('admin.bizTypes.service', 'Services') },
+    { type: 'OTHER', label: t('admin.bizTypes.other', 'Other Business') },
   ];
 
   return (
@@ -172,13 +172,13 @@ export const AdminBusinessesPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">Tenants & Businesses Directory</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">{t('admin.businesses.title', 'Tenants & Businesses Directory')}</h1>
             <span className="px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-bold border border-brand-200">
-              {totalElements} Registered Businesses
+              {t('admin.businesses.registeredCount', '{{count}} Registered Businesses', { count: totalElements })}
             </span>
           </div>
           <p className="text-xs sm:text-sm text-zinc-500 mt-0.5">
-            Monitor, inspect, and manage tenant organizations, tier allocations, and business settings.
+            {t('admin.businesses.subtitle', 'Monitor, inspect, and manage tenant organizations, tier allocations, and business settings.')}
           </p>
         </div>
 
@@ -197,7 +197,7 @@ export const AdminBusinessesPage: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <AlertTriangle size={18} className="text-rose-600 shrink-0" />
             <div>
-              <p className="font-bold text-rose-900">Unable to load businesses data</p>
+              <p className="font-bold text-rose-900">{t('admin.businesses.errorTitle', 'Unable to load businesses data')}</p>
               <p className="text-rose-700 text-[11px]">{error}</p>
             </div>
           </div>
@@ -205,7 +205,7 @@ export const AdminBusinessesPage: React.FC = () => {
             onClick={fetchBusinesses}
             className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer self-start sm:self-auto shrink-0 shadow-xs"
           >
-            Retry
+            {t('common.retry', 'Retry')}
           </button>
         </div>
       )}
@@ -220,7 +220,7 @@ export const AdminBusinessesPage: React.FC = () => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by business name, city, email, or phone..."
+              placeholder={t('admin.businesses.searchPlaceholder', 'Search by business name, city, email, or phone...')}
               className="w-full pl-9 pr-3 py-2 rounded-xl bg-zinc-50 border border-zinc-200 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all"
             />
           </div>
@@ -236,7 +236,7 @@ export const AdminBusinessesPage: React.FC = () => {
               }}
               className="bg-transparent text-xs font-bold text-zinc-800 focus:outline-none cursor-pointer"
             >
-              <option value="ALL">All Business Types</option>
+              <option value="ALL">{t('admin.businesses.allTypes', 'All Business Types')}</option>
               {businessTypes.map((bt) => (
                 <option key={bt.type} value={bt.type}>
                   {bt.label}
@@ -256,9 +256,9 @@ export const AdminBusinessesPage: React.FC = () => {
               }}
               className="bg-transparent text-xs font-bold text-zinc-800 focus:outline-none cursor-pointer"
             >
-              <option value="ALL">All Status</option>
-              <option value="ACTIVE">Active Only</option>
-              <option value="INACTIVE">Inactive Only</option>
+              <option value="ALL">{t('admin.businesses.allStatus', 'All Status')}</option>
+              <option value="ACTIVE">{t('admin.businesses.activeOnly', 'Active Only')}</option>
+              <option value="INACTIVE">{t('admin.businesses.inactiveOnly', 'Inactive Only')}</option>
             </select>
           </div>
 
@@ -277,13 +277,13 @@ export const AdminBusinessesPage: React.FC = () => {
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-bold uppercase tracking-wider text-[10px]">
-                <th className="px-5 py-3.5">Tenant Organization</th>
-                <th className="px-4 py-3.5">Category</th>
-                <th className="px-4 py-3.5">Primary Owner</th>
-                <th className="px-4 py-3.5">Contact Details</th>
-                <th className="px-4 py-3.5">Created</th>
-                <th className="px-4 py-3.5 text-center">Status</th>
-                <th className="px-4 py-3.5 text-right">Actions</th>
+                <th className="px-5 py-3.5">{t('admin.businesses.colTenantOrg', 'Tenant Organization')}</th>
+                <th className="px-4 py-3.5">{t('admin.businesses.colCategory', 'Category')}</th>
+                <th className="px-4 py-3.5">{t('admin.businesses.colPrimaryOwner', 'Primary Owner')}</th>
+                <th className="px-4 py-3.5">{t('admin.businesses.colContactDetails', 'Contact Details')}</th>
+                <th className="px-4 py-3.5">{t('admin.businesses.colCreated', 'Created')}</th>
+                <th className="px-4 py-3.5 text-center">{t('admin.businesses.colStatus', 'Status')}</th>
+                <th className="px-4 py-3.5 text-right">{t('admin.businesses.colActions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
@@ -297,8 +297,8 @@ export const AdminBusinessesPage: React.FC = () => {
                 <tr>
                   <td colSpan={7} className="px-4 py-14 text-center text-zinc-400 space-y-2">
                     <Building2 size={32} className="mx-auto text-zinc-300 mb-2" />
-                    <p className="font-bold text-zinc-800 text-sm">No businesses matched your criteria</p>
-                    <p className="text-xs text-zinc-400">Try adjusting your search keywords or business type filters.</p>
+                    <p className="font-bold text-zinc-800 text-sm">{t('admin.businesses.noMatchTitle', 'No businesses matched your criteria')}</p>
+                    <p className="text-xs text-zinc-400">{t('admin.businesses.noMatchSubtitle', 'Try adjusting your search keywords or business type filters.')}</p>
                   </td>
                 </tr>
               ) : (
@@ -316,7 +316,7 @@ export const AdminBusinessesPage: React.FC = () => {
                           <div>
                             <span className="font-bold text-zinc-900 text-xs">{biz.name}</span>
                             <span className="text-[11px] text-zinc-400 block font-mono">
-                              Tenant #{biz.id} • {biz.currency || 'INR'}
+                              {t('admin.businesses.tenantLabel', 'Tenant')} #{biz.id} • {biz.currency || 'INR'}
                             </span>
                           </div>
                         </div>
@@ -359,7 +359,7 @@ export const AdminBusinessesPage: React.FC = () => {
                           }`}
                         >
                           {biz.active ? <CheckCircle2 size={11} /> : <XCircle size={11} />}
-                          <span>{biz.active ? 'Active' : 'Inactive'}</span>
+                          <span>{biz.active ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}</span>
                         </span>
                       </td>
 
@@ -370,7 +370,7 @@ export const AdminBusinessesPage: React.FC = () => {
                           <button
                             onClick={() => handleViewDetail(biz.id)}
                             className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
-                            title="View Full Business Profile"
+                            title={t('admin.businesses.viewProfileTooltip', 'View Full Business Profile')}
                           >
                             <Eye size={15} />
                           </button>
@@ -385,7 +385,7 @@ export const AdminBusinessesPage: React.FC = () => {
                                 : 'bg-white hover:bg-emerald-50 text-emerald-700 border-zinc-200 hover:border-emerald-200'
                             }`}
                           >
-                            {isUpdating ? <RefreshCw size={12} className="animate-spin" /> : biz.active ? 'Deactivate' : 'Activate'}
+                            {isUpdating ? <RefreshCw size={12} className="animate-spin" /> : biz.active ? t('common.deactivate', 'Deactivate') : t('common.activate', 'Activate')}
                           </button>
                         </div>
                       </td>
@@ -401,7 +401,11 @@ export const AdminBusinessesPage: React.FC = () => {
         {totalPages > 1 && (
           <div className="px-5 py-3.5 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
             <span>
-              Showing Page {page + 1} of {totalPages} ({totalElements} total registered businesses)
+              {t('admin.businesses.paginationSummary', 'Showing Page {{currentPage}} of {{totalPages}} ({{total}} total registered businesses)', {
+                currentPage: page + 1,
+                totalPages: totalPages,
+                total: totalElements
+              })}
             </span>
 
             <div className="flex items-center gap-2">
@@ -411,14 +415,14 @@ export const AdminBusinessesPage: React.FC = () => {
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 disabled:opacity-40 font-bold cursor-pointer transition-colors"
               >
                 <ChevronLeft size={14} />
-                <span>Previous</span>
+                <span>{t('common.previous', 'Previous')}</span>
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
                 disabled={page >= totalPages - 1}
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 disabled:opacity-40 font-bold cursor-pointer transition-colors"
               >
-                <span>Next</span>
+                <span>{t('common.next', 'Next')}</span>
                 <ChevronRight size={14} />
               </button>
             </div>
@@ -433,7 +437,7 @@ export const AdminBusinessesPage: React.FC = () => {
             {loadingDetail || !businessDetail ? (
               <div className="p-12 text-center space-y-3">
                 <ButtonSpinner size="md" className="mx-auto text-brand-600" />
-                <p className="text-xs font-bold text-zinc-600">Loading comprehensive tenant profile...</p>
+                <p className="text-xs font-bold text-zinc-600">{t('admin.businesses.loadingTenantProfile', 'Loading comprehensive tenant profile...')}</p>
               </div>
             ) : (
               <>
@@ -450,11 +454,11 @@ export const AdminBusinessesPage: React.FC = () => {
                           {getTypeIcon(businessDetail.businessType)}
                           <span>{businessDetail.businessType}</span>
                         </span>
-                        <span className="text-[10px] text-zinc-400 font-mono">ID #{businessDetail.id}</span>
+                        <span className="text-[10px] text-zinc-400 font-mono">{t('admin.businesses.idLabel', 'ID')} #{businessDetail.id}</span>
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           businessDetail.active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
                         }`}>
-                          {businessDetail.active ? 'Active' : 'Inactive'}
+                          {businessDetail.active ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
                         </span>
                       </div>
                     </div>
@@ -474,7 +478,7 @@ export const AdminBusinessesPage: React.FC = () => {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-1">
                       <div className="flex items-center justify-between text-zinc-400">
-                        <span className="text-[10px] font-bold uppercase">Staff Team</span>
+                        <span className="text-[10px] font-bold uppercase">{t('admin.businesses.counterStaff', 'Staff Team')}</span>
                         <Users size={14} className="text-brand-600" />
                       </div>
                       <p className="text-xl font-black text-zinc-900">{businessDetail.staffCount}</p>
@@ -482,7 +486,7 @@ export const AdminBusinessesPage: React.FC = () => {
 
                     <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-1">
                       <div className="flex items-center justify-between text-zinc-400">
-                        <span className="text-[10px] font-bold uppercase">Catalog Items</span>
+                        <span className="text-[10px] font-bold uppercase">{t('admin.businesses.counterCatalog', 'Catalog Items')}</span>
                         <Package size={14} className="text-amber-600" />
                       </div>
                       <p className="text-xl font-black text-zinc-900">{businessDetail.productCount}</p>
@@ -490,7 +494,7 @@ export const AdminBusinessesPage: React.FC = () => {
 
                     <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-1">
                       <div className="flex items-center justify-between text-zinc-400">
-                        <span className="text-[10px] font-bold uppercase">Customers</span>
+                        <span className="text-[10px] font-bold uppercase">{t('admin.businesses.counterCustomers', 'Customers')}</span>
                         <Users size={14} className="text-cyan-600" />
                       </div>
                       <p className="text-xl font-black text-zinc-900">{businessDetail.customerCount}</p>
@@ -498,7 +502,7 @@ export const AdminBusinessesPage: React.FC = () => {
 
                     <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-1">
                       <div className="flex items-center justify-between text-zinc-400">
-                        <span className="text-[10px] font-bold uppercase">Invoices/Bills</span>
+                        <span className="text-[10px] font-bold uppercase">{t('admin.businesses.counterInvoices', 'Invoices/Bills')}</span>
                         <Receipt size={14} className="text-emerald-600" />
                       </div>
                       <p className="text-xl font-black text-zinc-900">{businessDetail.orderCount}</p>
@@ -508,25 +512,25 @@ export const AdminBusinessesPage: React.FC = () => {
                   {/* Owner Profile Card */}
                   <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-200/80 space-y-2">
                     <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
-                      <Briefcase size={12} className="text-amber-700" /> Primary Business Owner
+                      <Briefcase size={12} className="text-amber-700" /> {t('admin.businesses.primaryOwnerHeader', 'Primary Business Owner')}
                     </span>
                     {businessDetail.owner ? (
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
                         <div>
-                          <span className="text-zinc-400 text-[10px] block">Full Name</span>
+                          <span className="text-zinc-400 text-[10px] block">{t('admin.businesses.ownerFullName', 'Full Name')}</span>
                           <span className="font-bold text-zinc-900">{businessDetail.owner.fullName}</span>
                         </div>
                         <div>
-                          <span className="text-zinc-400 text-[10px] block">Email Address</span>
+                          <span className="text-zinc-400 text-[10px] block">{t('admin.businesses.ownerEmail', 'Email Address')}</span>
                           <span className="font-bold text-zinc-900 font-mono text-[11px] truncate block">{businessDetail.owner.email}</span>
                         </div>
                         <div>
-                          <span className="text-zinc-400 text-[10px] block">Phone / Mobile</span>
+                          <span className="text-zinc-400 text-[10px] block">{t('admin.businesses.ownerPhone', 'Phone / Mobile')}</span>
                           <span className="font-bold text-zinc-900 font-mono">{businessDetail.owner.phone || '—'}</span>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-zinc-500 italic">No registered owner account currently bound to this tenant.</p>
+                      <p className="text-zinc-500 italic">{t('admin.businesses.noOwnerBound', 'No registered owner account currently bound to this tenant.')}</p>
                     )}
                   </div>
 
@@ -534,43 +538,43 @@ export const AdminBusinessesPage: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2.5">
                       <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">
-                        Location & Contact
+                        {t('admin.businesses.sectionLocationContact', 'Location & Contact')}
                       </span>
                       <div className="space-y-1.5 text-[11px]">
                         <div className="flex items-start gap-2">
                           <MapPin size={13} className="text-zinc-400 shrink-0 mt-0.5" />
-                          <span className="text-zinc-700">{businessDetail.address || 'Address not registered'}</span>
+                          <span className="text-zinc-700">{businessDetail.address || t('admin.businesses.addressNotRegistered', 'Address not registered')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Phone size={13} className="text-zinc-400 shrink-0" />
-                          <span className="text-zinc-700 font-mono">{businessDetail.phone || 'Phone not registered'}</span>
+                          <span className="text-zinc-700 font-mono">{businessDetail.phone || t('admin.businesses.phoneNotRegistered', 'Phone not registered')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Mail size={13} className="text-zinc-400 shrink-0" />
-                          <span className="text-zinc-700 font-mono">{businessDetail.email || 'Email not registered'}</span>
+                          <span className="text-zinc-700 font-mono">{businessDetail.email || t('admin.businesses.emailNotRegistered', 'Email not registered')}</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2.5">
                       <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">
-                        Financial & Regional Configuration
+                        {t('admin.businesses.sectionFinancialConfig', 'Financial & Regional Configuration')}
                       </span>
                       <div className="grid grid-cols-2 gap-2 text-[11px]">
                         <div>
-                          <span className="text-zinc-400 text-[10px] block">Currency</span>
+                          <span className="text-zinc-400 text-[10px] block">{t('admin.businesses.currencyLabel', 'Currency')}</span>
                           <span className="font-bold text-zinc-900">{businessDetail.currency}</span>
                         </div>
                         <div>
-                          <span className="text-zinc-400 text-[10px] block">Timezone</span>
+                          <span className="text-zinc-400 text-[10px] block">{t('admin.businesses.timezoneLabel', 'Timezone')}</span>
                           <span className="font-bold text-zinc-900 font-mono text-[10px] truncate block">{businessDetail.timezone}</span>
                         </div>
                         <div>
-                          <span className="text-zinc-400 text-[10px] block">Tax Scheme</span>
+                          <span className="text-zinc-400 text-[10px] block">{t('admin.businesses.taxSchemeLabel', 'Tax Scheme')}</span>
                           <span className="font-bold text-zinc-900">{businessDetail.taxName} ({businessDetail.taxRate}%)</span>
                         </div>
                         <div>
-                          <span className="text-zinc-400 text-[10px] block">Tax Number</span>
+                          <span className="text-zinc-400 text-[10px] block">{t('admin.businesses.taxNumberLabel', 'Tax Number')}</span>
                           <span className="font-bold text-zinc-900 font-mono text-[10px]">{businessDetail.taxNumber || '—'}</span>
                         </div>
                       </div>
@@ -581,13 +585,13 @@ export const AdminBusinessesPage: React.FC = () => {
                   <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11px]">
                     <div className="space-y-1">
                       <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                        <Star size={11} className="text-amber-500" /> Public Feedback Link
+                        <Star size={11} className="text-amber-500" /> {t('admin.businesses.feedbackLinkLabel', 'Public Feedback Link')}
                       </span>
                       <p className="font-mono text-zinc-700">{businessDetail.publicReviewUrl || `/review/${businessDetail.reviewSlug}`}</p>
                     </div>
 
                     <div className="text-right text-zinc-400 font-mono text-[10px]">
-                      <span>Registered: {new Date(businessDetail.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                      <span>{t('admin.businesses.registeredDateLabel', 'Registered')}: {new Date(businessDetail.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                     </div>
                   </div>
                 </div>
@@ -604,14 +608,14 @@ export const AdminBusinessesPage: React.FC = () => {
                         : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
                     }`}
                   >
-                    {businessDetail.active ? 'Deactivate Business Tenant' : 'Activate Business Tenant'}
+                    {businessDetail.active ? t('admin.businesses.deactivateTenantBtn', 'Deactivate Business Tenant') : t('admin.businesses.activateTenantBtn', 'Activate Business Tenant')}
                   </button>
 
                   <button
                     onClick={closeModal}
                     className="px-5 py-2 rounded-xl bg-zinc-200 hover:bg-zinc-300 text-zinc-800 text-xs font-bold cursor-pointer transition-colors"
                   >
-                    Close
+                    {t('common.close', 'Close')}
                   </button>
                 </div>
               </>
@@ -632,18 +636,16 @@ export const AdminBusinessesPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-zinc-900">
-                  {confirmBusiness.active ? 'Deactivate Business Tenant' : 'Activate Business Tenant'}
+                  {confirmBusiness.active ? t('admin.businesses.deactivateTenantBtn', 'Deactivate Business Tenant') : t('admin.businesses.activateTenantBtn', 'Activate Business Tenant')}
                 </h3>
-                <p className="text-xs text-zinc-500 font-medium">Please confirm this action</p>
+                <p className="text-xs text-zinc-500 font-medium">{t('admin.businesses.confirmAction', 'Please confirm this action')}</p>
               </div>
             </div>
 
             <p className="text-xs text-zinc-600 leading-relaxed">
-              Are you sure you want to <strong>{confirmBusiness.active ? 'deactivate' : 'activate'}</strong> tenant organization{' '}
-              <span className="font-bold text-zinc-900">"{confirmBusiness.name}"</span>?
               {confirmBusiness.active
-                ? ' Deactivating will suspend POS billing, new orders, inventory tracking, and staff access for this store.'
-                : ' Activating will immediately restore full platform operations for this tenant.'}
+                ? t('admin.businesses.deactivateConfirmationMsg', 'Are you sure you want to deactivate tenant organization "{{name}}"? Deactivating will suspend POS billing, new orders, inventory tracking, and staff access for this store.', { name: confirmBusiness.name })
+                : t('admin.businesses.activateConfirmationMsg', 'Are you sure you want to activate tenant organization "{{name}}"? Activating will immediately restore full platform operations for this tenant.', { name: confirmBusiness.name })}
             </p>
 
             <div className="flex items-center justify-end gap-2.5 pt-2">
@@ -651,7 +653,7 @@ export const AdminBusinessesPage: React.FC = () => {
                 onClick={() => setConfirmBusiness(null)}
                 className="px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold cursor-pointer transition-colors"
               >
-                Cancel
+                {t('common.cancel', 'Cancel')}
               </button>
 
               <button
@@ -662,7 +664,7 @@ export const AdminBusinessesPage: React.FC = () => {
                 }`}
               >
                 {updatingId ? <RefreshCw size={13} className="animate-spin" /> : null}
-                <span>Confirm {confirmBusiness.active ? 'Deactivation' : 'Activation'}</span>
+                <span>{confirmBusiness.active ? t('admin.businesses.confirmDeactivation', 'Confirm Deactivation') : t('admin.businesses.confirmActivation', 'Confirm Activation')}</span>
               </button>
             </div>
           </div>

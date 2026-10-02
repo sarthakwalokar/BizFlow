@@ -397,7 +397,7 @@ export const SignupPage: React.FC = () => {
             <div className="flex items-start space-x-3">
               <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold block sm:inline">Registration Notice:</span>{' '}
+                <span className="font-semibold block sm:inline">{t('auth.registrationNotice', 'Registration Notice:')}</span>{' '}
                 <span>{apiError}</span>
               </div>
             </div>
@@ -406,7 +406,7 @@ export const SignupPage: React.FC = () => {
                 to="/login"
                 className="inline-flex items-center gap-1 font-bold text-blue-700 bg-white hover:bg-blue-50 px-3.5 py-1.5 rounded-lg border border-blue-200 shadow-2xs transition-colors shrink-0 text-xs"
               >
-                <span>Sign in here</span>
+                <span>{t('auth.signInHere', 'Sign in here')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             )}
@@ -427,14 +427,14 @@ export const SignupPage: React.FC = () => {
                 <div>
                   <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
                     <Store className="w-4 h-4 text-blue-600" />
-                    <span>Business Profile & Location</span>
+                    <span>{t('auth.bizProfileLocation', 'Business Profile & Location')}</span>
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Enter the details of the store, company or enterprise you are registering.
+                    {t('auth.enterBizDetails', 'Enter the details of the store, company or enterprise you are registering.')}
                   </p>
                 </div>
                 <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100/80">
-                  Step 1 of 2
+                  {t('auth.step1Of2', 'Step 1 of 2')}
                 </span>
               </div>
 
@@ -444,7 +444,7 @@ export const SignupPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-biz-name">
-                      Business / Store Name <span className="text-rose-500">*</span>
+                      {t('auth.bizStoreName', 'Business / Store Name')} <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -461,7 +461,7 @@ export const SignupPage: React.FC = () => {
                             setStep1Errors((prev) => ({ ...prev, businessName: '' }));
                           }
                         }}
-                        placeholder="e.g. Apex Retail & Co."
+                        placeholder={t('auth.bizNamePlaceholder', 'e.g. Apex Retail & Co.')}
                         className={`w-full pl-10 pr-3.5 py-2.5 bg-white border rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${
                           step1Errors.businessName
                             ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-200'
@@ -476,7 +476,7 @@ export const SignupPage: React.FC = () => {
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-biz-type">
-                      Business Type / Industry Category <span className="text-rose-500">*</span>
+                      {t('auth.bizTypeCategory', 'Business Type / Industry Category')} <span className="text-rose-500">*</span>
                     </label>
                     <select
                       id="reg-biz-type"
@@ -501,7 +501,7 @@ export const SignupPage: React.FC = () => {
                 {businessType === 'OTHER' && (
                   <div className="p-3.5 rounded-xl bg-blue-50/60 border border-blue-200/80 animate-in fade-in duration-200">
                     <label className="block text-xs font-semibold text-blue-950 mb-1.5" htmlFor="reg-custom-biz-type">
-                      Specify Custom Business Type <span className="text-rose-500">*</span>
+                      {t('auth.specifyCustomType', 'Specify Custom Business Type')} <span className="text-rose-500">*</span>
                     </label>
                     <input
                       id="reg-custom-biz-type"
@@ -513,7 +513,7 @@ export const SignupPage: React.FC = () => {
                           setStep1Errors((prev) => ({ ...prev, customBusinessType: '' }));
                         }
                       }}
-                      placeholder="e.g. Organic Farm Store, Event Production, Artisan Pottery"
+                      placeholder={t('auth.customTypePlaceholder', 'e.g. Organic Farm Store, Event Production, Artisan Pottery')}
                       className="w-full px-3.5 py-2.5 bg-white border border-blue-300 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                     />
                     {step1Errors.customBusinessType && (
@@ -526,9 +526,9 @@ export const SignupPage: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="block text-xs font-semibold text-slate-700">
-                      Business Size & Scale <span className="text-rose-500">*</span>
+                      {t('auth.bizSizeScale', 'Business Size & Scale')} <span className="text-rose-500">*</span>
                     </label>
-                    <span className="text-[11px] text-slate-400">Select operational model</span>
+                    <span className="text-[11px] text-slate-400">{t('auth.selectOperationalModel', 'Select operational model')}</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -553,10 +553,10 @@ export const SignupPage: React.FC = () => {
                       </div>
                       <div className="flex-1 min-w-0 pr-4">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs sm:text-sm font-bold text-slate-950">Small Business / Single Store</span>
+                          <span className="text-xs sm:text-sm font-bold text-slate-950">{t('auth.smallBizSingleStore', 'Small Business / Single Store')}</span>
                         </div>
                         <p className="text-[11px] sm:text-xs text-slate-600 mt-1 leading-relaxed">
-                          Lean setup, direct POS billing and quick operations
+                          {t('auth.smallBizDesc', 'Lean setup, direct POS billing and quick operations')}
                         </p>
                       </div>
                       <div className="absolute top-3.5 right-3.5">
@@ -593,10 +593,10 @@ export const SignupPage: React.FC = () => {
                       </div>
                       <div className="flex-1 min-w-0 pr-4">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs sm:text-sm font-bold text-slate-950">Growing / Multi-location Business</span>
+                          <span className="text-xs sm:text-sm font-bold text-slate-950">{t('auth.growingMultiLocation', 'Growing / Multi-location Business')}</span>
                         </div>
                         <p className="text-[11px] sm:text-xs text-slate-600 mt-1 leading-relaxed">
-                          Multiple locations, larger operations, inventory and advanced reporting
+                          {t('auth.largeBizDesc', 'Multiple locations, larger operations, inventory and advanced reporting')}
                         </p>
                       </div>
                       <div className="absolute top-3.5 right-3.5">
@@ -617,7 +617,7 @@ export const SignupPage: React.FC = () => {
                 {/* Business Address */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-biz-addr">
-                    Business Street / Shop Address
+                    {t('auth.streetAddressLabel', 'Business Street / Shop Address')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -628,7 +628,7 @@ export const SignupPage: React.FC = () => {
                       type="text"
                       value={streetAddress}
                       onChange={(e) => setStreetAddress(e.target.value)}
-                      placeholder="e.g. Shop #12, Ground Floor, Central Commercial Complex"
+                      placeholder={t('auth.streetAddressPlaceholder', 'e.g. Shop #12, Ground Floor, Central Commercial Complex')}
                       className="w-full pl-10 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                     />
                   </div>
@@ -638,28 +638,28 @@ export const SignupPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-biz-city">
-                      City / Town
+                      {t('auth.cityTownLabel', 'City / Town')}
                     </label>
                     <input
                       id="reg-biz-city"
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      placeholder="e.g. Mumbai, Bengaluru, Delhi"
+                      placeholder={t('auth.cityPlaceholder', 'e.g. Mumbai, Bengaluru, Delhi')}
                       className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-biz-state">
-                      State / Province
+                      {t('auth.stateProvinceLabel', 'State / Province')}
                     </label>
                     <input
                       id="reg-biz-state"
                       type="text"
                       value={stateName}
                       onChange={(e) => setStateName(e.target.value)}
-                      placeholder="e.g. Maharashtra, Karnataka"
+                      placeholder={t('auth.statePlaceholder', 'e.g. Maharashtra, Karnataka')}
                       className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                     />
                   </div>
@@ -669,7 +669,7 @@ export const SignupPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-biz-pin">
-                      Postal / PIN Code
+                      {t('auth.pinCodeLabel', 'Postal / PIN Code')}
                     </label>
                     <input
                       id="reg-biz-pin"
@@ -681,7 +681,7 @@ export const SignupPage: React.FC = () => {
                           setStep1Errors((prev) => ({ ...prev, pinCode: '' }));
                         }
                       }}
-                      placeholder="e.g. 400001 or 560038"
+                      placeholder={t('auth.pinCodePlaceholder', 'e.g. 400001 or 560038')}
                       className={`w-full px-3.5 py-2.5 bg-white border rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${
                         step1Errors.pinCode
                           ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-200'
@@ -696,16 +696,16 @@ export const SignupPage: React.FC = () => {
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="block text-xs font-semibold text-slate-700" htmlFor="reg-biz-gstin">
-                        GSTIN / Tax ID <span className="text-slate-400 font-normal">(Optional)</span>
+                        {t('auth.taxIdOptional', 'GSTIN / Tax ID')} <span className="text-slate-400 font-normal">({t('common.optional', 'Optional')})</span>
                       </label>
-                      <span className="text-[10px] text-slate-400">Can be set later in Settings</span>
+                      <span className="text-[10px] text-slate-400">{t('auth.canBeSetLater', 'Can be set later in Settings')}</span>
                     </div>
                     <input
                       id="reg-biz-gstin"
                       type="text"
                       value={gstin}
                       onChange={(e) => setGstin(e.target.value.toUpperCase())}
-                      placeholder="e.g. 27AAAAA0000A1Z5"
+                      placeholder={t('auth.gstinPlaceholder', 'e.g. 27AAAAA0000A1Z5')}
                       className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm uppercase text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                     />
                   </div>
@@ -715,7 +715,7 @@ export const SignupPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 border-t border-slate-100">
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-biz-phone">
-                      Business Phone Number <span className="text-rose-500">*</span>
+                      {t('auth.bizPhoneLabel', 'Business Phone Number')} <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -743,13 +743,13 @@ export const SignupPage: React.FC = () => {
                     {step1Errors.businessPhone ? (
                       <p className="text-[11px] text-rose-600 mt-1 font-medium">{step1Errors.businessPhone}</p>
                     ) : (
-                      <p className="text-[11px] text-slate-400 mt-1">Official phone printed on POS bills & receipts</p>
+                      <p className="text-[11px] text-slate-400 mt-1">{t('auth.officialPhoneNotice', 'Official phone printed on POS bills & receipts')}</p>
                     )}
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-biz-email">
-                      Business Contact Email <span className="text-slate-400 font-normal">(Optional)</span>
+                      {t('auth.bizEmailOptional', 'Business Contact Email')} <span className="text-slate-400 font-normal">({t('common.optional', 'Optional')})</span>
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -765,7 +765,7 @@ export const SignupPage: React.FC = () => {
                             setStep1Errors((prev) => ({ ...prev, businessEmail: '' }));
                           }
                         }}
-                        placeholder="contact@mybusiness.in"
+                        placeholder={t('auth.bizEmailPlaceholder', 'contact@mybusiness.in')}
                         className={`w-full pl-10 pr-3.5 py-2.5 bg-white border rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${
                           step1Errors.businessEmail
                             ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-200'
@@ -783,9 +783,9 @@ export const SignupPage: React.FC = () => {
               {/* Step 1 Actions */}
               <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p className="text-xs text-slate-500">
-                  Already registered?{' '}
+                  {t('auth.alreadyRegistered', 'Already registered?')}{' '}
                   <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700 hover:underline">
-                    Sign in to your account
+                    {t('auth.signInToAccount', 'Sign in to your account')}
                   </Link>
                 </p>
 
@@ -794,7 +794,7 @@ export const SignupPage: React.FC = () => {
                   id="signup-step1-next-btn"
                   className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-bold text-sm shadow-md shadow-blue-500/20 hover:shadow-cyan-500/25 transition-all cursor-pointer"
                 >
-                  <span>Continue to Owner Account</span>
+                  <span>{t('auth.continueToOwner', 'Continue to Owner Account')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -812,14 +812,14 @@ export const SignupPage: React.FC = () => {
                 <div>
                   <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-blue-600" />
-                    <span>Owner Master Credentials & Security</span>
+                    <span>{t('auth.ownerCredentialsTitle', 'Owner Master Credentials & Security')}</span>
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Create the administrative login for managing <span className="font-semibold text-slate-800">{businessName || 'your business'}</span>.
+                    {t('auth.ownerCredentialsDesc', 'Create the administrative login for managing {{name}}.', { name: businessName || 'your business' })}
                   </p>
                 </div>
                 <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100/80">
-                  Step 2 of 2
+                  {t('auth.step2Of2', 'Step 2 of 2')}
                 </span>
               </div>
 
@@ -829,7 +829,7 @@ export const SignupPage: React.FC = () => {
                   <UserIcon className="w-4 h-4" />
                 </div>
                 <div className="text-xs text-slate-700 leading-relaxed">
-                  <span className="font-bold text-blue-950">Owner Account Distinction:</span> You are registering as the primary business owner. You will have full access to billing, financial analytics, inventory, and staff management permissions.
+                  <span className="font-bold text-blue-950">{t('auth.ownerDistinctionHeader', 'Owner Account Distinction:')}</span> {t('auth.ownerDistinctionDesc', 'You are registering as the primary business owner. You will have full access to billing, financial analytics, inventory, and staff management permissions.')}
                 </div>
               </div>
 
@@ -839,7 +839,7 @@ export const SignupPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-owner-name">
-                      Owner Full Name <span className="text-rose-500">*</span>
+                      {t('auth.ownerFullNameLabel', 'Owner Full Name')} <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -856,7 +856,7 @@ export const SignupPage: React.FC = () => {
                             setStep2Errors((prev) => ({ ...prev, fullName: '' }));
                           }
                         }}
-                        placeholder="e.g. Arjun Kapoor"
+                        placeholder={t('auth.ownerFullNamePlaceholder', 'e.g. Arjun Kapoor')}
                         className={`w-full pl-10 pr-3.5 py-2.5 bg-white border rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${
                           step2Errors.fullName
                             ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-200'
@@ -871,7 +871,7 @@ export const SignupPage: React.FC = () => {
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-owner-phone">
-                      Owner Mobile Number <span className="text-slate-400 font-normal">(Optional)</span>
+                      {t('auth.ownerMobileOptional', 'Owner Mobile Number')} <span className="text-slate-400 font-normal">({t('common.optional', 'Optional')})</span>
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -886,14 +886,14 @@ export const SignupPage: React.FC = () => {
                         className="w-full pl-10 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                       />
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1">Used for owner security alerts and account recovery</p>
+                    <p className="text-[11px] text-slate-400 mt-1">{t('auth.ownerMobileNotice', 'Used for owner security alerts and account recovery')}</p>
                   </div>
                 </div>
 
                 {/* Login Email Address */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-owner-email">
-                    Login Email Address (Master Account) <span className="text-rose-500">*</span>
+                    {t('auth.loginEmailMaster', 'Login Email Address (Master Account)')} <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -911,7 +911,7 @@ export const SignupPage: React.FC = () => {
                         }
                         if (apiError) setApiError(null);
                       }}
-                      placeholder="owner@mybusiness.in"
+                      placeholder={t('auth.loginEmailPlaceholder', 'owner@mybusiness.in')}
                       className={`w-full pl-10 pr-3.5 py-2.5 bg-white border rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${
                         step2Errors.email
                           ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-200'
@@ -922,14 +922,14 @@ export const SignupPage: React.FC = () => {
                   {step2Errors.email ? (
                     <p className="text-[11px] text-rose-600 mt-1 font-medium">{step2Errors.email}</p>
                   ) : (
-                    <p className="text-[11px] text-slate-400 mt-1">This email will be your permanent username for signing in</p>
+                    <p className="text-[11px] text-slate-400 mt-1">{t('auth.permanentUsernameNotice', 'This email will be your permanent username for signing in')}</p>
                   )}
                 </div>
 
                 {/* Password with Live Strength Indicator & Checklist */}
                 <div className="space-y-2">
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-owner-password">
-                    Create Master Password <span className="text-rose-500">*</span>
+                    {t('auth.createMasterPassword', 'Create Master Password')} <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -946,7 +946,7 @@ export const SignupPage: React.FC = () => {
                           setStep2Errors((prev) => ({ ...prev, password: '' }));
                         }
                       }}
-                      placeholder="Minimum 8 characters with uppercase & number"
+                      placeholder={t('auth.passwordPlaceholder', 'Minimum 8 characters with uppercase & number')}
                       className={`w-full pl-10 pr-10 py-2.5 bg-white border rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${
                         step2Errors.password
                           ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-200'
@@ -968,7 +968,7 @@ export const SignupPage: React.FC = () => {
                   {password.length > 0 && (
                     <div className="space-y-2 pt-1 animate-in fade-in duration-200">
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-slate-500 font-medium">Password Strength:</span>
+                        <span className="text-slate-500 font-medium">{t('auth.passwordStrength', 'Password Strength:')}</span>
                         <span className={`font-bold ${
                           strength.score <= 1 ? 'text-rose-600' :
                           strength.score === 2 ? 'text-amber-600' :
@@ -994,7 +994,7 @@ export const SignupPage: React.FC = () => {
                         {hasMinLength ? <Check className="w-2.5 h-2.5" /> : <span className="w-1 h-1 rounded-full bg-slate-400" />}
                       </div>
                       <span className={hasMinLength ? 'text-emerald-800 font-medium' : 'text-slate-500'}>
-                        At least 8 characters
+                        {t('auth.atLeast8Chars', 'At least 8 characters')}
                       </span>
                     </div>
 
@@ -1005,7 +1005,7 @@ export const SignupPage: React.FC = () => {
                         {hasUppercase ? <Check className="w-2.5 h-2.5" /> : <span className="w-1 h-1 rounded-full bg-slate-400" />}
                       </div>
                       <span className={hasUppercase ? 'text-emerald-800 font-medium' : 'text-slate-500'}>
-                        At least 1 uppercase letter (A-Z)
+                        {t('auth.atLeast1Uppercase', 'At least 1 uppercase letter (A-Z)')}
                       </span>
                     </div>
 
@@ -1016,7 +1016,7 @@ export const SignupPage: React.FC = () => {
                         {hasNumber ? <Check className="w-2.5 h-2.5" /> : <span className="w-1 h-1 rounded-full bg-slate-400" />}
                       </div>
                       <span className={hasNumber ? 'text-emerald-800 font-medium' : 'text-slate-500'}>
-                        At least 1 number (0-9)
+                        {t('auth.atLeast1Number', 'At least 1 number (0-9)')}
                       </span>
                     </div>
 
@@ -1027,7 +1027,7 @@ export const SignupPage: React.FC = () => {
                         {hasSpecialOrLower ? <Check className="w-2.5 h-2.5" /> : <span className="w-1 h-1 rounded-full bg-slate-400" />}
                       </div>
                       <span className={hasSpecialOrLower ? 'text-emerald-800 font-medium' : 'text-slate-500'}>
-                        Lowercase or special symbol
+                        {t('auth.lowercaseOrSpecial', 'Lowercase or special symbol')}
                       </span>
                     </div>
                   </div>
@@ -1039,12 +1039,12 @@ export const SignupPage: React.FC = () => {
                 {/* Preferred Language Field */}
                 <div>
                   <LanguageSelector
-                    label="Preferred Language / पसंदीदा भाषा / पसंतीची भाषा"
+                    label={t('auth.preferredLanguageLabel', 'Preferred Language / पसंदीदा भाषा / पसंतीची भाषा')}
                     value={preferredLanguage}
                     onChange={handleLanguageChange}
                   />
                   <p className="text-[11px] text-slate-500 mt-1">
-                    BizFlow POS interface and AI business insights will automatically adapt to your chosen language.
+                    {t('auth.languageHint', 'BizFlow POS interface and AI business insights will automatically adapt to your chosen language.')}
                   </p>
                 </div>
 
@@ -1064,7 +1064,7 @@ export const SignupPage: React.FC = () => {
                       className="mt-0.5 w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
                     />
                     <label htmlFor="reg-agree-terms" className="text-xs text-slate-600 select-none cursor-pointer leading-relaxed">
-                      I have read and agree to BizFlow's{' '}
+                      {t('auth.agreeTermsPrefix', "I have read and agree to BizFlow's")}{' '}
                       <button
                         type="button"
                         onClick={(e) => {
@@ -1073,9 +1073,9 @@ export const SignupPage: React.FC = () => {
                         }}
                         className="font-bold text-blue-600 hover:text-blue-700 underline cursor-pointer"
                       >
-                        Terms of Service
+                        {t('auth.termsOfService', 'Terms of Service')}
                       </button>{' '}
-                      and{' '}
+                      {t('common.and', 'and')}{' '}
                       <button
                         type="button"
                         onClick={(e) => {
@@ -1084,7 +1084,7 @@ export const SignupPage: React.FC = () => {
                         }}
                         className="font-bold text-blue-600 hover:text-blue-700 underline cursor-pointer"
                       >
-                        Privacy Policy
+                        {t('auth.privacyPolicy', 'Privacy Policy')}
                       </button>
                       .
                     </label>
@@ -1106,7 +1106,7 @@ export const SignupPage: React.FC = () => {
                   className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold text-xs shadow-2xs transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back to Business Details</span>
+                  <span>{t('auth.backToBizDetails', 'Back to Business Details')}</span>
                 </button>
 
                 <button
@@ -1118,11 +1118,11 @@ export const SignupPage: React.FC = () => {
                   {loading ? (
                     <span className="inline-flex items-center gap-2">
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Creating Your BizFlow Workspace...</span>
+                      <span>{t('auth.creatingWorkspace', 'Creating Your BizFlow Workspace...')}</span>
                     </span>
                   ) : (
                     <>
-                      <span>Complete Registration & Launch Workspace</span>
+                      <span>{t('auth.completeRegistration', 'Complete Registration & Launch Workspace')}</span>
                       <Sparkles className="w-4 h-4" />
                     </>
                   )}
@@ -1134,7 +1134,7 @@ export const SignupPage: React.FC = () => {
           {/* Footer Note */}
           <div className="pt-6 border-t border-slate-100 text-center">
             <p className="text-xs text-slate-400">
-              BizFlow Enterprise Cloud • Encrypted with TLS 1.3 & BCrypt • Made for modern commerce
+              {t('auth.footerSecurityNote', 'BizFlow Enterprise Cloud • Encrypted with TLS 1.3 & BCrypt • Made for modern commerce')}
             </p>
           </div>
         </div>

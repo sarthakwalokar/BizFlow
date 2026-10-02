@@ -272,7 +272,7 @@ export const EduStudentsPage: React.FC = () => {
                     : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
-                {st === 'ALL' ? t('common.all', 'ALL') : st}
+                {st === 'ALL' ? t('common.all', 'ALL') : t(`education.status.${st}`, st)}
               </button>
             ))}
           </div>
@@ -403,7 +403,7 @@ export const EduStudentsPage: React.FC = () => {
                             : 'bg-slate-100 text-slate-600'
                         }`}
                       >
-                        {stu.status || 'ACTIVE'}
+                        {t(`education.status.${stu.status || 'ACTIVE'}`, stu.status || 'ACTIVE')}
                       </span>
                     </td>
 
@@ -468,7 +468,7 @@ export const EduStudentsPage: React.FC = () => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Aryan Deshmukh"
+                    placeholder={t('placeholders.studentNameExample', 'e.g. Aryan Deshmukh')}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
@@ -480,7 +480,7 @@ export const EduStudentsPage: React.FC = () => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. STU-2026-01"
+                    placeholder={t('placeholders.studentIdExample', 'e.g. STU-2026-01')}
                     value={studentIdNum}
                     onChange={(e) => setStudentIdNum(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
@@ -493,7 +493,7 @@ export const EduStudentsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('education.studentPhoneOpt', 'Student Phone (Optional)')}</label>
                   <input
                     type="tel"
-                    placeholder="e.g. 9876543210 (Optional)"
+                    placeholder={t('placeholders.phoneOptionalExample', 'e.g. 9876543210 (Optional)')}
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
@@ -504,7 +504,7 @@ export const EduStudentsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('education.emailAddress', 'Email Address')}</label>
                   <input
                     type="email"
-                    placeholder="e.g. student@gmail.com"
+                    placeholder={t('placeholders.emailExample', 'e.g. student@gmail.com')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
@@ -517,7 +517,7 @@ export const EduStudentsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('education.parentGuardianName', 'Parent / Guardian Name')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. Prakash Deshmukh"
+                    placeholder={t('placeholders.parentNameExample', 'e.g. Prakash Deshmukh')}
                     value={parentName}
                     onChange={(e) => setParentName(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
@@ -528,7 +528,7 @@ export const EduStudentsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('education.parentPhone', 'Parent Phone')}</label>
                   <input
                     type="tel"
-                    placeholder="e.g. 9822334455"
+                    placeholder={t('placeholders.phoneExample', 'e.g. 9822334455')}
                     value={parentPhone}
                     onChange={(e) => setParentPhone(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
@@ -642,7 +642,7 @@ export const EduStudentsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('education.studentPhoneOpt', 'Student Phone (Optional)')}</label>
                   <input
                     type="tel"
-                    placeholder="e.g. 9876543210 (Optional)"
+                    placeholder={t('placeholders.phoneOptionalExample', 'e.g. 9876543210 (Optional)')}
                     value={editPhone}
                     onChange={(e) => setEditPhone(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -706,10 +706,10 @@ export const EduStudentsPage: React.FC = () => {
                     onChange={(e) => setEditStatus(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800"
                   >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
-                    <option value="COMPLETED">COMPLETED</option>
-                    <option value="DROPPED">DROPPED</option>
+                    <option value="ACTIVE">{t('education.status.ACTIVE', 'ACTIVE')}</option>
+                    <option value="INACTIVE">{t('education.status.INACTIVE', 'INACTIVE')}</option>
+                    <option value="COMPLETED">{t('education.status.COMPLETED', 'COMPLETED')}</option>
+                    <option value="DROPPED">{t('education.status.DROPPED', 'DROPPED')}</option>
                   </select>
                 </div>
 

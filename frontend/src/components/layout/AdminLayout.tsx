@@ -233,19 +233,19 @@ export const AdminLayout: React.FC = () => {
                   <Activity size={14} />
                 </div>
                 <div>
-                  <h5 className="text-xs font-bold text-white leading-tight">System Engine</h5>
-                  <span className="text-[10px] text-cyan-400 font-medium">PostgreSQL 17.6 + Spring</span>
+                  <h5 className="text-xs font-bold text-white leading-tight">{t('admin.systemEngine', 'System Engine')}</h5>
+                  <span className="text-[10px] text-cyan-400 font-medium">{t('admin.systemEngineStack', 'PostgreSQL 17.6 + Spring')}</span>
                 </div>
               </div>
               <p className="text-[11px] text-slate-400 leading-snug">
-                Tenant isolation and real-time audit logging active.
+                {t('admin.tenantIsolationDesc', 'Tenant isolation and real-time audit logging active.')}
               </p>
               <Link
                 to="/admin/config"
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full py-1.5 px-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 text-[11px] font-bold border border-cyan-500/30 transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
-                <span>System Config</span>
+                <span>{t('admin.systemConfig', 'System Config')}</span>
                 <ChevronRight size={12} />
               </Link>
             </div>
@@ -263,7 +263,7 @@ export const AdminLayout: React.FC = () => {
                     {user?.fullName || 'Root Admin'}
                   </p>
                   <span className="inline-block text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    SUPER ADMIN
+                    {t('admin.superAdminBadge', 'SUPER ADMIN')}
                   </span>
                 </div>
               </div>
@@ -296,7 +296,7 @@ export const AdminLayout: React.FC = () => {
             {/* Sidebar Hide / Unhide Toggle Button - Three Line Menu Icon */}
             <button
               onClick={toggleSidebar}
-              title={sidebarCollapsed ? "Show sidebar (Ctrl+B)" : "Hide sidebar (Ctrl+B)"}
+              title={sidebarCollapsed ? t('admin.showSidebar', 'Show sidebar (Ctrl+B)') : t('admin.hideSidebar', 'Hide sidebar (Ctrl+B)')}
               className={`p-2 rounded-xl transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center ${
                 sidebarCollapsed
                   ? 'bg-slate-100 text-slate-800 hover:bg-slate-200 ring-1 ring-slate-300 shadow-2xs'
@@ -331,7 +331,7 @@ export const AdminLayout: React.FC = () => {
             {/* Multi-Tenant SaaS badge */}
             <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full clay-badge-blue text-xs font-bold">
               <Server size={12} className="text-brand-600" />
-              <span>Multi-Tenant SaaS</span>
+              <span>{t('admin.multiTenantBadge', 'Multi-Tenant SaaS')}</span>
             </div>
 
             <div className="h-5 w-px bg-slate-200"></div>

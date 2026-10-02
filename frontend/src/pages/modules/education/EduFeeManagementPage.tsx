@@ -542,7 +542,7 @@ export const EduFeeManagementPage: React.FC = () => {
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold"
                   >
                     <option value="CASH">{t('education.cash', 'Cash')}</option>
-                    <option value="UPI">UPI / GPay / PhonePe</option>
+                    <option value="UPI">{t('education.upiPayment', 'UPI / GPay / PhonePe')}</option>
                     <option value="BANK_TRANSFER">{t('education.bankTransfer', 'Bank Transfer / NEFT')}</option>
                     <option value="CHEQUE">{t('education.cheque', 'Cheque')}</option>
                     <option value="CARD">{t('education.card', 'Debit / Credit Card')}</option>
@@ -575,7 +575,7 @@ export const EduFeeManagementPage: React.FC = () => {
                 <label className="font-semibold text-slate-700">{t('education.receiptNotesOpt', 'Receipt Notes / Remarks (Optional)')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Installment 1 of 3, Cheque #12345"
+                  placeholder={t('placeholders.installmentNotesExample', 'e.g. Installment 1 of 3, Cheque #12345')}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"

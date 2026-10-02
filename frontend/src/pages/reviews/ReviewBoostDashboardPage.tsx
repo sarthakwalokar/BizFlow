@@ -273,7 +273,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               {/* Saved Google Review Destination Link */}
               <div className="pt-1.5 border-t border-zinc-200 flex items-center justify-between text-[11px]">
                 <div className="flex items-center space-x-1.5">
-                  <span className="font-semibold text-zinc-600">Google Redirect:</span>
+                  <span className="font-semibold text-zinc-600">{t('reviews.googleRedirect', 'Google Redirect')}:</span>
                   {settingsForm.publicReviewUrl ? (
                     <a
                       href={settingsForm.publicReviewUrl.startsWith('http') ? settingsForm.publicReviewUrl : `https://${settingsForm.publicReviewUrl}`}
@@ -285,7 +285,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                       {settingsForm.publicReviewUrl}
                     </a>
                   ) : (
-                    <span className="text-amber-600 font-medium">Auto Google Search</span>
+                    <span className="text-amber-600 font-medium">{t('reviews.autoGoogleSearch', 'Auto Google Search')}</span>
                   )}
                 </div>
 
@@ -556,7 +556,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. apex-retail"
+                  placeholder={t('placeholders.reviewSlugExample', 'e.g. apex-retail')}
                   value={settingsForm.reviewSlug}
                   onChange={(e) => setSettingsForm({ ...settingsForm, reviewSlug: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -580,7 +580,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                 </div>
                 <input
                   type="text"
-                  placeholder="https://g.page/r/.../review or maps.app.goo.gl/..."
+                  placeholder="https://g.page/r/.../review"
                   value={settingsForm.publicReviewUrl || ''}
                   onChange={(e) => setSettingsForm({ ...settingsForm, publicReviewUrl: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -591,7 +591,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                 <label className="text-xs font-medium text-zinc-700">{t('settings.welcomeMessage', 'Welcome Prompt Message')}</label>
                 <input
                   type="text"
-                  placeholder="How was your experience with us today?"
+                  placeholder={t('placeholders.reviewPromptExample', 'How was your experience with us today?')}
                   value={settingsForm.reviewPromptMessage || ''}
                   onChange={(e) => setSettingsForm({ ...settingsForm, reviewPromptMessage: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -656,7 +656,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
               <label className="text-xs font-medium text-zinc-700">{t('common.notes')}</label>
               <input
                 type="text"
-                placeholder="e.g. Addressed customer request"
+                placeholder={t('placeholders.moderationNotesExample', 'e.g. Addressed customer request')}
                 value={moderationNotes}
                 onChange={(e) => setModerationNotes(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"

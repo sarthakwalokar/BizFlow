@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { businessApi, StaffCreateRequest, BusinessUpdateRequest } from '../api/business';
 import { User, BusinessType } from '../api/auth';
@@ -26,6 +27,7 @@ import {
 } from 'lucide-react';
 
 export const OwnerDashboard: React.FC = () => {
+  const { t } = useTranslation();
   const { user, business, logout, updateBusinessState } = useAuth();
 
   const [activeTab, setActiveTab] = useState<'overview' | 'settings' | 'staff'>('overview');
@@ -102,16 +104,16 @@ export const OwnerDashboard: React.FC = () => {
         email: bizEmail,
         currency: bizCurrency,
         timezone: bizTimezone,
-        logo: bizLogo.trim(),
+        logo: bizLogo,
       };
 
       const updated = await businessApi.updateMyBusiness(updateData);
       updateBusinessState(updated);
-      setBizLogo(updated.logo || '');
       setSettingsSuccess(true);
       setTimeout(() => setSettingsSuccess(false), 4000);
     } catch (err: any) {
-      setSettingsError(err.response?.data?.message || err.message || 'Failed to update business settings.');
+      const msg = err.response?.data?.message || err.message || t('settings.saveError', 'Failed to update business settings.');
+      setSettingsError(msg);
     } finally {
       setSavingSettings(false);
     }
@@ -124,26 +126,27 @@ export const OwnerDashboard: React.FC = () => {
     setStaffSuccess(null);
 
     try {
-      const payload: StaffCreateRequest = {
+      const staffReq: StaffCreateRequest = {
         fullName: staffFullName,
         email: staffEmail,
         password: staffPassword,
         phone: staffPhone,
       };
 
-      const created = await businessApi.createStaff(payload);
-      setStaffList((prev) => [...prev, created]);
-      setStaffSuccess(`Staff member ${created.fullName} onboarded successfully!`);
+      await businessApi.createStaff(staffReq);
+      setStaffSuccess(t('staff.addedSuccess', 'Staff member onboarded successfully!'));
       setStaffFullName('');
       setStaffEmail('');
       setStaffPassword('');
       setStaffPhone('');
+      await loadStaff();
       setTimeout(() => {
         setStaffSuccess(null);
         setShowAddStaffModal(false);
-      }, 2000);
+      }, 1500);
     } catch (err: any) {
-      setStaffError(err.response?.data?.message || err.message || 'Failed to create staff member.');
+      const msg = err.response?.data?.message || err.message || t('staff.addFailed', 'Failed to onboard staff member.');
+      setStaffError(msg);
     } finally {
       setAddingStaff(false);
     }
@@ -162,19 +165,21 @@ export const OwnerDashboard: React.FC = () => {
             />
             <div className="border-l border-slate-800 pl-3">
               <div className="flex items-center space-x-2">
-                <span className="text-lg font-bold text-white tracking-tight">{business?.name || 'My Business'}</span>
+                <span className="text-lg font-bold text-white tracking-tight">{business?.name || t('nav.business', 'My Business')}</span>
                 <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 uppercase">
                   {business?.businessType || 'RETAIL'}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">Owner Workspace • Logged in as <span className="text-slate-300 font-medium">{user?.fullName}</span></p>
+              <p className="text-[11px] text-slate-400">
+                {t('staff.ownerWorkspace', 'Owner Workspace • Logged in as')} <span className="text-slate-300 font-medium">{user?.fullName}</span>
+              </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-3">
             <div className="hidden sm:flex items-center space-x-1.5 px-3 py-1 text-xs font-semibold rounded-lg bg-emerald-950/50 text-emerald-300 border border-emerald-500/30">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>OWNER Access</span>
+              <span>{t('staff.ownerAccess', 'OWNER Access')}</span>
             </div>
 
             <button
@@ -183,7 +188,7 @@ export const OwnerDashboard: React.FC = () => {
               className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-900 hover:bg-slate-800 text-rose-300 border border-slate-800 hover:border-slate-700 transition-all cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5 text-rose-400" />
-              <span>Log out</span>
+              <span>{t('nav.logout', 'Log out')}</span>
             </button>
           </div>
         </div>
@@ -203,7 +208,7 @@ export const OwnerDashboard: React.FC = () => {
             }`}
           >
             <Building className="w-4 h-4" />
-            <span>Business Overview</span>
+            <span>{t('nav.overview', 'Business Overview')}</span>
           </button>
 
           <button
@@ -215,7 +220,7 @@ export const OwnerDashboard: React.FC = () => {
             }`}
           >
             <Users className="w-4 h-4" />
-            <span>Staff Members ({staffList.length})</span>
+            <span>{t('nav.staff', 'Staff Members')} ({staffList.length})</span>
           </button>
 
           <button
@@ -227,7 +232,7 @@ export const OwnerDashboard: React.FC = () => {
             }`}
           >
             <Settings className="w-4 h-4" />
-            <span>Settings &amp; Profile</span>
+            <span>{t('nav.settings', 'Settings & Profile')}</span>
           </button>
         </div>
 
@@ -238,38 +243,38 @@ export const OwnerDashboard: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="glass-card rounded-xl p-5 border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>Business Vertical</span>
+                  <span>{t('dashboard.verticalType', 'Business Vertical')}</span>
                   <Building className="w-4 h-4 text-brand-400" />
                 </div>
                 <div className="text-xl font-bold text-white tracking-tight">{business?.businessType}</div>
-                <p className="text-[11px] text-slate-500">Custom POS &amp; Catalog Layout</p>
+                <p className="text-[11px] text-slate-500">{t('dashboard.customPosLayout', 'Custom POS & Catalog Layout')}</p>
               </div>
 
               <div className="glass-card rounded-xl p-5 border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>Active Staff</span>
+                  <span>{t('staff.activeStaff', 'Active Staff')}</span>
                   <Users className="w-4 h-4 text-blue-400" />
                 </div>
-                <div className="text-xl font-bold text-white tracking-tight">{staffList.length} Team Members</div>
-                <p className="text-[11px] text-slate-500">Authorized operators</p>
+                <div className="text-xl font-bold text-white tracking-tight">{staffList.length} {t('staff.teamMembers', 'Team Members')}</div>
+                <p className="text-[11px] text-slate-500">{t('staff.authorizedOperators', 'Authorized operators')}</p>
               </div>
 
               <div className="glass-card rounded-xl p-5 border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>Currency &amp; Region</span>
+                  <span>{t('settings.currencyRegion', 'Currency & Region')}</span>
                   <DollarSign className="w-4 h-4 text-emerald-400" />
                 </div>
                 <div className="text-xl font-bold text-white tracking-tight">{business?.currency || 'USD'} / {business?.timezone || 'Asia/Kolkata'}</div>
-                <p className="text-[11px] text-slate-500">Invoicing standard</p>
+                <p className="text-[11px] text-slate-500">{t('settings.invoicingStandard', 'Invoicing standard')}</p>
               </div>
 
               <div className="glass-card rounded-xl p-5 border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>Tenant Status</span>
+                  <span>{t('admin.tenantStatus', 'Tenant Status')}</span>
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 </div>
-                <div className="text-xl font-bold text-emerald-400 tracking-tight">ACTIVE</div>
-                <p className="text-[11px] text-slate-500">Multi-tenant isolation enabled</p>
+                <div className="text-xl font-bold text-emerald-400 tracking-tight">{t('common.active', 'ACTIVE')}</div>
+                <p className="text-[11px] text-slate-500">{t('admin.multiTenantIsolation', 'Multi-tenant isolation enabled')}</p>
               </div>
             </div>
 
@@ -278,13 +283,13 @@ export const OwnerDashboard: React.FC = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
                 <div>
                   <h3 className="text-lg font-bold text-white">{business?.name}</h3>
-                  <p className="text-xs text-slate-400">Registered Business Information &amp; Operational Identity</p>
+                  <p className="text-xs text-slate-400">{t('settings.registeredInfo', 'Registered Business Information & Operational Identity')}</p>
                 </div>
                 <button
                   onClick={() => setActiveTab('settings')}
                   className="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-semibold text-slate-200 transition-all cursor-pointer self-start sm:self-auto"
                 >
-                  Edit Profile
+                  {t('profile.editProfile', 'Edit Profile')}
                 </button>
               </div>
 
@@ -292,31 +297,31 @@ export const OwnerDashboard: React.FC = () => {
                 <div className="flex items-start space-x-3">
                   <MapPin className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-slate-400 block mb-0.5">Address</span>
-                    <span>{business?.address || 'No physical address specified'}</span>
+                    <span className="font-semibold text-slate-400 block mb-0.5">{t('staff.locationAddress', 'Address')}</span>
+                    <span>{business?.address || t('staff.noAddress', 'No physical address specified')}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-3">
                   <Phone className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-slate-400 block mb-0.5">Contact Phone</span>
-                    <span>{business?.phone || 'No phone number specified'}</span>
+                    <span className="font-semibold text-slate-400 block mb-0.5">{t('settings.contactPhone', 'Contact Phone')}</span>
+                    <span>{business?.phone || t('staff.noPhone', 'No phone number specified')}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-3">
                   <Mail className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-slate-400 block mb-0.5">Official Email</span>
-                    <span>{business?.email || 'No email specified'}</span>
+                    <span className="font-semibold text-slate-400 block mb-0.5">{t('settings.officialEmail', 'Official Email')}</span>
+                    <span>{business?.email || t('staff.noEmail', 'No email specified')}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-3">
                   <Calendar className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-slate-400 block mb-0.5">Created On</span>
+                    <span className="font-semibold text-slate-400 block mb-0.5">{t('admin.createdOn', 'Created On')}</span>
                     <span>{business?.createdAt ? new Date(business.createdAt).toLocaleDateString() : 'N/A'}</span>
                   </div>
                 </div>
@@ -324,7 +329,7 @@ export const OwnerDashboard: React.FC = () => {
                 <div className="flex items-start space-x-3">
                   <Clock className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-slate-400 block mb-0.5">Timezone</span>
+                    <span className="font-semibold text-slate-400 block mb-0.5">{t('settings.timezone', 'Timezone')}</span>
                     <span>{business?.timezone || 'UTC'}</span>
                   </div>
                 </div>
@@ -332,7 +337,7 @@ export const OwnerDashboard: React.FC = () => {
                 <div className="flex items-start space-x-3">
                   <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-slate-400 block mb-0.5">Primary Owner</span>
+                    <span className="font-semibold text-slate-400 block mb-0.5">{t('admin.primaryOwner', 'Primary Owner')}</span>
                     <span>{user?.fullName} ({user?.email})</span>
                   </div>
                 </div>
@@ -346,8 +351,8 @@ export const OwnerDashboard: React.FC = () => {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-lg font-bold text-white">Staff Members</h3>
-                <p className="text-xs text-slate-400">Onboard employees and cashiers to manage business operations</p>
+                <h3 className="text-lg font-bold text-white">{t('nav.staff', 'Staff Members')}</h3>
+                <p className="text-xs text-slate-400">{t('staff.onboardEmployeesDesc', 'Onboard employees and cashiers to manage business operations')}</p>
               </div>
 
               <button
@@ -356,29 +361,29 @@ export const OwnerDashboard: React.FC = () => {
                 className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-lg shadow-brand-500/20 transition-all cursor-pointer self-start sm:self-auto"
               >
                 <Plus className="w-4 h-4" />
-                <span>Onboard New Staff</span>
+                <span>{t('staff.onboardNewStaff', 'Onboard New Staff')}</span>
               </button>
             </div>
 
             {/* Staff List Table */}
             <div className="glass-card rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
               {loadingStaff ? (
-                <div className="p-12 text-center text-xs text-slate-400">Loading team members...</div>
+                <div className="p-12 text-center text-xs text-slate-400">{t('common.loading', 'Loading team members...')}</div>
               ) : staffList.length === 0 ? (
                 <div className="p-12 text-center space-y-3">
                   <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto text-slate-500">
                     <Users className="w-6 h-6" />
                   </div>
-                  <h4 className="text-sm font-semibold text-white">No staff members onboarded yet</h4>
+                  <h4 className="text-sm font-semibold text-white">{t('staff.noStaffYet', 'No staff members onboarded yet')}</h4>
                   <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                    Invite employees and cashier operators to help manage orders, tables, and services.
+                    {t('staff.inviteEmployeesHint', 'Invite employees and cashier operators to help manage orders, tables, and services.')}
                   </p>
                   <button
                     onClick={() => setShowAddStaffModal(true)}
                     className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-brand-600/30 hover:bg-brand-600/50 text-brand-300 border border-brand-500/30 text-xs font-semibold transition-all cursor-pointer"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
-                    <span>Add First Staff User</span>
+                    <span>{t('staff.addFirstStaff', 'Add First Staff User')}</span>
                   </button>
                 </div>
               ) : (
@@ -386,12 +391,12 @@ export const OwnerDashboard: React.FC = () => {
                   <table className="w-full text-left text-xs">
                     <thead className="bg-slate-900/80 border-b border-slate-800 text-slate-400 uppercase font-semibold">
                       <tr>
-                        <th className="px-6 py-3.5">Staff Name</th>
-                        <th className="px-6 py-3.5">Email</th>
-                        <th className="px-6 py-3.5">Phone</th>
-                        <th className="px-6 py-3.5">Role</th>
-                        <th className="px-6 py-3.5">Status</th>
-                        <th className="px-6 py-3.5">Created At</th>
+                        <th className="px-6 py-3.5">{t('staff.staffName', 'Staff Name')}</th>
+                        <th className="px-6 py-3.5">{t('staff.email', 'Email')}</th>
+                        <th className="px-6 py-3.5">{t('staff.phone', 'Phone')}</th>
+                        <th className="px-6 py-3.5">{t('staff.role', 'Role')}</th>
+                        <th className="px-6 py-3.5">{t('common.status', 'Status')}</th>
+                        <th className="px-6 py-3.5">{t('admin.createdAt', 'Created At')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/60">
@@ -402,13 +407,13 @@ export const OwnerDashboard: React.FC = () => {
                           <td className="px-6 py-4 text-slate-400">{member.phone || '—'}</td>
                           <td className="px-6 py-4">
                             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-300 border border-blue-500/20">
-                              STAFF
+                              {member.role || 'STAFF'}
                             </span>
                           </td>
                           <td className="px-6 py-4">
                             <span className="flex items-center space-x-1.5 text-emerald-400 font-medium">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                              <span>Active</span>
+                              <span>{t('common.active', 'Active')}</span>
                             </span>
                           </td>
                           <td className="px-6 py-4 text-slate-500">
@@ -428,14 +433,14 @@ export const OwnerDashboard: React.FC = () => {
         {activeTab === 'settings' && (
           <div className="glass-card rounded-2xl p-6 sm:p-10 border border-slate-800 shadow-2xl space-y-6 max-w-3xl">
             <div className="border-b border-slate-800/80 pb-4">
-              <h3 className="text-lg font-bold text-white">Business Settings &amp; Preferences</h3>
-              <p className="text-xs text-slate-400">Update company identity, contact channels, and localized options</p>
+              <h3 className="text-lg font-bold text-white">{t('settings.preferencesTitle', 'Business Settings & Preferences')}</h3>
+              <p className="text-xs text-slate-400">{t('settings.preferencesSubtitle', 'Update company identity, contact channels, and localized options')}</p>
             </div>
 
             {settingsSuccess && (
               <div className="p-3.5 rounded-xl bg-emerald-950/50 border border-emerald-800/80 flex items-center space-x-2 text-xs text-emerald-300">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <span>Business settings saved successfully!</span>
+                <span>{t('settings.savedSuccess', 'Business settings saved successfully!')}</span>
               </div>
             )}
 
@@ -450,7 +455,7 @@ export const OwnerDashboard: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="edit-biz-name">
-                    Business Name *
+                    {t('settings.businessName', 'Business Name')} *
                   </label>
                   <input
                     id="edit-biz-name"
@@ -464,7 +469,7 @@ export const OwnerDashboard: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="edit-biz-type">
-                    Business Vertical
+                    {t('settings.businessVertical', 'Business Vertical')}
                   </label>
                   <select
                     id="edit-biz-type"
@@ -472,19 +477,19 @@ export const OwnerDashboard: React.FC = () => {
                     onChange={(e) => setBizType(e.target.value as BusinessType)}
                     className="w-full px-3.5 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-brand-500"
                   >
-                    <option value="RETAIL">Retail Shop</option>
-                    <option value="RESTAURANT">Restaurant</option>
-                    <option value="CAFE">Café / Bistro</option>
-                    <option value="BAKERY">Bakery</option>
-                    <option value="SALON">Salon / Spa</option>
-                    <option value="SERVICE">Service Business</option>
-                    <option value="OTHER">Other Commercial</option>
+                    <option value="RETAIL">{t('business.typeRetail', 'Retail Shop')}</option>
+                    <option value="RESTAURANT">{t('business.typeRestaurant', 'Restaurant')}</option>
+                    <option value="CAFE">{t('business.typeCafe', 'Café / Bistro')}</option>
+                    <option value="BAKERY">{t('business.typeBakery', 'Bakery')}</option>
+                    <option value="SALON">{t('business.typeSalon', 'Salon / Spa')}</option>
+                    <option value="SERVICE">{t('business.typeService', 'Service Business')}</option>
+                    <option value="OTHER">{t('business.typeOther', 'Other Commercial')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="edit-biz-currency">
-                    Billing Currency
+                    {t('settings.billingCurrency', 'Billing Currency')}
                   </label>
                   <input
                     id="edit-biz-currency"
@@ -498,7 +503,7 @@ export const OwnerDashboard: React.FC = () => {
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="edit-biz-address">
-                    Address
+                    {t('settings.address', 'Address')}
                   </label>
                   <input
                     id="edit-biz-address"
@@ -511,7 +516,7 @@ export const OwnerDashboard: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="edit-biz-phone">
-                    Phone Number
+                    {t('settings.phone', 'Phone Number')}
                   </label>
                   <input
                     id="edit-biz-phone"
@@ -524,7 +529,7 @@ export const OwnerDashboard: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="edit-biz-email">
-                    Official Email
+                    {t('settings.email', 'Official Email')}
                   </label>
                   <input
                     id="edit-biz-email"
@@ -537,7 +542,7 @@ export const OwnerDashboard: React.FC = () => {
 
                 <div className="sm:col-span-2 space-y-2">
                   <label className="block text-xs font-semibold text-slate-300" htmlFor="edit-biz-logo">
-                    Business Logo (PNG, JPG, WebP, SVG)
+                    {t('settings.businessLogoLabel', 'Business Logo (PNG, JPG, WebP, SVG)')}
                   </label>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-700/80">
                     <div className="w-16 h-16 rounded-xl border border-slate-700 bg-slate-950 flex items-center justify-center p-1 shrink-0 overflow-hidden">
@@ -546,7 +551,7 @@ export const OwnerDashboard: React.FC = () => {
                           src={bizLogo}
                           alt="Business Logo Preview"
                           className="w-full h-full object-contain"
-                          onError={() => setLogoError('Failed to display image.')}
+                          onError={() => setLogoError(t('settings.displayImageError', 'Failed to display image.'))}
                         />
                       ) : (
                         <ImageIcon size={20} className="text-slate-500" />
@@ -557,12 +562,12 @@ export const OwnerDashboard: React.FC = () => {
                       {bizLogo !== (business?.logo || '') ? (
                         <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-bold">
                           <AlertCircle size={12} className="text-amber-400" />
-                          <span>Unsaved logo changes • Click "Save Settings" or "Save Logo" to apply</span>
+                          <span>{t('settings.unsavedLogo', 'Unsaved logo changes • Click "Save Settings" or "Save Logo" to apply')}</span>
                         </div>
                       ) : business?.logo ? (
                         <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold">
                           <CheckCircle2 size={12} className="text-emerald-400" />
-                          <span>Saved &amp; active across all invoices and documents</span>
+                          <span>{t('settings.savedLogo', 'Saved & active across all invoices and documents')}</span>
                         </div>
                       ) : null}
 
@@ -576,11 +581,11 @@ export const OwnerDashboard: React.FC = () => {
                             const file = e.target.files?.[0];
                             if (!file) return;
                             if (!file.type.startsWith('image/')) {
-                              setLogoError('Please select a valid image file (PNG, JPG, WebP, SVG).');
+                              setLogoError(t('settings.invalidImageType', 'Please select a valid image file (PNG, JPG, WebP, SVG).'));
                               return;
                             }
                             if (file.size > 5 * 1024 * 1024) {
-                              setLogoError('Image size must be less than 5MB.');
+                              setLogoError(t('settings.imageTooLarge', 'Image size must be less than 5MB.'));
                               return;
                             }
                             setLogoProcessing(true);
@@ -628,18 +633,18 @@ export const OwnerDashboard: React.FC = () => {
                                   setLogoProcessing(false);
                                 };
                                 img.onerror = () => {
-                                  setLogoError('Failed to parse image file.');
+                                  setLogoError(t('settings.parseImageError', 'Failed to parse image file.'));
                                   setLogoProcessing(false);
                                 };
                                 img.src = evt.target?.result as string;
                               };
                               reader.onerror = () => {
-                                setLogoError('Failed to read file.');
+                                setLogoError(t('settings.readFileError', 'Failed to read file.'));
                                 setLogoProcessing(false);
                               };
                               reader.readAsDataURL(file);
                             } catch (err: any) {
-                              setLogoError(err.message || 'Failed to process image.');
+                              setLogoError(err.message || t('settings.processImageError', 'Failed to process image.'));
                               setLogoProcessing(false);
                             }
                           }}
@@ -651,7 +656,7 @@ export const OwnerDashboard: React.FC = () => {
                           className="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                         >
                           <Upload size={13} />
-                          <span>{bizLogo ? 'Change Logo' : 'Upload Logo'}</span>
+                          <span>{bizLogo ? t('settings.changeLogo', 'Change Logo') : t('settings.uploadLogo', 'Upload Logo')}</span>
                         </button>
                         {bizLogo && (
                           <button
@@ -661,7 +666,7 @@ export const OwnerDashboard: React.FC = () => {
                             className="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                           >
                             <Trash2 size={13} />
-                            <span>Remove</span>
+                            <span>{t('common.remove', 'Remove')}</span>
                           </button>
                         )}
                         <button
@@ -671,7 +676,7 @@ export const OwnerDashboard: React.FC = () => {
                           className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                         >
                           <Save size={13} />
-                          <span>Save Logo</span>
+                          <span>{t('settings.saveLogo', 'Save Logo')}</span>
                         </button>
                       </div>
                       <input
@@ -682,7 +687,7 @@ export const OwnerDashboard: React.FC = () => {
                           setBizLogo(e.target.value);
                           setLogoError(null);
                         }}
-                        placeholder="Or paste image URL (https://...)"
+                        placeholder={t('settings.pasteUrlPlaceholder', 'Or paste image URL (https://...)')}
                         className="w-full px-3 py-1.5 bg-slate-900/80 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:border-brand-500"
                       />
                       {logoError && (
@@ -701,7 +706,7 @@ export const OwnerDashboard: React.FC = () => {
                   className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs shadow-lg shadow-brand-500/20 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   <Save className="w-4 h-4" />
-                  <span>{savingSettings ? 'Saving Settings...' : 'Save Changes'}</span>
+                  <span>{savingSettings ? t('settings.saving', 'Saving Settings...') : t('common.save', 'Save Changes')}</span>
                 </button>
               </div>
             </form>
@@ -716,7 +721,7 @@ export const OwnerDashboard: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
               <div className="flex items-center space-x-2">
                 <UserPlus className="w-5 h-5 text-brand-400" />
-                <h3 className="text-base font-bold text-white">Onboard Staff Member</h3>
+                <h3 className="text-base font-bold text-white">{t('staff.onboardStaffModalTitle', 'Onboard Staff Member')}</h3>
               </div>
               <button
                 onClick={() => setShowAddStaffModal(false)}
@@ -743,7 +748,7 @@ export const OwnerDashboard: React.FC = () => {
             <form onSubmit={handleCreateStaff} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="new-staff-name">
-                  Full Name *
+                  {t('staff.fullName', 'Full Name')} *
                 </label>
                 <input
                   id="new-staff-name"
@@ -751,14 +756,14 @@ export const OwnerDashboard: React.FC = () => {
                   required
                   value={staffFullName}
                   onChange={(e) => setStaffFullName(e.target.value)}
-                  placeholder="e.g. Alex Cashier"
+                  placeholder={t('staff.namePlaceholder', 'e.g. Alex Cashier')}
                   className="w-full px-3.5 py-2 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-brand-500"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="new-staff-email">
-                  Email Address *
+                  {t('staff.email', 'Email Address')} *
                 </label>
                 <input
                   id="new-staff-email"
@@ -773,7 +778,7 @@ export const OwnerDashboard: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="new-staff-password">
-                  Temporary Password *
+                  {t('staff.tempPassword', 'Temporary Password')} *
                 </label>
                 <input
                   id="new-staff-password"
@@ -782,21 +787,21 @@ export const OwnerDashboard: React.FC = () => {
                   minLength={6}
                   value={staffPassword}
                   onChange={(e) => setStaffPassword(e.target.value)}
-                  placeholder="Min 6 characters"
+                  placeholder={t('auth.minSixChars', 'Min 6 characters')}
                   className="w-full px-3.5 py-2 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-brand-500"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="new-staff-phone">
-                  Phone (Optional)
+                  {t('staff.phoneOptional', 'Phone (Optional)')}
                 </label>
                 <input
                   id="new-staff-phone"
                   type="tel"
                   value={staffPhone}
                   onChange={(e) => setStaffPhone(e.target.value)}
-                  placeholder="+1 (555) 019-9988"
+                  placeholder="+91 98765 43210"
                   className="w-full px-3.5 py-2 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-brand-500"
                 />
               </div>
@@ -807,7 +812,7 @@ export const OwnerDashboard: React.FC = () => {
                   onClick={() => setShowAddStaffModal(false)}
                   className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
@@ -815,7 +820,7 @@ export const OwnerDashboard: React.FC = () => {
                   id="submit-staff-btn"
                   className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-brand-600 hover:bg-brand-500 shadow-lg shadow-brand-500/25 transition-all disabled:opacity-50 cursor-pointer"
                 >
-                  {addingStaff ? 'Onboarding...' : 'Add Staff User'}
+                  {addingStaff ? t('staff.onboardingInProgress', 'Onboarding...') : t('staff.addStaffBtn', 'Add Staff User')}
                 </button>
               </div>
             </form>

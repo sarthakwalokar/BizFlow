@@ -234,14 +234,14 @@ export const BusinessSettingsPage: React.FC = () => {
       setLogo(updated.logo || '');
       setLogoSuccessMessage(
         isEducation
-          ? 'Institute logo saved and active across all fee receipts and reports!'
+          ? t('education.settings.logoSaved', 'Institute logo saved and active across all fee receipts and reports!')
           : t('settings.logoSaved', 'Logo saved and persisted successfully!')
       );
     } catch (err: any) {
       const msg =
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to save business logo. Please try again.';
+        t('settings.logoSaveError', 'Failed to save business logo. Please try again.');
       setLogoError(msg);
     } finally {
       setLogoSaving(false);
@@ -277,13 +277,13 @@ export const BusinessSettingsPage: React.FC = () => {
       updateBusinessState(updated);
       setLogo(updated.logo || '');
       setSuccessMessage(
-        isEducation ? 'Institute settings saved successfully!' : t('settings.settingsSaved')
+        isEducation ? t('education.settings.settingsSaved', 'Institute settings saved successfully!') : t('settings.settingsSaved')
       );
     } catch (err: any) {
       const msg =
         err.response?.data?.error?.message ||
         err.response?.data?.message ||
-        'Failed to save settings. Please try again.';
+        t('settings.saveError', 'Failed to save settings. Please try again.');
       setErrorMessage(msg);
     } finally {
       setSaving(false);
@@ -303,18 +303,18 @@ export const BusinessSettingsPage: React.FC = () => {
       <div>
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold text-zinc-900 tracking-tight">
-            {isEducation ? 'Institute Settings' : t('settings.title')}
+            {isEducation ? t('education.settings.title', 'Institute Settings') : t('settings.title')}
           </h1>
           {isEducation && (
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 flex items-center gap-1">
               <GraduationCap size={13} className="text-emerald-600" />
-              <span>Coaching &amp; Academy</span>
+              <span>{t('education.coachingBadge', 'Coaching & Academy')}</span>
             </span>
           )}
         </div>
         <p className="text-xs text-zinc-500 mt-0.5">
           {isEducation
-            ? 'Configure your coaching institute profile, branding logo, campus location, contact info and fee receipt settings'
+            ? t('education.settings.subtitle', 'Configure your coaching institute profile, branding logo, campus location, contact info and fee receipt settings')
             : t('settings.subtitle')}
         </p>
       </div>
@@ -377,11 +377,11 @@ export const BusinessSettingsPage: React.FC = () => {
             </div>
             <div>
               <h2 className="text-sm font-semibold text-zinc-900">
-                {isEducation ? 'Institute Profile & Branding' : t('settings.generalInfo')}
+                {isEducation ? t('education.settings.generalInfo', 'Institute Profile & Branding') : t('settings.generalInfo')}
               </h2>
               <p className="text-xs text-zinc-500">
                 {isEducation
-                  ? 'Coaching academy details, center address and official contact coordinates'
+                  ? t('education.settings.generalInfoDesc', 'Coaching academy details, center address and official contact coordinates')
                   : t('settings.generalInfoDesc')}
               </p>
             </div>
@@ -390,57 +390,57 @@ export const BusinessSettingsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {isEducation ? 'Institute / Coaching Class Name' : t('settings.businessName')} <span className="text-red-500">*</span>
+                {isEducation ? t('education.settings.businessName', 'Institute / Coaching Class Name') : t('settings.businessName')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder={isEducation ? 'e.g. Apex Tutorials & Computer Academy' : 'e.g. Apex Coffee & Bistro'}
+                placeholder={isEducation ? t('education.settings.namePlaceholder', 'e.g. Apex Tutorials & Computer Academy') : t('settings.namePlaceholder', 'e.g. Apex Coffee & Bistro')}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {isEducation ? 'Organization Type' : t('settings.businessType')} <span className="text-red-500">*</span>
+                {isEducation ? t('education.settings.businessType', 'Organization Type') : t('settings.businessType')} <span className="text-red-500">*</span>
               </label>
               <select
                 value={businessType}
                 onChange={(e) => setBusinessType(e.target.value as BusinessType)}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs bg-white text-zinc-800"
               >
-                <option value="EDUCATION">Education & Coaching Center</option>
-                <option value="RETAIL">Retail Store / Shop</option>
-                <option value="GROCERY">Grocery & Kirana Store</option>
-                <option value="SUPERMARKET">Supermarket / Hypermarket</option>
-                <option value="RESTAURANT">Restaurant / Fine Dining</option>
-                <option value="CAFE">Café & Coffee Shop</option>
-                <option value="BAKERY">Bakery & Patisserie</option>
-                <option value="SWEET_SHOP">Sweet Shop / Mithai</option>
-                <option value="SALON">Salon & Hair Studio</option>
-                <option value="BEAUTY_PARLOUR">Beauty Parlour & Spa</option>
-                <option value="CLOTHING">Clothing & Apparel / Boutique</option>
-                <option value="ELECTRONICS">Electronics & Appliances</option>
-                <option value="PHARMACY">Pharmacy & Medical Store</option>
-                <option value="HARDWARE">Hardware & Electrical</option>
-                <option value="FURNITURE">Furniture & Home Decor</option>
-                <option value="STATIONERY">Stationery & Book Store</option>
-                <option value="MOBILE_STORE">Mobile Store & Tech Hub</option>
-                <option value="REPAIR">Repair & Service Center</option>
-                <option value="FITNESS">Gym & Fitness Studio</option>
-                <option value="HOTEL">Hotel & Hospitality</option>
-                <option value="CATERING">Catering & Event Services</option>
-                <option value="SERVICE">Professional & Trade Services</option>
-                <option value="CONSULTANCY">Consultancy & Agency</option>
-                <option value="OTHER">Other Commercial Enterprise</option>
+                <option value="EDUCATION">{t('business.type.EDUCATION', 'Education & Coaching Center')}</option>
+                <option value="RETAIL">{t('business.type.RETAIL', 'Retail Store / Shop')}</option>
+                <option value="GROCERY">{t('business.type.GROCERY', 'Grocery & Kirana Store')}</option>
+                <option value="SUPERMARKET">{t('business.type.SUPERMARKET', 'Supermarket / Hypermarket')}</option>
+                <option value="RESTAURANT">{t('business.type.RESTAURANT', 'Restaurant / Fine Dining')}</option>
+                <option value="CAFE">{t('business.type.CAFE', 'Café & Coffee Shop')}</option>
+                <option value="BAKERY">{t('business.type.BAKERY', 'Bakery & Patisserie')}</option>
+                <option value="SWEET_SHOP">{t('business.type.SWEET_SHOP', 'Sweet Shop / Mithai')}</option>
+                <option value="SALON">{t('business.type.SALON', 'Salon & Hair Studio')}</option>
+                <option value="BEAUTY_PARLOUR">{t('business.type.BEAUTY_PARLOUR', 'Beauty Parlour & Spa')}</option>
+                <option value="CLOTHING">{t('business.type.CLOTHING', 'Clothing & Apparel / Boutique')}</option>
+                <option value="ELECTRONICS">{t('business.type.ELECTRONICS', 'Electronics & Appliances')}</option>
+                <option value="PHARMACY">{t('business.type.PHARMACY', 'Pharmacy & Medical Store')}</option>
+                <option value="HARDWARE">{t('business.type.HARDWARE', 'Hardware & Electrical')}</option>
+                <option value="FURNITURE">{t('business.type.FURNITURE', 'Furniture & Home Decor')}</option>
+                <option value="STATIONERY">{t('business.type.STATIONERY', 'Stationery & Book Store')}</option>
+                <option value="MOBILE_STORE">{t('business.type.MOBILE_STORE', 'Mobile Store & Tech Hub')}</option>
+                <option value="REPAIR">{t('business.type.REPAIR', 'Repair & Service Center')}</option>
+                <option value="FITNESS">{t('business.type.FITNESS', 'Gym & Fitness Studio')}</option>
+                <option value="HOTEL">{t('business.type.HOTEL', 'Hotel & Hospitality')}</option>
+                <option value="CATERING">{t('business.type.CATERING', 'Catering & Event Services')}</option>
+                <option value="SERVICE">{t('business.type.SERVICE', 'Professional & Trade Services')}</option>
+                <option value="CONSULTANCY">{t('business.type.CONSULTANCY', 'Consultancy & Agency')}</option>
+                <option value="OTHER">{t('business.type.OTHER', 'Other Commercial Enterprise')}</option>
               </select>
             </div>
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {isEducation ? 'Institute Office Email' : t('settings.contactEmail')}
+                {isEducation ? t('education.settings.contactEmail', 'Institute Office Email') : t('settings.contactEmail')}
               </label>
               <input
                 type="email"
@@ -453,7 +453,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {isEducation ? 'Institute Helpline / Phone' : t('settings.contactPhone')}
+                {isEducation ? t('education.settings.contactPhone', 'Institute Helpline / Phone') : t('settings.contactPhone')}
               </label>
               <input
                 type="text"
@@ -466,7 +466,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
             <div className="space-y-1 md:col-span-2">
               <label className="text-xs font-medium text-zinc-700">
-                {isEducation ? 'Institute Campus / Center Address' : t('settings.physicalAddress')}
+                {isEducation ? t('education.settings.physicalAddress', 'Institute Campus / Center Address') : t('settings.physicalAddress')}
               </label>
               <textarea
                 rows={2}
@@ -484,8 +484,8 @@ export const BusinessSettingsPage: React.FC = () => {
             {/* Logo Section */}
             <div className="space-y-2 md:col-span-2">
               <label className="text-xs font-semibold text-zinc-700 flex items-center justify-between">
-                <span>{isEducation ? 'Institute Logo & Letterhead Branding' : t('settings.logo', 'Business Brand Logo')}</span>
-                <span className="text-[10px] text-zinc-400 font-normal">PNG, JPG, WebP or SVG (Max 5MB)</span>
+                <span>{isEducation ? t('education.settings.logo', 'Institute Logo & Letterhead Branding') : t('settings.logo', 'Business Brand Logo')}</span>
+                <span className="text-[10px] text-zinc-400 font-normal">{t('settings.logoFormatHint', 'PNG, JPG, WebP or SVG (Max 5MB)')}</span>
               </label>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-xl border border-zinc-200 bg-zinc-50/70">
@@ -494,20 +494,20 @@ export const BusinessSettingsPage: React.FC = () => {
                   {logo ? (
                     <img
                       src={logo}
-                      alt="Institute Logo Preview"
+                      alt="Logo Preview"
                       className="w-full h-full object-contain"
-                      onError={() => setLogoError('Failed to display image from provided source.')}
+                      onError={() => setLogoError(t('settings.logoDisplayError', 'Failed to display image from provided source.'))}
                     />
                   ) : (
                     <div className="text-center p-2 text-zinc-400 flex flex-col items-center">
                       <ImageIcon size={24} className="text-zinc-300 mb-0.5" />
-                      <span className="text-[9px] font-medium text-zinc-400">No Logo</span>
+                      <span className="text-[9px] font-medium text-zinc-400">{t('settings.noLogo', 'No Logo')}</span>
                     </div>
                   )}
                   {logoProcessing && (
                     <div className="absolute inset-0 bg-white/85 flex flex-col items-center justify-center space-y-1">
                       <ButtonSpinner className="text-brand-600" />
-                      <span className="text-[9px] font-bold text-brand-600">Processing</span>
+                      <span className="text-[9px] font-bold text-brand-600">{t('settings.processing', 'Processing')}</span>
                     </div>
                   )}
                 </div>
@@ -518,15 +518,15 @@ export const BusinessSettingsPage: React.FC = () => {
                   {logo !== (business?.logo || '') ? (
                     <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold">
                       <AlertCircle size={12} className="text-amber-600" />
-                      <span>Unsaved logo changes • Click "Save Logo" to apply</span>
+                      <span>{t('settings.unsavedLogoChanges', 'Unsaved logo changes • Click "Save Logo" to apply')}</span>
                     </div>
                   ) : business?.logo ? (
                     <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
                       <CheckCircle2 size={12} className="text-emerald-600" />
                       <span>
                         {isEducation
-                          ? 'Saved & active across all fee receipts, admission cards, and reports'
-                          : 'Saved & active across all invoices and documents'}
+                          ? t('education.settings.logoActive', 'Saved & active across all fee receipts, admission cards, and reports')
+                          : t('settings.logoActive', 'Saved & active across all invoices and documents')}
                       </span>
                     </div>
                   ) : null}
@@ -586,11 +586,11 @@ export const BusinessSettingsPage: React.FC = () => {
                       className="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {logoSaving ? (
-                        <ButtonSpinner text="Saving Logo..." spinnerColor="text-white" />
+                        <ButtonSpinner text={t('settings.savingLogo', 'Saving Logo...')} spinnerColor="text-white" />
                       ) : (
                         <>
                           <Save size={13} />
-                          <span>Save Logo</span>
+                          <span>{t('settings.saveLogo', 'Save Logo')}</span>
                         </>
                       )}
                     </button>
@@ -622,7 +622,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
                   <p className="text-[11px] text-zinc-500 leading-tight pt-1">
                     {isEducation
-                      ? 'Your institute logo will be printed on student fee receipts, admission cards, and coaching reports.'
+                      ? t('education.settings.logoHelp', 'Your institute logo will be printed on student fee receipts, admission cards, and coaching reports.')
                       : t('settings.logoHint', 'Your logo is securely stored and automatically displayed on POS receipts, tax invoices, PDF exports, and client review pages.')}
                   </p>
                 </div>
@@ -646,22 +646,22 @@ export const BusinessSettingsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {isEducation ? 'Fee Currency' : t('settings.operatingCurrency')}
+                {isEducation ? t('education.settings.feeCurrency', 'Fee Currency') : t('settings.operatingCurrency')}
               </label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs bg-white text-zinc-800"
               >
-                <option value="INR">INR (₹) - Indian Rupee</option>
-                <option value="USD">USD ($) - US Dollar</option>
-                <option value="EUR">EUR (€) - Euro</option>
-                <option value="GBP">GBP (£) - British Pound</option>
-                <option value="CAD">CAD ($) - Canadian Dollar</option>
-                <option value="AUD">AUD ($) - Australian Dollar</option>
-                <option value="JPY">JPY (¥) - Japanese Yen</option>
-                <option value="AED">AED (د.إ) - UAE Dirham</option>
-                <option value="SGD">SGD ($) - Singapore Dollar</option>
+                <option value="INR">{t('currencies.inr', 'INR (₹) - Indian Rupee')}</option>
+                <option value="USD">{t('currencies.usd', 'USD ($) - US Dollar')}</option>
+                <option value="EUR">{t('currencies.eur', 'EUR (€) - Euro')}</option>
+                <option value="GBP">{t('currencies.gbp', 'GBP (£) - British Pound')}</option>
+                <option value="CAD">{t('currencies.cad', 'CAD ($) - Canadian Dollar')}</option>
+                <option value="AUD">{t('currencies.aud', 'AUD ($) - Australian Dollar')}</option>
+                <option value="JPY">{t('currencies.jpy', 'JPY (¥) - Japanese Yen')}</option>
+                <option value="AED">{t('currencies.aed', 'AED (د.إ) - UAE Dirham')}</option>
+                <option value="SGD">{t('currencies.sgd', 'SGD ($) - Singapore Dollar')}</option>
               </select>
             </div>
 
@@ -674,16 +674,16 @@ export const BusinessSettingsPage: React.FC = () => {
                 onChange={(e) => setTimezone(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs bg-white text-zinc-800"
               >
-                <option value="UTC">UTC (Coordinated Universal Time)</option>
-                <option value="America/New_York">America/New York (EST/EDT)</option>
-                <option value="America/Chicago">America/Chicago (CST/CDT)</option>
-                <option value="America/Los_Angeles">America/Los Angeles (PST/PDT)</option>
-                <option value="Europe/London">Europe/London (GMT/BST)</option>
-                <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
-                <option value="Asia/Dubai">Asia/Dubai (GST)</option>
-                <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
-                <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
-                <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                <option value="UTC">{t('timezones.utc', 'UTC (Coordinated Universal Time)')}</option>
+                <option value="America/New_York">{t('timezones.new_york', 'America/New York (EST/EDT)')}</option>
+                <option value="America/Chicago">{t('timezones.chicago', 'America/Chicago (CST/CDT)')}</option>
+                <option value="America/Los_Angeles">{t('timezones.los_angeles', 'America/Los Angeles (PST/PDT)')}</option>
+                <option value="Europe/London">{t('timezones.london', 'Europe/London (GMT/BST)')}</option>
+                <option value="Europe/Paris">{t('timezones.paris', 'Europe/Paris (CET/CEST)')}</option>
+                <option value="Asia/Dubai">{t('timezones.dubai', 'Asia/Dubai (GST)')}</option>
+                <option value="Asia/Kolkata">{t('timezones.kolkata', 'Asia/Kolkata (IST)')}</option>
+                <option value="Asia/Singapore">{t('timezones.singapore', 'Asia/Singapore (SGT)')}</option>
+                <option value="Asia/Tokyo">{t('timezones.tokyo', 'Asia/Tokyo (JST)')}</option>
               </select>
             </div>
           </div>
@@ -697,11 +697,11 @@ export const BusinessSettingsPage: React.FC = () => {
             </div>
             <div>
               <h2 className="text-sm font-semibold text-zinc-900">
-                {isEducation ? 'Fee & Receipt Settings' : t('settings.taxSettings')}
+                {isEducation ? t('education.settings.feeSettings', 'Fee & Receipt Settings') : t('settings.taxSettings')}
               </h2>
               <p className="text-xs text-zinc-500">
                 {isEducation
-                  ? 'Customize receipt headers, applicable tax or government levy rate, and institute registration code'
+                  ? t('education.settings.feeSettingsDesc', 'Customize receipt headers, applicable tax or government levy rate, and institute registration code')
                   : t('settings.taxSettingsDesc')}
               </p>
             </div>
@@ -710,20 +710,20 @@ export const BusinessSettingsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {isEducation ? 'Receipt / Tax Title' : t('settings.taxName')}
+                {isEducation ? t('education.settings.taxName', 'Receipt / Tax Title') : t('settings.taxName')}
               </label>
               <input
                 type="text"
                 value={taxName}
                 onChange={(e) => setTaxName(e.target.value)}
-                placeholder={isEducation ? 'e.g. Fee Receipt / GST' : 'e.g. GST, VAT, Sales Tax'}
+                placeholder={isEducation ? t('placeholders.eduTaxName', 'e.g. Fee Receipt / GST') : t('placeholders.taxName', 'e.g. GST, VAT, Sales Tax')}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs"
               />
             </div>
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {isEducation ? 'Tax / Levy Rate (%)' : t('settings.taxRate')}
+                {isEducation ? t('education.settings.taxRate', 'Tax / Levy Rate (%)') : t('settings.taxRate')}
               </label>
               <input
                 type="number"
@@ -732,14 +732,14 @@ export const BusinessSettingsPage: React.FC = () => {
                 max="100"
                 value={taxRate}
                 onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
-                placeholder="0.0 (or 18.0 if applicable)"
+                placeholder={t('placeholders.taxRateExample', '0.0 (or 18.0 if applicable)')}
                 className="w-full px-3 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-xs font-semibold"
               />
             </div>
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-zinc-700">
-                {isEducation ? 'Institute Reg / GST Number' : t('settings.taxNumber')}
+                {isEducation ? t('education.settings.taxNumber', 'Institute Reg / GST Number') : t('settings.taxNumber')}
               </label>
               <input
                 type="text"
@@ -756,7 +756,7 @@ export const BusinessSettingsPage: React.FC = () => {
             <div className="space-y-0.5 pr-4">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-zinc-900">
-                  {isEducation ? 'Fees are Inclusive of Taxes' : t('settings.taxInclusive')}
+                  {isEducation ? t('education.settings.taxInclusive', 'Fees are Inclusive of Taxes') : t('settings.taxInclusive')}
                 </span>
                 <span className="px-2 py-0.5 rounded-full bg-zinc-200 text-zinc-700 text-[10px] font-medium">
                   {taxInclusive ? t('common.active') : t('common.inactive')}
@@ -764,7 +764,7 @@ export const BusinessSettingsPage: React.FC = () => {
               </div>
               <p className="text-[11px] text-zinc-500">
                 {isEducation
-                  ? 'When enabled, the course total fee quoted to students already includes all taxes and levies.'
+                  ? t('education.settings.taxInclusiveDesc', 'When enabled, the course total fee quoted to students already includes all taxes and levies.')
                   : t('settings.taxInclusiveDesc')}
               </p>
             </div>
@@ -783,13 +783,13 @@ export const BusinessSettingsPage: React.FC = () => {
           <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-2">
             <div className="flex items-center gap-1.5 text-zinc-700 font-medium text-xs">
               <Receipt size={14} className="text-zinc-500" />
-              <span>{isEducation ? 'Sample Fee Receipt Breakdown' : t('settings.taxPreview')}</span>
+              <span>{isEducation ? t('education.settings.taxPreview', 'Sample Fee Receipt Breakdown') : t('settings.taxPreview')}</span>
             </div>
 
             <div className="grid grid-cols-3 gap-3 text-xs">
               <div className="p-2.5 rounded-lg bg-white border border-zinc-200">
                 <span className="text-zinc-400 block text-[10px]">
-                  {isEducation ? 'Base Tuition Fee' : t('settings.netItemPrice')}
+                  {isEducation ? t('education.settings.basePrice', 'Base Tuition Fee') : t('settings.netItemPrice')}
                 </span>
                 <span className="font-medium text-zinc-900">
                   {formatCurrency(
@@ -810,7 +810,7 @@ export const BusinessSettingsPage: React.FC = () => {
 
               <div className="p-2.5 rounded-lg bg-white border border-zinc-200">
                 <span className="text-zinc-400 block text-[10px]">
-                  {isEducation ? 'Total Receipt Amount' : t('settings.totalBilled')}
+                  {isEducation ? t('education.settings.totalReceipt', 'Total Receipt Amount') : t('settings.totalBilled')}
                 </span>
                 <span className="font-bold text-brand-700">
                   {formatCurrency(simulatedTotalPrice, currency)}
@@ -939,7 +939,7 @@ export const BusinessSettingsPage: React.FC = () => {
             ) : (
               <>
                 <Save size={15} />
-                <span>{isEducation ? 'Save Institute Settings' : t('settings.saveSettings')}</span>
+                <span>{isEducation ? t('education.settings.saveBtn', 'Save Institute Settings') : t('settings.saveSettings')}</span>
               </>
             )}
           </button>

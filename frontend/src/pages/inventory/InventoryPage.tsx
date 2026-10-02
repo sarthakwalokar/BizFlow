@@ -848,7 +848,7 @@ export const InventoryPage: React.FC = () => {
                 <label className="text-xs font-medium text-zinc-700">{t('inventory.reason')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Audit / Damaged goods"
+                  placeholder={t('placeholders.inventoryReasonExample', 'e.g. Audit / Damaged goods')}
                   value={adjustNotes}
                   onChange={(e) => setAdjustNotes(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -958,7 +958,7 @@ export const InventoryPage: React.FC = () => {
                 <label className="text-xs font-medium text-zinc-700">{t('common.notes')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Branch store replenishment"
+                  placeholder={t('placeholders.transferNotesExample', 'e.g. Branch store replenishment')}
                   value={transferNotes}
                   onChange={(e) => setTransferNotes(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -1012,7 +1012,7 @@ export const InventoryPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Central Warehouse / Counter A"
+                  placeholder={t('placeholders.locationNameExample', 'e.g. Central Warehouse / Counter A')}
                   value={locationName}
                   onChange={(e) => setLocationName(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -1023,7 +1023,7 @@ export const InventoryPage: React.FC = () => {
                 <label className="text-xs font-medium text-zinc-700">{t('common.code')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. WH-01"
+                  placeholder={t('placeholders.locationCodeExample', 'e.g. WH-01')}
                   value={locationCode}
                   onChange={(e) => setLocationCode(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -1034,7 +1034,7 @@ export const InventoryPage: React.FC = () => {
                 <label className="text-xs font-medium text-zinc-700">{t('common.address')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Industrial Area Phase 1"
+                  placeholder={t('placeholders.addressExample', 'e.g. Industrial Area Phase 1')}
                   value={locationAddress}
                   onChange={(e) => setLocationAddress(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -1088,7 +1088,7 @@ export const InventoryPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Apex Electronics Wholesale Ltd"
+                  placeholder={t('placeholders.supplierNameExample', 'e.g. Apex Electronics Wholesale Ltd')}
                   value={supplierName}
                   onChange={(e) => setSupplierName(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -1100,7 +1100,7 @@ export const InventoryPage: React.FC = () => {
                   <label className="text-xs font-medium text-zinc-700">{t('common.name')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. Ramesh"
+                    placeholder={t('placeholders.contactPersonExample', 'e.g. Ramesh')}
                     value={supplierContact}
                     onChange={(e) => setSupplierContact(e.target.value)}
                     className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -1123,7 +1123,7 @@ export const InventoryPage: React.FC = () => {
                 <label className="text-xs font-medium text-zinc-700">{t('common.email')}</label>
                 <input
                   type="email"
-                  placeholder="procurement@vendor.in"
+                  placeholder={t('placeholders.supplierEmailExample', 'procurement@vendor.in')}
                   value={supplierEmail}
                   onChange={(e) => setSupplierEmail(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -1134,7 +1134,7 @@ export const InventoryPage: React.FC = () => {
                 <label className="text-xs font-medium text-zinc-700">{t('inventory.supplierGst')}</label>
                 <input
                   type="text"
-                  placeholder="29AAAAA0000A1Z5"
+                  placeholder={t('placeholders.gstinExample', '29AAAAA0000A1Z5')}
                   value={supplierTaxNumber}
                   onChange={(e) => setSupplierTaxNumber(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"

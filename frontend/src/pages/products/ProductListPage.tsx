@@ -493,7 +493,7 @@ export const ProductListPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Masala Chai (Large) / Haircut & Style"
+                  placeholder={t('placeholders.productNameExample', 'e.g. Masala Chai (Large) / Haircut & Style')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-emerald-600"
@@ -557,7 +557,7 @@ export const ProductListPage: React.FC = () => {
                     type="number"
                     min="0"
                     step="0.01"
-                    placeholder="Optional unit cost"
+                    placeholder={t('placeholders.optionalUnitCost', 'Optional unit cost')}
                     value={costPrice}
                     onChange={(e) => setCostPrice(e.target.value)}
                     className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600"
@@ -569,7 +569,7 @@ export const ProductListPage: React.FC = () => {
                 <label className="text-xs font-bold text-zinc-700">{t('products.sku')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. PRD-890123"
+                  placeholder={t('placeholders.skuExample', 'e.g. PRD-890123')}
                   value={sku}
                   onChange={(e) => setSku(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-mono focus:ring-1 focus:ring-brand-600"

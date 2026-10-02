@@ -178,10 +178,10 @@ export const OrdersHistoryPage: React.FC = () => {
               className="px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20"
             >
               <option value="ALL">{t('common.all', 'All')} {t('billing.paymentMethod', 'Method')}</option>
-              <option value="UPI">UPI</option>
-              <option value="CASH">Cash</option>
-              <option value="CARD">Card</option>
-              <option value="CREDIT">Credit</option>
+              <option value="UPI">{t('payment.upi', 'UPI')}</option>
+              <option value="CASH">{t('payment.cash', 'Cash')}</option>
+              <option value="CARD">{t('payment.card', 'Card')}</option>
+              <option value="CREDIT">{t('payment.credit', 'Credit')}</option>
               <option value="OTHER">{t('common.other', 'Other')}</option>
             </select>
 

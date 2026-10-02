@@ -338,7 +338,7 @@ export const DashboardHomePage: React.FC = () => {
         {performanceLoading && (
           <div className="absolute inset-0 bg-white/40 backdrop-blur-xs flex items-center justify-center z-20 rounded-xl">
             <div className="flex items-center space-x-2 px-3 py-1.5 bg-white/90 shadow-xs rounded-lg text-xs font-semibold text-brand-600 border border-brand-100 animate-pulse">
-              <span>Loading trend data...</span>
+              <span>{t('dashboard.loadingTrendData', 'Loading trend data...')}</span>
             </div>
           </div>
         )}
@@ -534,21 +534,21 @@ export const DashboardHomePage: React.FC = () => {
             </div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
               <div className="flex items-center justify-between space-x-2">
-                <span className="text-slate-500 font-medium">Revenue:</span>
+                <span className="text-slate-500 font-medium">{t('dashboard.revenue', 'Revenue')}:</span>
                 <span className="text-brand-600 font-extrabold">
                   {formatCurrency(activeHoverPoint.data.revenue, currency)}
-                  {activeHoverPoint.data.orderCount ? ` (${activeHoverPoint.data.orderCount} order${activeHoverPoint.data.orderCount > 1 ? 's' : ''})` : ''}
+                  {activeHoverPoint.data.orderCount ? ` (${activeHoverPoint.data.orderCount} ${t('dashboard.orders', 'orders')})` : ''}
                 </span>
               </div>
               <div className="flex items-center justify-between space-x-2">
-                <span className="text-slate-500 font-medium">Expense:</span>
+                <span className="text-slate-500 font-medium">{t('dashboard.expenses', 'Expense')}:</span>
                 <span className="text-teal-600 font-extrabold">
                   {formatCurrency(activeHoverPoint.data.expense, currency)}
-                  {activeHoverPoint.data.expenseCount ? ` (${activeHoverPoint.data.expenseCount} exp)` : ''}
+                  {activeHoverPoint.data.expenseCount ? ` (${activeHoverPoint.data.expenseCount} ${t('dashboard.expenses', 'exp')})` : ''}
                 </span>
               </div>
               <div className="flex items-center justify-between space-x-2 col-span-2 pt-1 border-t border-slate-100">
-                <span className="text-slate-500 font-medium">Net Profit:</span>
+                <span className="text-slate-500 font-medium">{t('dashboard.netProfit', 'Net Profit')}:</span>
                 <span className={`font-black ${activeHoverPoint.data.revenue - activeHoverPoint.data.expense >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                   {activeHoverPoint.data.revenue - activeHoverPoint.data.expense >= 0 ? '+' : ''}
                   {formatCurrency(activeHoverPoint.data.revenue - activeHoverPoint.data.expense, currency)}
@@ -575,7 +575,7 @@ export const DashboardHomePage: React.FC = () => {
               {getGreeting()}, {user?.fullName || 'Business Owner'} 👋
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-              {t('dashboard.overviewSubtitle', "Here's a quick overview of your business performance and latest updates.")}
+              {t('dashboard.overviewSubtitle', "Get a clear view of your daily business performance and stay on top of what matters.")}
             </p>
           </div>
 

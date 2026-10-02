@@ -1,5 +1,6 @@
 import React from 'react';
 import { Loader2, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Small spinner inside buttons during active API requests.
@@ -182,17 +183,22 @@ export const AiAnalyzingIndicator: React.FC<{ message?: string }> = ({
  * Full page loading state for initial app authorization bootstrap.
  */
 export const FullPageLoader: React.FC<{ message?: string }> = ({ 
-  message = "Loading BizFlow workspace..." 
-}) => (
-  <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center p-4">
-    <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card flex flex-col items-center space-y-4 max-w-xs w-full text-center">
-      <div className="w-12 h-12 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-xs">
-        <Loader2 className="w-6 h-6 animate-spin text-white" />
-      </div>
-      <div>
-        <p className="text-sm font-bold text-zinc-950">BizFlow</p>
-        <p className="text-xs text-zinc-500 mt-1">{message}</p>
+  message 
+}) => {
+  const { t } = useTranslation();
+  const displayMessage = message || t('common.loadingWorkspace', 'Loading BizFlow workspace...');
+
+  return (
+    <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center p-4">
+      <div className="p-6 rounded-2xl bg-white border border-zinc-200 shadow-card flex flex-col items-center space-y-4 max-w-xs w-full text-center">
+        <div className="w-12 h-12 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-xs">
+          <Loader2 className="w-6 h-6 animate-spin text-white" />
+        </div>
+        <div>
+          <p className="text-sm font-bold text-zinc-950">BizFlow</p>
+          <p className="text-xs text-zinc-500 mt-1">{displayMessage}</p>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};

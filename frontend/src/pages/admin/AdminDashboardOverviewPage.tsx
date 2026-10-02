@@ -83,21 +83,21 @@ export const AdminDashboardOverviewPage: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand-50 text-brand-700 border border-brand-200">
             <ShieldAlert size={10} />
-            <span>ADMIN</span>
+            <span>{t('admin.roleAdmin', 'ADMIN')}</span>
           </span>
         );
       case 'OWNER':
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
             <Briefcase size={10} />
-            <span>OWNER</span>
+            <span>{t('admin.roleOwner', 'OWNER')}</span>
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-100 text-zinc-700 border border-zinc-200">
             <UserCheck size={10} />
-            <span>STAFF</span>
+            <span>{t('admin.roleStaff', 'STAFF')}</span>
           </span>
         );
     }
@@ -109,7 +109,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
     if (growthData.length === 0) {
       return (
         <div className="py-12 text-center text-zinc-400 text-xs font-medium">
-          No monthly growth data recorded yet.
+          {t('admin.noMonthlyGrowth', 'No monthly growth data recorded yet.')}
         </div>
       );
     }
@@ -277,15 +277,15 @@ export const AdminDashboardOverviewPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
-              Platform Administration
+              {t('admin.dashboard.title', 'Platform Administration')}
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-bold border border-brand-200 flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>Live Database</span>
+              <span>{t('admin.dashboard.liveDb', 'Live Database')}</span>
             </span>
           </div>
           <p className="text-xs sm:text-sm text-zinc-500 mt-0.5">
-            Real-time platform governance, multi-tenant directory, and operational metrics.
+            {t('admin.dashboard.subtitle', 'Real-time platform governance, multi-tenant directory, and operational metrics.')}
           </p>
         </div>
 
@@ -307,7 +307,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <AlertTriangle size={18} className="text-rose-600 shrink-0" />
             <div>
-              <p className="font-bold text-rose-900">Unable to load dashboard data</p>
+              <p className="font-bold text-rose-900">{t('admin.dashboard.errorTitle', 'Unable to load dashboard data')}</p>
               <p className="text-rose-700 text-[11px]">{error}</p>
             </div>
           </div>
@@ -315,7 +315,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
             onClick={loadStats}
             className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer self-start sm:self-auto shrink-0 shadow-xs"
           >
-            Retry
+            {t('common.retry', 'Retry')}
           </button>
         </div>
       )}
@@ -368,89 +368,89 @@ export const AdminDashboardOverviewPage: React.FC = () => {
              ========================================================================= */}
           <div className="space-y-3">
             <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider font-mono">
-              Platform Overview
+              {t('admin.dashboard.platformOverview', 'Platform Overview')}
             </h2>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
               {/* 1. Total Businesses */}
               <div className="bg-white border border-zinc-200 rounded-2xl p-4 shadow-xs hover:border-brand-200 transition-all space-y-1">
                 <div className="flex items-center justify-between text-zinc-500 text-[11px] font-bold">
-                  <span>Total Businesses</span>
+                  <span>{t('admin.dashboard.totalBusinesses', 'Total Businesses')}</span>
                   <Building2 size={15} className="text-brand-600" />
                 </div>
                 <div className="text-2xl font-black text-zinc-950 tracking-tight">
                   {stats?.totalBusinesses ?? 0}
                 </div>
-                <p className="text-[10px] text-zinc-400 font-medium">Registered tenants</p>
+                <p className="text-[10px] text-zinc-400 font-medium">{t('admin.dashboard.registeredTenants', 'Registered tenants')}</p>
               </div>
 
               {/* 2. Active Businesses */}
               <div className="bg-white border border-zinc-200 rounded-2xl p-4 shadow-xs hover:border-brand-200 transition-all space-y-1">
                 <div className="flex items-center justify-between text-zinc-500 text-[11px] font-bold">
-                  <span>Active Businesses</span>
+                  <span>{t('admin.dashboard.activeBusinesses', 'Active Businesses')}</span>
                   <CheckCircle2 size={15} className="text-emerald-600" />
                 </div>
                 <div className="text-2xl font-black text-emerald-600 tracking-tight">
                   {stats?.activeBusinesses ?? 0}
                 </div>
                 <p className="text-[10px] text-emerald-700 font-medium">
-                  {stats?.inactiveBusinesses ? `${stats.inactiveBusinesses} inactive` : '100% operational'}
+                  {stats?.inactiveBusinesses ? `${stats.inactiveBusinesses} ${t('admin.dashboard.inactive', 'inactive')}` : t('admin.dashboard.allOperational', '100% operational')}
                 </p>
               </div>
 
               {/* 3. Total Users */}
               <div className="bg-white border border-zinc-200 rounded-2xl p-4 shadow-xs hover:border-brand-200 transition-all space-y-1">
                 <div className="flex items-center justify-between text-zinc-500 text-[11px] font-bold">
-                  <span>Total Users</span>
+                  <span>{t('admin.dashboard.totalUsers', 'Total Users')}</span>
                   <Users size={15} className="text-brand-600" />
                 </div>
                 <div className="text-2xl font-black text-zinc-950 tracking-tight">
                   {stats?.totalUsers ?? 0}
                 </div>
                 <p className="text-[10px] text-zinc-400 font-medium">
-                  {stats?.totalOwners ?? 0} owners, {stats?.totalStaff ?? 0} staff
+                  {stats?.totalOwners ?? 0} {t('admin.dashboard.ownersCount', 'owners')}, {stats?.totalStaff ?? 0} {t('admin.dashboard.staffCount', 'staff')}
                 </p>
               </div>
 
               {/* 4. Active Users */}
               <div className="bg-white border border-zinc-200 rounded-2xl p-4 shadow-xs hover:border-brand-200 transition-all space-y-1">
                 <div className="flex items-center justify-between text-zinc-500 text-[11px] font-bold">
-                  <span>Active Users</span>
+                  <span>{t('admin.dashboard.activeUsers', 'Active Users')}</span>
                   <UserCheck size={15} className="text-emerald-600" />
                 </div>
                 <div className="text-2xl font-black text-emerald-600 tracking-tight">
                   {stats?.activeUsers ?? 0}
                 </div>
                 <p className="text-[10px] text-zinc-400 font-medium">
-                  {stats?.inactiveUsers ?? 0} disabled
+                  {stats?.inactiveUsers ?? 0} {t('admin.dashboard.disabledCount', 'disabled')}
                 </p>
               </div>
 
               {/* 5. New Businesses */}
               <div className="bg-white border border-zinc-200 rounded-2xl p-4 shadow-xs hover:border-brand-200 transition-all space-y-1">
                 <div className="flex items-center justify-between text-zinc-500 text-[11px] font-bold">
-                  <span>New Businesses</span>
+                  <span>{t('admin.dashboard.newBusinesses', 'New Businesses')}</span>
                   <Building size={15} className="text-teal-600" />
                 </div>
                 <div className="text-2xl font-black text-zinc-950 tracking-tight">
                   +{stats?.newBusinesses30d ?? 0}
                 </div>
                 <p className="text-[10px] text-teal-700 font-medium">
-                  +{stats?.newBusinesses7d ?? 0} in 7d • +{stats?.newBusinessesToday ?? 0} today
+                  +{stats?.newBusinesses7d ?? 0} {t('admin.dashboard.in7Days', 'in 7d')} • +{stats?.newBusinessesToday ?? 0} {t('admin.dashboard.today', 'today')}
                 </p>
               </div>
 
               {/* 6. New Users */}
               <div className="bg-white border border-zinc-200 rounded-2xl p-4 shadow-xs hover:border-brand-200 transition-all space-y-1">
                 <div className="flex items-center justify-between text-zinc-500 text-[11px] font-bold">
-                  <span>New Users</span>
+                  <span>{t('admin.dashboard.newUsers', 'New Users')}</span>
                   <UserPlus size={15} className="text-violet-600" />
                 </div>
                 <div className="text-2xl font-black text-zinc-950 tracking-tight">
                   +{stats?.newUsers30d ?? 0}
                 </div>
                 <p className="text-[10px] text-violet-700 font-medium">
-                  +{stats?.newUsers7d ?? 0} in 7d • +{stats?.newUsersToday ?? 0} today
+                  +{stats?.newUsers7d ?? 0} {t('admin.dashboard.in7Days', 'in 7d')} • +{stats?.newUsersToday ?? 0} {t('admin.dashboard.today', 'today')}
                 </p>
               </div>
             </div>
@@ -466,19 +466,19 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                   <TrendingUp size={16} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-zinc-900">Platform Growth (Last 6 Months)</h3>
-                  <p className="text-[11px] text-zinc-500">Live database growth curve: new users vs registered businesses</p>
+                  <h3 className="text-sm font-bold text-zinc-900">{t('admin.dashboard.growthTitle', 'Platform Growth (Last 6 Months)')}</h3>
+                  <p className="text-[11px] text-zinc-500">{t('admin.dashboard.growthSubtitle', 'Live database growth curve: new users vs registered businesses')}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-4 text-xs font-bold">
                 <span className="flex items-center gap-1.5 text-brand-600">
                   <span className="w-2.5 h-2.5 rounded-full bg-brand-600"></span>
-                  <span>New Users</span>
+                  <span>{t('admin.dashboard.newUsersLegend', 'New Users')}</span>
                 </span>
                 <span className="flex items-center gap-1.5 text-teal-600">
                   <span className="w-2.5 h-2.5 rounded-full bg-teal-600"></span>
-                  <span>New Businesses</span>
+                  <span>{t('admin.dashboard.newBusinessesLegend', 'New Businesses')}</span>
                 </span>
               </div>
             </div>
@@ -496,13 +496,13 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                 <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
                   <div className="flex items-center gap-2">
                     <Building2 size={16} className="text-brand-600" />
-                    <h3 className="text-sm font-bold text-zinc-900">Recent Businesses</h3>
+                    <h3 className="text-sm font-bold text-zinc-900">{t('admin.dashboard.recentBusinesses', 'Recent Businesses')}</h3>
                   </div>
                   <Link
                     to="/admin/businesses"
                     className="text-xs text-brand-600 hover:text-brand-700 font-bold flex items-center gap-1 hover:underline"
                   >
-                    <span>View All Businesses</span>
+                    <span>{t('admin.dashboard.viewAllBusinesses', 'View All Businesses')}</span>
                     <ArrowUpRight size={13} />
                   </Link>
                 </div>
@@ -511,18 +511,18 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
                       <tr className="border-b border-zinc-100 text-zinc-400 font-bold uppercase text-[10px] tracking-wider">
-                        <th className="pb-2.5">Business</th>
-                        <th className="pb-2.5">Owner</th>
-                        <th className="pb-2.5">Type</th>
-                        <th className="pb-2.5 text-center">Status</th>
-                        <th className="pb-2.5 text-right">Joined</th>
+                        <th className="pb-2.5">{t('admin.dashboard.colBusiness', 'Business')}</th>
+                        <th className="pb-2.5">{t('admin.dashboard.colOwner', 'Owner')}</th>
+                        <th className="pb-2.5">{t('admin.dashboard.colType', 'Type')}</th>
+                        <th className="pb-2.5 text-center">{t('admin.dashboard.colStatus', 'Status')}</th>
+                        <th className="pb-2.5 text-right">{t('admin.dashboard.colJoined', 'Joined')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-100">
                       {!stats?.recentBusinesses || stats.recentBusinesses.length === 0 ? (
                         <tr>
                           <td colSpan={5} className="py-8 text-center text-zinc-400">
-                            No businesses registered yet.
+                            {t('admin.dashboard.noRecentBusinesses', 'No businesses registered yet.')}
                           </td>
                         </tr>
                       ) : (
@@ -548,7 +548,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                               <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                                 b.active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
                               }`}>
-                                {b.active ? 'Active' : 'Inactive'}
+                                {b.active ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
                               </span>
                             </td>
                             <td className="py-3 text-right text-zinc-400 font-mono text-[11px]">
@@ -567,7 +567,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                   to="/admin/businesses"
                   className="text-xs text-zinc-500 hover:text-zinc-800 font-bold inline-flex items-center gap-1"
                 >
-                  <span>Manage all {stats?.totalBusinesses ?? 0} businesses →</span>
+                  <span>{t('admin.dashboard.manageAllBusinesses', 'Manage all {{count}} businesses →', { count: stats?.totalBusinesses ?? 0 })}</span>
                 </Link>
               </div>
             </div>
@@ -578,13 +578,13 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                 <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
                   <div className="flex items-center gap-2">
                     <Users size={16} className="text-brand-600" />
-                    <h3 className="text-sm font-bold text-zinc-900">Recent Users</h3>
+                    <h3 className="text-sm font-bold text-zinc-900">{t('admin.dashboard.recentUsers', 'Recent Users')}</h3>
                   </div>
                   <Link
                     to="/admin/users"
                     className="text-xs text-brand-600 hover:text-brand-700 font-bold flex items-center gap-1 hover:underline"
                   >
-                    <span>View All Users</span>
+                    <span>{t('admin.dashboard.viewAllUsers', 'View All Users')}</span>
                     <ArrowUpRight size={13} />
                   </Link>
                 </div>
@@ -593,18 +593,18 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
                       <tr className="border-b border-zinc-100 text-zinc-400 font-bold uppercase text-[10px] tracking-wider">
-                        <th className="pb-2.5">Name</th>
-                        <th className="pb-2.5">Role</th>
-                        <th className="pb-2.5">Business</th>
-                        <th className="pb-2.5 text-center">Status</th>
-                        <th className="pb-2.5 text-right">Joined</th>
+                        <th className="pb-2.5">{t('admin.dashboard.colName', 'Name')}</th>
+                        <th className="pb-2.5">{t('admin.dashboard.colRole', 'Role')}</th>
+                        <th className="pb-2.5">{t('admin.dashboard.colBusinessAssoc', 'Business')}</th>
+                        <th className="pb-2.5 text-center">{t('admin.dashboard.colStatus', 'Status')}</th>
+                        <th className="pb-2.5 text-right">{t('admin.dashboard.colJoined', 'Joined')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-100">
                       {!stats?.recentUsers || stats.recentUsers.length === 0 ? (
                         <tr>
                           <td colSpan={5} className="py-8 text-center text-zinc-400">
-                            No users registered yet.
+                            {t('admin.dashboard.noRecentUsers', 'No users registered yet.')}
                           </td>
                         </tr>
                       ) : (
@@ -623,13 +623,13 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                             </td>
                             <td className="py-3">{getRoleBadge(u.role)}</td>
                             <td className="py-3 text-zinc-700 font-medium truncate max-w-[120px]">
-                              {u.businessName || 'Platform'}
+                              {u.businessName || t('admin.dashboard.platformScope', 'Platform')}
                             </td>
                             <td className="py-3 text-center">
                               <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                                 u.enabled ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
                               }`}>
-                                {u.enabled ? 'Active' : 'Disabled'}
+                                {u.enabled ? t('common.active', 'Active') : t('common.disabled', 'Disabled')}
                               </span>
                             </td>
                             <td className="py-3 text-right text-zinc-400 font-mono text-[11px]">
@@ -648,7 +648,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                   to="/admin/users"
                   className="text-xs text-zinc-500 hover:text-zinc-800 font-bold inline-flex items-center gap-1"
                 >
-                  <span>Manage all {stats?.totalUsers ?? 0} users →</span>
+                  <span>{t('admin.dashboard.manageAllUsers', 'Manage all {{count}} users →', { count: stats?.totalUsers ?? 0 })}</span>
                 </Link>
               </div>
             </div>
@@ -664,13 +664,13 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                   <Layers size={16} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-zinc-900">Business Type Distribution</h3>
-                  <p className="text-[11px] text-zinc-500">Live classification of registered commercial tenants</p>
+                  <h3 className="text-sm font-bold text-zinc-900">{t('admin.dashboard.distributionTitle', 'Business Type Distribution')}</h3>
+                  <p className="text-[11px] text-zinc-500">{t('admin.dashboard.distributionSubtitle', 'Live classification of registered commercial tenants')}</p>
                 </div>
               </div>
 
               <span className="text-xs font-bold text-zinc-400 font-mono">
-                {stats?.totalBusinesses ?? 0} Total Active Tenants
+                {t('admin.dashboard.totalTenantsActive', '{{count}} Total Active Tenants', { count: stats?.totalBusinesses ?? 0 })}
               </span>
             </div>
 
@@ -693,7 +693,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                       </div>
                       <div>
                         <span className="text-[11px] font-bold text-zinc-800 block truncate">{type}</span>
-                        <div className="text-base font-black text-zinc-950 mt-0.5">{count} stores</div>
+                        <div className="text-base font-black text-zinc-950 mt-0.5">{count} {t('admin.dashboard.stores', 'stores')}</div>
                       </div>
                       <div className="w-full bg-zinc-200 rounded-full h-1.5 overflow-hidden">
                         <div
@@ -717,8 +717,8 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                   <Activity size={16} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-zinc-900">Recent Platform Activity</h3>
-                  <p className="text-[11px] text-zinc-500">Live platform audit log of registrations and operational events</p>
+                  <h3 className="text-sm font-bold text-zinc-900">{t('admin.dashboard.activityTitle', 'Recent Platform Activity')}</h3>
+                  <p className="text-[11px] text-zinc-500">{t('admin.dashboard.activitySubtitle', 'Live platform audit log of registrations and operational events')}</p>
                 </div>
               </div>
 
@@ -726,7 +726,7 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                 to="/admin/reports"
                 className="text-xs text-brand-600 hover:text-brand-700 font-bold flex items-center gap-1 hover:underline"
               >
-                <span>Audit Center</span>
+                <span>{t('admin.dashboard.auditCenter', 'Audit Center')}</span>
                 <ArrowUpRight size={13} />
               </Link>
             </div>
@@ -735,8 +735,8 @@ export const AdminDashboardOverviewPage: React.FC = () => {
               {!stats?.recentActivity || stats.recentActivity.length === 0 ? (
                 <div className="py-12 text-center text-zinc-400 space-y-1">
                   <Activity size={28} className="mx-auto text-zinc-300 mb-2" />
-                  <p className="font-bold text-zinc-700 text-xs">No recent platform activity</p>
-                  <p className="text-[11px] text-zinc-400">Events will appear here as users and businesses interact with the platform.</p>
+                  <p className="font-bold text-zinc-700 text-xs">{t('admin.dashboard.noActivity', 'No recent platform activity')}</p>
+                  <p className="text-[11px] text-zinc-400">{t('admin.dashboard.noActivityDesc', 'Events will appear here as users and businesses interact with the platform.')}</p>
                 </div>
               ) : (
                 stats.recentActivity.map((act) => (
@@ -760,14 +760,14 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-zinc-900">{act.title}</span>
-                          <span className="text-[10px] text-zinc-500 font-mono">({act.businessName || 'Platform'})</span>
+                          <span className="text-[10px] text-zinc-500 font-mono">({act.businessName || t('admin.dashboard.platformScope', 'Platform')})</span>
                         </div>
                         <p className="text-[11px] text-zinc-600 font-medium">{act.description}</p>
                       </div>
                     </div>
 
                     <div className="text-right text-[11px] text-zinc-400 font-mono">
-                      {act.timestamp ? new Date(act.timestamp).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : 'Recent'}
+                      {act.timestamp ? new Date(act.timestamp).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : t('common.recent', 'Recent')}
                     </div>
                   </div>
                 ))
@@ -786,8 +786,8 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                   <Users size={18} />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-zinc-900 group-hover:text-brand-600 transition-colors">Users Directory</h4>
-                  <p className="text-[10px] text-zinc-500">{stats?.totalUsers ?? 0} Accounts</p>
+                  <h4 className="text-xs font-bold text-zinc-900 group-hover:text-brand-600 transition-colors">{t('admin.dashboard.usersDirectory', 'Users Directory')}</h4>
+                  <p className="text-[10px] text-zinc-500">{t('admin.dashboard.accountsCount', '{{count}} Accounts', { count: stats?.totalUsers ?? 0 })}</p>
                 </div>
               </div>
               <ChevronRight size={14} className="text-zinc-400 group-hover:text-brand-600 transition-colors" />
@@ -802,8 +802,8 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                   <Building2 size={18} />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-zinc-900 group-hover:text-teal-600 transition-colors">Tenants Directory</h4>
-                  <p className="text-[10px] text-zinc-500">{stats?.totalBusinesses ?? 0} Registered</p>
+                  <h4 className="text-xs font-bold text-zinc-900 group-hover:text-teal-600 transition-colors">{t('admin.dashboard.tenantsDirectory', 'Tenants Directory')}</h4>
+                  <p className="text-[10px] text-zinc-500">{t('admin.dashboard.registeredCount', '{{count}} Registered', { count: stats?.totalBusinesses ?? 0 })}</p>
                 </div>
               </div>
               <ChevronRight size={14} className="text-zinc-400 group-hover:text-teal-600 transition-colors" />
@@ -818,8 +818,8 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                   <BarChart3 size={18} />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-zinc-900 group-hover:text-violet-600 transition-colors">Platform Reports</h4>
-                  <p className="text-[10px] text-zinc-500">Growth Analytics</p>
+                  <h4 className="text-xs font-bold text-zinc-900 group-hover:text-violet-600 transition-colors">{t('admin.dashboard.platformReports', 'Platform Reports')}</h4>
+                  <p className="text-[10px] text-zinc-500">{t('admin.dashboard.growthAnalytics', 'Growth Analytics')}</p>
                 </div>
               </div>
               <ChevronRight size={14} className="text-zinc-400 group-hover:text-violet-600 transition-colors" />
@@ -834,8 +834,8 @@ export const AdminDashboardOverviewPage: React.FC = () => {
                   <Sparkles size={18} />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-zinc-900 group-hover:text-amber-600 transition-colors">System Config</h4>
-                  <p className="text-[10px] text-zinc-500">Engine & Settings</p>
+                  <h4 className="text-xs font-bold text-zinc-900 group-hover:text-amber-600 transition-colors">{t('admin.dashboard.systemConfig', 'System Config')}</h4>
+                  <p className="text-[10px] text-zinc-500">{t('admin.dashboard.engineSettings', 'Engine & Settings')}</p>
                 </div>
               </div>
               <ChevronRight size={14} className="text-zinc-400 group-hover:text-amber-600 transition-colors" />

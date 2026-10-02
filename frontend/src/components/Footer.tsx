@@ -45,25 +45,25 @@ export const Footer: React.FC = () => {
               <li>
                 <a href="#features" className="hover:text-cyan-400 transition-colors flex items-center gap-2">
                   <Receipt className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Billing & POS Terminal</span>
+                  <span>{t('footer.billingPos', 'Billing & POS Terminal')}</span>
                 </a>
               </li>
               <li>
                 <a href="#ai-assistant" className="hover:text-cyan-400 transition-colors flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                  <span>AI Business Assistant</span>
+                  <span>{t('footer.aiAssistant', 'AI Business Assistant')}</span>
                 </a>
               </li>
               <li>
                 <a href="#analytics" className="hover:text-cyan-400 transition-colors flex items-center gap-2">
                   <BarChart3 className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Sales & Expense Analytics</span>
+                  <span>{t('footer.salesAnalytics', 'Sales & Expense Analytics')}</span>
                 </a>
               </li>
               <li>
                 <a href="#reviews" className="hover:text-cyan-400 transition-colors flex items-center gap-2">
                   <QrCode className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Reviews (QR Reputation)</span>
+                  <span>{t('footer.reviewsQr', 'Reviews (QR Reputation)')}</span>
                 </a>
               </li>
             </ul>
@@ -101,15 +101,15 @@ export const Footer: React.FC = () => {
             <div className="space-y-2 text-xs text-slate-400 font-medium">
               <div className="flex items-center space-x-2 bg-slate-900 p-2 rounded-xl border border-slate-800">
                 <Zap className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                <span>JWT Auth</span>
+                <span>{t('footer.jwtAuth', 'JWT Auth')}</span>
               </div>
               <div className="flex items-center space-x-2 bg-slate-900 p-2 rounded-xl border border-slate-800">
                 <Database className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                <span>PostgreSQL DB</span>
+                <span>{t('footer.postgresDb', 'PostgreSQL DB')}</span>
               </div>
               <div className="flex items-center space-x-2 bg-slate-900 p-2 rounded-xl border border-slate-800">
                 <Shield className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>Role Protected</span>
+                <span>{t('footer.roleProtected', 'Role Protected')}</span>
               </div>
             </div>
           </div>
@@ -117,9 +117,9 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} BizFlow. Business management platform for managing and growing your business.</p>
+          <p>© {new Date().getFullYear()} BizFlow. {t('footer.bottomTagline', 'Business management platform for managing and growing your business.')}</p>
           <div className="flex items-center space-x-6 text-slate-400">
-            <span>Unified Commerce & POS</span>
+            <span>{t('footer.unifiedCommerce', 'Unified Commerce & POS')}</span>
           </div>
         </div>
       </div>

@@ -1441,7 +1441,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Rahul Sharma"
+                  placeholder={t('placeholders.customerNameExample', 'e.g. Rahul Sharma')}
                   value={reserveCustomerName}
                   onChange={(e) => setReserveCustomerName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-purple-500/20 focus:outline-none"
@@ -1470,7 +1470,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. 7:30 PM Tonight"
+                    placeholder={t('restaurant.tables.timeSlotExample', 'e.g. 7:30 PM Tonight')}
                     value={reserveTime}
                     onChange={(e) => setReserveTime(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-purple-500/20 focus:outline-none"
@@ -1485,7 +1485,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 </label>
                 <textarea
                   rows={2}
-                  placeholder="e.g. Window side preference, birthday celebration, high chair needed..."
+                  placeholder={t('restaurant.tables.specialReqExample', 'e.g. Window side preference, birthday celebration, high chair needed...')}
                   value={reserveNotes}
                   onChange={(e) => setReserveNotes(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-purple-500/20 focus:outline-none"
@@ -1556,7 +1556,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Rahul Sharma"
+                      placeholder={t('placeholders.customerNameExample', 'e.g. Rahul Sharma')}
                       value={parcelCustomerName}
                       onChange={(e) => setParcelCustomerName(e.target.value)}
                       className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
@@ -1584,7 +1584,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     </label>
                     <input
                       type="email"
-                      placeholder="e.g. customer@example.com"
+                      placeholder={t('placeholders.emailExample', 'e.g. customer@example.com')}
                       value={parcelCustomerEmail}
                       onChange={(e) => setParcelCustomerEmail(e.target.value)}
                       className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
@@ -1598,7 +1598,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Flat 102, City Center"
+                      placeholder={t('placeholders.addressExample', 'e.g. Flat 102, City Center')}
                       value={parcelCustomerAddress}
                       onChange={(e) => setParcelCustomerAddress(e.target.value)}
                       className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
@@ -1730,7 +1730,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   disabled={parcelCart.length === 0 || orderLoading}
                   onClick={() => handleCreateParcelOrder(false)}
                   className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold cursor-pointer disabled:opacity-50"
-                  title="Send order to kitchen and collect payment later"
+                  title={t('restaurant.tables.sendKotTitle', 'Send order to kitchen and collect payment later')}
                 >
                   {t('restaurant.tables.sendKotPayLater', 'Send to KOT (Pay Later)')}
                 </button>
@@ -1844,7 +1844,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     <label className="text-[10px] font-semibold text-slate-600">{t('restaurant.tables.nameOpt', 'Name (Optional)')}</label>
                     <input
                       type="text"
-                      placeholder="e.g. Rahul Sharma"
+                      placeholder={t('placeholders.customerNameExample', 'e.g. Rahul Sharma')}
                       value={settleCustomerName}
                       onChange={(e) => setSettleCustomerName(e.target.value)}
                       className="w-full px-2.5 py-1 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
@@ -1864,7 +1864,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     <label className="text-[10px] font-semibold text-slate-600">{t('restaurant.tables.emailOpt', 'Email (Optional)')}</label>
                     <input
                       type="email"
-                      placeholder="customer@example.com"
+                      placeholder={t('placeholders.emailExample', 'customer@example.com')}
                       value={settleCustomerEmail}
                       onChange={(e) => setSettleCustomerEmail(e.target.value)}
                       className="w-full px-2.5 py-1 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
@@ -1874,7 +1874,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     <label className="text-[10px] font-semibold text-slate-600">{t('restaurant.tables.addressOpt', 'Address (Optional)')}</label>
                     <input
                       type="text"
-                      placeholder="e.g. Flat 102, City"
+                      placeholder={t('placeholders.addressExample', 'e.g. Flat 102, City')}
                       value={settleCustomerAddress}
                       onChange={(e) => setSettleCustomerAddress(e.target.value)}
                       className="w-full px-2.5 py-1 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
@@ -2012,7 +2012,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 </div>
                 <div className="flex justify-between font-bold text-slate-900">
                   <span>{receiptData.orderType}</span>
-                  <span className="text-emerald-700">PAID</span>
+                  <span className="text-emerald-700">{t('common.paid', 'PAID')}</span>
                 </div>
                 {receiptData.customerName && <div>{t('restaurant.tables.receiptCustomer', 'Customer: {{name}}', { name: receiptData.customerName })}</div>}
                 {receiptData.customerPhone && <div>{t('restaurant.tables.receiptPhone', 'Phone: {{phone}}', { phone: receiptData.customerPhone })}</div>}
@@ -2105,7 +2105,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. T-1, 101, Bar-2"
+                  placeholder={t('restaurant.tables.tableNumExample', 'e.g. T-1, 101, Bar-2')}
                   value={newTableNum}
                   onChange={(e) => setNewTableNum(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
@@ -2116,7 +2116,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 <label className="font-semibold text-slate-700">{t('restaurant.tables.tableNameOpt', 'Table Display Name')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Window Corner Booth"
+                  placeholder={t('restaurant.tables.tableNameExample', 'e.g. Window Corner Booth')}
                   value={newTableName}
                   onChange={(e) => setNewTableName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
@@ -2140,7 +2140,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('restaurant.tables.floorSection', 'Floor / Section')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. Rooftop, AC Hall, Patio"
+                    placeholder={t('restaurant.tables.sectionExample', 'e.g. Rooftop, AC Hall, Patio')}
                     value={newSection}
                     onChange={(e) => setNewSection(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none"

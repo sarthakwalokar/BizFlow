@@ -357,7 +357,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. iPhone 15 Pro Max 256GB"
+                  placeholder={t('placeholders.electronicsProductExample', 'e.g. iPhone 15 Pro Max 256GB')}
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -369,7 +369,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('electronics.brand', 'Brand')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. Apple, Samsung, Dell"
+                    placeholder={t('placeholders.electronicsBrandExample', 'e.g. Apple, Samsung, Dell')}
                     value={brand}
                     onChange={(e) => setBrand(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -380,7 +380,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('electronics.modelCode', 'Model Name / Code')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. A2849 / SM-S918B"
+                    placeholder={t('placeholders.modelExample', 'e.g. A2849 / SM-S918B')}
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -394,7 +394,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. F2LZW123Q6N"
+                    placeholder={t('placeholders.serialExample', 'e.g. F2LZW123Q6N')}
                     value={serialNumber}
                     onChange={(e) => setSerialNumber(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono text-xs"
@@ -405,7 +405,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('electronics.imeiNumberOpt', 'IMEI Number (Optional)')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. 354890123456789"
+                    placeholder={t('placeholders.imeiExample', 'e.g. 354890123456789')}
                     value={imeiNumber}
                     onChange={(e) => setImeiNumber(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono text-xs"

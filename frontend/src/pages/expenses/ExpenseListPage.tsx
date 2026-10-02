@@ -604,7 +604,7 @@ export const ExpenseListPage: React.FC = () => {
                 <label className="text-xs font-medium text-zinc-700">{t('common.description')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Monthly milk supply / Electrical wiring repair"
+                  placeholder={t('placeholders.expenseDescExample', 'e.g. Monthly milk supply / Electrical wiring repair')}
                   value={formData.description || ''}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-xs focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"

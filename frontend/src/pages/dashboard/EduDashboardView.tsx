@@ -93,7 +93,7 @@ export const EduDashboardView: React.FC = () => {
               {getGreeting()}, {user?.fullName || t('education.educator', 'Educator')}!
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
-              {t('education.dashboardSubtitle', 'Manage student admissions, batch schedules, tuition fee installments, and coaching business insights with ease.')}
+              {t('education.dashboardSubtitle', 'Get a clear view of your daily business performance and stay on top of what matters.')}
             </p>
           </div>
 

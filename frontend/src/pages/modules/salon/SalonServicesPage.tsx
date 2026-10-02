@@ -244,7 +244,7 @@ export const SalonServicesPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Keratin Hair Treatment"
+                  placeholder={t('placeholders.salonServiceExample', 'e.g. Keratin Hair Treatment')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -256,7 +256,7 @@ export const SalonServicesPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('salon.serviceCategory', 'Category')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. Hair, Skin, Nails"
+                    placeholder={t('placeholders.salonCategoryExample', 'e.g. Hair, Skin, Nails')}
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -282,7 +282,7 @@ export const SalonServicesPage: React.FC = () => {
                   type="number"
                   step="0.01"
                   required
-                  placeholder="e.g. 1200.00"
+                  placeholder="0.00"
                   value={price}
                   onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -293,7 +293,7 @@ export const SalonServicesPage: React.FC = () => {
                 <label className="font-semibold text-slate-700">{t('common.description', 'Description')}</label>
                 <textarea
                   rows={2}
-                  placeholder="Treatment details and benefits..."
+                  placeholder={t('placeholders.serviceDetailsExample', 'Treatment details and benefits...')}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"

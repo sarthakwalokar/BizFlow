@@ -927,7 +927,7 @@ export const POSBillingPage: React.FC = () => {
                 </label>
                 <input
                   type="email"
-                  placeholder="rahul@example.com"
+                  placeholder={t('customers.emailPlaceholder', 'name@example.com')}
                   value={newCustEmail}
                   onChange={(e) => setNewCustEmail(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-brand-600 text-xs"
@@ -940,7 +940,7 @@ export const POSBillingPage: React.FC = () => {
                 </label>
                 <textarea
                   rows={2}
-                  placeholder="Street, City, Postal Code"
+                  placeholder={t('customers.addressPlaceholder', 'Street, City, Postal Code')}
                   value={newCustAddress}
                   onChange={(e) => setNewCustAddress(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-brand-600 text-xs resize-none"

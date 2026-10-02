@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { Role } from '../api/auth';
 import { Loader2 } from 'lucide-react';
@@ -10,13 +11,14 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
+  const { t } = useTranslation();
   const { user, isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 space-y-4">
         <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-        <p className="text-sm font-medium">Verifying authorization...</p>
+        <p className="text-sm font-medium">{t('auth.verifyingAuth', 'Verifying authorization...')}</p>
       </div>
     );
   }

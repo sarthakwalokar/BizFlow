@@ -570,7 +570,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Unit Test 1"
+                    placeholder={t('placeholders.examNameExample', 'e.g. Unit Test 1')}
                     value={examForm.examName}
                     onChange={(e) => setExamForm({ ...examForm, examName: e.target.value })}
                     className="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
@@ -581,7 +581,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Mathematics"
+                    placeholder={t('placeholders.subjectExample', 'e.g. Mathematics')}
                     value={examForm.subject}
                     onChange={(e) => setExamForm({ ...examForm, subject: e.target.value })}
                     className="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
@@ -629,7 +629,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
                 <label className="block text-xs font-medium text-slate-300 mb-1">{t('education.remarksFeedback', 'Remarks / Feedback')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Excellent conceptual grasp in calculus"
+                  placeholder={t('placeholders.remarksExample', 'e.g. Excellent conceptual grasp in calculus')}
                   value={examForm.remarks}
                   onChange={(e) => setExamForm({ ...examForm, remarks: e.target.value })}
                   className="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"

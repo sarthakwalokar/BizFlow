@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
+import { LandingSystemHealth } from './components/LandingSystemHealth';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
@@ -266,14 +267,14 @@ const LandingPage: React.FC = () => {
                         <div className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80">
                           <span className="text-[9px] text-slate-400 font-medium block">{t('landing.netMargin', 'Net Margin')}</span>
                           <span className="text-sm sm:text-base font-extrabold text-emerald-400 block mt-0.5">₹34,650</span>
-                          <span className="text-[8px] text-emerald-300 font-semibold">80.8% Profit</span>
+                          <span className="text-[8px] text-emerald-300 font-semibold">{t('landing.profitTag', '80.8% Profit')}</span>
                         </div>
 
                         {/* Reviews */}
                         <div className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80">
                           <span className="text-[9px] text-slate-400 font-medium block">{t('landing.featReviews', 'Reviews')}</span>
                           <span className="text-sm sm:text-base font-extrabold text-amber-400 block mt-0.5">4.9 ★</span>
-                          <span className="text-[8px] text-amber-300 font-semibold">QR Standee</span>
+                          <span className="text-[8px] text-amber-300 font-semibold">{t('landing.qrStandee', 'QR Standee')}</span>
                         </div>
                       </div>
 
@@ -288,15 +289,15 @@ const LandingPage: React.FC = () => {
                           <div className="space-y-1 text-[9px]">
                             <div className="flex items-center justify-between p-1.5 rounded-lg bg-slate-900 border border-slate-800">
                               <div className="truncate">
-                                <span className="font-semibold text-slate-200">INV-1082 • Walk-in</span>
-                                <span className="text-slate-400 block text-[8px]">UPI • 3 items</span>
+                                <span className="font-semibold text-slate-200">{t('landing.demoInv1', 'INV-1082 • Walk-in')}</span>
+                                <span className="text-slate-400 block text-[8px]">{t('landing.demoInv1Sub', 'UPI • 3 items')}</span>
                               </div>
                               <span className="font-bold text-cyan-400">₹1,450</span>
                             </div>
                             <div className="flex items-center justify-between p-1.5 rounded-lg bg-slate-900 border border-slate-800">
                               <div className="truncate">
-                                <span className="font-semibold text-slate-200">INV-1081 • Counter</span>
-                                <span className="text-slate-400 block text-[8px]">Cash • 1 item</span>
+                                <span className="font-semibold text-slate-200">{t('landing.demoInv2', 'INV-1081 • Counter')}</span>
+                                <span className="text-slate-400 block text-[8px]">{t('landing.demoInv2Sub', 'Cash • 1 item')}</span>
                               </div>
                               <span className="font-bold text-cyan-400">₹320</span>
                             </div>
@@ -310,11 +311,11 @@ const LandingPage: React.FC = () => {
                               <Sparkles className="w-3 h-3 text-purple-400" />
                               {t('nav.aiAssistant', 'AI Business Assistant')}
                             </span>
-                            <span className="text-[8px] bg-purple-900/50 text-purple-300 px-1.5 py-0.5 rounded border border-purple-700/50">Grounded</span>
+                            <span className="text-[8px] bg-purple-900/50 text-purple-300 px-1.5 py-0.5 rounded border border-purple-700/50">{t('landing.grounded', 'Grounded')}</span>
                           </div>
                           <div className="bg-slate-900 p-2 rounded-lg border border-slate-800 text-[9px] text-slate-300 space-y-1">
-                            <p className="text-slate-400 italic">"3 items are below minimum stock: Coffee Beans (2 left), Takeaway Cups (10 left)."</p>
-                            <p className="text-emerald-400 font-semibold text-[8px]">💡 Recommendation: Restock before weekend rush.</p>
+                            <p className="text-slate-400 italic">{t('landing.demoAiResponse', '"3 items are below minimum stock: Coffee Beans (2 left), Takeaway Cups (10 left)."')}</p>
+                            <p className="text-emerald-400 font-semibold text-[8px]">{t('landing.demoAiRec', '💡 Recommendation: Restock before weekend rush.')}</p>
                           </div>
                         </div>
                       </div>
@@ -573,13 +574,13 @@ const LandingPage: React.FC = () => {
                         {t('landing.weeklyStoreAnalysis', 'Weekly Store Analysis')}:
                       </div>
                       <p className="text-slate-300">
-                        1. <strong className="text-cyan-400">Espresso Roast 1kg</strong> generated highest margin (₹14,200 net profit, 72% margin).
+                        1. <strong className="text-cyan-400">{t('landing.demoProduct1', 'Espresso Roast 1kg')}</strong> {t('landing.demoProduct1Desc', 'generated highest margin (₹14,200 net profit, 72% margin).')}
                       </p>
                       <p className="text-slate-300">
-                        2. <strong className="text-cyan-400">Cold Brew Bottles</strong> were second (₹9,800 net profit).
+                        2. <strong className="text-cyan-400">{t('landing.demoProduct2', 'Cold Brew Bottles')}</strong> {t('landing.demoProduct2Desc', 'were second (₹9,800 net profit).')}
                       </p>
                       <div className="p-2 rounded-lg bg-amber-950/40 border border-amber-800/60 text-amber-300 text-[11px]">
-                        ⚠️ <strong>Restock Alert:</strong> Oat Milk 1L is down to 3 units (Min threshold: 10). Reorder recommended today.
+                        ⚠️ <strong>{t('landing.restockAlert', 'Restock Alert')}:</strong> {t('landing.restockAlertDesc', 'Oat Milk 1L is down to 3 units (Min threshold: 10). Reorder recommended today.')}
                       </div>
                     </div>
                   </div>
@@ -587,8 +588,8 @@ const LandingPage: React.FC = () => {
 
                 {/* Sample Prompt Chips */}
                 <div className="pt-2 border-t border-slate-800 flex flex-wrap gap-2 text-[10px] text-slate-400">
-                  <span className="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700">"Show today's gross vs net margin"</span>
-                  <span className="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700">"Summarize logged expenses"</span>
+                  <span className="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700">"{t('landing.demoPrompt1', "Show today's gross vs net margin")}"</span>
+                  <span className="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700">"{t('landing.demoPrompt2', 'Summarize logged expenses')}"</span>
                 </div>
 
               </div>
@@ -657,16 +658,16 @@ const LandingPage: React.FC = () => {
                     {t('landing.tenderPaymentChannels', 'Tender & Payment Channels')}
                   </h3>
                   <span className="text-[10px] text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full font-semibold">
-                    Multi-tender
+                    {t('landing.multiTender', 'Multi-tender')}
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Instant breakdown across payment modes for simplified daily cash-drawer and bank reconciliation.
+                  {t('landing.multiTenderDesc', 'Instant breakdown across payment modes for simplified daily cash-drawer and bank reconciliation.')}
                 </p>
                 <div className="space-y-2 pt-2 text-xs">
                   <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
                     <div className="flex justify-between text-slate-700">
-                      <span>UPI & QR Payments</span>
+                      <span>{t('landing.upiAndQr', 'UPI & QR Payments')}</span>
                       <span className="font-bold text-cyan-700">62% (₹1,14,390)</span>
                     </div>
                     <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
@@ -675,7 +676,7 @@ const LandingPage: React.FC = () => {
                   </div>
                   <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
                     <div className="flex justify-between text-slate-700">
-                      <span>Cash Register</span>
+                      <span>{t('landing.cashRegister', 'Cash Register')}</span>
                       <span className="font-bold text-emerald-700">26% (₹47,970)</span>
                     </div>
                     <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
@@ -684,7 +685,7 @@ const LandingPage: React.FC = () => {
                   </div>
                   <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
                     <div className="flex justify-between text-slate-700">
-                      <span>Card POS</span>
+                      <span>{t('landing.cardPos', 'Card POS')}</span>
                       <span className="font-bold text-blue-700">12% (₹22,140)</span>
                     </div>
                     <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
@@ -702,23 +703,23 @@ const LandingPage: React.FC = () => {
                     {t('landing.overheadCategorization', 'Overhead Categorization')}
                   </h3>
                   <span className="text-[10px] text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full font-semibold">
-                    Categorized
+                    {t('landing.categorized', 'Categorized')}
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Identify cost leakages across utilities, inventory inwards, store rent, and staff compensation.
+                  {t('landing.categorizedDesc', 'Identify cost leakages across utilities, inventory inwards, store rent, and staff compensation.')}
                 </p>
                 <div className="space-y-2 pt-2 text-xs">
                   <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                    <span className="text-slate-600">Inventory Restock</span>
+                    <span className="text-slate-600">{t('landing.inventoryRestock', 'Inventory Restock')}</span>
                     <span className="font-bold text-slate-900">₹22,400</span>
                   </div>
                   <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                    <span className="text-slate-600">Rent & Utilities</span>
+                    <span className="text-slate-600">{t('landing.rentAndUtilities', 'Rent & Utilities')}</span>
                     <span className="font-bold text-slate-900">₹11,000</span>
                   </div>
                   <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                    <span className="text-slate-600">Store Supplies & Misc</span>
+                    <span className="text-slate-600">{t('landing.storeSuppliesMisc', 'Store Supplies & Misc')}</span>
                     <span className="font-bold text-slate-900">₹4,800</span>
                   </div>
                 </div>
@@ -896,6 +897,11 @@ const LandingPage: React.FC = () => {
             </div>
           </div>
         </section>
+
+        {/* =========================================================================
+            7. COMPACT SYSTEM HEALTH & LIVE AVAILABILITY SECTION
+           ========================================================================= */}
+        <LandingSystemHealth />
 
       </main>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { 
   Building, 
@@ -12,6 +13,7 @@ import {
 } from 'lucide-react';
 
 export const StaffDashboard: React.FC = () => {
+  const { t } = useTranslation();
   const { user, business, logout } = useAuth();
 
   return (
@@ -27,19 +29,21 @@ export const StaffDashboard: React.FC = () => {
             />
             <div className="border-l border-slate-800 pl-3">
               <div className="flex items-center space-x-2">
-                <span className="text-base font-bold text-white tracking-tight">{business?.name || 'Assigned Business'}</span>
+                <span className="text-base font-bold text-white tracking-tight">{business?.name || t('staff.assignedBusiness', 'Assigned Business')}</span>
                 <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 uppercase">
                   {business?.businessType || 'RETAIL'}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">Staff Portal • Logged in as <span className="text-slate-200 font-medium">{user?.fullName}</span></p>
+              <p className="text-[11px] text-slate-400">
+                {t('staff.portalNotice', 'Staff Portal • Logged in as')} <span className="text-slate-200 font-medium">{user?.fullName}</span>
+              </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-3">
             <div className="hidden sm:flex items-center space-x-1.5 px-3 py-1 text-xs font-semibold rounded-lg bg-brand-950 text-brand-300 border border-brand-800">
               <UserCheck className="w-3.5 h-3.5 text-brand-400" />
-              <span>STAFF Role</span>
+              <span>{t('staff.roleStaff', 'STAFF Role')}</span>
             </div>
 
             <button
@@ -48,7 +52,7 @@ export const StaffDashboard: React.FC = () => {
               className="inline-flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 transition-colors cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5 text-rose-400" />
-              <span>Log out</span>
+              <span>{t('nav.logout', 'Log out')}</span>
             </button>
           </div>
         </div>
@@ -61,9 +65,9 @@ export const StaffDashboard: React.FC = () => {
         <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700 flex items-start space-x-3 text-xs text-slate-300">
           <ShieldAlert className="w-5 h-5 text-brand-400 flex-shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <p className="font-semibold text-white">Operational Staff Workspace</p>
+            <p className="font-semibold text-white">{t('staff.workspaceTitle', 'Operational Staff Workspace')}</p>
             <p className="text-slate-400">
-              You are signed in as a staff operator for <strong>{business?.name}</strong>. You have operational permissions for POS checkouts and daily tasks.
+              {t('staff.workspaceNotice', 'You are signed in as a staff operator for')} <strong>{business?.name}</strong>. {t('staff.workspacePermissions', 'You have operational permissions for POS checkouts and daily tasks.')}
             </p>
           </div>
         </div>
@@ -77,11 +81,11 @@ export const StaffDashboard: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">{business?.name}</h3>
-                <p className="text-xs text-slate-400">Assigned Commercial Tenant Establishment</p>
+                <p className="text-xs text-slate-400">{t('staff.assignedTenant', 'Assigned Commercial Tenant Establishment')}</p>
               </div>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
-              TENANT ACTIVE
+              {t('staff.tenantActive', 'TENANT ACTIVE')}
             </span>
           </div>
 
@@ -89,31 +93,31 @@ export const StaffDashboard: React.FC = () => {
             <div className="flex items-start space-x-3">
               <MapPin className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold text-slate-400 block mb-0.5">Location Address</span>
-                <span>{business?.address || 'No address specified'}</span>
+                <span className="font-semibold text-slate-400 block mb-0.5">{t('staff.locationAddress', 'Location Address')}</span>
+                <span>{business?.address || t('staff.noAddress', 'No address specified')}</span>
               </div>
             </div>
 
             <div className="flex items-start space-x-3">
               <Phone className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold text-slate-400 block mb-0.5">Store Phone</span>
-                <span>{business?.phone || 'No phone specified'}</span>
+                <span className="font-semibold text-slate-400 block mb-0.5">{t('staff.storePhone', 'Store Phone')}</span>
+                <span>{business?.phone || t('staff.noPhone', 'No phone specified')}</span>
               </div>
             </div>
 
             <div className="flex items-start space-x-3">
               <Mail className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold text-slate-400 block mb-0.5">Store Contact</span>
-                <span>{business?.email || 'No email specified'}</span>
+                <span className="font-semibold text-slate-400 block mb-0.5">{t('staff.storeContact', 'Store Contact')}</span>
+                <span>{business?.email || t('staff.noEmail', 'No email specified')}</span>
               </div>
             </div>
 
             <div className="flex items-start space-x-3">
               <DollarSign className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold text-slate-400 block mb-0.5">Operational Currency</span>
+                <span className="font-semibold text-slate-400 block mb-0.5">{t('staff.operationalCurrency', 'Operational Currency')}</span>
                 <span>{business?.currency || 'USD'}</span>
               </div>
             </div>
@@ -121,7 +125,7 @@ export const StaffDashboard: React.FC = () => {
             <div className="flex items-start space-x-3">
               <UserCheck className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold text-slate-400 block mb-0.5">My Staff Account</span>
+                <span className="font-semibold text-slate-400 block mb-0.5">{t('staff.myAccount', 'My Staff Account')}</span>
                 <span>{user?.fullName} ({user?.email})</span>
               </div>
             </div>

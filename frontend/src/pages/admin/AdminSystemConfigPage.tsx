@@ -126,9 +126,9 @@ export const AdminSystemConfigPage: React.FC = () => {
             {/* Self Registration Toggle */}
             <div className="flex items-center justify-between p-3.5 rounded-lg bg-zinc-50 border border-zinc-200">
               <div>
-                <span className="text-xs font-semibold text-zinc-900 block">Tenant Self-Registration</span>
+                <span className="text-xs font-semibold text-zinc-900 block">{t('admin.config.selfRegistration', 'Tenant Self-Registration')}</span>
                 <p className="text-[11px] text-zinc-500">
-                  Allow new business owners to register accounts directly via the public website
+                  {t('admin.config.selfRegistrationDesc', 'Allow new business owners to register accounts directly via the public website')}
                 </p>
               </div>
 
@@ -146,9 +146,9 @@ export const AdminSystemConfigPage: React.FC = () => {
             {/* Maintenance Mode Toggle */}
             <div className="flex items-center justify-between p-3.5 rounded-lg bg-zinc-50 border border-zinc-200">
               <div>
-                <span className="text-xs font-semibold text-zinc-900 block">Platform Maintenance Mode</span>
+                <span className="text-xs font-semibold text-zinc-900 block">{t('admin.config.maintenanceMode', 'Platform Maintenance Mode')}</span>
                 <p className="text-[11px] text-zinc-500">
-                  Pause non-admin transactions and restrict access during backend updates
+                  {t('admin.config.maintenanceModeDesc', 'Pause non-admin transactions and restrict access during backend updates')}
                 </p>
               </div>
 
@@ -169,12 +169,12 @@ export const AdminSystemConfigPage: React.FC = () => {
         <div className="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs space-y-4">
           <div className="flex items-center gap-2.5 border-b border-zinc-100 pb-3">
             <Globe size={16} className="text-zinc-600" />
-            <h3 className="text-sm font-semibold text-zinc-900">{t('settings.currencyAndRegional')}</h3>
+            <h3 className="text-sm font-semibold text-zinc-900">{t('settings.currencyAndRegional', 'Currency & Regional Configuration')}</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-zinc-700">{t('settings.operatingCurrency')}</label>
+              <label className="block text-xs font-medium text-zinc-700">{t('settings.operatingCurrency', 'Operating Currency')}</label>
               <input
                 type="text"
                 value={defaultCurrency}
@@ -185,7 +185,7 @@ export const AdminSystemConfigPage: React.FC = () => {
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-zinc-700">{t('settings.systemTimezone')}</label>
+              <label className="block text-xs font-medium text-zinc-700">{t('settings.systemTimezone', 'System Timezone')}</label>
               <input
                 type="text"
                 value={defaultTimezone}
@@ -196,7 +196,7 @@ export const AdminSystemConfigPage: React.FC = () => {
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-zinc-700">Session Expiry (Minutes)</label>
+              <label className="block text-xs font-medium text-zinc-700">{t('admin.config.sessionExpiry', 'Session Expiry (Minutes)')}</label>
               <input
                 type="number"
                 value={sessionTimeoutMinutes}
@@ -213,33 +213,33 @@ export const AdminSystemConfigPage: React.FC = () => {
         <div className="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs space-y-3">
           <div className="flex items-center gap-2.5 border-b border-zinc-100 pb-3">
             <Zap size={16} className="text-amber-500" />
-            <h3 className="text-sm font-semibold text-zinc-900">{t('ai.title')}</h3>
+            <h3 className="text-sm font-semibold text-zinc-900">{t('ai.title', 'AI Business Assistant')}</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1">
-              <span className="text-zinc-400 text-[10px] block">{t('ai.activeProvider')}</span>
+              <span className="text-zinc-400 text-[10px] block">{t('ai.activeProvider', 'Active AI Provider')}</span>
               <span className="font-semibold text-brand-700">
                 {config?.activeAiProvider || 'BizFlow Intelligent Advisor'}
               </span>
             </div>
 
             <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1">
-              <span className="text-zinc-400 text-[10px] block">{t('health.environment')}</span>
+              <span className="text-zinc-400 text-[10px] block">{t('health.environment', 'Environment')}</span>
               <span className="font-semibold text-zinc-900">{config?.environment || 'Spring Boot 3.3.4 (Dev)'}</span>
             </div>
 
             <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1">
-              <span className="text-zinc-400 text-[10px] block">{t('admin.maintenance')}</span>
+              <span className="text-zinc-400 text-[10px] block">{t('admin.config.aiRoutingFallback', 'AI Routing & Fallbacks')}</span>
               <span className="text-zinc-700">
                 {config?.availableAiProviders?.join(' → ') || 'BizFlow AI Engine (Primary) → Rule Engine'}
               </span>
             </div>
 
             <div className="p-3.5 rounded-lg bg-zinc-50 border border-zinc-200 space-y-1">
-              <span className="text-zinc-400 text-[10px] block">Server Synchronized Time</span>
+              <span className="text-zinc-400 text-[10px] block">{t('admin.config.serverSyncTime', 'Server Synchronized Time')}</span>
               <span className="font-mono text-zinc-700">
-                {config?.serverTime ? new Date(config.serverTime).toUTCString() : 'Syncing...'}
+                {config?.serverTime ? new Date(config.serverTime).toUTCString() : t('common.syncing', 'Syncing...')}
               </span>
             </div>
           </div>

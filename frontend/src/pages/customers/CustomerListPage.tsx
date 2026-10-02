@@ -535,7 +535,7 @@ export const CustomerListPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Rahul Sharma"
+                  placeholder={t('placeholders.customerNameExample', 'e.g. Rahul Sharma')}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600"
@@ -557,7 +557,7 @@ export const CustomerListPage: React.FC = () => {
                 <label className="text-xs font-bold text-zinc-700">{t('common.email')}</label>
                 <input
                   type="email"
-                  placeholder="rahul@example.com"
+                  placeholder={t('placeholders.emailExample', 'rahul@example.com')}
                   value={formData.email || ''}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600"
@@ -568,7 +568,7 @@ export const CustomerListPage: React.FC = () => {
                 <label className="text-xs font-bold text-zinc-700">{t('common.address')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Sector 4, HSR Layout"
+                  placeholder={t('placeholders.addressExample', 'e.g. Sector 4, HSR Layout')}
                   value={formData.address || ''}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600"
@@ -579,7 +579,7 @@ export const CustomerListPage: React.FC = () => {
                 <label className="text-xs font-bold text-zinc-700">{t('common.notes')}</label>
                 <textarea
                   rows={2}
-                  placeholder="Preferences, notes, loyalty tier, etc."
+                  placeholder={t('placeholders.customerNotesExample', 'Preferences, notes, loyalty tier, etc.')}
                   value={formData.notes || ''}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:ring-1 focus:ring-brand-600 resize-none"

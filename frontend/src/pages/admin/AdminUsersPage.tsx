@@ -124,21 +124,21 @@ export const AdminUsersPage: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-50 text-brand-700 border border-brand-200">
             <ShieldAlert size={11} />
-            <span>ADMIN</span>
+            <span>{t('admin.roleAdmin', 'ADMIN')}</span>
           </span>
         );
       case 'OWNER':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
             <Briefcase size={11} />
-            <span>OWNER</span>
+            <span>{t('admin.roleOwner', 'OWNER')}</span>
           </span>
         );
       case 'STAFF':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-zinc-100 text-zinc-700 border border-zinc-200">
             <UserCheck size={11} />
-            <span>STAFF</span>
+            <span>{t('admin.roleStaff', 'STAFF')}</span>
           </span>
         );
     }
@@ -158,13 +158,13 @@ export const AdminUsersPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">User Accounts Management</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">{t('admin.users.title', 'User Accounts Management')}</h1>
             <span className="px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-bold border border-brand-200">
-              {totalElements} Total Users
+              {t('admin.users.totalCount', '{{count}} Total Users', { count: totalElements })}
             </span>
           </div>
           <p className="text-xs sm:text-sm text-zinc-500 mt-0.5">
-            Manage all platform owners, staff members, and system administrators across registered businesses.
+            {t('admin.users.subtitle', 'Manage all platform owners, staff members, and system administrators across registered businesses.')}
           </p>
         </div>
 
@@ -183,7 +183,7 @@ export const AdminUsersPage: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <AlertCircle size={18} className="text-rose-600 shrink-0" />
             <div>
-              <p className="font-bold text-rose-900">Unable to load users data</p>
+              <p className="font-bold text-rose-900">{t('admin.users.errorTitle', 'Unable to load users data')}</p>
               <p className="text-rose-700 text-[11px]">{error}</p>
             </div>
           </div>
@@ -191,7 +191,7 @@ export const AdminUsersPage: React.FC = () => {
             onClick={fetchUsers}
             className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer self-start sm:self-auto shrink-0 shadow-xs"
           >
-            Retry
+            {t('common.retry', 'Retry')}
           </button>
         </div>
       )}
@@ -206,7 +206,7 @@ export const AdminUsersPage: React.FC = () => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, email, phone, or business..."
+              placeholder={t('admin.users.searchPlaceholder', 'Search by name, email, phone, or business...')}
               className="w-full pl-9 pr-3 py-2 rounded-xl bg-zinc-50 border border-zinc-200 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all"
             />
           </div>
@@ -222,10 +222,10 @@ export const AdminUsersPage: React.FC = () => {
               }}
               className="bg-transparent text-xs font-bold text-zinc-800 focus:outline-none cursor-pointer"
             >
-              <option value="ALL">All Roles</option>
-              <option value="OWNER">Store Owners</option>
-              <option value="STAFF">Store Staff</option>
-              <option value="ADMIN">Platform Admins</option>
+              <option value="ALL">{t('admin.users.allRoles', 'All Roles')}</option>
+              <option value="OWNER">{t('admin.users.storeOwners', 'Store Owners')}</option>
+              <option value="STAFF">{t('admin.users.storeStaff', 'Store Staff')}</option>
+              <option value="ADMIN">{t('admin.users.platformAdmins', 'Platform Admins')}</option>
             </select>
           </div>
 
@@ -240,9 +240,9 @@ export const AdminUsersPage: React.FC = () => {
               }}
               className="bg-transparent text-xs font-bold text-zinc-800 focus:outline-none cursor-pointer"
             >
-              <option value="ALL">All Status</option>
-              <option value="ENABLED">Active Only</option>
-              <option value="DISABLED">Disabled Only</option>
+              <option value="ALL">{t('admin.users.allStatus', 'All Status')}</option>
+              <option value="ENABLED">{t('admin.users.activeOnly', 'Active Only')}</option>
+              <option value="DISABLED">{t('admin.users.disabledOnly', 'Disabled Only')}</option>
             </select>
           </div>
 
@@ -261,13 +261,13 @@ export const AdminUsersPage: React.FC = () => {
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-bold uppercase tracking-wider text-[10px]">
-                <th className="px-5 py-3.5">User Profile</th>
-                <th className="px-4 py-3.5">Role</th>
-                <th className="px-4 py-3.5">Associated Business</th>
-                <th className="px-4 py-3.5">Contact</th>
-                <th className="px-4 py-3.5">Registered</th>
-                <th className="px-4 py-3.5 text-center">Status</th>
-                <th className="px-4 py-3.5 text-right">Actions</th>
+                <th className="px-5 py-3.5">{t('admin.users.colUserProfile', 'User Profile')}</th>
+                <th className="px-4 py-3.5">{t('admin.users.colRole', 'Role')}</th>
+                <th className="px-4 py-3.5">{t('admin.users.colAssocBusiness', 'Associated Business')}</th>
+                <th className="px-4 py-3.5">{t('admin.users.colContact', 'Contact')}</th>
+                <th className="px-4 py-3.5">{t('admin.users.colRegistered', 'Registered')}</th>
+                <th className="px-4 py-3.5 text-center">{t('admin.users.colStatus', 'Status')}</th>
+                <th className="px-4 py-3.5 text-right">{t('admin.users.colActions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
@@ -281,8 +281,8 @@ export const AdminUsersPage: React.FC = () => {
                 <tr>
                   <td colSpan={7} className="px-4 py-14 text-center text-zinc-400 space-y-2">
                     <Users size={32} className="mx-auto text-zinc-300 mb-2" />
-                    <p className="font-bold text-zinc-800 text-sm">No users matched your criteria</p>
-                    <p className="text-xs text-zinc-400">Try adjusting your search keywords or role filters.</p>
+                    <p className="font-bold text-zinc-800 text-sm">{t('admin.users.noMatchTitle', 'No users matched your criteria')}</p>
+                    <p className="text-xs text-zinc-400">{t('admin.users.noMatchSubtitle', 'Try adjusting your search keywords or role filters.')}</p>
                   </td>
                 </tr>
               ) : (
@@ -304,11 +304,11 @@ export const AdminUsersPage: React.FC = () => {
                               <span className="font-bold text-zinc-900 text-xs">{usr.fullName}</span>
                               {isSelf && (
                                 <span className="px-1.5 py-0.2 rounded bg-brand-50 text-brand-700 text-[9px] font-bold border border-brand-200">
-                                  You
+                                  {t('common.you', 'You')}
                                 </span>
                               )}
                             </div>
-                            <span className="text-[11px] text-zinc-400 font-mono">User ID #{usr.id}</span>
+                            <span className="text-[11px] text-zinc-400 font-mono">{t('admin.users.userIdLabel', 'User ID')} #{usr.id}</span>
                           </div>
                         </div>
                       </td>
@@ -325,11 +325,11 @@ export const AdminUsersPage: React.FC = () => {
                           >
                             <Building2 size={13} className="text-zinc-400 shrink-0" />
                             <span className="font-bold text-xs truncate max-w-[180px]">
-                              {usr.businessName || `Tenant #${usr.businessId}`}
+                              {usr.businessName || `${t('admin.businesses.tenantLabel', 'Tenant')} #${usr.businessId}`}
                             </span>
                           </Link>
                         ) : (
-                          <span className="text-zinc-400 italic text-[11px]">Platform Wide</span>
+                          <span className="text-zinc-400 italic text-[11px]">{t('admin.users.platformWide', 'Platform Wide')}</span>
                         )}
                       </td>
 
@@ -356,7 +356,7 @@ export const AdminUsersPage: React.FC = () => {
                           }`}
                         >
                           {usr.enabled ? <CheckCircle2 size={11} /> : <XCircle size={11} />}
-                          <span>{usr.enabled ? 'Active' : 'Disabled'}</span>
+                          <span>{usr.enabled ? t('common.active', 'Active') : t('common.disabled', 'Disabled')}</span>
                         </span>
                       </td>
 
@@ -367,7 +367,7 @@ export const AdminUsersPage: React.FC = () => {
                           <button
                             onClick={() => setSelectedUser(usr)}
                             className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
-                            title="View Full User Details"
+                            title={t('admin.users.viewDetailsTooltip', 'View Full User Details')}
                           >
                             <Eye size={15} />
                           </button>
@@ -378,10 +378,10 @@ export const AdminUsersPage: React.FC = () => {
                             disabled={isUpdating || isSelf || (isAdmin && usr.enabled)}
                             title={
                               isSelf
-                                ? 'Cannot disable your own account'
+                                ? t('admin.users.cannotDisableSelf', 'Cannot disable your own account')
                                 : isAdmin
-                                ? 'Platform Admin accounts cannot be disabled'
-                                : usr.enabled ? 'Deactivate user' : 'Activate user'
+                                ? t('admin.users.adminCannotDisable', 'Platform Admin accounts cannot be disabled')
+                                : usr.enabled ? t('admin.users.deactivateUserTooltip', 'Deactivate user') : t('admin.users.activateUserTooltip', 'Activate user')
                             }
                             className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
                               usr.enabled
@@ -392,9 +392,9 @@ export const AdminUsersPage: React.FC = () => {
                             {isUpdating ? (
                               <RefreshCw size={12} className="animate-spin" />
                             ) : usr.enabled ? (
-                              'Deactivate'
+                              t('common.deactivate', 'Deactivate')
                             ) : (
-                              'Activate'
+                              t('common.activate', 'Activate')
                             )}
                           </button>
                         </div>
@@ -411,7 +411,11 @@ export const AdminUsersPage: React.FC = () => {
         {totalPages > 1 && (
           <div className="px-5 py-3.5 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
             <span>
-              Showing Page {page + 1} of {totalPages} ({totalElements} total registered users)
+              {t('admin.users.paginationSummary', 'Showing Page {{currentPage}} of {{totalPages}} ({{total}} total registered users)', {
+                currentPage: page + 1,
+                totalPages: totalPages,
+                total: totalElements
+              })}
             </span>
 
             <div className="flex items-center gap-2">
@@ -421,14 +425,14 @@ export const AdminUsersPage: React.FC = () => {
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 disabled:opacity-40 font-bold cursor-pointer transition-colors"
               >
                 <ChevronLeft size={14} />
-                <span>Previous</span>
+                <span>{t('common.previous', 'Previous')}</span>
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
                 disabled={page >= totalPages - 1}
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 disabled:opacity-40 font-bold cursor-pointer transition-colors"
               >
-                <span>Next</span>
+                <span>{t('common.next', 'Next')}</span>
                 <ChevronRight size={14} />
               </button>
             </div>
@@ -450,7 +454,7 @@ export const AdminUsersPage: React.FC = () => {
                   <h3 className="text-base font-bold text-zinc-900">{selectedUser.fullName}</h3>
                   <div className="flex items-center gap-2 mt-0.5">
                     {getRoleBadge(selectedUser.role)}
-                    <span className="text-[10px] text-zinc-400 font-mono">User #{selectedUser.id}</span>
+                    <span className="text-[10px] text-zinc-400 font-mono">{t('admin.users.userIdLabel', 'User')} #{selectedUser.id}</span>
                   </div>
                 </div>
               </div>
@@ -468,46 +472,46 @@ export const AdminUsersPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-1">
                   <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                    <Mail size={11} /> Email Address
+                    <Mail size={11} /> {t('admin.users.emailAddressLabel', 'Email Address')}
                   </span>
                   <p className="font-bold text-zinc-900 truncate">{selectedUser.email}</p>
                 </div>
 
                 <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-1">
                   <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                    <Phone size={11} /> Contact Phone
+                    <Phone size={11} /> {t('admin.users.contactPhoneLabel', 'Contact Phone')}
                   </span>
-                  <p className="font-bold text-zinc-900 font-mono">{selectedUser.phone || 'Not Provided'}</p>
+                  <p className="font-bold text-zinc-900 font-mono">{selectedUser.phone || t('common.notProvided', 'Not Provided')}</p>
                 </div>
               </div>
 
               <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2">
                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                  <Building2 size={11} /> Associated Tenant Business
+                  <Building2 size={11} /> {t('admin.users.assocTenantBusinessLabel', 'Associated Tenant Business')}
                 </span>
                 {selectedUser.businessId ? (
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-bold text-zinc-900 text-sm">{selectedUser.businessName || `Business #${selectedUser.businessId}`}</p>
-                      <span className="text-[10px] text-zinc-400 font-mono">Tenant ID: {selectedUser.businessId}</span>
+                      <p className="font-bold text-zinc-900 text-sm">{selectedUser.businessName || `${t('admin.businesses.tenantLabel', 'Business')} #${selectedUser.businessId}`}</p>
+                      <span className="text-[10px] text-zinc-400 font-mono">{t('admin.businesses.tenantIdLabel', 'Tenant ID')}: {selectedUser.businessId}</span>
                     </div>
                     <Link
                       to={`/admin/businesses?search=${encodeURIComponent(selectedUser.businessName || '')}`}
                       className="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-brand-600 font-bold text-xs hover:bg-brand-50 flex items-center gap-1"
                     >
-                      <span>View Tenant</span>
+                      <span>{t('admin.users.viewTenantBtn', 'View Tenant')}</span>
                       <ExternalLink size={12} />
                     </Link>
                   </div>
                 ) : (
-                  <p className="text-zinc-500 italic">Platform-level administrator account (no tenant binding).</p>
+                  <p className="text-zinc-500 italic">{t('admin.users.platformLevelAdminDesc', 'Platform-level administrator account (no tenant binding).')}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-[11px]">
                 <div className="space-y-1">
                   <span className="text-zinc-400 font-medium flex items-center gap-1">
-                    <Calendar size={12} /> Account Created
+                    <Calendar size={12} /> {t('admin.users.accountCreatedLabel', 'Account Created')}
                   </span>
                   <p className="font-bold text-zinc-800 font-mono">
                     {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '—'}
@@ -516,11 +520,11 @@ export const AdminUsersPage: React.FC = () => {
 
                 <div className="space-y-1">
                   <span className="text-zinc-400 font-medium flex items-center gap-1">
-                    <Clock size={12} /> Account Status
+                    <Clock size={12} /> {t('admin.users.accountStatusLabel', 'Account Status')}
                   </span>
                   <p className={`font-bold flex items-center gap-1 ${selectedUser.enabled ? 'text-emerald-600' : 'text-rose-600'}`}>
                     {selectedUser.enabled ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                    <span>{selectedUser.enabled ? 'Active / Permitted' : 'Disabled / Suspended'}</span>
+                    <span>{selectedUser.enabled ? t('admin.users.statusActivePermitted', 'Active / Permitted') : t('admin.users.statusDisabledSuspended', 'Disabled / Suspended')}</span>
                   </p>
                 </div>
               </div>
@@ -528,7 +532,7 @@ export const AdminUsersPage: React.FC = () => {
               {selectedUser.permissions && (
                 <div className="pt-2 border-t border-zinc-100">
                   <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1.5">
-                    Granted Permissions
+                    {t('admin.users.grantedPermissionsLabel', 'Granted Permissions')}
                   </span>
                   <div className="p-2.5 rounded-lg bg-zinc-100/70 font-mono text-[11px] text-zinc-700">
                     {selectedUser.permissions}
@@ -550,14 +554,14 @@ export const AdminUsersPage: React.FC = () => {
                     : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
                 }`}
               >
-                {selectedUser.enabled ? 'Deactivate Account' : 'Activate Account'}
+                {selectedUser.enabled ? t('admin.users.deactivateAccountBtn', 'Deactivate Account') : t('admin.users.activateAccountBtn', 'Activate Account')}
               </button>
 
               <button
                 onClick={() => setSelectedUser(null)}
                 className="px-4 py-1.5 rounded-xl bg-zinc-200 hover:bg-zinc-300 text-zinc-800 text-xs font-bold cursor-pointer transition-colors"
               >
-                Close
+                {t('common.close', 'Close')}
               </button>
             </div>
           </div>
@@ -576,18 +580,16 @@ export const AdminUsersPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-zinc-900">
-                  {confirmUser.enabled ? 'Deactivate User Account' : 'Activate User Account'}
+                  {confirmUser.enabled ? t('admin.users.deactivateUserTitle', 'Deactivate User Account') : t('admin.users.activateUserTitle', 'Activate User Account')}
                 </h3>
-                <p className="text-xs text-zinc-500 font-medium">Please confirm this action</p>
+                <p className="text-xs text-zinc-500 font-medium">{t('admin.users.confirmAction', 'Please confirm this action')}</p>
               </div>
             </div>
 
             <p className="text-xs text-zinc-600 leading-relaxed">
-              Are you sure you want to <strong>{confirmUser.enabled ? 'deactivate' : 'activate'}</strong> account for{' '}
-              <span className="font-bold text-zinc-900">{confirmUser.fullName}</span> ({confirmUser.email})?
               {confirmUser.enabled
-                ? ' The user will immediately lose access to the POS, portal, and API endpoints.'
-                : ' The user will immediately be permitted to sign in.'}
+                ? t('admin.users.deactivateConfirmMsg', 'Are you sure you want to deactivate account for "{{name}}" ({{email}})? The user will immediately lose access to the POS, portal, and API endpoints.', { name: confirmUser.fullName, email: confirmUser.email })
+                : t('admin.users.activateConfirmMsg', 'Are you sure you want to activate account for "{{name}}" ({{email}})? The user will immediately be permitted to sign in.', { name: confirmUser.fullName, email: confirmUser.email })}
             </p>
 
             <div className="flex items-center justify-end gap-2.5 pt-2">
@@ -595,7 +597,7 @@ export const AdminUsersPage: React.FC = () => {
                 onClick={() => setConfirmUser(null)}
                 className="px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold cursor-pointer transition-colors"
               >
-                Cancel
+                {t('common.cancel', 'Cancel')}
               </button>
 
               <button
@@ -606,7 +608,7 @@ export const AdminUsersPage: React.FC = () => {
                 }`}
               >
                 {updatingId ? <RefreshCw size={13} className="animate-spin" /> : null}
-                <span>Confirm {confirmUser.enabled ? 'Deactivation' : 'Activation'}</span>
+                <span>{confirmUser.enabled ? t('admin.users.confirmDeactivation', 'Confirm Deactivation') : t('admin.users.confirmActivation', 'Confirm Activation')}</span>
               </button>
             </div>
           </div>

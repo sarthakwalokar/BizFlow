@@ -207,7 +207,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              {st}
+              {t(`salon.status_${st.toLowerCase()}`, st)}
             </button>
           ))}
         </div>
@@ -294,7 +294,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                             : 'bg-amber-50 text-amber-700 border border-amber-200'
                         }`}
                       >
-                        {appt.status}
+                        {t(`salon.status_${appt.status.toLowerCase()}`, appt.status)}
                       </span>
                     </td>
 
@@ -345,7 +345,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                 <label className="font-semibold text-slate-700">{t('salon.clientNameOpt', 'Client Name (Optional)')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Ananya Sen (or Walk-in Guest)"
+                  placeholder={t('placeholders.customerNameExample', 'e.g. Ananya Sen (or Walk-in Guest)')}
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -356,7 +356,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                 <label className="font-semibold text-slate-700">{t('salon.clientPhoneOpt', 'Client Phone Number (Optional)')}</label>
                 <input
                   type="tel"
-                  placeholder="e.g. 9876543210 (Optional)"
+                  placeholder={t('placeholders.phoneOptionalExample', 'e.g. 9876543210 (Optional)')}
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -385,7 +385,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('salon.timeSlot', 'Time Slot')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. 02:30 PM"
+                    placeholder="02:30 PM"
                     value={apptTime}
                     onChange={(e) => setApptTime(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -396,7 +396,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                   <label className="font-semibold text-slate-700">{t('salon.assignedStylist', 'Assigned Stylist')}</label>
                   <input
                     type="text"
-                    placeholder="e.g. Maya Sharma"
+                    placeholder={t('placeholders.technicianExample', 'e.g. Maya Sharma')}
                     value={staffName}
                     onChange={(e) => setStaffName(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -408,7 +408,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                 <label className="font-semibold text-slate-700">{t('salon.clientNotes', 'Client Preferences / Notes')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Organic hair spa treatment"
+                  placeholder={t('placeholders.serviceDetailsExample', 'e.g. Organic hair spa treatment')}
                   value={apptNotes}
                   onChange={(e) => setApptNotes(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"

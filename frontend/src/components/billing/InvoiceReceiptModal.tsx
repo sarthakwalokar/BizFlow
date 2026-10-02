@@ -83,7 +83,7 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
                 ? 'bg-brand-600 text-white shadow-xs'
                 : 'text-zinc-400 hover:text-white'
                 }`}
-              title="80mm Thermal Receipt format"
+              title={t('receipt.thermalFormatTooltip', '80mm Thermal Receipt format')}
             >
               <Receipt size={13} />
               <span className="hidden sm:inline">{t('receipt.thermalReceipt', 'Receipt (80mm)')}</span>
@@ -96,7 +96,7 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
                 ? 'bg-brand-600 text-white shadow-xs'
                 : 'text-zinc-400 hover:text-white'
                 }`}
-              title="Standard Full A4 Tax Invoice format"
+              title={t('receipt.a4FormatTooltip', 'Standard Full A4 Tax Invoice format')}
             >
               <FileText size={13} />
               <span className="hidden sm:inline">{t('receipt.fullPageA4', 'Full Page (A4)')}</span>
@@ -183,7 +183,7 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
                       </div>
                       {order.customer.phone && (
                         <div className="flex justify-between text-zinc-500 text-[9px]">
-                          <span>Tel:</span>
+                          <span>{t('common.phone', 'Tel')}:</span>
                           <span className="font-mono text-zinc-800">{order.customer.phone}</span>
                         </div>
                       )}

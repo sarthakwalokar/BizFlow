@@ -52,17 +52,23 @@ public class RepairService {
 
         BigDecimal estCost = request.getTotalEstimatedCost() != null ? request.getTotalEstimatedCost() : BigDecimal.ZERO;
 
+        String cName = request.getCustomerName() != null && !request.getCustomerName().trim().isEmpty() ? request.getCustomerName().trim() : "Walk-in Customer";
+        String cPhone = request.getCustomerPhone() != null && !request.getCustomerPhone().trim().isEmpty() ? request.getCustomerPhone().trim() : null;
+        String cEmail = request.getCustomerEmail() != null && !request.getCustomerEmail().trim().isEmpty() ? request.getCustomerEmail().trim() : null;
+        String cAddress = request.getCustomerAddress() != null && !request.getCustomerAddress().trim().isEmpty() ? request.getCustomerAddress().trim() : null;
+
         RepairJobCard job = RepairJobCard.builder()
                 .business(business)
                 .jobCardNumber(jobNum)
-                .customerName(request.getCustomerName().trim())
-                .customerPhone(request.getCustomerPhone().trim())
-                .customerEmail(request.getCustomerEmail())
-                .itemType(request.getItemType() != null ? request.getItemType().trim() : "General Device")
+                .customerName(cName)
+                .customerPhone(cPhone)
+                .customerEmail(cEmail)
+                .customerAddress(cAddress)
+                .itemType(request.getItemType() != null && !request.getItemType().trim().isEmpty() ? request.getItemType().trim() : "General Device")
                 .brand(request.getBrand() != null ? request.getBrand().trim() : "")
                 .model(request.getModel() != null ? request.getModel().trim() : "")
                 .serialOrImei(request.getSerialOrImei())
-                .problemDescription(request.getProblemDescription().trim())
+                .problemDescription(request.getProblemDescription() != null && !request.getProblemDescription().trim().isEmpty() ? request.getProblemDescription().trim() : "General Repair & Service")
                 .diagnosticNotes(request.getDiagnosticNotes())
                 .workPerformed("")
                 .partsCost(BigDecimal.ZERO)
@@ -134,6 +140,7 @@ public class RepairService {
                 .customerName(job.getCustomerName())
                 .customerPhone(job.getCustomerPhone())
                 .customerEmail(job.getCustomerEmail())
+                .customerAddress(job.getCustomerAddress())
                 .itemType(job.getItemType())
                 .brand(job.getBrand())
                 .model(job.getModel())

@@ -33,7 +33,7 @@ public class EduStudent extends BaseEntity {
     @Column(name = "email", length = 150)
     private String email;
 
-    @Column(name = "phone", nullable = false, length = 50)
+    @Column(name = "phone", length = 50)
     private String phone;
 
     @Column(name = "parent_name", length = 150)

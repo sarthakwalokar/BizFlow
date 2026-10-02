@@ -113,6 +113,8 @@ public class RestaurantService {
                 .orderType(request.getOrderType() != null ? request.getOrderType() : "DINE_IN")
                 .customerName(request.getCustomerName())
                 .customerPhone(request.getCustomerPhone())
+                .customerEmail(request.getCustomerEmail())
+                .customerAddress(request.getCustomerAddress())
                 .status("ORDERED")
                 .totalAmount(BigDecimal.ZERO)
                 .notes(request.getNotes())
@@ -360,6 +362,20 @@ public class RestaurantService {
         if (table.getActiveOrderId() != null) {
             orderRepository.findById(table.getActiveOrderId()).ifPresent(ord -> {
                 ord.setStatus("COMPLETED");
+                if (request != null) {
+                    if (request.getCustomerName() != null && !request.getCustomerName().trim().isEmpty()) {
+                        ord.setCustomerName(request.getCustomerName().trim());
+                    }
+                    if (request.getCustomerPhone() != null && !request.getCustomerPhone().trim().isEmpty()) {
+                        ord.setCustomerPhone(request.getCustomerPhone().trim());
+                    }
+                    if (request.getCustomerEmail() != null && !request.getCustomerEmail().trim().isEmpty()) {
+                        ord.setCustomerEmail(request.getCustomerEmail().trim());
+                    }
+                    if (request.getCustomerAddress() != null && !request.getCustomerAddress().trim().isEmpty()) {
+                        ord.setCustomerAddress(request.getCustomerAddress().trim());
+                    }
+                }
                 String method = (request != null && request.getPaymentMethod() != null) ? request.getPaymentMethod() : "CASH";
                 String notes = request != null ? request.getNotes() : null;
                 if (ord.getCoreOrderId() == null) {
@@ -388,6 +404,20 @@ public class RestaurantService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         order.setStatus("COMPLETED");
+        if (request != null) {
+            if (request.getCustomerName() != null && !request.getCustomerName().trim().isEmpty()) {
+                order.setCustomerName(request.getCustomerName().trim());
+            }
+            if (request.getCustomerPhone() != null && !request.getCustomerPhone().trim().isEmpty()) {
+                order.setCustomerPhone(request.getCustomerPhone().trim());
+            }
+            if (request.getCustomerEmail() != null && !request.getCustomerEmail().trim().isEmpty()) {
+                order.setCustomerEmail(request.getCustomerEmail().trim());
+            }
+            if (request.getCustomerAddress() != null && !request.getCustomerAddress().trim().isEmpty()) {
+                order.setCustomerAddress(request.getCustomerAddress().trim());
+            }
+        }
         String method = (request != null && request.getPaymentMethod() != null) ? request.getPaymentMethod() : "CASH";
         String notes = request != null ? request.getNotes() : null;
         if (order.getCoreOrderId() == null) {
@@ -427,17 +457,37 @@ public class RestaurantService {
         Customer customer = null;
         String custPhone = (restOrder.getCustomerPhone() != null && !restOrder.getCustomerPhone().trim().isEmpty()) ? restOrder.getCustomerPhone().trim() : null;
         String custName = (restOrder.getCustomerName() != null && !restOrder.getCustomerName().trim().isEmpty()) ? restOrder.getCustomerName().trim() : null;
+        String custEmail = (restOrder.getCustomerEmail() != null && !restOrder.getCustomerEmail().trim().isEmpty()) ? restOrder.getCustomerEmail().trim() : null;
+        String custAddress = (restOrder.getCustomerAddress() != null && !restOrder.getCustomerAddress().trim().isEmpty()) ? restOrder.getCustomerAddress().trim() : null;
 
         if (custPhone != null) {
             customer = customerRepository.findByBusinessIdAndPhone(business.getId(), custPhone).orElse(null);
         }
-        if (customer == null && (custName != null || custPhone != null)) {
+        if (customer == null && custEmail != null) {
+            customer = customerRepository.findByBusinessIdAndEmail(business.getId(), custEmail).orElse(null);
+        }
+        if (customer == null && (custName != null || custPhone != null || custEmail != null || custAddress != null)) {
             customer = Customer.builder()
                     .business(business)
                     .name(custName != null ? custName : ("Customer " + (custPhone != null ? custPhone : "")))
                     .phone(custPhone)
+                    .email(custEmail)
+                    .address(custAddress)
                     .build();
             customer = customerRepository.save(customer);
+        } else if (customer != null) {
+            boolean updated = false;
+            if ((customer.getAddress() == null || customer.getAddress().trim().isEmpty()) && custAddress != null) {
+                customer.setAddress(custAddress);
+                updated = true;
+            }
+            if ((customer.getEmail() == null || customer.getEmail().trim().isEmpty()) && custEmail != null) {
+                customer.setEmail(custEmail);
+                updated = true;
+            }
+            if (updated) {
+                customer = customerRepository.save(customer);
+            }
         }
 
         String creatorName = "Restaurant POS";
@@ -546,6 +596,8 @@ public class RestaurantService {
                 .orderType(order.getOrderType())
                 .customerName(order.getCustomerName())
                 .customerPhone(order.getCustomerPhone())
+                .customerEmail(order.getCustomerEmail())
+                .customerAddress(order.getCustomerAddress())
                 .status(order.getStatus())
                 .totalAmount(order.getTotalAmount())
                 .notes(order.getNotes())

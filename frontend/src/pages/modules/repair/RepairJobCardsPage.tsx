@@ -29,6 +29,7 @@ export const RepairJobCardsPage: React.FC = () => {
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
+  const [customerAddress, setCustomerAddress] = useState('');
   const [itemType, setItemType] = useState('Smartphone');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
@@ -72,14 +73,15 @@ export const RepairJobCardsPage: React.FC = () => {
 
   const handleCreateJobCard = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName.trim() || !customerPhone.trim() || !problemDescription.trim()) return;
+    if (!problemDescription.trim()) return;
 
     try {
       await repairApi.createJobCard({
-        customerName: customerName.trim(),
-        customerPhone: customerPhone.trim(),
+        customerName: customerName.trim() || 'Walk-in Customer',
+        customerPhone: customerPhone.trim() || undefined,
         customerEmail: customerEmail.trim() || undefined,
-        itemType: itemType.trim(),
+        customerAddress: customerAddress.trim() || undefined,
+        itemType: itemType.trim() || 'Device',
         brand: brand.trim(),
         model: model.trim(),
         serialOrImei: serialOrImei.trim() || undefined,
@@ -137,6 +139,7 @@ export const RepairJobCardsPage: React.FC = () => {
     setCustomerName('');
     setCustomerPhone('');
     setCustomerEmail('');
+    setCustomerAddress('');
     setItemType('Smartphone');
     setBrand('');
     setModel('');
@@ -375,10 +378,9 @@ export const RepairJobCardsPage: React.FC = () => {
             <form onSubmit={handleCreateJobCard} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Customer Name *</label>
+                  <label className="font-semibold text-slate-700">Customer Name (Optional)</label>
                   <input
                     type="text"
-                    required
                     placeholder="e.g. Vikram Joshi"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
@@ -387,13 +389,36 @@ export const RepairJobCardsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Customer Phone *</label>
+                  <label className="font-semibold text-slate-700">Customer Phone (Optional)</label>
                   <input
                     type="tel"
-                    required
                     placeholder="e.g. 9812345678"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-700">Customer Email (Optional)</label>
+                  <input
+                    type="email"
+                    placeholder="e.g. customer@example.com"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-700">Customer Address (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 45 Park Avenue, City"
+                    value={customerAddress}
+                    onChange={(e) => setCustomerAddress(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
                   />
                 </div>

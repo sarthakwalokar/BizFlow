@@ -17,6 +17,10 @@ export interface OrderItemRequest {
 
 export interface CreateOrderRequest {
   customerId?: number;
+  customerName?: string;
+  customerPhone?: string;
+  customerEmail?: string;
+  customerAddress?: string;
   items: OrderItemRequest[];
   discount?: number;
   isPercentageDiscount?: boolean;

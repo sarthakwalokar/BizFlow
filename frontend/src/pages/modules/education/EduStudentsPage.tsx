@@ -83,14 +83,14 @@ export const EduStudentsPage: React.FC = () => {
 
   const handleCreateStudent = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !studentIdNum.trim() || !phone.trim()) return;
+    if (!fullName.trim() || !studentIdNum.trim()) return;
 
     try {
       await educationApi.createStudent({
         fullName: fullName.trim(),
         studentIdNumber: studentIdNum.trim(),
         email: email.trim() || undefined,
-        phone: phone.trim(),
+        phone: phone.trim() || undefined,
         parentName: parentName.trim() || undefined,
         parentPhone: parentPhone.trim() || undefined,
         address: address.trim() || undefined,
@@ -111,7 +111,7 @@ export const EduStudentsPage: React.FC = () => {
     setEditFullName(stu.fullName);
     setEditStudentIdNum(stu.studentIdNumber);
     setEditEmail(stu.email || '');
-    setEditPhone(stu.phone);
+    setEditPhone(stu.phone || '');
     setEditParentName(stu.parentName || '');
     setEditParentPhone(stu.parentPhone || '');
     setEditAddress(stu.address || '');
@@ -122,14 +122,14 @@ export const EduStudentsPage: React.FC = () => {
 
   const handleUpdateStudent = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingStudent || !editFullName.trim() || !editStudentIdNum.trim() || !editPhone.trim()) return;
+    if (!editingStudent || !editFullName.trim() || !editStudentIdNum.trim()) return;
 
     try {
       await educationApi.updateStudent(editingStudent.id, {
         fullName: editFullName.trim(),
         studentIdNumber: editStudentIdNum.trim(),
         email: editEmail.trim() || undefined,
-        phone: editPhone.trim(),
+        phone: editPhone.trim() || undefined,
         parentName: editParentName.trim() || undefined,
         parentPhone: editParentPhone.trim() || undefined,
         address: editAddress.trim() || undefined,
@@ -488,11 +488,10 @@ export const EduStudentsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Student Phone *</label>
+                  <label className="font-semibold text-slate-700">Student Phone (Optional)</label>
                   <input
                     type="tel"
-                    required
-                    placeholder="e.g. 9876543210"
+                    placeholder="e.g. 9876543210 (Optional)"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
@@ -638,10 +637,10 @@ export const EduStudentsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Student Phone *</label>
+                  <label className="font-semibold text-slate-700">Student Phone (Optional)</label>
                   <input
                     type="tel"
-                    required
+                    placeholder="e.g. 9876543210 (Optional)"
                     value={editPhone}
                     onChange={(e) => setEditPhone(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"

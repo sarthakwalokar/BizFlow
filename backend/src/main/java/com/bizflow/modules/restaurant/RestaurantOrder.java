@@ -42,6 +42,12 @@ public class RestaurantOrder extends BaseEntity {
     @Column(name = "customer_phone", length = 50)
     private String customerPhone;
 
+    @Column(name = "customer_email", length = 150)
+    private String customerEmail;
+
+    @Column(name = "customer_address", columnDefinition = "TEXT")
+    private String customerAddress;
+
     @Column(name = "status", nullable = false, length = 30)
     private String status; // ORDERED, PREPARING, READY, SERVED, COMPLETED, CANCELLED
 

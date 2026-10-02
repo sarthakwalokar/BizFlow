@@ -176,9 +176,22 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
                     </span>
                   </div>
                   {order.customer && (
-                    <div className="flex justify-between">
-                      <span className="text-zinc-500">{t('receipt.customer', 'Customer')}:</span>
-                      <span className="font-bold text-zinc-900">{order.customer.name}</span>
+                    <div className="pt-1 border-t border-dashed border-zinc-200 space-y-0.5">
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">{t('receipt.customer', 'Customer')}:</span>
+                        <span className="font-bold text-zinc-900">{order.customer.name}</span>
+                      </div>
+                      {order.customer.phone && (
+                        <div className="flex justify-between text-zinc-500 text-[9px]">
+                          <span>Tel:</span>
+                          <span className="font-mono text-zinc-800">{order.customer.phone}</span>
+                        </div>
+                      )}
+                      {order.customer.address && (
+                        <div className="text-[9px] text-zinc-500 line-clamp-2 pt-0.5">
+                          {order.customer.address}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -322,6 +335,9 @@ export const InvoiceReceiptModal: React.FC<InvoiceReceiptModalProps> = ({
                         )}
                         {order.customer.email && (
                           <p className="text-xs text-zinc-600">{order.customer.email}</p>
+                        )}
+                        {order.customer.address && (
+                          <p className="text-xs text-zinc-600 whitespace-pre-line pt-0.5">{order.customer.address}</p>
                         )}
                       </div>
                     ) : (

@@ -31,6 +31,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
+  const [customerAddress, setCustomerAddress] = useState('');
   const [invoiceNumber, setInvoiceNumber] = useState('');
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
   const [warrantyMonths, setWarrantyMonths] = useState(12);
@@ -81,6 +82,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
         customerName: customerName.trim() || undefined,
         customerPhone: customerPhone.trim() || undefined,
         customerEmail: customerEmail.trim() || undefined,
+        customerAddress: customerAddress.trim() || undefined,
         invoiceNumber: invoiceNumber.trim() || undefined,
         purchaseDate,
         warrantyMonths: Number(warrantyMonths),
@@ -116,6 +118,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
     setCustomerName('');
     setCustomerPhone('');
     setCustomerEmail('');
+    setCustomerAddress('');
     setInvoiceNumber('');
     setPurchaseDate(new Date().toISOString().split('T')[0]);
     setWarrantyMonths(12);
@@ -434,22 +437,39 @@ export const ElectronicsSerialsPage: React.FC = () => {
 
               <div className="pt-2 border-t border-slate-100 space-y-2">
                 <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px] block">
-                  Customer Ownership Link
+                  Customer Ownership Link (Optional)
                 </span>
 
                 <div className="grid grid-cols-2 gap-3">
                   <input
                     type="text"
-                    placeholder="Customer Name"
+                    placeholder="Customer Name (Optional)"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
                   />
                   <input
                     type="tel"
-                    placeholder="Customer Phone"
+                    placeholder="Customer Phone (Optional)"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="email"
+                    placeholder="Customer Email (Optional)"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Customer Address (Optional)"
+                    value={customerAddress}
+                    onChange={(e) => setCustomerAddress(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
                   />
                 </div>

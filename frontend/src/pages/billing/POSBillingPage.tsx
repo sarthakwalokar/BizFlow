@@ -73,6 +73,7 @@ export const POSBillingPage: React.FC = () => {
   const [newCustName, setNewCustName] = useState('');
   const [newCustPhone, setNewCustPhone] = useState('');
   const [newCustEmail, setNewCustEmail] = useState('');
+  const [newCustAddress, setNewCustAddress] = useState('');
   const [creatingCustomer, setCreatingCustomer] = useState(false);
 
   // Processing & Modal state
@@ -297,6 +298,7 @@ export const POSBillingPage: React.FC = () => {
         name: newCustName,
         phone: newCustPhone || undefined,
         email: newCustEmail || undefined,
+        address: newCustAddress || undefined,
       });
 
       setSelectedCustomer(newCust);
@@ -304,6 +306,7 @@ export const POSBillingPage: React.FC = () => {
       setNewCustName('');
       setNewCustPhone('');
       setNewCustEmail('');
+      setNewCustAddress('');
       setSuccessToast(`${t('customers.customerSaved', 'Customer saved!')} "${newCust.name}"`);
     } catch (err: any) {
       setErrorMessage(
@@ -569,7 +572,7 @@ export const POSBillingPage: React.FC = () => {
                   <Search size={14} className="absolute left-3 top-2.5 text-zinc-400" />
                   <input
                     type="text"
-                    placeholder={t('billing.customerName', 'Search Customer (Name/Phone)...')}
+                    placeholder={t('billing.customerName', 'Attach Customer (Optional)...')}
                     value={customerSearch}
                     onChange={(e) => setCustomerSearch(e.target.value)}
                     className="w-full pl-8 pr-3 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
@@ -928,6 +931,19 @@ export const POSBillingPage: React.FC = () => {
                   value={newCustEmail}
                   onChange={(e) => setNewCustEmail(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-brand-600 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-700">
+                  {t('customers.address', 'Billing / Delivery Address')}
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Street, City, Postal Code"
+                  value={newCustAddress}
+                  onChange={(e) => setNewCustAddress(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-brand-600 text-xs resize-none"
                 />
               </div>
 

@@ -21,6 +21,7 @@ public class RepairDtos {
         private String customerName;
         private String customerPhone;
         private String customerEmail;
+        private String customerAddress;
         private String itemType;
         private String brand;
         private String model;
@@ -49,6 +50,7 @@ public class RepairDtos {
         private String customerName;
         private String customerPhone;
         private String customerEmail;
+        private String customerAddress;
         private String itemType;
         private String brand;
         private String model;

@@ -25,6 +25,7 @@ public class ElectronicsDtos {
         private String customerName;
         private String customerPhone;
         private String customerEmail;
+        private String customerAddress;
         private String invoiceNumber;
         private LocalDate purchaseDate;
         private Integer warrantyMonths;
@@ -50,6 +51,7 @@ public class ElectronicsDtos {
         private String customerName;
         private String customerPhone;
         private String customerEmail;
+        private String customerAddress;
         private String invoiceNumber;
         private String purchaseDate; // YYYY-MM-DD
         private Integer warrantyMonths;

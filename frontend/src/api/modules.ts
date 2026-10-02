@@ -38,6 +38,8 @@ export interface RestaurantOrder {
   orderType: 'DINE_IN' | 'TAKEAWAY';
   customerName?: string;
   customerPhone?: string;
+  customerEmail?: string;
+  customerAddress?: string;
   status: 'ORDERED' | 'PREPARING' | 'READY' | 'SERVED' | 'COMPLETED' | 'CANCELLED';
   totalAmount: number;
   notes?: string;
@@ -92,6 +94,8 @@ export const restaurantApi = {
     orderType: string;
     customerName?: string;
     customerPhone?: string;
+    customerEmail?: string;
+    customerAddress?: string;
     notes?: string;
     items: { productId?: number; itemName: string; quantity: number; unitPrice: number; notes?: string }[];
   }): Promise<RestaurantOrder> => {
@@ -118,14 +122,14 @@ export const restaurantApi = {
   },
   settleTableBill: async (
     tableId: number,
-    payload?: { paymentMethod?: string; amountPaid?: number; notes?: string }
+    payload?: { paymentMethod?: string; amountPaid?: number; notes?: string; customerName?: string; customerPhone?: string; customerEmail?: string; customerAddress?: string }
   ): Promise<RestaurantTable> => {
     const res = await apiClient.post(`/restaurant/tables/${tableId}/settle-bill`, payload || {});
     return res.data.data;
   },
   settleOrder: async (
     orderId: number,
-    payload?: { paymentMethod?: string; amountPaid?: number; notes?: string }
+    payload?: { paymentMethod?: string; amountPaid?: number; notes?: string; customerName?: string; customerPhone?: string; customerEmail?: string; customerAddress?: string }
   ): Promise<RestaurantOrder> => {
     const res = await apiClient.post(`/restaurant/orders/${orderId}/settle`, payload || {});
     return res.data.data;
@@ -220,6 +224,7 @@ export interface DeviceSerialItem {
   customerName?: string;
   customerPhone?: string;
   customerEmail?: string;
+  customerAddress?: string;
   invoiceNumber?: string;
   purchaseDate: string;
   warrantyMonths: number;
@@ -262,9 +267,10 @@ export const electronicsApi = {
 export interface RepairJobCard {
   id: number;
   jobCardNumber: string;
-  customerName: string;
-  customerPhone: string;
+  customerName?: string;
+  customerPhone?: string;
   customerEmail?: string;
+  customerAddress?: string;
   itemType: string;
   brand?: string;
   model?: string;
@@ -341,7 +347,7 @@ export interface EduStudent {
   fullName: string;
   studentIdNumber: string;
   email?: string;
-  phone: string;
+  phone?: string;
   parentName?: string;
   parentPhone?: string;
   address?: string;

@@ -19,6 +19,10 @@ import java.util.List;
 public class CreateOrderRequest {
 
     private Long customerId;
+    private String customerName;
+    private String customerPhone;
+    private String customerEmail;
+    private String customerAddress;
 
     @NotEmpty(message = "Order must have at least one item")
     @Valid

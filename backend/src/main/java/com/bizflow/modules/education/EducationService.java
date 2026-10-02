@@ -196,9 +196,9 @@ public class EducationService {
 
         EduStudent student = EduStudent.builder()
                 .business(business)
-                .fullName(request.getFullName().trim())
+                .fullName(request.getFullName() != null && !request.getFullName().trim().isEmpty() ? request.getFullName().trim() : ("Student " + rollNum))
                 .studentIdNumber(rollNum)
-                .email(request.getEmail() != null ? request.getEmail().trim() : null)
+                .email(request.getEmail() != null && !request.getEmail().trim().isEmpty() ? request.getEmail().trim() : null)
                 .phone(request.getPhone() != null ? request.getPhone().trim() : "")
                 .parentName(request.getParentName() != null ? request.getParentName().trim() : null)
                 .parentPhone(request.getParentPhone() != null ? request.getParentPhone().trim() : null)

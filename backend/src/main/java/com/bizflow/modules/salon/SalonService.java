@@ -116,7 +116,7 @@ public class SalonService {
         SalonAppointment appointment = SalonAppointment.builder()
                 .business(business)
                 .customer(customer)
-                .customerName(request.getCustomerName() != null ? request.getCustomerName().trim() : (customer != null ? customer.getName() : "Guest"))
+                .customerName(request.getCustomerName() != null && !request.getCustomerName().trim().isEmpty() ? request.getCustomerName().trim() : (customer != null ? customer.getName() : "Walk-in Guest"))
                 .customerPhone(request.getCustomerPhone() != null ? request.getCustomerPhone().trim() : (customer != null ? customer.getPhone() : ""))
                 .service(serviceItem)
                 .serviceName(request.getServiceName() != null ? request.getServiceName() : (serviceItem != null ? serviceItem.getName() : "Custom Service"))

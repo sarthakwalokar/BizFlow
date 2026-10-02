@@ -71,12 +71,12 @@ export const SalonAppointmentsPage: React.FC = () => {
 
   const handleCreateAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName.trim() || !selectedServiceId) return;
+    if (!selectedServiceId) return;
 
     const serv = services.find((s) => s.id === Number(selectedServiceId));
     try {
       await salonApi.createAppointment({
-        customerName: customerName.trim(),
+        customerName: customerName.trim() || 'Walk-in Guest',
         customerPhone: customerPhone.trim() || undefined,
         serviceId: serv?.id,
         serviceName: serv?.name || 'Hair & Beauty Care',
@@ -340,11 +340,10 @@ export const SalonAppointmentsPage: React.FC = () => {
 
             <form onSubmit={handleCreateAppointment} className="space-y-3.5 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Client Name *</label>
+                <label className="font-semibold text-slate-700">Client Name (Optional)</label>
                 <input
                   type="text"
-                  required
-                  placeholder="e.g. Ananya Sen"
+                  placeholder="e.g. Ananya Sen (or Walk-in Guest)"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -352,10 +351,10 @@ export const SalonAppointmentsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Client Phone Number</label>
+                <label className="font-semibold text-slate-700">Client Phone Number (Optional)</label>
                 <input
                   type="tel"
-                  placeholder="e.g. 9876543210"
+                  placeholder="e.g. 9876543210 (Optional)"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"

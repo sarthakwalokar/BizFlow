@@ -67,7 +67,7 @@ export const EduReportsView: React.FC = () => {
     const matchesSearch =
       s.fullName.toLowerCase().includes(search.toLowerCase()) ||
       s.studentIdNumber.toLowerCase().includes(search.toLowerCase()) ||
-      s.phone.includes(search) ||
+      (s.phone && s.phone.includes(search)) ||
       (s.parentPhone && s.parentPhone.includes(search));
     const matchesBatch = selectedBatchId === 'ALL' || s.currentBatchId === Number(selectedBatchId);
     const matchesStatus = selectedStatus === 'ALL' || s.status === selectedStatus;
@@ -117,7 +117,7 @@ export const EduReportsView: React.FC = () => {
       const rows = filteredStudents.map((s) => [
         `"${s.studentIdNumber}"`,
         `"${s.fullName}"`,
-        `"${s.phone}"`,
+        `"${s.phone || ''}"`,
         `"${s.email || ''}"`,
         `"${s.parentName || ''}"`,
         `"${s.parentPhone || ''}"`,

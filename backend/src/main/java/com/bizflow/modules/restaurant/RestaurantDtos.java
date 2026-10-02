@@ -68,6 +68,8 @@ public class RestaurantDtos {
         private String orderType;
         private String customerName;
         private String customerPhone;
+        private String customerEmail;
+        private String customerAddress;
         private String status;
         private BigDecimal totalAmount;
         private String notes;
@@ -85,6 +87,10 @@ public class RestaurantDtos {
         private String paymentMethod;
         private BigDecimal amountPaid;
         private String notes;
+        private String customerName;
+        private String customerPhone;
+        private String customerEmail;
+        private String customerAddress;
     }
 
     @Data
@@ -110,6 +116,8 @@ public class RestaurantDtos {
         private String orderType; // DINE_IN, TAKEAWAY
         private String customerName;
         private String customerPhone;
+        private String customerEmail;
+        private String customerAddress;
         private String notes;
         private List<CreateOrderItemRequest> items;
     }

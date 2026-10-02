@@ -53,6 +53,9 @@ public class DeviceSerialItem extends BaseEntity {
     @Column(name = "customer_email", length = 150)
     private String customerEmail;
 
+    @Column(name = "customer_address", columnDefinition = "TEXT")
+    private String customerAddress;
+
     @Column(name = "invoice_number", length = 100)
     private String invoiceNumber;
 

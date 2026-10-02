@@ -29,14 +29,17 @@ public class RepairJobCard extends BaseEntity {
     @Column(name = "job_card_number", nullable = false, length = 100)
     private String jobCardNumber;
 
-    @Column(name = "customer_name", nullable = false, length = 150)
+    @Column(name = "customer_name", length = 150)
     private String customerName;
 
-    @Column(name = "customer_phone", nullable = false, length = 50)
+    @Column(name = "customer_phone", length = 50)
     private String customerPhone;
 
     @Column(name = "customer_email", length = 150)
     private String customerEmail;
+
+    @Column(name = "customer_address", columnDefinition = "TEXT")
+    private String customerAddress;
 
     @Column(name = "item_type", nullable = false, length = 100)
     private String itemType;

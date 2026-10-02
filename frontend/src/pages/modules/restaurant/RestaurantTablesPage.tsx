@@ -25,6 +25,8 @@ import {
   Banknote,
   User as UserIcon,
   Phone,
+  Mail,
+  MapPin,
   ChefHat,
   Calendar,
   Clock,
@@ -81,6 +83,8 @@ export const RestaurantTablesPage: React.FC = () => {
   const [showParcelModal, setShowParcelModal] = useState(false);
   const [parcelCustomerName, setParcelCustomerName] = useState('');
   const [parcelCustomerPhone, setParcelCustomerPhone] = useState('');
+  const [parcelCustomerEmail, setParcelCustomerEmail] = useState('');
+  const [parcelCustomerAddress, setParcelCustomerAddress] = useState('');
   const [parcelNotes, setParcelNotes] = useState('');
   const [parcelCart, setParcelCart] = useState<
     { productId: number; itemName: string; quantity: number; unitPrice: number; notes: string }[]
@@ -98,12 +102,20 @@ export const RestaurantTablesPage: React.FC = () => {
     orderNumber?: string;
     customerName?: string;
     customerPhone?: string;
+    customerEmail?: string;
+    customerAddress?: string;
     items: RestaurantOrderItem[];
     subtotal: number;
     taxRate: number;
     taxAmount: number;
     grandTotal: number;
   } | null>(null);
+
+  const [settleCustomerName, setSettleCustomerName] = useState('');
+  const [settleCustomerPhone, setSettleCustomerPhone] = useState('');
+  const [settleCustomerEmail, setSettleCustomerEmail] = useState('');
+  const [settleCustomerAddress, setSettleCustomerAddress] = useState('');
+  const [showSettleCustomerForm, setShowSettleCustomerForm] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'UPI' | 'CARD'>('CASH');
   const [cashTendered, setCashTendered] = useState<string>('');
@@ -117,6 +129,8 @@ export const RestaurantTablesPage: React.FC = () => {
     tableName?: string;
     customerName?: string;
     customerPhone?: string;
+    customerEmail?: string;
+    customerAddress?: string;
     items: RestaurantOrderItem[];
     subtotal: number;
     taxAmount: number;
@@ -419,8 +433,10 @@ export const RestaurantTablesPage: React.FC = () => {
       setOrderLoading(true);
       const created = await restaurantApi.createOrder({
         orderType: 'TAKEAWAY',
-        customerName: parcelCustomerName.trim() || 'Parcel Guest',
+        customerName: parcelCustomerName.trim() || undefined,
         customerPhone: parcelCustomerPhone.trim() || undefined,
+        customerEmail: parcelCustomerEmail.trim() || undefined,
+        customerAddress: parcelCustomerAddress.trim() || undefined,
         notes: parcelNotes.trim() || undefined,
         items: parcelCart,
       });
@@ -429,6 +445,8 @@ export const RestaurantTablesPage: React.FC = () => {
       setParcelCart([]);
       setParcelCustomerName('');
       setParcelCustomerPhone('');
+      setParcelCustomerEmail('');
+      setParcelCustomerAddress('');
       setParcelNotes('');
 
       if (payImmediately) {
@@ -437,12 +455,20 @@ export const RestaurantTablesPage: React.FC = () => {
         const taxAmount = (subtotal * taxRate) / 100;
         const grandTotal = subtotal + taxAmount;
 
+        setSettleCustomerName(created.customerName || '');
+        setSettleCustomerPhone(created.customerPhone || '');
+        setSettleCustomerEmail(created.customerEmail || '');
+        setSettleCustomerAddress(created.customerAddress || '');
+        setShowSettleCustomerForm(false);
+
         setSettlementTarget({
           type: 'TAKEAWAY',
           orderId: created.id,
           orderNumber: created.orderNumber,
           customerName: created.customerName,
           customerPhone: created.customerPhone,
+          customerEmail: created.customerEmail,
+          customerAddress: created.customerAddress,
           items: created.items || [],
           subtotal,
           taxRate,
@@ -470,14 +496,27 @@ export const RestaurantTablesPage: React.FC = () => {
     const taxAmount = (subtotal * taxRate) / 100;
     const grandTotal = subtotal + taxAmount;
 
+    const cName = tableOrder.customerName || selectedTable.reservationCustomerName || '';
+    const cPhone = tableOrder.customerPhone || selectedTable.reservationCustomerPhone || '';
+    const cEmail = tableOrder.customerEmail || '';
+    const cAddress = tableOrder.customerAddress || '';
+
+    setSettleCustomerName(cName);
+    setSettleCustomerPhone(cPhone);
+    setSettleCustomerEmail(cEmail);
+    setSettleCustomerAddress(cAddress);
+    setShowSettleCustomerForm(Boolean(cName || cPhone));
+
     setSettlementTarget({
       type: 'DINE_IN',
       tableId: selectedTable.id,
       tableName: selectedTable.name || `Table ${selectedTable.tableNumber}`,
       orderId: tableOrder.id,
       orderNumber: tableOrder.orderNumber,
-      customerName: tableOrder.customerName || selectedTable.reservationCustomerName,
-      customerPhone: tableOrder.customerPhone || selectedTable.reservationCustomerPhone,
+      customerName: cName,
+      customerPhone: cPhone,
+      customerEmail: cEmail,
+      customerAddress: cAddress,
       items: tableOrder.items || [],
       subtotal,
       taxRate,
@@ -495,12 +534,20 @@ export const RestaurantTablesPage: React.FC = () => {
     const taxAmount = (subtotal * taxRate) / 100;
     const grandTotal = subtotal + taxAmount;
 
+    setSettleCustomerName(order.customerName || '');
+    setSettleCustomerPhone(order.customerPhone || '');
+    setSettleCustomerEmail(order.customerEmail || '');
+    setSettleCustomerAddress(order.customerAddress || '');
+    setShowSettleCustomerForm(Boolean(order.customerName || order.customerPhone));
+
     setSettlementTarget({
       type: 'TAKEAWAY',
       orderId: order.id,
       orderNumber: order.orderNumber,
       customerName: order.customerName,
       customerPhone: order.customerPhone,
+      customerEmail: order.customerEmail,
+      customerAddress: order.customerAddress,
       items: order.items || [],
       subtotal,
       taxRate,
@@ -516,16 +563,19 @@ export const RestaurantTablesPage: React.FC = () => {
     if (!settlementTarget) return;
     try {
       setSettlingPayment(true);
+      const settlePayload = {
+        paymentMethod,
+        amountPaid: settlementTarget.grandTotal,
+        customerName: settleCustomerName.trim() || undefined,
+        customerPhone: settleCustomerPhone.trim() || undefined,
+        customerEmail: settleCustomerEmail.trim() || undefined,
+        customerAddress: settleCustomerAddress.trim() || undefined,
+      };
+
       if (settlementTarget.type === 'DINE_IN' && settlementTarget.tableId) {
-        await restaurantApi.settleTableBill(settlementTarget.tableId, {
-          paymentMethod,
-          amountPaid: settlementTarget.grandTotal,
-        });
+        await restaurantApi.settleTableBill(settlementTarget.tableId, settlePayload);
       } else if (settlementTarget.orderId) {
-        await restaurantApi.settleOrder(settlementTarget.orderId, {
-          paymentMethod,
-          amountPaid: settlementTarget.grandTotal,
-        });
+        await restaurantApi.settleOrder(settlementTarget.orderId, settlePayload);
       }
 
       const tendered = parseFloat(cashTendered) || settlementTarget.grandTotal;
@@ -535,8 +585,10 @@ export const RestaurantTablesPage: React.FC = () => {
         orderNumber: settlementTarget.orderNumber || 'ORD',
         orderType: settlementTarget.type === 'DINE_IN' ? `Dine-In (${settlementTarget.tableName})` : 'Parcel / Takeaway',
         tableName: settlementTarget.tableName,
-        customerName: settlementTarget.customerName,
-        customerPhone: settlementTarget.customerPhone,
+        customerName: settleCustomerName.trim() || settlementTarget.customerName || undefined,
+        customerPhone: settleCustomerPhone.trim() || settlementTarget.customerPhone || undefined,
+        customerEmail: settleCustomerEmail.trim() || settlementTarget.customerEmail || undefined,
+        customerAddress: settleCustomerAddress.trim() || settlementTarget.customerAddress || undefined,
         items: settlementTarget.items,
         subtotal: settlementTarget.subtotal,
         taxAmount: settlementTarget.taxAmount,
@@ -1457,33 +1509,70 @@ export const RestaurantTablesPage: React.FC = () => {
               </div>
 
               {/* Customer Details Inputs */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                    <UserIcon size={12} className="text-slate-400" />
-                    <span>Customer Name</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Rahul Sharma"
-                    value={parcelCustomerName}
-                    onChange={(e) => setParcelCustomerName(e.target.value)}
-                    className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
-                  />
+              <div className="space-y-2.5 pt-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <UserIcon size={13} className="text-emerald-600" />
+                    <span>Customer Information</span>
+                  </span>
+                  <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">Optional</span>
                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-slate-600 flex items-center gap-1">
+                      <UserIcon size={11} className="text-slate-400" />
+                      <span>Customer Name (Optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Rahul Sharma"
+                      value={parcelCustomerName}
+                      onChange={(e) => setParcelCustomerName(e.target.value)}
+                      className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                    />
+                  </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                    <Phone size={12} className="text-slate-400" />
-                    <span>Contact Mobile</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="+91 98765 43210"
-                    value={parcelCustomerPhone}
-                    onChange={(e) => setParcelCustomerPhone(e.target.value)}
-                    className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
-                  />
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-slate-600 flex items-center gap-1">
+                      <Phone size={11} className="text-slate-400" />
+                      <span>Contact Mobile (Optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="+91 98765 43210"
+                      value={parcelCustomerPhone}
+                      onChange={(e) => setParcelCustomerPhone(e.target.value)}
+                      className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-slate-600 flex items-center gap-1">
+                      <Mail size={11} className="text-slate-400" />
+                      <span>Email (Optional)</span>
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="e.g. customer@example.com"
+                      value={parcelCustomerEmail}
+                      onChange={(e) => setParcelCustomerEmail(e.target.value)}
+                      className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-slate-600 flex items-center gap-1">
+                      <MapPin size={11} className="text-slate-400" />
+                      <span>Delivery / Pickup Address (Optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Flat 102, City Center"
+                      value={parcelCustomerAddress}
+                      onChange={(e) => setParcelCustomerAddress(e.target.value)}
+                      className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -1697,6 +1786,69 @@ export const RestaurantTablesPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Customer Information (Optional) */}
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                  <UserIcon size={13} className="text-emerald-600" />
+                  <span>Customer Information</span>
+                  <span className="text-[10px] font-normal text-slate-400 bg-slate-200/60 px-1.5 py-0.5 rounded-full">Optional</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowSettleCustomerForm(!showSettleCustomerForm)}
+                  className="text-[11px] text-emerald-600 hover:text-emerald-700 font-semibold cursor-pointer"
+                >
+                  {showSettleCustomerForm ? 'Hide Details' : (settleCustomerName || settleCustomerPhone ? 'Edit Details' : '+ Add Customer Info')}
+                </button>
+              </div>
+
+              {showSettleCustomerForm && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-slate-200/60">
+                  <div className="space-y-0.5">
+                    <label className="text-[10px] font-semibold text-slate-600">Name (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Rahul Sharma"
+                      value={settleCustomerName}
+                      onChange={(e) => setSettleCustomerName(e.target.value)}
+                      className="w-full px-2.5 py-1 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+                  <div className="space-y-0.5">
+                    <label className="text-[10px] font-semibold text-slate-600">Phone (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="+91 98765 43210"
+                      value={settleCustomerPhone}
+                      onChange={(e) => setSettleCustomerPhone(e.target.value)}
+                      className="w-full px-2.5 py-1 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+                  <div className="space-y-0.5">
+                    <label className="text-[10px] font-semibold text-slate-600">Email (Optional)</label>
+                    <input
+                      type="email"
+                      placeholder="customer@example.com"
+                      value={settleCustomerEmail}
+                      onChange={(e) => setSettleCustomerEmail(e.target.value)}
+                      className="w-full px-2.5 py-1 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+                  <div className="space-y-0.5">
+                    <label className="text-[10px] font-semibold text-slate-600">Address (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Flat 102, City"
+                      value={settleCustomerAddress}
+                      onChange={(e) => setSettleCustomerAddress(e.target.value)}
+                      className="w-full px-2.5 py-1 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Payment Method Selector */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-800">Select Payment Method</label>
@@ -1828,6 +1980,9 @@ export const RestaurantTablesPage: React.FC = () => {
                   <span className="text-emerald-700">PAID</span>
                 </div>
                 {receiptData.customerName && <div>Customer: {receiptData.customerName}</div>}
+                {receiptData.customerPhone && <div>Phone: {receiptData.customerPhone}</div>}
+                {receiptData.customerEmail && <div>Email: {receiptData.customerEmail}</div>}
+                {receiptData.customerAddress && <div>Address: {receiptData.customerAddress}</div>}
               </div>
 
               {/* Items */}

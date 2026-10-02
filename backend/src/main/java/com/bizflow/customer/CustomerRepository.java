@@ -36,6 +36,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>, JpaSp
     @Query("SELECT c FROM Customer c WHERE c.business.id = :businessId AND c.phone = :phone")
     Optional<Customer> findByBusinessIdAndPhone(@Param("businessId") Long businessId, @Param("phone") String phone);
 
+    @Query("SELECT c FROM Customer c WHERE c.business.id = :businessId AND LOWER(c.email) = LOWER(:email)")
+    Optional<Customer> findByBusinessIdAndEmail(@Param("businessId") Long businessId, @Param("email") String email);
+
     @Query("SELECT COUNT(c) > 0 FROM Customer c WHERE c.business.id = :businessId AND c.phone = :phone")
     boolean existsByBusinessIdAndPhone(@Param("businessId") Long businessId, @Param("phone") String phone);
 

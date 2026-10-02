@@ -30,7 +30,7 @@ public class SalonAppointment extends BaseEntity {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Column(name = "customer_name", nullable = false, length = 150)
+    @Column(name = "customer_name", length = 150)
     private String customerName;
 
     @Column(name = "customer_phone", length = 50)

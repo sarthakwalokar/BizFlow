@@ -74,6 +74,43 @@ public class BillingService {
         if (request.getCustomerId() != null) {
             customer = customerRepository.findByIdAndBusinessId(request.getCustomerId(), businessId)
                     .orElseThrow(() -> new ResourceNotFoundException("Customer", "id", request.getCustomerId()));
+        } else {
+            String cName = request.getCustomerName() != null ? request.getCustomerName().trim() : null;
+            String cPhone = request.getCustomerPhone() != null ? request.getCustomerPhone().trim() : null;
+            String cEmail = request.getCustomerEmail() != null ? request.getCustomerEmail().trim() : null;
+            String cAddress = request.getCustomerAddress() != null ? request.getCustomerAddress().trim() : null;
+
+            if ((cName != null && !cName.isEmpty()) || (cPhone != null && !cPhone.isEmpty()) || (cEmail != null && !cEmail.isEmpty()) || (cAddress != null && !cAddress.isEmpty())) {
+                if (cPhone != null && !cPhone.isEmpty()) {
+                    customer = customerRepository.findByBusinessIdAndPhone(businessId, cPhone).orElse(null);
+                }
+                if (customer == null && cEmail != null && !cEmail.isEmpty()) {
+                    customer = customerRepository.findByBusinessIdAndEmail(businessId, cEmail).orElse(null);
+                }
+                if (customer == null) {
+                    customer = Customer.builder()
+                            .business(business)
+                            .name(cName != null && !cName.isEmpty() ? cName : ("Customer " + (cPhone != null ? cPhone : "")))
+                            .phone(cPhone)
+                            .email(cEmail)
+                            .address(cAddress)
+                            .build();
+                    customer = customerRepository.save(customer);
+                } else {
+                    boolean updated = false;
+                    if ((customer.getAddress() == null || customer.getAddress().trim().isEmpty()) && cAddress != null && !cAddress.isEmpty()) {
+                        customer.setAddress(cAddress);
+                        updated = true;
+                    }
+                    if ((customer.getEmail() == null || customer.getEmail().trim().isEmpty()) && cEmail != null && !cEmail.isEmpty()) {
+                        customer.setEmail(cEmail);
+                        updated = true;
+                    }
+                    if (updated) {
+                        customer = customerRepository.save(customer);
+                    }
+                }
+            }
         }
 
         if (request.getItems() == null || request.getItems().isEmpty()) {

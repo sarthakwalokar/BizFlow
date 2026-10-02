@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../context/AuthContext';
 import { formatCurrency } from '../../../utils/currency';
 import {
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 
 export const SalonAppointmentsPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const currency = business?.currency || 'INR';
 
@@ -134,15 +136,15 @@ export const SalonAppointmentsPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Salon &amp; Beauty Appointments
+              {t('salon.appointmentsTitle', 'Salon & Beauty Appointments')}
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-pink-50 text-pink-800 text-xs font-bold border border-pink-200 flex items-center gap-1.5">
               <Scissors size={12} className="text-pink-600" />
-              <span>Salon Module</span>
+              <span>{t('salon.moduleBadge', 'Salon Module')}</span>
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Daily booking calendar, stylist assignments, client history, and duration tracking.
+            {t('salon.appointmentsSubtitle', 'Daily booking calendar, stylist assignments, client history, and duration tracking.')}
           </p>
         </div>
 
@@ -152,7 +154,7 @@ export const SalonAppointmentsPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <Plus size={15} />
-            <span>Book Appointment</span>
+            <span>{t('salon.bookAppointment', 'Book Appointment')}</span>
           </button>
         </div>
       </div>
@@ -160,24 +162,24 @@ export const SalonAppointmentsPage: React.FC = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Booked</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('salon.totalBooked', 'Total Booked')}</span>
           <div className="text-2xl font-black text-slate-900">{appointments.length}</div>
-          <p className="text-[10px] text-slate-400">For selected date</p>
+          <p className="text-[10px] text-slate-400">{t('salon.forSelectedDate', 'For selected date')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Upcoming</span>
+          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">{t('salon.upcoming', 'Upcoming')}</span>
           <div className="text-2xl font-black text-amber-600">{bookedCount}</div>
-          <p className="text-[10px] text-amber-700">Scheduled slots</p>
+          <p className="text-[10px] text-amber-700">{t('salon.scheduledSlots', 'Scheduled slots')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">In Chair</span>
+          <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">{t('salon.inChair', 'In Chair')}</span>
           <div className="text-2xl font-black text-blue-600">{inProgressCount}</div>
-          <p className="text-[10px] text-blue-700">Service in progress</p>
+          <p className="text-[10px] text-blue-700">{t('salon.serviceInProgress', 'Service in progress')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Completed</span>
+          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">{t('salon.completed', 'Completed')}</span>
           <div className="text-2xl font-black text-emerald-600">{completedCount}</div>
-          <p className="text-[10px] text-emerald-700">Checked out &amp; billed</p>
+          <p className="text-[10px] text-emerald-700">{t('salon.checkedOutBilled', 'Checked out & billed')}</p>
         </div>
       </div>
 
@@ -185,7 +187,7 @@ export const SalonAppointmentsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200">
         <div className="flex items-center gap-2">
           <CalendarIcon size={16} className="text-pink-600" />
-          <span className="text-xs font-bold text-slate-700">Select Date:</span>
+          <span className="text-xs font-bold text-slate-700">{t('salon.selectDate', 'Select Date')}:</span>
           <input
             type="date"
             value={selectedDate}
@@ -222,21 +224,21 @@ export const SalonAppointmentsPage: React.FC = () => {
         ) : filteredAppts.length === 0 ? (
           <div className="py-12 text-center text-slate-400 space-y-2">
             <Scissors size={32} className="mx-auto text-slate-300" />
-            <p className="font-bold text-slate-800 text-sm">No appointments scheduled for this date</p>
-            <p className="text-xs text-slate-400">Click "Book Appointment" to schedule your first salon booking.</p>
+            <p className="font-bold text-slate-800 text-sm">{t('salon.noApptsDate', 'No appointments scheduled for this date')}</p>
+            <p className="text-xs text-slate-400">{t('salon.noApptsDesc', 'Click "Book Appointment" to schedule your first salon booking.')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="text-slate-400 text-[10px] uppercase font-bold tracking-wider border-b border-slate-100">
-                  <th className="pb-3">Time &amp; Duration</th>
-                  <th className="pb-3">Customer</th>
-                  <th className="pb-3">Service</th>
-                  <th className="pb-3">Stylist</th>
-                  <th className="pb-3">Price</th>
-                  <th className="pb-3 text-center">Status</th>
-                  <th className="pb-3 text-right">Actions</th>
+                  <th className="pb-3">{t('salon.thTimeDuration', 'Time & Duration')}</th>
+                  <th className="pb-3">{t('salon.thCustomer', 'Customer')}</th>
+                  <th className="pb-3">{t('salon.thService', 'Service')}</th>
+                  <th className="pb-3">{t('salon.thStylist', 'Stylist')}</th>
+                  <th className="pb-3">{t('salon.thPrice', 'Price')}</th>
+                  <th className="pb-3 text-center">{t('salon.thStatus', 'Status')}</th>
+                  <th className="pb-3 text-right">{t('salon.thActions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -248,7 +250,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                         <span>{appt.startTime}</span>
                       </div>
                       <span className="text-[10px] text-slate-400 font-normal">
-                        {appt.durationMinutes} mins
+                        {t('salon.mins', '{{count}} mins', { count: appt.durationMinutes })}
                       </span>
                     </td>
 
@@ -260,7 +262,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                           className="text-[10px] text-pink-600 hover:underline flex items-center gap-1 mt-0.5 cursor-pointer"
                         >
                           <Phone size={10} />
-                          <span>{appt.customerPhone} (View History)</span>
+                          <span>{appt.customerPhone} ({t('salon.viewHistory', 'View History')})</span>
                         </button>
                       )}
                     </td>
@@ -273,7 +275,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                     </td>
 
                     <td className="py-3 text-slate-600 font-medium">
-                      {appt.staffName || 'Any Available'}
+                      {appt.staffName || t('salon.anyAvailable', 'Any Available')}
                     </td>
 
                     <td className="py-3 font-black text-slate-900">
@@ -303,7 +305,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                             onClick={() => handleUpdateStatus(appt.id, 'IN_PROGRESS')}
                             className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold text-[10px] cursor-pointer"
                           >
-                            Start
+                            {t('salon.start', 'Start')}
                           </button>
                         )}
                         {appt.status !== 'COMPLETED' && (
@@ -311,7 +313,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                             onClick={() => handleUpdateStatus(appt.id, 'COMPLETED')}
                             className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-[10px] cursor-pointer"
                           >
-                            Done
+                            {t('salon.done', 'Done')}
                           </button>
                         )}
                       </div>
@@ -329,7 +331,7 @@ export const SalonAppointmentsPage: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-900">Book Client Appointment</h3>
+              <h3 className="text-sm font-bold text-slate-900">{t('salon.bookClientAppt', 'Book Client Appointment')}</h3>
               <button
                 onClick={() => setShowAddModal(false)}
                 className="text-slate-400 hover:text-slate-600 cursor-pointer"
@@ -340,7 +342,7 @@ export const SalonAppointmentsPage: React.FC = () => {
 
             <form onSubmit={handleCreateAppointment} className="space-y-3.5 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Client Name (Optional)</label>
+                <label className="font-semibold text-slate-700">{t('salon.clientNameOpt', 'Client Name (Optional)')}</label>
                 <input
                   type="text"
                   placeholder="e.g. Ananya Sen (or Walk-in Guest)"
@@ -351,7 +353,7 @@ export const SalonAppointmentsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Client Phone Number (Optional)</label>
+                <label className="font-semibold text-slate-700">{t('salon.clientPhoneOpt', 'Client Phone Number (Optional)')}</label>
                 <input
                   type="tel"
                   placeholder="e.g. 9876543210 (Optional)"
@@ -362,14 +364,14 @@ export const SalonAppointmentsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Select Service *</label>
+                <label className="font-semibold text-slate-700">{t('salon.selectService', 'Select Service')} *</label>
                 <select
                   required
                   value={selectedServiceId}
                   onChange={(e) => setSelectedServiceId(Number(e.target.value))}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
                 >
-                  <option value="">-- Choose a Service --</option>
+                  <option value="">{t('salon.chooseService', '-- Choose a Service --')}</option>
                   {services.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.name} ({s.durationMinutes} mins) - {formatCurrency(s.price, currency)}
@@ -380,7 +382,7 @@ export const SalonAppointmentsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Time Slot</label>
+                  <label className="font-semibold text-slate-700">{t('salon.timeSlot', 'Time Slot')}</label>
                   <input
                     type="text"
                     placeholder="e.g. 02:30 PM"
@@ -391,7 +393,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Assigned Stylist</label>
+                  <label className="font-semibold text-slate-700">{t('salon.assignedStylist', 'Assigned Stylist')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Maya Sharma"
@@ -403,7 +405,7 @@ export const SalonAppointmentsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Client Preferences / Notes</label>
+                <label className="font-semibold text-slate-700">{t('salon.clientNotes', 'Client Preferences / Notes')}</label>
                 <input
                   type="text"
                   placeholder="e.g. Organic hair spa treatment"
@@ -419,13 +421,13 @@ export const SalonAppointmentsPage: React.FC = () => {
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold cursor-pointer shadow-xs"
                 >
-                  Confirm Booking
+                  {t('salon.confirmBooking', 'Confirm Booking')}
                 </button>
               </div>
             </form>
@@ -440,7 +442,7 @@ export const SalonAppointmentsPage: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
                 <h3 className="text-sm font-bold text-slate-900">{historyCustomer.customerName}</h3>
-                <p className="text-[11px] text-slate-400">Phone: {historyCustomer.customerPhone}</p>
+                <p className="text-[11px] text-slate-400">{t('common.phone', 'Phone')}: {historyCustomer.customerPhone}</p>
               </div>
               <button
                 onClick={() => setHistoryCustomer(null)}
@@ -453,18 +455,18 @@ export const SalonAppointmentsPage: React.FC = () => {
             {/* Lifetime stats */}
             <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-pink-50/50 border border-pink-100 text-xs">
               <div>
-                <span className="text-slate-500 font-semibold block text-[10px] uppercase">Total Visits</span>
-                <span className="text-lg font-black text-slate-900">{historyCustomer.totalAppointments} Visits</span>
+                <span className="text-slate-500 font-semibold block text-[10px] uppercase">{t('salon.totalVisits', 'Total Visits')}</span>
+                <span className="text-lg font-black text-slate-900">{t('salon.visitsCount', '{{count}} Visits', { count: historyCustomer.totalAppointments })}</span>
               </div>
               <div>
-                <span className="text-slate-500 font-semibold block text-[10px] uppercase">Lifetime Spent</span>
+                <span className="text-slate-500 font-semibold block text-[10px] uppercase">{t('salon.lifetimeSpent', 'Lifetime Spent')}</span>
                 <span className="text-lg font-black text-pink-700">{formatCurrency(historyCustomer.totalSpent, currency)}</span>
               </div>
             </div>
 
             {/* Past Visits List */}
             <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Past Appointments</h4>
+              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">{t('salon.pastAppts', 'Past Appointments')}</h4>
               {historyCustomer.pastAppointments.map((p) => (
                 <div key={p.id} className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1">
                   <div className="flex items-center justify-between font-bold text-slate-900">
@@ -484,7 +486,7 @@ export const SalonAppointmentsPage: React.FC = () => {
                 onClick={() => setHistoryCustomer(null)}
                 className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
               >
-                Close
+                {t('common.close', 'Close')}
               </button>
             </div>
           </div>

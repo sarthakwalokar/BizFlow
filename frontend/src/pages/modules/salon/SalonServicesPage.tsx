@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../context/AuthContext';
 import { formatCurrency } from '../../../utils/currency';
 import { salonApi, SalonServiceItem } from '../../../api/modules';
@@ -13,6 +14,7 @@ import {
 } from 'lucide-react';
 
 export const SalonServicesPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const currency = business?.currency || 'INR';
 
@@ -87,7 +89,7 @@ export const SalonServicesPage: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to remove this service?')) return;
+    if (!window.confirm(t('salon.deleteConfirm', 'Are you sure you want to remove this service?'))) return;
     try {
       await salonApi.deleteService(id);
       fetchServices();
@@ -118,15 +120,15 @@ export const SalonServicesPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Salon Services Menu
+              {t('salon.servicesTitle', 'Salon Services Menu')}
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-pink-50 text-pink-800 text-xs font-bold border border-pink-200 flex items-center gap-1.5">
               <Scissors size={12} className="text-pink-600" />
-              <span>Service Catalog</span>
+              <span>{t('salon.serviceCatalog', 'Service Catalog')}</span>
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Manage treatments, beauty packages, styling tariffs, and standard durations.
+            {t('salon.servicesSubtitle', 'Manage treatments, beauty packages, styling tariffs, and standard durations.')}
           </p>
         </div>
 
@@ -139,7 +141,7 @@ export const SalonServicesPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <Plus size={15} />
-            <span>Add Service</span>
+            <span>{t('salon.addService', 'Add Service')}</span>
           </button>
         </div>
       </div>
@@ -149,7 +151,7 @@ export const SalonServicesPage: React.FC = () => {
         <Search size={14} className="absolute left-3.5 top-3 text-slate-400" />
         <input
           type="text"
-          placeholder="Search treatments or categories..."
+          placeholder={t('salon.searchPlaceholder', 'Search treatments or categories...')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs"
@@ -166,8 +168,8 @@ export const SalonServicesPage: React.FC = () => {
       ) : filtered.length === 0 ? (
         <div className="clay-card p-12 text-center text-slate-400 space-y-2">
           <Scissors size={32} className="mx-auto text-slate-300" />
-          <p className="font-bold text-slate-800 text-sm">No services added yet</p>
-          <p className="text-xs text-slate-400">Add haircutting, coloring, spa treatments, or styling packages.</p>
+          <p className="font-bold text-slate-800 text-sm">{t('salon.noServicesYet', 'No services added yet')}</p>
+          <p className="text-xs text-slate-400">{t('salon.noServicesDesc', 'Add haircutting, coloring, spa treatments, or styling packages.')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -179,11 +181,11 @@ export const SalonServicesPage: React.FC = () => {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-pink-700 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-100">
-                    {s.category || 'General'}
+                    {s.category || t('salon.generalCategory', 'General')}
                   </span>
                   <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold">
                     <Clock size={12} className="text-pink-600" />
-                    <span>{s.durationMinutes} mins</span>
+                    <span>{t('salon.mins', '{{count}} mins', { count: s.durationMinutes })}</span>
                   </div>
                 </div>
 
@@ -202,14 +204,14 @@ export const SalonServicesPage: React.FC = () => {
                   <button
                     onClick={() => handleEdit(s)}
                     className="p-1.5 rounded-lg text-slate-400 hover:text-pink-600 hover:bg-pink-50 cursor-pointer"
-                    title="Edit Service"
+                    title={t('salon.editService', 'Edit Service')}
                   >
                     <Edit2 size={14} />
                   </button>
                   <button
                     onClick={() => handleDelete(s.id)}
                     className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer"
-                    title="Delete Service"
+                    title={t('salon.deleteService', 'Delete Service')}
                   >
                     <Trash2 size={14} />
                   </button>
@@ -226,7 +228,7 @@ export const SalonServicesPage: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-sm font-bold text-slate-900">
-                {editingId ? 'Edit Salon Service' : 'Add New Salon Service'}
+                {editingId ? t('salon.modalEditTitle', 'Edit Salon Service') : t('salon.modalAddTitle', 'Add New Salon Service')}
               </h3>
               <button
                 onClick={() => setShowModal(false)}
@@ -238,7 +240,7 @@ export const SalonServicesPage: React.FC = () => {
 
             <form onSubmit={handleSave} className="space-y-3.5 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Service Name *</label>
+                <label className="font-semibold text-slate-700">{t('salon.serviceName', 'Service Name')} *</label>
                 <input
                   type="text"
                   required
@@ -251,7 +253,7 @@ export const SalonServicesPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Category</label>
+                  <label className="font-semibold text-slate-700">{t('salon.serviceCategory', 'Category')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Hair, Skin, Nails"
@@ -262,7 +264,7 @@ export const SalonServicesPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Duration (Mins)</label>
+                  <label className="font-semibold text-slate-700">{t('salon.durationMins', 'Duration (Mins)')}</label>
                   <input
                     type="number"
                     min={5}
@@ -275,7 +277,7 @@ export const SalonServicesPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Service Price ({currency}) *</label>
+                <label className="font-semibold text-slate-700">{t('salon.servicePrice', 'Service Price')} ({currency}) *</label>
                 <input
                   type="number"
                   step="0.01"
@@ -288,7 +290,7 @@ export const SalonServicesPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Description</label>
+                <label className="font-semibold text-slate-700">{t('common.description', 'Description')}</label>
                 <textarea
                   rows={2}
                   placeholder="Treatment details and benefits..."
@@ -304,13 +306,13 @@ export const SalonServicesPage: React.FC = () => {
                   onClick={() => setShowModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold cursor-pointer shadow-xs"
                 >
-                  Save Service
+                  {t('salon.saveService', 'Save Service')}
                 </button>
               </div>
             </form>

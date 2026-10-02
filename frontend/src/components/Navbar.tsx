@@ -52,7 +52,7 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Right: Auth Actions (NO SEARCH BAR) */}
-        <div className="hidden sm:flex items-center space-x-4">
+        <div className="hidden sm:flex items-center space-x-3.5">
           {isAuthenticated && user ? (
             <div className="flex items-center space-x-3">
               <Link
@@ -72,7 +72,7 @@ export const Navbar: React.FC = () => {
               </button>
             </div>
           ) : (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <Link
                 to="/login"
                 id="nav-login-btn"
@@ -105,7 +105,7 @@ export const Navbar: React.FC = () => {
         <div className="flex sm:hidden items-center space-x-2">
           <Link
             to="/signup"
-            className="px-4 py-2 text-xs font-bold rounded-full text-white bg-gradient-to-r from-brand-600 to-cyan-500 shadow-sm"
+            className="px-3 py-1.5 text-xs font-bold rounded-full text-white bg-gradient-to-r from-brand-600 to-cyan-500 shadow-sm"
           >
             {t('landing.getStarted', 'Get Started')}
           </Link>

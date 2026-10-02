@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { restaurantApi, RestaurantKotTicket } from '../../../api/modules';
 import {
   ChefHat,
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 
 export const RestaurantKotPage: React.FC = () => {
+  const { t } = useTranslation();
   const [kots, setKots] = useState<RestaurantKotTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
@@ -79,7 +81,7 @@ export const RestaurantKotPage: React.FC = () => {
         prev.map((k) => (k.id === kot.id ? { ...k, status: previousStatus } : k))
       );
       setErrorToast(
-        err.response?.data?.message || 'Could not update cooking status. Please try again.'
+        err.response?.data?.message || t('restaurant.kotUpdateError', 'Could not update cooking status. Please try again.')
       );
     } finally {
       setUpdatingKotId(null);
@@ -96,7 +98,7 @@ export const RestaurantKotPage: React.FC = () => {
       setConfirmDeleteKot(null);
     } catch (err: any) {
       console.error('Failed to delete KOT ticket', err);
-      setErrorToast(err.response?.data?.message || 'Failed to delete KOT ticket.');
+      setErrorToast(err.response?.data?.message || t('restaurant.kotDeleteError', 'Failed to delete KOT ticket.'));
     } finally {
       setDeletingKotId(null);
     }
@@ -119,15 +121,15 @@ export const RestaurantKotPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Kitchen Order Tickets (KOT)
+              {t('restaurant.kotTitle', 'Kitchen Order Tickets (KOT)')}
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-800 text-xs font-bold border border-orange-200 flex items-center gap-1.5">
               <ChefHat size={13} className="text-orange-600" />
-              <span>Live Kitchen Display</span>
+              <span>{t('restaurant.liveKitchenDisplay', 'Live Kitchen Display')}</span>
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Real-time kitchen order tickets with 3-step cooking status lifecycle: Start Preparing &rarr; Prepared &rarr; Served.
+            {t('restaurant.kotSubtitle', 'Real-time kitchen order tickets with 3-step cooking status lifecycle: Start Preparing → Prepared → Served.')}
           </p>
         </div>
 
@@ -137,7 +139,7 @@ export const RestaurantKotPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin text-orange-600' : ''} />
-            <span>Refresh KOT</span>
+            <span>{t('restaurant.refreshKot', 'Refresh KOT')}</span>
           </button>
         </div>
       </div>
@@ -161,35 +163,35 @@ export const RestaurantKotPage: React.FC = () => {
       {/* KPI Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Awaiting (Pending)</span>
+          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">{t('restaurant.awaitingPending', 'Awaiting (Pending)')}</span>
           <div className="text-2xl font-black text-amber-600">{pendingCount}</div>
-          <p className="text-[10px] text-amber-700">Awaiting kitchen start</p>
+          <p className="text-[10px] text-amber-700">{t('restaurant.awaitingDesc', 'Awaiting kitchen start')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Preparing</span>
+          <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">{t('restaurant.preparing', 'Preparing')}</span>
           <div className="text-2xl font-black text-blue-600">{preparingCount}</div>
-          <p className="text-[10px] text-blue-700">Cooking on stoves</p>
+          <p className="text-[10px] text-blue-700">{t('restaurant.cookingDesc', 'Cooking on stoves')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Prepared (Ready)</span>
+          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">{t('restaurant.preparedReady', 'Prepared (Ready)')}</span>
           <div className="text-2xl font-black text-emerald-600">{preparedCount}</div>
-          <p className="text-[10px] text-emerald-700">Ready to be served</p>
+          <p className="text-[10px] text-emerald-700">{t('restaurant.readyServeDesc', 'Ready to be served')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Served</span>
+          <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">{t('restaurant.served', 'Served')}</span>
           <div className="text-2xl font-black text-slate-900">{servedCount}</div>
-          <p className="text-[10px] text-slate-400">Delivered to guests</p>
+          <p className="text-[10px] text-slate-400">{t('restaurant.deliveredDesc', 'Delivered to guests')}</p>
         </div>
       </div>
 
       {/* Status Filter Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
         {[
-          { id: 'ALL', label: `All Tickets (${kots.length})` },
-          { id: 'PENDING', label: `Pending (${pendingCount})` },
-          { id: 'PREPARING', label: `Preparing (${preparingCount})` },
-          { id: 'READY', label: `Prepared (${preparedCount})` },
-          { id: 'SERVED', label: `Served (${servedCount})` },
+          { id: 'ALL', label: t('restaurant.allTickets', 'All Tickets ({{count}})', { count: kots.length }) },
+          { id: 'PENDING', label: t('restaurant.pendingTickets', 'Pending ({{count}})', { count: pendingCount }) },
+          { id: 'PREPARING', label: t('restaurant.preparingTickets', 'Preparing ({{count}})', { count: preparingCount }) },
+          { id: 'READY', label: t('restaurant.readyTickets', 'Prepared ({{count}})', { count: preparedCount }) },
+          { id: 'SERVED', label: t('restaurant.servedTickets', 'Served ({{count}})', { count: servedCount }) },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -215,8 +217,8 @@ export const RestaurantKotPage: React.FC = () => {
       ) : filteredKots.length === 0 ? (
         <div className="clay-card p-12 text-center text-slate-400 space-y-2">
           <ChefHat size={36} className="mx-auto text-slate-300" />
-          <p className="font-bold text-slate-800 text-sm">No Kitchen Order Tickets in this view</p>
-          <p className="text-xs text-slate-400">New orders dispatched from Tables &amp; Orders will appear here.</p>
+          <p className="font-bold text-slate-800 text-sm">{t('restaurant.noKotInView', 'No Kitchen Order Tickets in this view')}</p>
+          <p className="text-xs text-slate-400">{t('restaurant.noKotDesc', 'New orders dispatched from Tables & Orders will appear here.')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -248,7 +250,7 @@ export const RestaurantKotPage: React.FC = () => {
                         <span>{kot.kotNumber}</span>
                       </div>
                       <span className="text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-md mt-1 inline-block border border-orange-200/60">
-                        {kot.tableName || 'Takeaway'}
+                        {kot.tableName || t('restaurant.takeaway', 'Takeaway')}
                       </span>
                     </div>
 
@@ -266,12 +268,12 @@ export const RestaurantKotPage: React.FC = () => {
                           }`}
                         >
                           {isPending
-                            ? 'PENDING'
+                            ? t('restaurant.statusPending', 'PENDING')
                             : isPreparing
-                            ? 'PREPARING'
+                            ? t('restaurant.statusPreparing', 'PREPARING')
                             : isPrepared
-                            ? 'PREPARED'
-                            : 'SERVED'}
+                            ? t('restaurant.statusPrepared', 'PREPARED')
+                            : t('restaurant.statusServed', 'SERVED')}
                         </span>
 
                         {/* Delete KOT Action */}
@@ -279,7 +281,7 @@ export const RestaurantKotPage: React.FC = () => {
                           type="button"
                           onClick={() => setConfirmDeleteKot(kot)}
                           className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer ml-1"
-                          title="Delete KOT Ticket"
+                          title={t('restaurant.deleteKotTicket', 'Delete KOT Ticket')}
                         >
                           <Trash2 size={13} />
                         </button>
@@ -303,7 +305,7 @@ export const RestaurantKotPage: React.FC = () => {
                             <span className="font-bold text-slate-900">{item.itemName}</span>
                             {item.notes && (
                               <span className="block text-[11px] text-amber-700 font-medium italic">
-                                Note: {item.notes}
+                                {t('common.notes', 'Note')}: {item.notes}
                               </span>
                             )}
                           </div>
@@ -313,7 +315,7 @@ export const RestaurantKotPage: React.FC = () => {
                         </div>
                       ))
                     ) : (
-                      <p className="text-xs text-slate-400 italic">Chef items pending dispatch</p>
+                      <p className="text-xs text-slate-400 italic">{t('restaurant.chefItemsPending', 'Chef items pending dispatch')}</p>
                     )}
                   </div>
                 </div>
@@ -328,7 +330,7 @@ export const RestaurantKotPage: React.FC = () => {
                       className="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer disabled:opacity-50"
                     >
                       {isUpdating ? <Loader2 size={14} className="animate-spin" /> : <Flame size={14} />}
-                      <span>{isUpdating ? 'Updating...' : 'Start Preparing'}</span>
+                      <span>{isUpdating ? t('common.loading', 'Updating...') : t('restaurant.startPreparing', 'Start Preparing')}</span>
                     </button>
                   )}
 
@@ -340,7 +342,7 @@ export const RestaurantKotPage: React.FC = () => {
                       className="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer disabled:opacity-50"
                     >
                       {isUpdating ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-                      <span>{isUpdating ? 'Updating...' : 'Prepared'}</span>
+                      <span>{isUpdating ? t('common.loading', 'Updating...') : t('restaurant.prepared', 'Prepared')}</span>
                     </button>
                   )}
 
@@ -352,14 +354,14 @@ export const RestaurantKotPage: React.FC = () => {
                       className="flex-1 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer disabled:opacity-50"
                     >
                       {isUpdating ? <Loader2 size={14} className="animate-spin" /> : <UtensilsCrossed size={14} />}
-                      <span>{isUpdating ? 'Updating...' : 'Served'}</span>
+                      <span>{isUpdating ? t('common.loading', 'Updating...') : t('restaurant.servedBtn', 'Served')}</span>
                     </button>
                   )}
 
                   {isServed && (
                     <div className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold flex items-center justify-center gap-1.5">
                       <CheckCircle2 size={14} className="text-emerald-600" />
-                      <span>Order Served</span>
+                      <span>{t('restaurant.orderServed', 'Order Served')}</span>
                     </div>
                   )}
 
@@ -367,7 +369,7 @@ export const RestaurantKotPage: React.FC = () => {
                     type="button"
                     onClick={() => window.print()}
                     className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 cursor-pointer"
-                    title="Print KOT Ticket"
+                    title={t('restaurant.printKot', 'Print KOT Ticket')}
                   >
                     <Printer size={14} />
                   </button>
@@ -389,9 +391,9 @@ export const RestaurantKotPage: React.FC = () => {
                 <AlertTriangle size={18} />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm font-bold text-slate-900">Delete Kitchen Ticket</h3>
+                <h3 className="text-sm font-bold text-slate-900">{t('restaurant.deleteKotTitle', 'Delete Kitchen Ticket')}</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Are you sure you want to delete KOT ticket <strong>{confirmDeleteKot.kotNumber}</strong> ({confirmDeleteKot.tableName})? This removes only the kitchen ticket; the dining table and customer order remain untouched.
+                  {t('restaurant.deleteKotConfirm', 'Are you sure you want to delete KOT ticket {{number}} ({{table}})? This removes only the kitchen ticket; the dining table and customer order remain untouched.', { number: confirmDeleteKot.kotNumber, table: confirmDeleteKot.tableName || t('restaurant.takeaway', 'Takeaway') })}
                 </p>
               </div>
             </div>
@@ -403,7 +405,7 @@ export const RestaurantKotPage: React.FC = () => {
                 disabled={deletingKotId !== null}
                 className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
               >
-                Keep KOT
+                {t('restaurant.keepKot', 'Keep KOT')}
               </button>
               <button
                 type="button"
@@ -412,7 +414,7 @@ export const RestaurantKotPage: React.FC = () => {
                 className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
               >
                 {deletingKotId !== null && <Loader2 size={13} className="animate-spin" />}
-                <span>{deletingKotId !== null ? 'Deleting...' : 'Yes, Delete KOT'}</span>
+                <span>{deletingKotId !== null ? t('common.deleting', 'Deleting...') : t('restaurant.yesDeleteKot', 'Yes, Delete KOT')}</span>
               </button>
             </div>
           </div>

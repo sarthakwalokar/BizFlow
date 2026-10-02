@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../context/AuthContext';
 import { formatCurrency } from '../../../utils/currency';
 import {
@@ -16,6 +17,7 @@ import {
 import { Link } from 'react-router-dom';
 
 export const RepairJobCardsPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const currency = business?.currency || 'INR';
 
@@ -163,15 +165,15 @@ export const RepairJobCardsPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Repair &amp; Service Job Cards
+              {t('repair.pageTitle', 'Repair & Service Job Cards')}
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-violet-50 text-violet-800 text-xs font-bold border border-violet-200 flex items-center gap-1.5">
               <Wrench size={12} className="text-violet-600" />
-              <span>Repair Module</span>
+              <span>{t('repair.moduleTag', 'Repair Module')}</span>
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Job card ticketing, device diagnostics, technician assignments, and pickup dispatch.
+            {t('repair.pageSubtitle', 'Job card ticketing, device diagnostics, technician assignments, and pickup dispatch.')}
           </p>
         </div>
 
@@ -181,7 +183,7 @@ export const RepairJobCardsPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <Clock size={14} className="text-violet-600" />
-            <span>Track Repair</span>
+            <span>{t('repair.trackRepair', 'Track Repair')}</span>
           </Link>
 
           <button
@@ -192,7 +194,7 @@ export const RepairJobCardsPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <Plus size={15} />
-            <span>New Job Card</span>
+            <span>{t('repair.newJobCard', 'New Job Card')}</span>
           </button>
         </div>
       </div>
@@ -200,24 +202,24 @@ export const RepairJobCardsPage: React.FC = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">In Intake / Diag</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('repair.inIntake', 'In Intake / Diag')}</span>
           <div className="text-2xl font-black text-slate-900">{receivedCount}</div>
-          <p className="text-[10px] text-slate-400">Received devices</p>
+          <p className="text-[10px] text-slate-400">{t('repair.receivedDevices', 'Received devices')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Under Repair</span>
+          <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">{t('repair.underRepair', 'Under Repair')}</span>
           <div className="text-2xl font-black text-blue-600">{repairingCount}</div>
-          <p className="text-[10px] text-blue-700">On workbench</p>
+          <p className="text-[10px] text-blue-700">{t('repair.onWorkbench', 'On workbench')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Ready for Pickup</span>
+          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">{t('repair.readyForPickup', 'Ready for Pickup')}</span>
           <div className="text-2xl font-black text-emerald-600">{readyCount}</div>
-          <p className="text-[10px] text-emerald-700">Customer notified</p>
+          <p className="text-[10px] text-emerald-700">{t('repair.customerNotified', 'Customer notified')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Delivered</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('repair.delivered', 'Delivered')}</span>
           <div className="text-2xl font-black text-slate-900">{deliveredCount}</div>
-          <p className="text-[10px] text-slate-400">Completed jobs</p>
+          <p className="text-[10px] text-slate-400">{t('repair.completedJobs', 'Completed jobs')}</p>
         </div>
       </div>
 
@@ -227,7 +229,7 @@ export const RepairJobCardsPage: React.FC = () => {
           <Search size={14} className="absolute left-3.5 top-3 text-slate-400" />
           <input
             type="text"
-            placeholder="Search by Job #, Customer, Device, or S/N..."
+            placeholder={t('repair.searchJobCards', 'Search by Job #, Customer, Device, or S/N...')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs"
@@ -245,7 +247,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
               }`}
             >
-              {st}
+              {st === 'ALL' ? t('common.all', 'ALL') : st}
             </button>
           ))}
         </div>
@@ -262,21 +264,21 @@ export const RepairJobCardsPage: React.FC = () => {
         ) : jobCards.length === 0 ? (
           <div className="py-12 text-center text-slate-400 space-y-2">
             <Wrench size={32} className="mx-auto text-slate-300" />
-            <p className="font-bold text-slate-800 text-sm">No repair job cards found</p>
-            <p className="text-xs text-slate-400">Click "New Job Card" to intake a device for diagnosis and repair.</p>
+            <p className="font-bold text-slate-800 text-sm">{t('repair.noJobsFound', 'No repair job cards found')}</p>
+            <p className="text-xs text-slate-400">{t('repair.clickNewJob', 'Click "New Job Card" to intake a device for diagnosis and repair.')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="text-slate-400 text-[10px] uppercase font-bold tracking-wider border-b border-slate-100">
-                  <th className="pb-3">Job Card #</th>
-                  <th className="pb-3">Customer</th>
-                  <th className="pb-3">Device &amp; Problem</th>
-                  <th className="pb-3">Technician</th>
-                  <th className="pb-3">Cost (Est/Final)</th>
-                  <th className="pb-3 text-center">Status</th>
-                  <th className="pb-3 text-right">Actions</th>
+                  <th className="pb-3">{t('repair.jobCardNo', 'Job Card #')}</th>
+                  <th className="pb-3">{t('repair.customer', 'Customer')}</th>
+                  <th className="pb-3">{t('repair.deviceAndProblem', 'Device & Problem')}</th>
+                  <th className="pb-3">{t('repair.technician', 'Technician')}</th>
+                  <th className="pb-3">{t('repair.costEstFinal', 'Cost (Est/Final)')}</th>
+                  <th className="pb-3 text-center">{t('common.status', 'Status')}</th>
+                  <th className="pb-3 text-right">{t('common.actions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -306,7 +308,7 @@ export const RepairJobCardsPage: React.FC = () => {
                     </td>
 
                     <td className="py-3 text-slate-600">
-                      {job.assignedTechnician || 'Unassigned'}
+                      {job.assignedTechnician || t('repair.unassigned', 'Unassigned')}
                     </td>
 
                     <td className="py-3 font-black text-slate-900">
@@ -342,12 +344,12 @@ export const RepairJobCardsPage: React.FC = () => {
                           onClick={() => handleOpenEdit(job)}
                           className="px-2.5 py-1 rounded-lg bg-violet-50 text-violet-700 hover:bg-violet-100 font-bold text-[10px] cursor-pointer"
                         >
-                          Update Status
+                          {t('repair.updateStatus', 'Update Status')}
                         </button>
                         <button
                           onClick={() => window.print()}
                           className="p-1 rounded-lg text-slate-400 hover:text-slate-600 cursor-pointer"
-                          title="Print Handover Slip"
+                          title={t('repair.printSlip', 'Print Handover Slip')}
                         >
                           <Printer size={13} />
                         </button>
@@ -366,7 +368,7 @@ export const RepairJobCardsPage: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-900">Intake Device &amp; Create Job Card</h3>
+              <h3 className="text-sm font-bold text-slate-900">{t('repair.intakeTitle', 'Intake Device & Create Job Card')}</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="text-slate-400 hover:text-slate-600 cursor-pointer"
@@ -378,7 +380,7 @@ export const RepairJobCardsPage: React.FC = () => {
             <form onSubmit={handleCreateJobCard} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Customer Name (Optional)</label>
+                  <label className="font-semibold text-slate-700">{t('repair.customerNameOpt', 'Customer Name (Optional)')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Vikram Joshi"
@@ -389,7 +391,7 @@ export const RepairJobCardsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Customer Phone (Optional)</label>
+                  <label className="font-semibold text-slate-700">{t('repair.customerPhoneOpt', 'Customer Phone (Optional)')}</label>
                   <input
                     type="tel"
                     placeholder="e.g. 9812345678"
@@ -402,7 +404,7 @@ export const RepairJobCardsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Customer Email (Optional)</label>
+                  <label className="font-semibold text-slate-700">{t('repair.customerEmailOpt', 'Customer Email (Optional)')}</label>
                   <input
                     type="email"
                     placeholder="e.g. customer@example.com"
@@ -413,7 +415,7 @@ export const RepairJobCardsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Customer Address (Optional)</label>
+                  <label className="font-semibold text-slate-700">{t('repair.customerAddressOpt', 'Customer Address (Optional)')}</label>
                   <input
                     type="text"
                     placeholder="e.g. 45 Park Avenue, City"
@@ -426,7 +428,7 @@ export const RepairJobCardsPage: React.FC = () => {
 
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Item Type</label>
+                  <label className="font-semibold text-slate-700">{t('repair.itemType', 'Item Type')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Laptop, Phone"
@@ -436,7 +438,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Brand</label>
+                  <label className="font-semibold text-slate-700">{t('repair.brand', 'Brand')}</label>
                   <input
                     type="text"
                     placeholder="e.g. HP, Sony"
@@ -446,7 +448,7 @@ export const RepairJobCardsPage: React.FC = () => {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Model</label>
+                  <label className="font-semibold text-slate-700">{t('repair.model', 'Model')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Pavilion 15"
@@ -458,7 +460,7 @@ export const RepairJobCardsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Serial Number / IMEI (Optional)</label>
+                <label className="font-semibold text-slate-700">{t('repair.serialOrImeiOpt', 'Serial Number / IMEI (Optional)')}</label>
                 <input
                   type="text"
                   placeholder="e.g. 5CD1234XYZ"
@@ -469,11 +471,11 @@ export const RepairJobCardsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Problem Description *</label>
+                <label className="font-semibold text-slate-700">{t('repair.problemDescRequired', 'Problem Description *')}</label>
                 <textarea
                   rows={2}
                   required
-                  placeholder="Customer complaints (e.g. screen flickering, no power, battery drain)..."
+                  placeholder={t('repair.problemPlaceholder', 'Customer complaints (e.g. screen flickering, no power, battery drain)...')}
                   value={problemDescription}
                   onChange={(e) => setProblemDescription(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -482,7 +484,7 @@ export const RepairJobCardsPage: React.FC = () => {
 
               <div className="grid grid-cols-4 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Estimated Cost ({currency})</label>
+                  <label className="font-semibold text-slate-700">{t('repair.estimatedCost', 'Estimated Cost')} ({currency})</label>
                   <input
                     type="number"
                     step="0.01"
@@ -494,7 +496,7 @@ export const RepairJobCardsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Assign Technician</label>
+                  <label className="font-semibold text-slate-700">{t('repair.assignTechnician', 'Assign Technician')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Rajesh Kumar"
@@ -505,21 +507,21 @@ export const RepairJobCardsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Priority</label>
+                  <label className="font-semibold text-slate-700">{t('repair.priority', 'Priority')}</label>
                   <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value as any)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
                   >
-                    <option value="NORMAL">Normal</option>
-                    <option value="HIGH">High</option>
-                    <option value="URGENT">Urgent (Express)</option>
-                    <option value="LOW">Low</option>
+                    <option value="NORMAL">{t('repair.priorityNormal', 'Normal')}</option>
+                    <option value="HIGH">{t('repair.priorityHigh', 'High')}</option>
+                    <option value="URGENT">{t('repair.priorityUrgent', 'Urgent (Express)')}</option>
+                    <option value="LOW">{t('repair.priorityLow', 'Low')}</option>
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Est. Completion</label>
+                  <label className="font-semibold text-slate-700">{t('repair.estCompletion', 'Est. Completion')}</label>
                   <input
                     type="date"
                     value={estDate}
@@ -535,13 +537,13 @@ export const RepairJobCardsPage: React.FC = () => {
                   onClick={() => setShowCreateModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold cursor-pointer shadow-xs"
                 >
-                  Create Job Card
+                  {t('repair.createJobCardBtn', 'Create Job Card')}
                 </button>
               </div>
             </form>
@@ -555,7 +557,9 @@ export const RepairJobCardsPage: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Update Job {editingJob.jobCardNumber}</h3>
+                <h3 className="text-sm font-bold text-slate-900">
+                  {t('repair.updateJobTitle', 'Update Job {{number}}', { number: editingJob.jobCardNumber })}
+                </h3>
                 <p className="text-[11px] text-slate-400">{editingJob.customerName} • {editingJob.brand} {editingJob.model}</p>
               </div>
               <button
@@ -568,7 +572,7 @@ export const RepairJobCardsPage: React.FC = () => {
 
             <form onSubmit={handleSaveEdit} className="space-y-3.5 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Repair Status *</label>
+                <label className="font-semibold text-slate-700">{t('repair.repairStatusRequired', 'Repair Status *')}</label>
                 <select
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value as any)}
@@ -584,10 +588,10 @@ export const RepairJobCardsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Diagnostic Findings</label>
+                <label className="font-semibold text-slate-700">{t('repair.diagFindings', 'Diagnostic Findings')}</label>
                 <textarea
                   rows={2}
-                  placeholder="Root cause diagnosis..."
+                  placeholder={t('repair.diagPlaceholder', 'Root cause diagnosis...')}
                   value={editDiag}
                   onChange={(e) => setEditDiag(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -595,10 +599,10 @@ export const RepairJobCardsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Work Performed / Parts Replaced</label>
+                <label className="font-semibold text-slate-700">{t('repair.workPerformedParts', 'Work Performed / Parts Replaced')}</label>
                 <textarea
                   rows={2}
-                  placeholder="e.g. Replaced display IC and motherboard capacitor..."
+                  placeholder={t('repair.workPerformedPlaceholder', 'e.g. Replaced display IC and motherboard capacitor...')}
                   value={editWork}
                   onChange={(e) => setEditWork(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -607,7 +611,7 @@ export const RepairJobCardsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Parts Cost ({currency})</label>
+                  <label className="font-semibold text-slate-700">{t('repair.partsCost', 'Parts Cost')} ({currency})</label>
                   <input
                     type="number"
                     step="0.01"
@@ -619,7 +623,7 @@ export const RepairJobCardsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Labour / Service Cost ({currency})</label>
+                  <label className="font-semibold text-slate-700">{t('repair.labourCost', 'Labour / Service Cost')} ({currency})</label>
                   <input
                     type="number"
                     step="0.01"
@@ -632,14 +636,14 @@ export const RepairJobCardsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Payment Settlement</label>
+                <label className="font-semibold text-slate-700">{t('repair.paymentSettlement', 'Payment Settlement')}</label>
                 <select
                   value={editPaymentStatus}
                   onChange={(e) => setEditPaymentStatus(e.target.value as any)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
                 >
-                  <option value="PENDING">PENDING (Collect upon delivery)</option>
-                  <option value="PAID">PAID (Settled)</option>
+                  <option value="PENDING">{t('repair.pendingCollect', 'PENDING (Collect upon delivery)')}</option>
+                  <option value="PAID">{t('repair.paidSettled', 'PAID (Settled)')}</option>
                 </select>
               </div>
 
@@ -649,13 +653,13 @@ export const RepairJobCardsPage: React.FC = () => {
                   onClick={() => setEditingJob(null)}
                   className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold cursor-pointer shadow-xs"
                 >
-                  Save Progress
+                  {t('repair.saveProgress', 'Save Progress')}
                 </button>
               </div>
             </form>

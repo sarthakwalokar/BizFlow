@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../context/AuthContext';
 import { formatCurrency } from '../../../utils/currency';
 import { repairApi, RepairJobCard } from '../../../api/modules';
@@ -9,6 +10,7 @@ import {
 } from 'lucide-react';
 
 export const RepairTrackingPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const currency = business?.currency || 'INR';
 
@@ -46,15 +48,15 @@ export const RepairTrackingPage: React.FC = () => {
       <div>
         <div className="flex items-center gap-2.5">
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-            Repair Status Tracker &amp; History
+            {t('repair.trackerTitle', 'Repair Status Tracker & History')}
           </h1>
           <span className="px-2.5 py-0.5 rounded-full bg-violet-50 text-violet-800 text-xs font-bold border border-violet-200 flex items-center gap-1.5">
             <Clock size={13} className="text-violet-600" />
-            <span>Tracking Center</span>
+            <span>{t('repair.trackingCenter', 'Tracking Center')}</span>
           </span>
         </div>
         <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-          Track stage-wise diagnostic status, parts replacement history, and customer job cards.
+          {t('repair.trackerSubtitle', 'Track stage-wise diagnostic status, parts replacement history, and customer job cards.')}
         </p>
       </div>
 
@@ -66,7 +68,7 @@ export const RepairTrackingPage: React.FC = () => {
             <input
               type="text"
               required
-              placeholder="Search by Job Card Number (e.g. JOB-1001) or Customer Phone..."
+              placeholder={t('repair.searchPlaceholder', 'Search by Job Card Number (e.g. JOB-1001) or Customer Phone...')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-violet-500/20 font-mono"
@@ -78,7 +80,7 @@ export const RepairTrackingPage: React.FC = () => {
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             <Search size={15} />
-            <span>{loading ? 'Searching...' : 'Track Job'}</span>
+            <span>{loading ? t('common.loading', 'Searching...') : t('repair.trackJob', 'Track Job')}</span>
           </button>
         </form>
       </div>
@@ -89,8 +91,12 @@ export const RepairTrackingPage: React.FC = () => {
           {results.length === 0 ? (
             <div className="clay-card p-10 text-center text-slate-400 space-y-2">
               <Wrench size={32} className="mx-auto text-slate-300" />
-              <p className="font-bold text-slate-800 text-sm">No repair records matching "{query}"</p>
-              <p className="text-xs text-slate-400">Verify the job card number or contact phone number.</p>
+              <p className="font-bold text-slate-800 text-sm">
+                {t('repair.noRecordsFound', 'No repair records matching "{{query}}"', { query })}
+              </p>
+              <p className="text-xs text-slate-400">
+                {t('repair.verifyJobCard', 'Verify the job card number or contact phone number.')}
+              </p>
             </div>
           ) : (
             results.map((job) => (
@@ -105,7 +111,7 @@ export const RepairTrackingPage: React.FC = () => {
                       </span>
                     </div>
                     <p className="text-xs text-slate-500 mt-0.5 font-bold">
-                      {job.brand} {job.model} • Owner: {job.customerName} ({job.customerPhone})
+                      {job.brand} {job.model} • {t('repair.owner', 'Owner')}: {job.customerName} ({job.customerPhone})
                     </p>
                   </div>
 
@@ -114,7 +120,7 @@ export const RepairTrackingPage: React.FC = () => {
                       {job.status}
                     </span>
                     <p className="text-[11px] text-slate-400 font-mono mt-1">
-                      Target: {job.estimatedCompletionDate || 'Standard turnaround'}
+                      {t('repair.target', 'Target')}: {job.estimatedCompletionDate || t('repair.standardTurnaround', 'Standard turnaround')}
                     </p>
                   </div>
                 </div>
@@ -122,11 +128,11 @@ export const RepairTrackingPage: React.FC = () => {
                 {/* Progress Step Bar */}
                 <div className="grid grid-cols-5 gap-2 text-center text-[10px] font-bold">
                   {[
-                    { key: 'RECEIVED', label: '1. Received' },
-                    { key: 'DIAGNOSING', label: '2. Diagnosing' },
-                    { key: 'REPAIRING', label: '3. Repairing' },
-                    { key: 'READY', label: '4. Ready' },
-                    { key: 'DELIVERED', label: '5. Delivered' },
+                    { key: 'RECEIVED', label: `1. ${t('repair.received', 'Received')}` },
+                    { key: 'DIAGNOSING', label: `2. ${t('repair.diagnosing', 'Diagnosing')}` },
+                    { key: 'REPAIRING', label: `3. ${t('repair.repairing', 'Repairing')}` },
+                    { key: 'READY', label: `4. ${t('repair.ready', 'Ready')}` },
+                    { key: 'DELIVERED', label: `5. ${t('repair.delivered', 'Delivered')}` },
                   ].map((step) => {
                     const active = getStepActive(job.status, step.key);
                     return (
@@ -147,14 +153,14 @@ export const RepairTrackingPage: React.FC = () => {
                 {/* Diagnostics and Repair notes */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-                    <span className="font-bold text-slate-500 uppercase text-[10px]">Reported Problem</span>
+                    <span className="font-bold text-slate-500 uppercase text-[10px]">{t('repair.reportedProblem', 'Reported Problem')}</span>
                     <p className="text-slate-900 font-medium">{job.problemDescription}</p>
                   </div>
 
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-                    <span className="font-bold text-slate-500 uppercase text-[10px]">Work Performed</span>
+                    <span className="font-bold text-slate-500 uppercase text-[10px]">{t('repair.workPerformed', 'Work Performed')}</span>
                     <p className="text-slate-900 font-medium">
-                      {job.workPerformed || 'Awaiting completion log from technician.'}
+                      {job.workPerformed || t('repair.awaitingCompletion', 'Awaiting completion log from technician.')}
                     </p>
                   </div>
                 </div>
@@ -162,13 +168,13 @@ export const RepairTrackingPage: React.FC = () => {
                 {/* Costs & Settlement */}
                 <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-4 text-slate-600">
-                    <span>Parts: {formatCurrency(job.partsCost || 0, currency)}</span>
+                    <span>{t('repair.parts', 'Parts')}: {formatCurrency(job.partsCost || 0, currency)}</span>
                     <span>+</span>
-                    <span>Labour: {formatCurrency(job.labourCost || 0, currency)}</span>
+                    <span>{t('repair.labour', 'Labour')}: {formatCurrency(job.labourCost || 0, currency)}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-600">Total Charge:</span>
+                    <span className="font-bold text-slate-600">{t('repair.totalCharge', 'Total Charge')}:</span>
                     <span className="text-lg font-black text-slate-950">
                       {formatCurrency(job.totalFinalCost || job.totalEstimatedCost, currency)}
                     </span>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../context/AuthContext';
 import { formatCurrency } from '../../../utils/currency';
 import {
@@ -39,6 +40,7 @@ import {
 type ViewMode = 'TABLES' | 'PARCELS';
 
 export const RestaurantTablesPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const currency = business?.currency || 'INR';
 
@@ -276,9 +278,16 @@ export const RestaurantTablesPage: React.FC = () => {
   const handleCancelReservationPrompt = (table: RestaurantTable, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setConfirmModal({
-      title: 'Cancel Table Reservation',
-      message: `Are you sure you want to cancel the reservation for ${table.name || `Table ${table.tableNumber}`} (${table.reservationCustomerName || 'Guest'})? The table will become available for seating.`,
-      confirmText: 'Yes, Cancel Reservation',
+      title: t('restaurant.tables.cancelReservationTitle', 'Cancel Table Reservation'),
+      message: t(
+        'restaurant.tables.cancelReservationMsg',
+        'Are you sure you want to cancel the reservation for {{name}} ({{guest}})? The table will become available for seating.',
+        {
+          name: table.name || `${t('restaurant.tables.table', 'Table')} ${table.tableNumber}`,
+          guest: table.reservationCustomerName || t('restaurant.tables.guest', 'Guest'),
+        }
+      ),
+      confirmText: t('restaurant.tables.cancelReservationBtn', 'Yes, Cancel Reservation'),
       danger: true,
       onConfirm: async () => {
         try {
@@ -371,9 +380,13 @@ export const RestaurantTablesPage: React.FC = () => {
   // Delete Dine-in or Takeaway Order
   const handleDeleteOrderPrompt = (orderId: number, orderLabel: string) => {
     setConfirmModal({
-      title: 'Delete Restaurant Order',
-      message: `Are you sure you want to delete order ${orderLabel}? This will clear unpaid food items and associated kitchen tickets. Protected completed bills will not be deleted.`,
-      confirmText: 'Yes, Delete Order',
+      title: t('restaurant.tables.deleteOrderTitle', 'Delete Restaurant Order'),
+      message: t(
+        'restaurant.tables.deleteOrderMsg',
+        'Are you sure you want to delete order {{orderLabel}}? This will clear unpaid food items and associated kitchen tickets. Protected completed bills will not be deleted.',
+        { orderLabel }
+      ),
+      confirmText: t('restaurant.tables.deleteOrderBtn', 'Yes, Delete Order'),
       danger: true,
       onConfirm: async () => {
         try {
@@ -628,15 +641,15 @@ export const RestaurantTablesPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Tables &amp; Orders
+              {t('restaurant.tables.title', 'Tables & Orders')}
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 text-xs font-bold border border-amber-200 flex items-center gap-1.5">
               <UtensilsCrossed size={12} className="text-amber-600" />
-              <span>Restaurant Billing &amp; Reservations</span>
+              <span>{t('restaurant.tables.badge', 'Restaurant Billing & Reservations')}</span>
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Manage table bookings, dine-in tabs, takeaway orders, and instant receipt checkouts.
+            {t('restaurant.tables.subtitle', 'Manage table bookings, dine-in tabs, takeaway orders, and instant receipt checkouts.')}
           </p>
         </div>
 
@@ -650,7 +663,7 @@ export const RestaurantTablesPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <ShoppingBag size={15} />
-            <span>+ New Parcel / Takeaway</span>
+            <span>{t('restaurant.tables.newParcel', '+ New Parcel / Takeaway')}</span>
           </button>
 
           <button
@@ -658,7 +671,7 @@ export const RestaurantTablesPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold shadow-2xs transition-all cursor-pointer"
           >
             <Plus size={15} />
-            <span>Add Table</span>
+            <span>{t('restaurant.tables.addTable', 'Add Table')}</span>
           </button>
         </div>
       </div>
@@ -666,26 +679,26 @@ export const RestaurantTablesPage: React.FC = () => {
       {/* KPI Stats Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Tables</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('restaurant.tables.totalTables', 'Total Tables')}</span>
           <div className="text-2xl font-black text-slate-900">{tables.length}</div>
           <p className="text-[10px] text-slate-400">
-            {tables.reduce((acc, t) => acc + t.capacity, 0)} total seats
+            {t('restaurant.tables.totalSeats', '{{count}} total seats', { count: tables.reduce((acc, t) => acc + t.capacity, 0) })}
           </p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Available</span>
+          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">{t('restaurant.tables.available', 'Available')}</span>
           <div className="text-2xl font-black text-emerald-600">{availableCount}</div>
-          <p className="text-[10px] text-emerald-700">Ready to seat</p>
+          <p className="text-[10px] text-emerald-700">{t('restaurant.tables.readyToSeat', 'Ready to seat')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Occupied Tabs</span>
+          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">{t('restaurant.tables.occupiedTabs', 'Occupied Tabs')}</span>
           <div className="text-2xl font-black text-amber-600">{occupiedCount}</div>
-          <p className="text-[10px] text-amber-700">Dining in progress</p>
+          <p className="text-[10px] text-amber-700">{t('restaurant.tables.diningInProgress', 'Dining in progress')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-purple-600 uppercase tracking-wider">Reserved Tables</span>
+          <span className="text-xs font-bold text-purple-600 uppercase tracking-wider">{t('restaurant.tables.reservedTables', 'Reserved Tables')}</span>
           <div className="text-2xl font-black text-purple-600">{reservedCount}</div>
-          <p className="text-[10px] text-purple-700">Customer bookings</p>
+          <p className="text-[10px] text-purple-700">{t('restaurant.tables.customerBookings', 'Customer bookings')}</p>
         </div>
       </div>
 
@@ -701,7 +714,7 @@ export const RestaurantTablesPage: React.FC = () => {
             }`}
           >
             <UtensilsCrossed size={14} />
-            <span>Dine-In Tables ({tables.length})</span>
+            <span>{t('restaurant.tables.dineInTables', 'Dine-In Tables ({{count}})', { count: tables.length })}</span>
           </button>
 
           <button
@@ -713,7 +726,7 @@ export const RestaurantTablesPage: React.FC = () => {
             }`}
           >
             <ShoppingBag size={14} />
-            <span>Active Parcels &amp; Takeaways ({takeawayOrders.length})</span>
+            <span>{t('restaurant.tables.activeParcels', 'Active Parcels & Takeaways ({{count}})', { count: takeawayOrders.length })}</span>
           </button>
         </div>
 
@@ -729,7 +742,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
               >
-                {sec === 'ALL' ? 'All Sections' : sec}
+                {sec === 'ALL' ? t('restaurant.tables.allSections', 'All Sections') : sec}
               </button>
             ))}
           </div>
@@ -753,9 +766,9 @@ export const RestaurantTablesPage: React.FC = () => {
               <div className="clay-card p-12 text-center text-slate-400 space-y-3">
                 <UtensilsCrossed size={36} className="mx-auto text-slate-300" />
                 <div>
-                  <p className="font-bold text-slate-800 text-sm">No dining tables found</p>
+                  <p className="font-bold text-slate-800 text-sm">{t('restaurant.tables.noTablesFound', 'No dining tables found')}</p>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Click "Add Table" to set up your floor seating layout.
+                    {t('restaurant.tables.noTablesHint', 'Click "Add Table" to set up your floor seating layout.')}
                   </p>
                 </div>
               </div>
@@ -791,7 +804,11 @@ export const RestaurantTablesPage: React.FC = () => {
                               : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                           }`}
                         >
-                          {table.status}
+                          {isOccupied
+                            ? t('restaurant.tables.statusOccupied', 'OCCUPIED')
+                            : isReserved
+                            ? t('restaurant.tables.statusReserved', 'RESERVED')
+                            : t('restaurant.tables.statusAvailable', 'AVAILABLE')}
                         </span>
                         <span className="flex items-center gap-1 text-[11px] text-slate-500 font-semibold">
                           <Users size={12} />
@@ -802,7 +819,7 @@ export const RestaurantTablesPage: React.FC = () => {
                       {/* Table Name & Number */}
                       <div className="my-3 space-y-0.5">
                         <h3 className="text-base font-black text-slate-900">
-                          {table.name || `Table ${table.tableNumber}`}
+                          {table.name || `${t('restaurant.tables.table', 'Table')} ${table.tableNumber}`}
                         </h3>
                         <p className="text-[11px] text-slate-400 font-medium">{table.sectionFloor}</p>
                       </div>
@@ -828,17 +845,17 @@ export const RestaurantTablesPage: React.FC = () => {
                         {isOccupied && table.activeOrder ? (
                           <div className="space-y-0.5">
                             <span className="text-[10px] text-amber-700 font-bold block">
-                              {table.activeOrder.items?.length || 0} items ordered
+                              {t('restaurant.tables.itemsOrdered', '{{count}} items ordered', { count: table.activeOrder.items?.length || 0 })}
                             </span>
                             <span className="font-black text-slate-900">
                               {formatCurrency(table.activeOrder.totalAmount || 0, currency)}
                             </span>
                           </div>
                         ) : isReserved ? (
-                          <span className="text-[11px] text-purple-700 font-bold">Booked Table</span>
+                          <span className="text-[11px] text-purple-700 font-bold">{t('restaurant.tables.bookedTable', 'Booked Table')}</span>
                         ) : (
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] text-emerald-600 font-semibold">Available</span>
+                            <span className="text-[11px] text-emerald-600 font-semibold">{t('restaurant.tables.statusAvailable', 'Available')}</span>
                           </div>
                         )}
                         <ChevronRight size={14} className="text-slate-400" />
@@ -871,7 +888,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="text-base font-bold text-slate-900">
-                          {selectedTable.name || `Table ${selectedTable.tableNumber}`}
+                          {selectedTable.name || `${t('restaurant.tables.table', 'Table')} ${selectedTable.tableNumber}`}
                         </h3>
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
@@ -882,11 +899,15 @@ export const RestaurantTablesPage: React.FC = () => {
                               : 'bg-emerald-100 text-emerald-800'
                           }`}
                         >
-                          {selectedTable.status}
+                          {selectedTable.status === 'OCCUPIED'
+                            ? t('restaurant.tables.statusOccupied', 'OCCUPIED')
+                            : selectedTable.status === 'RESERVED'
+                            ? t('restaurant.tables.statusReserved', 'RESERVED')
+                            : t('restaurant.tables.statusAvailable', 'AVAILABLE')}
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-400">
-                        {selectedTable.sectionFloor} • Capacity {selectedTable.capacity} guests
+                        {selectedTable.sectionFloor} • {t('restaurant.tables.capacityGuests', 'Capacity {{count}} guests', { count: selectedTable.capacity })}
                       </p>
                     </div>
                   </div>
@@ -905,14 +926,14 @@ export const RestaurantTablesPage: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-purple-900 uppercase flex items-center gap-1">
                         <Calendar size={13} />
-                        <span>Active Reservation</span>
+                        <span>{t('restaurant.tables.activeReservation', 'Active Reservation')}</span>
                       </span>
                       <button
                         type="button"
                         onClick={(e) => handleCancelReservationPrompt(selectedTable, e)}
                         className="text-[11px] font-bold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg border border-rose-200 cursor-pointer transition-colors"
                       >
-                        Cancel Reservation
+                        {t('restaurant.tables.cancelReservation', 'Cancel Reservation')}
                       </button>
                     </div>
 
@@ -930,12 +951,12 @@ export const RestaurantTablesPage: React.FC = () => {
                       {selectedTable.reservationTime && (
                         <p className="flex items-center gap-1.5 text-slate-600">
                           <Clock size={13} className="text-slate-400" />
-                          <span>Time / Slot: {selectedTable.reservationTime}</span>
+                          <span>{t('restaurant.tables.timeSlot', 'Time / Slot: {{time}}', { time: selectedTable.reservationTime })}</span>
                         </p>
                       )}
                       {selectedTable.reservationNotes && (
                         <p className="text-[11px] text-purple-800 italic pt-1 border-t border-purple-100">
-                          Notes: "{selectedTable.reservationNotes}"
+                          {t('restaurant.tables.notesWithQuotes', 'Notes: "{{notes}}"', { notes: selectedTable.reservationNotes })}
                         </p>
                       )}
                     </div>
@@ -949,7 +970,7 @@ export const RestaurantTablesPage: React.FC = () => {
                       className="w-full py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-xl shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
                     >
                       <UtensilsCrossed size={14} />
-                      <span>Seat Guests &amp; Take Order</span>
+                      <span>{t('restaurant.tables.seatGuestsTakeOrder', 'Seat Guests & Take Order')}</span>
                     </button>
                   </div>
                 )}
@@ -963,7 +984,7 @@ export const RestaurantTablesPage: React.FC = () => {
                       className="flex-1 py-2 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
                     >
                       <Calendar size={13} />
-                      <span>Book / Reserve Table</span>
+                      <span>{t('restaurant.tables.bookReserveTable', 'Book / Reserve Table')}</span>
                     </button>
 
                     <button
@@ -975,7 +996,7 @@ export const RestaurantTablesPage: React.FC = () => {
                       className="flex-1 py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-colors"
                     >
                       <Plus size={13} />
-                      <span>Take Dine-In Order</span>
+                      <span>{t('restaurant.tables.takeDineInOrder', 'Take Dine-In Order')}</span>
                     </button>
                   </div>
                 )}
@@ -984,7 +1005,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
                     <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                      Current Dining Tab
+                      {t('restaurant.tables.currentDiningTab', 'Current Dining Tab')}
                     </h4>
                     {tableOrder && tableOrder.items && tableOrder.items.length > 0 && (
                       <div className="flex items-center gap-1.5">
@@ -996,17 +1017,17 @@ export const RestaurantTablesPage: React.FC = () => {
                           className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 hover:text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 cursor-pointer"
                         >
                           <Plus size={12} />
-                          <span>+ Add Items</span>
+                          <span>{t('restaurant.tables.addItemsBtn', '+ Add Items')}</span>
                         </button>
                         <button
                           onClick={() =>
                             handleDeleteOrderPrompt(
                               tableOrder.id,
-                              `#${tableOrder.orderNumber} (${selectedTable.name || `Table ${selectedTable.tableNumber}`})`
+                              `#${tableOrder.orderNumber} (${selectedTable.name || `${t('restaurant.tables.table', 'Table')} ${selectedTable.tableNumber}`})`
                             )
                           }
                           className="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 cursor-pointer"
-                          title="Delete / Cancel Order"
+                          title={t('restaurant.tables.deleteCancelOrder', 'Delete / Cancel Order')}
                         >
                           <Trash2 size={13} />
                         </button>
@@ -1017,11 +1038,11 @@ export const RestaurantTablesPage: React.FC = () => {
                   {!tableOrder || !tableOrder.items || tableOrder.items.length === 0 ? (
                     <div className="py-6 text-center text-slate-400 space-y-2 bg-slate-50/70 rounded-xl border border-dashed border-slate-200">
                       <ShoppingBag size={24} className="mx-auto text-slate-300" />
-                      <p className="text-xs font-bold text-slate-700">No active dining order</p>
+                      <p className="text-xs font-bold text-slate-700">{t('restaurant.tables.noActiveOrder', 'No active dining order')}</p>
                       <p className="text-[11px] text-slate-400">
                         {selectedTable.status === 'RESERVED'
-                          ? 'Table is reserved. Click below when guest arrives.'
-                          : 'Click below to take food order and send KOT to kitchen.'}
+                          ? t('restaurant.tables.tableReservedHint', 'Table is reserved. Click below when guest arrives.')
+                          : t('restaurant.tables.takeOrderHint', 'Click below to take food order and send KOT to kitchen.')}
                       </p>
                     </div>
                   ) : (
@@ -1035,7 +1056,10 @@ export const RestaurantTablesPage: React.FC = () => {
                             <p className="font-bold text-slate-900">{item.itemName}</p>
                             <div className="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5">
                               <span>
-                                Qty: {item.quantity} × {formatCurrency(item.unitPrice, currency)}
+                                {t('restaurant.tables.qtyPrice', 'Qty: {{qty}} × {{price}}', {
+                                  qty: item.quantity,
+                                  price: formatCurrency(item.unitPrice, currency),
+                                })}
                               </span>
                               {item.notes && <span className="text-amber-600 font-medium">({item.notes})</span>}
                             </div>
@@ -1054,7 +1078,7 @@ export const RestaurantTablesPage: React.FC = () => {
                                   : 'bg-amber-50 text-amber-700'
                               }`}
                             >
-                              KOT: {item.kotStatus || 'PENDING'}
+                              {t('restaurant.tables.kotStatus', 'KOT: {{status}}', { status: item.kotStatus || 'PENDING' })}
                             </span>
                           </div>
                         </div>
@@ -1068,7 +1092,7 @@ export const RestaurantTablesPage: React.FC = () => {
               {tableOrder && tableOrder.items && tableOrder.items.length > 0 && (
                 <div className="pt-3 border-t border-slate-100 space-y-3">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-bold text-slate-600">Total Food Bill:</span>
+                    <span className="font-bold text-slate-600">{t('restaurant.tables.totalFoodBill', 'Total Food Bill:')}</span>
                     <span className="text-xl font-black text-slate-950">
                       {formatCurrency(tableOrder.totalAmount, currency)}
                     </span>
@@ -1079,7 +1103,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Receipt size={15} />
-                    <span>Generate Bill &amp; Settle Payment</span>
+                    <span>{t('restaurant.tables.generateBillSettle', 'Generate Bill & Settle Payment')}</span>
                   </button>
                 </div>
               )}
@@ -1095,8 +1119,8 @@ export const RestaurantTablesPage: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Active Parcels &amp; Takeaway Orders</h3>
-              <p className="text-xs text-slate-500">Orders being prepared or waiting for customer pickup and billing.</p>
+              <h3 className="text-sm font-bold text-slate-900">{t('restaurant.tables.activeParcelsTitle', 'Active Parcels & Takeaway Orders')}</h3>
+              <p className="text-xs text-slate-500">{t('restaurant.tables.activeParcelsSubtitle', 'Orders being prepared or waiting for customer pickup and billing.')}</p>
             </div>
 
             <button
@@ -1107,7 +1131,7 @@ export const RestaurantTablesPage: React.FC = () => {
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs cursor-pointer"
             >
               <Plus size={14} />
-              <span>+ New Parcel Order</span>
+              <span>{t('restaurant.tables.newParcelOrderBtn', '+ New Parcel Order')}</span>
             </button>
           </div>
 
@@ -1115,9 +1139,9 @@ export const RestaurantTablesPage: React.FC = () => {
             <div className="clay-card p-12 text-center text-slate-400 space-y-3">
               <ShoppingBag size={36} className="mx-auto text-slate-300" />
               <div>
-                <p className="font-bold text-slate-800 text-sm">No active parcel orders right now</p>
+                <p className="font-bold text-slate-800 text-sm">{t('restaurant.tables.noParcelsFound', 'No active parcel orders right now')}</p>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Customers ordering food for takeaway or parcel can be created without booking a table.
+                  {t('restaurant.tables.noParcelsHint', 'Customers ordering food for takeaway or parcel can be created without booking a table.')}
                 </p>
               </div>
               <button
@@ -1127,7 +1151,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 }}
                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs cursor-pointer"
               >
-                + Create Takeaway Order
+                {t('restaurant.tables.createTakeawayBtn', '+ Create Takeaway Order')}
               </button>
             </div>
           ) : (
@@ -1155,7 +1179,7 @@ export const RestaurantTablesPage: React.FC = () => {
                             )
                           }
                           className="p-1 rounded text-rose-500 hover:text-rose-700 hover:bg-rose-50 cursor-pointer"
-                          title="Delete Order"
+                          title={t('common.delete', 'Delete Order')}
                         >
                           <Trash2 size={13} />
                         </button>
@@ -1164,7 +1188,7 @@ export const RestaurantTablesPage: React.FC = () => {
 
                     <div>
                       <h4 className="text-sm font-bold text-slate-900">
-                        {ord.customerName || 'Takeaway Customer'}
+                        {ord.customerName || t('restaurant.tables.takeawayCustomer', 'Takeaway Customer')}
                       </h4>
                       {ord.customerPhone && (
                         <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
@@ -1191,7 +1215,7 @@ export const RestaurantTablesPage: React.FC = () => {
 
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
                     <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-bold block">Bill Total</span>
+                      <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('restaurant.tables.billTotal', 'Bill Total')}</span>
                       <span className="text-base font-black text-slate-900">
                         {formatCurrency(ord.totalAmount, currency)}
                       </span>
@@ -1202,7 +1226,7 @@ export const RestaurantTablesPage: React.FC = () => {
                       className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-xs flex items-center gap-1.5 cursor-pointer"
                     >
                       <Receipt size={13} />
-                      <span>Bill &amp; Pay</span>
+                      <span>{t('restaurant.tables.billAndPay', 'Bill & Pay')}</span>
                     </button>
                   </div>
                 </div>
@@ -1222,9 +1246,11 @@ export const RestaurantTablesPage: React.FC = () => {
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">
-                    Add Items to {selectedTable.name || `Table ${selectedTable.tableNumber}`}
+                    {t('restaurant.tables.addItemsToTable', 'Add Items to {{name}}', {
+                      name: selectedTable.name || `${t('restaurant.tables.table', 'Table')} ${selectedTable.tableNumber}`,
+                    })}
                   </h3>
-                  <p className="text-xs text-slate-400">Select dishes to dispatch KOT ticket to kitchen</p>
+                  <p className="text-xs text-slate-400">{t('restaurant.tables.selectDishesHint', 'Select dishes to dispatch KOT ticket to kitchen')}</p>
                 </div>
                 <button
                   onClick={() => setShowAddItemModal(false)}
@@ -1240,7 +1266,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Search menu items..."
+                    placeholder={t('restaurant.tables.searchMenu', 'Search menu items...')}
                     value={productSearch}
                     onChange={(e) => setProductSearch(e.target.value)}
                     className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20"
@@ -1252,7 +1278,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none"
                 >
-                  <option value="ALL">All Categories</option>
+                  <option value="ALL">{t('restaurant.tables.allCategories', 'All Categories')}</option>
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
@@ -1307,7 +1333,7 @@ export const RestaurantTablesPage: React.FC = () => {
                             onClick={() => handleAddItemToDineInCart(prod)}
                             className="px-3 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs cursor-pointer border border-amber-200"
                           >
-                            + Add
+                            {t('common.add', '+ Add')}
                           </button>
                         )}
                       </div>
@@ -1318,7 +1344,7 @@ export const RestaurantTablesPage: React.FC = () => {
               {/* Cart Items To Add */}
               {orderItemsCart.length > 0 && (
                 <div className="mt-3 p-3 rounded-xl bg-amber-50/50 border border-amber-200 space-y-2">
-                  <h4 className="text-[11px] font-bold text-amber-900 uppercase">Items Ready to Send to Kitchen:</h4>
+                  <h4 className="text-[11px] font-bold text-amber-900 uppercase">{t('restaurant.tables.itemsReadyKot', 'Items Ready to Send to Kitchen:')}</h4>
                   <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
                     {orderItemsCart.map((item) => (
                       <div key={item.productId} className="flex items-center justify-between text-xs">
@@ -1327,7 +1353,7 @@ export const RestaurantTablesPage: React.FC = () => {
                         </span>
                         <input
                           type="text"
-                          placeholder="Kitchen notes (e.g. less spicy)..."
+                          placeholder={t('restaurant.tables.kitchenNotesPlaceholder', 'Kitchen notes (e.g. less spicy)...')}
                           value={item.notes}
                           onChange={(e) => handleUpdateDineInNotes(item.productId, e.target.value)}
                           className="px-2 py-0.5 text-[11px] rounded border border-slate-200 bg-white max-w-[180px]"
@@ -1341,7 +1367,7 @@ export const RestaurantTablesPage: React.FC = () => {
 
             <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
               <div>
-                <span className="text-[10px] text-slate-400 block font-bold">New Items Total</span>
+                <span className="text-[10px] text-slate-400 block font-bold">{t('restaurant.tables.newItemsTotal', 'New Items Total')}</span>
                 <span className="text-sm font-black text-slate-900">
                   {formatCurrency(
                     orderItemsCart.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0),
@@ -1356,7 +1382,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   onClick={() => setShowAddItemModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="button"
@@ -1365,7 +1391,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-xs font-bold shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
                 >
                   <ChefHat size={14} />
-                  <span>{orderLoading ? 'Sending...' : 'Send KOT to Kitchen'}</span>
+                  <span>{orderLoading ? t('common.processing', 'Sending...') : t('restaurant.tables.sendKotToKitchen', 'Send KOT to Kitchen')}</span>
                 </button>
               </div>
             </div>
@@ -1386,10 +1412,15 @@ export const RestaurantTablesPage: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">
-                    Book {reserveTableTarget.name || `Table ${reserveTableTarget.tableNumber}`}
+                    {t('restaurant.tables.bookTableTitle', 'Book {{name}}', {
+                      name: reserveTableTarget.name || `${t('restaurant.tables.table', 'Table')} ${reserveTableTarget.tableNumber}`,
+                    })}
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Capacity: {reserveTableTarget.capacity} guests • {reserveTableTarget.sectionFloor}
+                    {t('restaurant.tables.capacitySection', 'Capacity: {{capacity}} guests • {{section}}', {
+                      capacity: reserveTableTarget.capacity,
+                      section: reserveTableTarget.sectionFloor,
+                    })}
                   </p>
                 </div>
               </div>
@@ -1405,7 +1436,7 @@ export const RestaurantTablesPage: React.FC = () => {
               <div className="space-y-1">
                 <label className="font-semibold text-slate-800 flex items-center gap-1">
                   <UserIcon size={12} className="text-purple-600" />
-                  <span>Customer Name *</span>
+                  <span>{t('restaurant.tables.customerNameReq', 'Customer Name *')}</span>
                 </label>
                 <input
                   type="text"
@@ -1421,7 +1452,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700 flex items-center gap-1">
                     <Phone size={12} className="text-slate-400" />
-                    <span>Mobile (Optional)</span>
+                    <span>{t('restaurant.tables.mobileOpt', 'Mobile (Optional)')}</span>
                   </label>
                   <input
                     type="text"
@@ -1435,7 +1466,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700 flex items-center gap-1">
                     <Clock size={12} className="text-slate-400" />
-                    <span>Time / Slot (Optional)</span>
+                    <span>{t('restaurant.tables.timeSlotOpt', 'Time / Slot (Optional)')}</span>
                   </label>
                   <input
                     type="text"
@@ -1450,7 +1481,7 @@ export const RestaurantTablesPage: React.FC = () => {
               <div className="space-y-1">
                 <label className="font-semibold text-slate-700 flex items-center gap-1">
                   <FileText size={12} className="text-slate-400" />
-                  <span>Customer Details / Special Requests (Optional)</span>
+                  <span>{t('restaurant.tables.customerDetailsReqOpt', 'Customer Details / Special Requests (Optional)')}</span>
                 </label>
                 <textarea
                   rows={2}
@@ -1467,7 +1498,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   onClick={() => setShowReserveModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
@@ -1475,7 +1506,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   className="px-4 py-2 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold cursor-pointer shadow-xs disabled:opacity-50 flex items-center gap-1.5"
                 >
                   {reserving && <Loader2 size={13} className="animate-spin" />}
-                  <span>{reserving ? 'Saving...' : 'Confirm Table Booking'}</span>
+                  <span>{reserving ? t('common.saving', 'Saving...') : t('restaurant.tables.confirmTableBooking', 'Confirm Table Booking')}</span>
                 </button>
               </div>
             </form>
@@ -1496,8 +1527,8 @@ export const RestaurantTablesPage: React.FC = () => {
                     <ShoppingBag size={16} />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">New Parcel / Takeaway Order</h3>
-                    <p className="text-xs text-slate-400">Order &amp; bill directly without table assignment</p>
+                    <h3 className="text-sm font-bold text-slate-900">{t('restaurant.tables.newParcelModalTitle', 'New Parcel / Takeaway Order')}</h3>
+                    <p className="text-xs text-slate-400">{t('restaurant.tables.newParcelModalSubtitle', 'Order & bill directly without table assignment')}</p>
                   </div>
                 </div>
                 <button
@@ -1513,15 +1544,15 @@ export const RestaurantTablesPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                     <UserIcon size={13} className="text-emerald-600" />
-                    <span>Customer Information</span>
+                    <span>{t('restaurant.tables.customerInformation', 'Customer Information')}</span>
                   </span>
-                  <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">Optional</span>
+                  <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">{t('common.optional', 'Optional')}</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <div className="space-y-1">
                     <label className="text-[11px] font-semibold text-slate-600 flex items-center gap-1">
                       <UserIcon size={11} className="text-slate-400" />
-                      <span>Customer Name (Optional)</span>
+                      <span>{t('restaurant.tables.customerNameOpt', 'Customer Name (Optional)')}</span>
                     </label>
                     <input
                       type="text"
@@ -1535,7 +1566,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   <div className="space-y-1">
                     <label className="text-[11px] font-semibold text-slate-600 flex items-center gap-1">
                       <Phone size={11} className="text-slate-400" />
-                      <span>Contact Mobile (Optional)</span>
+                      <span>{t('restaurant.tables.contactMobileOpt', 'Contact Mobile (Optional)')}</span>
                     </label>
                     <input
                       type="text"
@@ -1549,7 +1580,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   <div className="space-y-1">
                     <label className="text-[11px] font-semibold text-slate-600 flex items-center gap-1">
                       <Mail size={11} className="text-slate-400" />
-                      <span>Email (Optional)</span>
+                      <span>{t('restaurant.tables.emailOpt', 'Email (Optional)')}</span>
                     </label>
                     <input
                       type="email"
@@ -1563,7 +1594,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   <div className="space-y-1">
                     <label className="text-[11px] font-semibold text-slate-600 flex items-center gap-1">
                       <MapPin size={11} className="text-slate-400" />
-                      <span>Delivery / Pickup Address (Optional)</span>
+                      <span>{t('restaurant.tables.addressOpt', 'Delivery / Pickup Address (Optional)')}</span>
                     </label>
                     <input
                       type="text"
@@ -1582,7 +1613,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Search menu items..."
+                    placeholder={t('restaurant.tables.searchMenu', 'Search menu items...')}
                     value={parcelProductSearch}
                     onChange={(e) => setParcelProductSearch(e.target.value)}
                     className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-none"
@@ -1594,7 +1625,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   onChange={(e) => setParcelCategory(e.target.value)}
                   className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none"
                 >
-                  <option value="ALL">All Categories</option>
+                  <option value="ALL">{t('restaurant.tables.allCategories', 'All Categories')}</option>
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
@@ -1649,7 +1680,7 @@ export const RestaurantTablesPage: React.FC = () => {
                             onClick={() => handleAddParcelItem(prod)}
                             className="px-3 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs cursor-pointer border border-emerald-200"
                           >
-                            + Add
+                            {t('common.add', '+ Add')}
                           </button>
                         )}
                       </div>
@@ -1660,7 +1691,7 @@ export const RestaurantTablesPage: React.FC = () => {
               {/* Parcel Cart Summary */}
               {parcelCart.length > 0 && (
                 <div className="mt-3 p-3 rounded-xl bg-emerald-50/50 border border-emerald-200 space-y-2">
-                  <h4 className="text-[11px] font-bold text-emerald-900 uppercase">Selected Parcel Items:</h4>
+                  <h4 className="text-[11px] font-bold text-emerald-900 uppercase">{t('restaurant.tables.selectedParcelItems', 'Selected Parcel Items:')}</h4>
                   <div className="space-y-1 max-h-28 overflow-y-auto pr-1">
                     {parcelCart.map((item) => (
                       <div key={item.productId} className="flex items-center justify-between text-xs">
@@ -1669,7 +1700,7 @@ export const RestaurantTablesPage: React.FC = () => {
                         </span>
                         <input
                           type="text"
-                          placeholder="Parcel instructions (e.g. pack separately)..."
+                          placeholder={t('restaurant.tables.parcelInstructions', 'Parcel instructions (e.g. pack separately)...')}
                           value={item.notes}
                           onChange={(e) => handleUpdateParcelNotes(item.productId, e.target.value)}
                           className="px-2 py-0.5 text-[11px] rounded border border-slate-200 bg-white max-w-[200px]"
@@ -1684,7 +1715,7 @@ export const RestaurantTablesPage: React.FC = () => {
             {/* Footer Actions */}
             <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div>
-                <span className="text-[10px] text-slate-400 block font-bold">Total Parcel Bill</span>
+                <span className="text-[10px] text-slate-400 block font-bold">{t('restaurant.tables.totalParcelBill', 'Total Parcel Bill')}</span>
                 <span className="text-base font-black text-slate-900">
                   {formatCurrency(
                     parcelCart.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0),
@@ -1701,7 +1732,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold cursor-pointer disabled:opacity-50"
                   title="Send order to kitchen and collect payment later"
                 >
-                  Send to KOT (Pay Later)
+                  {t('restaurant.tables.sendKotPayLater', 'Send to KOT (Pay Later)')}
                 </button>
 
                 <button
@@ -1711,7 +1742,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1"
                 >
                   <Receipt size={14} />
-                  <span>Bill &amp; Pay Now</span>
+                  <span>{t('restaurant.tables.billAndPayNow', 'Bill & Pay Now')}</span>
                 </button>
               </div>
             </div>
@@ -1732,7 +1763,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">
-                    Bill Settlement &amp; Checkout
+                    {t('restaurant.tables.settleTitle', 'Bill Settlement & Checkout')}
                   </h3>
                   <p className="text-xs text-slate-400">
                     {settlementTarget.type === 'DINE_IN'
@@ -1766,7 +1797,7 @@ export const RestaurantTablesPage: React.FC = () => {
 
               <div className="pt-2 border-t border-slate-200 space-y-1">
                 <div className="flex items-center justify-between text-slate-500">
-                  <span>Subtotal</span>
+                  <span>{t('common.subtotal', 'Subtotal')}</span>
                   <span>{formatCurrency(settlementTarget.subtotal, currency)}</span>
                 </div>
                 {settlementTarget.taxRate > 0 && (
@@ -1778,7 +1809,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   </div>
                 )}
                 <div className="flex items-center justify-between text-sm font-black text-slate-900 pt-1 border-t border-slate-200">
-                  <span>Total Amount Payable</span>
+                  <span>{t('restaurant.tables.totalPayable', 'Total Amount Payable')}</span>
                   <span className="text-emerald-700 text-lg">
                     {formatCurrency(settlementTarget.grandTotal, currency)}
                   </span>
@@ -1791,22 +1822,26 @@ export const RestaurantTablesPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="font-bold text-slate-800 flex items-center gap-1.5">
                   <UserIcon size={13} className="text-emerald-600" />
-                  <span>Customer Information</span>
-                  <span className="text-[10px] font-normal text-slate-400 bg-slate-200/60 px-1.5 py-0.5 rounded-full">Optional</span>
+                  <span>{t('restaurant.tables.customerInformation', 'Customer Information')}</span>
+                  <span className="text-[10px] font-normal text-slate-400 bg-slate-200/60 px-1.5 py-0.5 rounded-full">{t('common.optional', 'Optional')}</span>
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowSettleCustomerForm(!showSettleCustomerForm)}
                   className="text-[11px] text-emerald-600 hover:text-emerald-700 font-semibold cursor-pointer"
                 >
-                  {showSettleCustomerForm ? 'Hide Details' : (settleCustomerName || settleCustomerPhone ? 'Edit Details' : '+ Add Customer Info')}
+                  {showSettleCustomerForm
+                    ? t('restaurant.tables.hideDetails', 'Hide Details')
+                    : settleCustomerName || settleCustomerPhone
+                    ? t('restaurant.tables.editDetails', 'Edit Details')
+                    : t('restaurant.tables.addCustomerInfo', '+ Add Customer Info')}
                 </button>
               </div>
 
               {showSettleCustomerForm && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-slate-200/60">
                   <div className="space-y-0.5">
-                    <label className="text-[10px] font-semibold text-slate-600">Name (Optional)</label>
+                    <label className="text-[10px] font-semibold text-slate-600">{t('restaurant.tables.nameOpt', 'Name (Optional)')}</label>
                     <input
                       type="text"
                       placeholder="e.g. Rahul Sharma"
@@ -1816,7 +1851,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-0.5">
-                    <label className="text-[10px] font-semibold text-slate-600">Phone (Optional)</label>
+                    <label className="text-[10px] font-semibold text-slate-600">{t('restaurant.tables.phoneOpt', 'Phone (Optional)')}</label>
                     <input
                       type="text"
                       placeholder="+91 98765 43210"
@@ -1826,7 +1861,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-0.5">
-                    <label className="text-[10px] font-semibold text-slate-600">Email (Optional)</label>
+                    <label className="text-[10px] font-semibold text-slate-600">{t('restaurant.tables.emailOpt', 'Email (Optional)')}</label>
                     <input
                       type="email"
                       placeholder="customer@example.com"
@@ -1836,7 +1871,7 @@ export const RestaurantTablesPage: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-0.5">
-                    <label className="text-[10px] font-semibold text-slate-600">Address (Optional)</label>
+                    <label className="text-[10px] font-semibold text-slate-600">{t('restaurant.tables.addressOpt', 'Address (Optional)')}</label>
                     <input
                       type="text"
                       placeholder="e.g. Flat 102, City"
@@ -1851,12 +1886,12 @@ export const RestaurantTablesPage: React.FC = () => {
 
             {/* Payment Method Selector */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-800">Select Payment Method</label>
+              <label className="text-xs font-bold text-slate-800">{t('restaurant.tables.selectPaymentMethod', 'Select Payment Method')}</label>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { id: 'CASH', label: 'Cash', icon: Banknote },
-                  { id: 'UPI', label: 'UPI / QR', icon: QrCode },
-                  { id: 'CARD', label: 'Card / POS', icon: CreditCard },
+                  { id: 'CASH', label: t('restaurant.tables.pmCash', 'Cash'), icon: Banknote },
+                  { id: 'UPI', label: t('restaurant.tables.pmUpi', 'UPI / QR'), icon: QrCode },
+                  { id: 'CARD', label: t('restaurant.tables.pmCard', 'Card / POS'), icon: CreditCard },
                 ].map((pm) => {
                   const Icon = pm.icon;
                   const isSelected = paymentMethod === pm.id;
@@ -1883,7 +1918,7 @@ export const RestaurantTablesPage: React.FC = () => {
             {paymentMethod === 'CASH' && (
               <div className="p-3 rounded-xl bg-amber-50/60 border border-amber-200 space-y-2 text-xs">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="font-semibold text-amber-900">Cash Received from Guest:</span>
+                  <span className="font-semibold text-amber-900">{t('restaurant.tables.cashReceived', 'Cash Received from Guest:')}</span>
                   <input
                     type="number"
                     value={cashTendered}
@@ -1894,7 +1929,7 @@ export const RestaurantTablesPage: React.FC = () => {
 
                 {parseFloat(cashTendered) > settlementTarget.grandTotal && (
                   <div className="flex items-center justify-between text-xs pt-1 border-t border-amber-200 font-bold text-amber-950">
-                    <span>Change Due to Return:</span>
+                    <span>{t('restaurant.tables.changeDue', 'Change Due to Return:')}</span>
                     <span className="text-emerald-700 text-sm font-black">
                       {formatCurrency(parseFloat(cashTendered) - settlementTarget.grandTotal, currency)}
                     </span>
@@ -1910,7 +1945,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 onClick={() => setShowPaymentModal(false)}
                 className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold cursor-pointer"
               >
-                Cancel
+                {t('common.cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -1919,7 +1954,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
               >
                 {settlingPayment ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle2 size={15} />}
-                <span>{settlingPayment ? 'Processing...' : 'Complete Payment & Settle'}</span>
+                <span>{settlingPayment ? t('common.processing', 'Processing...') : t('restaurant.tables.completePaymentSettle', 'Complete Payment & Settle')}</span>
               </button>
             </div>
           </div>
@@ -1935,7 +1970,7 @@ export const RestaurantTablesPage: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-100 pb-2 print:hidden">
               <div className="flex items-center gap-2">
                 <CheckCircle2 size={18} className="text-emerald-600" />
-                <span className="text-xs font-bold text-emerald-800">Bill Settled &amp; Paid</span>
+                <span className="text-xs font-bold text-emerald-800">{t('restaurant.tables.billSettledPaid', 'Bill Settled & Paid')}</span>
               </div>
               <button
                 onClick={() => setShowReceiptModal(false)}
@@ -1952,7 +1987,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   <div className="flex justify-center pb-1">
                     <img
                       src={business.logo}
-                      alt={business?.name || 'Restaurant'}
+                      alt={business?.name || t('restaurant.tables.defaultRestName', 'Restaurant & Dining')}
                       className="max-h-12 max-w-[120px] object-contain mx-auto"
                       onError={(e) => {
                         (e.target as HTMLElement).style.display = 'none';
@@ -1961,7 +1996,7 @@ export const RestaurantTablesPage: React.FC = () => {
                   </div>
                 )}
                 <h3 className="font-black text-sm uppercase tracking-wider text-slate-900">
-                  {business?.name || 'Restaurant & Dining'}
+                  {business?.name || t('restaurant.tables.defaultRestName', 'Restaurant & Dining')}
                 </h3>
                 {business?.address && <p className="text-[10px] text-slate-500">{business.address}</p>}
                 {business?.phone && <p className="text-[10px] text-slate-500">Ph: {business.phone}</p>}
@@ -1972,17 +2007,17 @@ export const RestaurantTablesPage: React.FC = () => {
 
               <div className="text-[10px] space-y-0.5 border-b border-dashed border-slate-300 pb-2 text-slate-600">
                 <div className="flex justify-between">
-                  <span>Order: {receiptData.orderNumber}</span>
+                  <span>{t('restaurant.tables.receiptOrder', 'Order: {{num}}', { num: receiptData.orderNumber })}</span>
                   <span>{receiptData.paidAt}</span>
                 </div>
                 <div className="flex justify-between font-bold text-slate-900">
                   <span>{receiptData.orderType}</span>
                   <span className="text-emerald-700">PAID</span>
                 </div>
-                {receiptData.customerName && <div>Customer: {receiptData.customerName}</div>}
-                {receiptData.customerPhone && <div>Phone: {receiptData.customerPhone}</div>}
-                {receiptData.customerEmail && <div>Email: {receiptData.customerEmail}</div>}
-                {receiptData.customerAddress && <div>Address: {receiptData.customerAddress}</div>}
+                {receiptData.customerName && <div>{t('restaurant.tables.receiptCustomer', 'Customer: {{name}}', { name: receiptData.customerName })}</div>}
+                {receiptData.customerPhone && <div>{t('restaurant.tables.receiptPhone', 'Phone: {{phone}}', { phone: receiptData.customerPhone })}</div>}
+                {receiptData.customerEmail && <div>{t('restaurant.tables.receiptEmail', 'Email: {{email}}', { email: receiptData.customerEmail })}</div>}
+                {receiptData.customerAddress && <div>{t('restaurant.tables.receiptAddress', 'Address: {{address}}', { address: receiptData.customerAddress })}</div>}
               </div>
 
               {/* Items */}
@@ -2000,29 +2035,29 @@ export const RestaurantTablesPage: React.FC = () => {
               {/* Totals */}
               <div className="space-y-0.5 text-xs pt-1">
                 <div className="flex justify-between text-slate-500">
-                  <span>Subtotal</span>
+                  <span>{t('common.subtotal', 'Subtotal')}</span>
                   <span>{formatCurrency(receiptData.subtotal, currency)}</span>
                 </div>
                 {receiptData.taxAmount > 0 && (
                   <div className="flex justify-between text-slate-500">
-                    <span>Tax / GST</span>
+                    <span>{t('restaurant.tables.taxGst', 'Tax / GST')}</span>
                     <span>+{formatCurrency(receiptData.taxAmount, currency)}</span>
                   </div>
                 )}
                 <div className="flex justify-between font-black text-sm text-slate-950 pt-1 border-t border-slate-300">
-                  <span>TOTAL PAID</span>
+                  <span>{t('restaurant.tables.totalPaid', 'TOTAL PAID')}</span>
                   <span>{formatCurrency(receiptData.grandTotal, currency)}</span>
                 </div>
                 <div className="flex justify-between text-[10px] text-slate-500 pt-0.5">
-                  <span>Method: {receiptData.paymentMethod}</span>
+                  <span>{t('restaurant.tables.receiptMethod', 'Method: {{method}}', { method: receiptData.paymentMethod })}</span>
                   {receiptData.changeDue !== undefined && receiptData.changeDue > 0 && (
-                    <span>Change: {formatCurrency(receiptData.changeDue, currency)}</span>
+                    <span>{t('restaurant.tables.receiptChange', 'Change: {{change}}', { change: formatCurrency(receiptData.changeDue, currency) })}</span>
                   )}
                 </div>
               </div>
 
               <div className="text-center text-[10px] text-slate-400 pt-2 border-t border-dashed border-slate-300">
-                Thank you for visiting! Have a wonderful meal.
+                {t('restaurant.tables.thankYouMeal', 'Thank you for visiting! Have a wonderful meal.')}
               </div>
             </div>
 
@@ -2034,14 +2069,14 @@ export const RestaurantTablesPage: React.FC = () => {
                 className="flex-1 py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Printer size={14} />
-                <span>Print Receipt</span>
+                <span>{t('common.printReceipt', 'Print Receipt')}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setShowReceiptModal(false)}
                 className="py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
               >
-                Close
+                {t('common.close', 'Close')}
               </button>
             </div>
           </div>
@@ -2055,7 +2090,7 @@ export const RestaurantTablesPage: React.FC = () => {
         <div className="fixed inset-0 w-full h-full min-h-screen z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4 my-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-900">Add Dining Table</h3>
+              <h3 className="text-sm font-bold text-slate-900">{t('restaurant.tables.addTableModalTitle', 'Add Dining Table')}</h3>
               <button
                 onClick={() => setShowAddTableModal(false)}
                 className="text-slate-400 hover:text-slate-600 cursor-pointer"
@@ -2066,7 +2101,7 @@ export const RestaurantTablesPage: React.FC = () => {
 
             <form onSubmit={handleCreateTable} className="space-y-3.5 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Table Number / Identifier *</label>
+                <label className="font-semibold text-slate-700">{t('restaurant.tables.tableNumberReq', 'Table Number / Identifier *')}</label>
                 <input
                   type="text"
                   required
@@ -2078,7 +2113,7 @@ export const RestaurantTablesPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Table Display Name</label>
+                <label className="font-semibold text-slate-700">{t('restaurant.tables.tableNameOpt', 'Table Display Name')}</label>
                 <input
                   type="text"
                   placeholder="e.g. Window Corner Booth"
@@ -2090,7 +2125,7 @@ export const RestaurantTablesPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Seating Capacity</label>
+                  <label className="font-semibold text-slate-700">{t('restaurant.tables.seatingCapacity', 'Seating Capacity')}</label>
                   <input
                     type="number"
                     min={1}
@@ -2102,7 +2137,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Floor / Section</label>
+                  <label className="font-semibold text-slate-700">{t('restaurant.tables.floorSection', 'Floor / Section')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Rooftop, AC Hall, Patio"
@@ -2119,13 +2154,13 @@ export const RestaurantTablesPage: React.FC = () => {
                   onClick={() => setShowAddTableModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer shadow-xs"
                 >
-                  Save Table
+                  {t('restaurant.tables.saveTableBtn', 'Save Table')}
                 </button>
               </div>
             </form>
@@ -2156,7 +2191,7 @@ export const RestaurantTablesPage: React.FC = () => {
                 disabled={confirmLoading}
                 className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
               >
-                Keep
+                {t('common.cancel', 'Keep')}
               </button>
               <button
                 type="button"

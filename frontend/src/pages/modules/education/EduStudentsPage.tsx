@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   educationApi,
   EduStudent,
@@ -20,6 +21,7 @@ import {
 import { Link } from 'react-router-dom';
 
 export const EduStudentsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [students, setStudents] = useState<EduStudent[]>([]);
   const [batches, setBatches] = useState<EduBatch[]>([]);
   const [loading, setLoading] = useState(true);
@@ -146,7 +148,7 @@ export const EduStudentsPage: React.FC = () => {
   };
 
   const handleDeleteStudent = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this student record?')) return;
+    if (!window.confirm(t('education.confirmDeleteStudent', 'Are you sure you want to delete this student record?'))) return;
     try {
       await educationApi.deleteStudent(id);
       fetchStudents();
@@ -183,15 +185,15 @@ export const EduStudentsPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Students &amp; Admissions Directory
+              {t('education.studentsTitle', 'Students & Admissions Directory')}
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-800 text-xs font-bold border border-indigo-200 flex items-center gap-1.5">
               <GraduationCap size={13} className="text-indigo-600" />
-              <span>Coaching Students</span>
+              <span>{t('education.coachingStudents', 'Coaching Students')}</span>
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Student profiles, contact information, guardian contacts, batch association, and active status.
+            {t('education.studentsSubtitle', 'Student profiles, contact information, guardian contacts, batch association, and active status.')}
           </p>
         </div>
 
@@ -201,7 +203,7 @@ export const EduStudentsPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <BookOpen size={14} className="text-indigo-600" />
-            <span>Courses &amp; Batches</span>
+            <span>{t('education.coursesAndBatches', 'Courses & Batches')}</span>
           </Link>
 
           <button
@@ -212,7 +214,7 @@ export const EduStudentsPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <Plus size={15} />
-            <span>Admit New Student</span>
+            <span>{t('education.admitStudent', 'Admit New Student')}</span>
           </button>
         </div>
       </div>
@@ -220,27 +222,27 @@ export const EduStudentsPage: React.FC = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Registered</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('education.totalRegistered', 'Total Registered')}</span>
           <div className="text-2xl font-black text-slate-900">{students.length}</div>
-          <p className="text-[10px] text-slate-400">All enrolled students</p>
+          <p className="text-[10px] text-slate-400">{t('education.allEnrolled', 'All enrolled students')}</p>
         </div>
 
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Active Students</span>
+          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">{t('education.activeStudents', 'Active Students')}</span>
           <div className="text-2xl font-black text-emerald-600">{activeCount}</div>
-          <p className="text-[10px] text-emerald-700">Currently studying</p>
+          <p className="text-[10px] text-emerald-700">{t('education.currentlyStudying', 'Currently studying')}</p>
         </div>
 
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Inactive / Completed</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('education.inactiveCompleted', 'Inactive / Completed')}</span>
           <div className="text-2xl font-black text-slate-700">{inactiveCount}</div>
-          <p className="text-[10px] text-slate-400">Passed out or inactive</p>
+          <p className="text-[10px] text-slate-400">{t('education.passedOut', 'Passed out or inactive')}</p>
         </div>
 
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Batches</span>
+          <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">{t('education.batches', 'Batches')}</span>
           <div className="text-2xl font-black text-indigo-600">{batches.length}</div>
-          <p className="text-[10px] text-indigo-700">Active classroom cohorts</p>
+          <p className="text-[10px] text-indigo-700">{t('education.activeCohorts', 'Active classroom cohorts')}</p>
         </div>
       </div>
 
@@ -250,7 +252,7 @@ export const EduStudentsPage: React.FC = () => {
           <Search size={14} className="absolute left-3.5 top-3 text-slate-400" />
           <input
             type="text"
-            placeholder="Search by student name, roll number, or phone..."
+            placeholder={t('education.searchStudentPlaceholder', 'Search by student name, roll number, or phone...')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
@@ -270,7 +272,7 @@ export const EduStudentsPage: React.FC = () => {
                     : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
-                {st}
+                {st === 'ALL' ? t('common.all', 'ALL') : st}
               </button>
             ))}
           </div>
@@ -283,10 +285,10 @@ export const EduStudentsPage: React.FC = () => {
               onChange={(e) => setSelectedBatchId(e.target.value)}
               className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
             >
-              <option value="ALL">All Batches</option>
+              <option value="ALL">{t('education.allBatches', 'All Batches')}</option>
               {batches.map((b) => (
                 <option key={b.id} value={b.id}>
-                  {b.batchName} ({b.courseName || 'Course'})
+                  {b.batchName} ({b.courseName || t('education.course', 'Course')})
                 </option>
               ))}
             </select>
@@ -305,11 +307,11 @@ export const EduStudentsPage: React.FC = () => {
         ) : filteredStudents.length === 0 ? (
           <div className="py-12 text-center text-slate-400 space-y-2">
             <GraduationCap size={32} className="mx-auto text-slate-300" />
-            <p className="font-bold text-slate-800 text-sm">No students found</p>
+            <p className="font-bold text-slate-800 text-sm">{t('education.noStudentsFound', 'No students found')}</p>
             <p className="text-xs text-slate-400">
               {search || selectedBatchId !== 'ALL' || selectedStatus !== 'ALL'
-                ? 'Try adjusting your search or filters.'
-                : 'Click "Admit New Student" to enroll your first student.'}
+                ? t('education.tryAdjustingFilters', 'Try adjusting your search or filters.')
+                : t('education.clickAdmitFirst', 'Click "Admit New Student" to enroll your first student.')}
             </p>
           </div>
         ) : (
@@ -317,13 +319,13 @@ export const EduStudentsPage: React.FC = () => {
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="text-slate-400 text-[10px] uppercase font-bold tracking-wider border-b border-slate-100">
-                  <th className="pb-3">Student Name &amp; ID</th>
-                  <th className="pb-3">Contact Details</th>
-                  <th className="pb-3">Parent / Guardian</th>
-                  <th className="pb-3">Assigned Batch</th>
-                  <th className="pb-3">Admission Date</th>
-                  <th className="pb-3 text-center">Status</th>
-                  <th className="pb-3 text-right">Actions</th>
+                  <th className="pb-3">{t('education.studentNameAndId', 'Student Name & ID')}</th>
+                  <th className="pb-3">{t('education.contactDetails', 'Contact Details')}</th>
+                  <th className="pb-3">{t('education.parentGuardian', 'Parent / Guardian')}</th>
+                  <th className="pb-3">{t('education.assignedBatch', 'Assigned Batch')}</th>
+                  <th className="pb-3">{t('education.admissionDate', 'Admission Date')}</th>
+                  <th className="pb-3 text-center">{t('common.status', 'Status')}</th>
+                  <th className="pb-3 text-right">{t('common.actions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -338,7 +340,7 @@ export const EduStudentsPage: React.FC = () => {
                         <div>
                           <span>{stu.fullName}</span>
                           <span className="block text-[10px] text-slate-400 font-mono font-normal">
-                            ID: {stu.studentIdNumber}
+                            {t('education.idLabel', 'ID')}: {stu.studentIdNumber}
                           </span>
                         </div>
                       </div>
@@ -379,7 +381,7 @@ export const EduStudentsPage: React.FC = () => {
                           {stu.currentBatchName}
                         </span>
                       ) : (
-                        <span className="text-slate-400 italic text-[11px]">Unassigned</span>
+                        <span className="text-slate-400 italic text-[11px]">{t('education.unassigned', 'Unassigned')}</span>
                       )}
                     </td>
 
@@ -411,16 +413,16 @@ export const EduStudentsPage: React.FC = () => {
                         <Link
                           to="/dashboard/education/fees"
                           className="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] font-bold border border-emerald-200 transition-colors flex items-center gap-1"
-                          title="Manage Fees"
+                          title={t('education.manageFees', 'Manage Fees')}
                         >
                           <CircleDollarSign size={12} />
-                          <span>Fees</span>
+                          <span>{t('education.fees', 'Fees')}</span>
                         </Link>
 
                         <button
                           onClick={() => handleOpenEditModal(stu)}
                           className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 cursor-pointer transition-colors"
-                          title="Edit Student"
+                          title={t('education.editStudent', 'Edit Student')}
                         >
                           <Edit2 size={13} />
                         </button>
@@ -428,7 +430,7 @@ export const EduStudentsPage: React.FC = () => {
                         <button
                           onClick={() => handleDeleteStudent(stu.id)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer transition-colors"
-                          title="Delete Student"
+                          title={t('education.deleteStudent', 'Delete Student')}
                         >
                           <Trash2 size={13} />
                         </button>
@@ -448,8 +450,8 @@ export const EduStudentsPage: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Student Admission Form</h3>
-                <p className="text-[11px] text-slate-400">Enroll student and optionally assign to a batch.</p>
+                <h3 className="text-sm font-bold text-slate-900">{t('education.admissionFormTitle', 'Student Admission Form')}</h3>
+                <p className="text-[11px] text-slate-400">{t('education.admissionFormSubtitle', 'Enroll student and optionally assign to a batch.')}</p>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -462,7 +464,7 @@ export const EduStudentsPage: React.FC = () => {
             <form onSubmit={handleCreateStudent} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Student Full Name *</label>
+                  <label className="font-semibold text-slate-700">{t('education.studentFullNameReq', 'Student Full Name *')}</label>
                   <input
                     type="text"
                     required
@@ -474,7 +476,7 @@ export const EduStudentsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Student Roll / ID No. *</label>
+                  <label className="font-semibold text-slate-700">{t('education.studentRollIdReq', 'Student Roll / ID No. *')}</label>
                   <input
                     type="text"
                     required
@@ -488,7 +490,7 @@ export const EduStudentsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Student Phone (Optional)</label>
+                  <label className="font-semibold text-slate-700">{t('education.studentPhoneOpt', 'Student Phone (Optional)')}</label>
                   <input
                     type="tel"
                     placeholder="e.g. 9876543210 (Optional)"
@@ -499,7 +501,7 @@ export const EduStudentsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Email Address</label>
+                  <label className="font-semibold text-slate-700">{t('education.emailAddress', 'Email Address')}</label>
                   <input
                     type="email"
                     placeholder="e.g. student@gmail.com"
@@ -512,7 +514,7 @@ export const EduStudentsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Parent / Guardian Name</label>
+                  <label className="font-semibold text-slate-700">{t('education.parentGuardianName', 'Parent / Guardian Name')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Prakash Deshmukh"
@@ -523,7 +525,7 @@ export const EduStudentsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Parent Phone</label>
+                  <label className="font-semibold text-slate-700">{t('education.parentPhone', 'Parent Phone')}</label>
                   <input
                     type="tel"
                     placeholder="e.g. 9822334455"
@@ -536,23 +538,23 @@ export const EduStudentsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Assign to Batch</label>
+                  <label className="font-semibold text-slate-700">{t('education.assignToBatch', 'Assign to Batch')}</label>
                   <select
                     value={currentBatchId}
                     onChange={(e) => setCurrentBatchId(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold"
                   >
-                    <option value="">-- Select Batch (Auto-enrolls) --</option>
+                    <option value="">{t('education.selectBatchAuto', '-- Select Batch (Auto-enrolls) --')}</option>
                     {batches.map((b) => (
                       <option key={b.id} value={b.id}>
-                        {b.batchName} ({b.courseName || 'Course'})
+                        {b.batchName} ({b.courseName || t('education.course', 'Course')})
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Admission Date</label>
+                  <label className="font-semibold text-slate-700">{t('education.admissionDate', 'Admission Date')}</label>
                   <input
                     type="date"
                     value={admissionDate}
@@ -563,10 +565,10 @@ export const EduStudentsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Residential Address</label>
+                <label className="font-semibold text-slate-700">{t('education.residentialAddress', 'Residential Address')}</label>
                 <textarea
                   rows={2}
-                  placeholder="Street, City, State, PIN..."
+                  placeholder={t('education.addressPlaceholder', 'Street, City, State, PIN...')}
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -579,13 +581,13 @@ export const EduStudentsPage: React.FC = () => {
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer shadow-xs"
                 >
-                  Complete Admission
+                  {t('education.completeAdmission', 'Complete Admission')}
                 </button>
               </div>
             </form>
@@ -599,8 +601,8 @@ export const EduStudentsPage: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Edit Student Details</h3>
-                <p className="text-[11px] text-slate-400">Update contact details, batch allocation, or status.</p>
+                <h3 className="text-sm font-bold text-slate-900">{t('education.editStudentTitle', 'Edit Student Details')}</h3>
+                <p className="text-[11px] text-slate-400">{t('education.editStudentSubtitle', 'Update contact details, batch allocation, or status.')}</p>
               </div>
               <button
                 onClick={() => setEditingStudent(null)}
@@ -613,7 +615,7 @@ export const EduStudentsPage: React.FC = () => {
             <form onSubmit={handleUpdateStudent} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Student Full Name *</label>
+                  <label className="font-semibold text-slate-700">{t('education.studentFullNameReq', 'Student Full Name *')}</label>
                   <input
                     type="text"
                     required
@@ -624,7 +626,7 @@ export const EduStudentsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Student Roll / ID No. *</label>
+                  <label className="font-semibold text-slate-700">{t('education.studentRollIdReq', 'Student Roll / ID No. *')}</label>
                   <input
                     type="text"
                     required
@@ -637,7 +639,7 @@ export const EduStudentsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Student Phone (Optional)</label>
+                  <label className="font-semibold text-slate-700">{t('education.studentPhoneOpt', 'Student Phone (Optional)')}</label>
                   <input
                     type="tel"
                     placeholder="e.g. 9876543210 (Optional)"
@@ -648,7 +650,7 @@ export const EduStudentsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Email Address</label>
+                  <label className="font-semibold text-slate-700">{t('education.emailAddress', 'Email Address')}</label>
                   <input
                     type="email"
                     value={editEmail}
@@ -660,7 +662,7 @@ export const EduStudentsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Parent / Guardian Name</label>
+                  <label className="font-semibold text-slate-700">{t('education.parentGuardianName', 'Parent / Guardian Name')}</label>
                   <input
                     type="text"
                     value={editParentName}
@@ -670,7 +672,7 @@ export const EduStudentsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Parent Phone</label>
+                  <label className="font-semibold text-slate-700">{t('education.parentPhone', 'Parent Phone')}</label>
                   <input
                     type="tel"
                     value={editParentPhone}
@@ -682,23 +684,23 @@ export const EduStudentsPage: React.FC = () => {
 
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Assigned Batch</label>
+                  <label className="font-semibold text-slate-700">{t('education.assignedBatch', 'Assigned Batch')}</label>
                   <select
                     value={editBatchId}
                     onChange={(e) => setEditBatchId(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold"
                   >
-                    <option value="">-- None --</option>
+                    <option value="">{t('education.none', '-- None --')}</option>
                     {batches.map((b) => (
                       <option key={b.id} value={b.id}>
-                        {b.batchName} ({b.courseName || 'Course'})
+                        {b.batchName} ({b.courseName || t('education.course', 'Course')})
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Status</label>
+                  <label className="font-semibold text-slate-700">{t('common.status', 'Status')}</label>
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value)}
@@ -712,7 +714,7 @@ export const EduStudentsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Admission Date</label>
+                  <label className="font-semibold text-slate-700">{t('education.admissionDate', 'Admission Date')}</label>
                   <input
                     type="date"
                     value={editAdmissionDate}
@@ -723,7 +725,7 @@ export const EduStudentsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Address</label>
+                <label className="font-semibold text-slate-700">{t('education.address', 'Address')}</label>
                 <textarea
                   rows={2}
                   value={editAddress}
@@ -738,13 +740,13 @@ export const EduStudentsPage: React.FC = () => {
                   onClick={() => setEditingStudent(null)}
                   className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer shadow-xs"
                 >
-                  Save Changes
+                  {t('common.saveChanges', 'Save Changes')}
                 </button>
               </div>
             </form>

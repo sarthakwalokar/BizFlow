@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Navbar } from './components/Navbar';
@@ -61,6 +62,8 @@ import {
 } from 'lucide-react';
 
 const LandingPage: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen flex flex-col bg-white text-slate-900 font-sans selection:bg-cyan-100 selection:text-blue-900">
       <Navbar />
@@ -83,18 +86,18 @@ const LandingPage: React.FC = () => {
                 {/* Brand Badge */}
                 <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-semibold">
                   <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
-                  <span>Business Management Platform</span>
+                  <span>{t('landing.platformBadge', 'Business Management Platform')}</span>
                 </div>
 
                 {/* Main Headline */}
                 <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black text-slate-950 tracking-tight leading-[1.12]">
-                  Manage and grow your business with{' '}
+                  {t('landing.manageAndGrow', 'Manage and grow your business with')}{' '}
                   <span className="gradient-text-bizflow font-black">BizFlow</span>
                 </h1>
 
                 {/* Supporting Description */}
                 <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed font-normal">
-                  The all-in-one business management platform built for retail stores, services, and growing enterprises. High-speed POS billing, real-time inventory, expense tracking, invoice management, Customer Reviews, and grounded AI analytics.
+                  {t('landing.heroDescription', 'The all-in-one business management platform built for retail stores, services, and growing enterprises. High-speed POS billing, real-time inventory, expense tracking, invoice management, Customer Reviews, and grounded AI analytics.')}
                 </p>
 
                 {/* CTA Buttons (NO SEARCH BAR) */}
@@ -104,7 +107,7 @@ const LandingPage: React.FC = () => {
                     id="hero-get-started-btn"
                     className="inline-flex items-center justify-center space-x-2 px-7 py-3.5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-sm shadow-md shadow-blue-500/25 transition-all hover:shadow-cyan-500/35 hover:-translate-y-0.5 cursor-pointer"
                   >
-                    <span>Get Started</span>
+                    <span>{t('landing.getStarted', 'Get Started')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
 
@@ -113,7 +116,7 @@ const LandingPage: React.FC = () => {
                     id="hero-explore-features-btn"
                     className="inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-semibold text-sm transition-all hover:border-slate-400 cursor-pointer shadow-xs"
                   >
-                    <span>Explore Features</span>
+                    <span>{t('landing.exploreFeatures', 'Explore Features')}</span>
                   </a>
                 </div>
 
@@ -124,8 +127,8 @@ const LandingPage: React.FC = () => {
                       <Zap className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-slate-900">High-Speed POS</div>
-                      <div className="text-[10px] text-slate-500">Barcode & thermal prints</div>
+                      <div className="text-xs font-bold text-slate-900">{t('landing.highSpeedPos', 'High-Speed POS')}</div>
+                      <div className="text-[10px] text-slate-500">{t('landing.barcodePrints', 'Barcode & thermal prints')}</div>
                     </div>
                   </div>
 
@@ -134,8 +137,8 @@ const LandingPage: React.FC = () => {
                       <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-slate-900">Grounded AI</div>
-                      <div className="text-[10px] text-slate-500">18 languages supported</div>
+                      <div className="text-xs font-bold text-slate-900">{t('landing.groundedAi', 'Grounded AI')}</div>
+                      <div className="text-[10px] text-slate-500">{t('landing.languagesSupported', '18 languages supported')}</div>
                     </div>
                   </div>
 
@@ -144,14 +147,14 @@ const LandingPage: React.FC = () => {
                       <Shield className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-slate-900">Net Margin Control</div>
-                      <div className="text-[10px] text-slate-500">Sales minus expenses</div>
+                      <div className="text-xs font-bold text-slate-900">{t('landing.netMarginControl', 'Net Margin Control')}</div>
+                      <div className="text-[10px] text-slate-500">{t('landing.salesMinusExpenses', 'Sales minus expenses')}</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* RIGHT COLUMN: Realistic Live BizFlow Dashboard Frame (Sleek High-Contrast Device Mockup) */}
+              {/* RIGHT COLUMN: Realistic Live BizFlow Dashboard Frame */}
               <div className="lg:col-span-6 relative">
                 {/* Glow behind device */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-cyan-400/20 to-blue-500/20 rounded-3xl blur-2xl transform scale-95" />
@@ -170,7 +173,7 @@ const LandingPage: React.FC = () => {
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       <span>bizflow.app/dashboard</span>
                     </div>
-                    <div className="text-[10px] text-cyan-400 font-semibold">Live POS</div>
+                    <div className="text-[10px] text-cyan-400 font-semibold">{t('landing.liveStore', 'Live POS')}</div>
                   </div>
 
                   {/* Platform Interface Preview */}
@@ -192,27 +195,27 @@ const LandingPage: React.FC = () => {
                         <div className="space-y-1 text-[10px] font-medium">
                           <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg bg-blue-600 text-white font-semibold shadow-xs">
                             <Layers className="w-3 h-3 shrink-0" />
-                            <span className="truncate">Dashboard</span>
+                            <span className="truncate">{t('nav.dashboard', 'Dashboard')}</span>
                           </div>
                           <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white">
                             <Receipt className="w-3 h-3 shrink-0" />
-                            <span className="truncate">POS Billing</span>
+                            <span className="truncate">{t('nav.pos', 'POS Billing')}</span>
                           </div>
                           <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white">
                             <Package className="w-3 h-3 shrink-0" />
-                            <span className="truncate">Inventory</span>
+                            <span className="truncate">{t('nav.inventory', 'Inventory')}</span>
                           </div>
                           <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white">
                             <TrendingDown className="w-3 h-3 shrink-0" />
-                            <span className="truncate">Expenses</span>
+                            <span className="truncate">{t('nav.expenses', 'Expenses')}</span>
                           </div>
                           <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white">
                             <Star className="w-3 h-3 shrink-0" />
-                            <span className="truncate">Reviews</span>
+                            <span className="truncate">{t('nav.reviews', 'Reviews')}</span>
                           </div>
                           <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white">
                             <Sparkles className="w-3 h-3 shrink-0" />
-                            <span className="truncate">AI Assistant</span>
+                            <span className="truncate">{t('nav.aiAssistant', 'AI Assistant')}</span>
                           </div>
                         </div>
                       </div>
@@ -229,9 +232,9 @@ const LandingPage: React.FC = () => {
                       <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                         <div>
                           <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-1">
-                            Store Operations Active
+                            {t('landing.storeOperationsActive', 'Store Operations Active')}
                           </h4>
-                          <p className="text-[10px] text-slate-400">Terminal Ready • Multi-Channel Active</p>
+                          <p className="text-[10px] text-slate-400">{t('landing.terminalReady', 'Terminal Ready • Multi-Channel Active')}</p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <div className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
@@ -247,28 +250,28 @@ const LandingPage: React.FC = () => {
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         {/* Sales */}
                         <div className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80">
-                          <span className="text-[9px] text-slate-400 font-medium block">Gross Sales</span>
+                          <span className="text-[9px] text-slate-400 font-medium block">{t('landing.grossSales', 'Gross Sales')}</span>
                           <span className="text-sm sm:text-base font-extrabold text-white block mt-0.5">₹42,850</span>
-                          <span className="text-[8px] text-cyan-400 font-semibold">POS + Orders</span>
+                          <span className="text-[8px] text-cyan-400 font-semibold">{t('landing.posAndOrders', 'POS + Orders')}</span>
                         </div>
 
                         {/* Expenses */}
                         <div className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80">
-                          <span className="text-[9px] text-slate-400 font-medium block">Expenses</span>
+                          <span className="text-[9px] text-slate-400 font-medium block">{t('landing.expenses', 'Expenses')}</span>
                           <span className="text-sm sm:text-base font-extrabold text-rose-400 block mt-0.5">₹8,200</span>
-                          <span className="text-[8px] text-rose-300 font-semibold">Logged Today</span>
+                          <span className="text-[8px] text-rose-300 font-semibold">{t('landing.loggedToday', 'Logged Today')}</span>
                         </div>
 
                         {/* Net Margin */}
                         <div className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80">
-                          <span className="text-[9px] text-slate-400 font-medium block">Net Margin</span>
+                          <span className="text-[9px] text-slate-400 font-medium block">{t('landing.netMargin', 'Net Margin')}</span>
                           <span className="text-sm sm:text-base font-extrabold text-emerald-400 block mt-0.5">₹34,650</span>
                           <span className="text-[8px] text-emerald-300 font-semibold">80.8% Profit</span>
                         </div>
 
                         {/* Reviews */}
                         <div className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80">
-                          <span className="text-[9px] text-slate-400 font-medium block">Reviews</span>
+                          <span className="text-[9px] text-slate-400 font-medium block">{t('landing.featReviews', 'Reviews')}</span>
                           <span className="text-sm sm:text-base font-extrabold text-amber-400 block mt-0.5">4.9 ★</span>
                           <span className="text-[8px] text-amber-300 font-semibold">QR Standee</span>
                         </div>
@@ -279,8 +282,8 @@ const LandingPage: React.FC = () => {
                         {/* Live POS Stream */}
                         <div className="sm:col-span-6 bg-slate-950 rounded-xl border border-slate-800 p-2.5 space-y-2">
                           <div className="flex items-center justify-between text-[10px] font-bold text-slate-200">
-                            <span>Recent POS Invoices</span>
-                            <span className="text-cyan-400 text-[9px]">Receipts →</span>
+                            <span>{t('landing.recentPosInvoices', 'Recent POS Invoices')}</span>
+                            <span className="text-cyan-400 text-[9px]">{t('landing.receipts', 'Receipts')} →</span>
                           </div>
                           <div className="space-y-1 text-[9px]">
                             <div className="flex items-center justify-between p-1.5 rounded-lg bg-slate-900 border border-slate-800">
@@ -305,7 +308,7 @@ const LandingPage: React.FC = () => {
                           <div className="flex items-center justify-between text-[10px] font-bold text-purple-300">
                             <span className="flex items-center gap-1">
                               <Sparkles className="w-3 h-3 text-purple-400" />
-                              AI Business Assistant
+                              {t('nav.aiAssistant', 'AI Business Assistant')}
                             </span>
                             <span className="text-[8px] bg-purple-900/50 text-purple-300 px-1.5 py-0.5 rounded border border-purple-700/50">Grounded</span>
                           </div>
@@ -335,13 +338,13 @@ const LandingPage: React.FC = () => {
             {/* Section Header */}
             <div className="max-w-3xl mx-auto text-center space-y-3">
               <span className="text-xs font-bold text-blue-600 tracking-widest uppercase font-mono">
-                PRODUCT CAPABILITIES
+                {t('landing.productCapabilities', 'PRODUCT CAPABILITIES')}
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
-                Built Around Your Real Business Operations
+                {t('landing.builtAroundRealOperations', 'Built Around Your Real Business Operations')}
               </h2>
               <p className="text-sm sm:text-base text-slate-600">
-                Every tool inside BizFlow is purpose-built to streamline store workflows, automate accounting, and boost profitability.
+                {t('landing.featuresSubheading', 'Every tool inside BizFlow is purpose-built to streamline store workflows, automate accounting, and boost profitability.')}
               </p>
             </div>
 
@@ -353,9 +356,9 @@ const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Sparkles className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">AI Business Assistant</h3>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{t('nav.aiAssistant', 'AI Business Assistant')}</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Grounded AI intelligence answering live queries on sales trends, low inventory, and margin optimization powered by BizFlow AI across 18 languages.
+                  {t('landing.featAiDesc', 'Grounded AI intelligence answering live queries on sales trends, low inventory, and margin optimization powered by BizFlow AI across 18 languages.')}
                 </p>
               </div>
 
@@ -364,9 +367,9 @@ const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-xl bg-cyan-50 border border-cyan-100 text-cyan-700 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <BarChart3 className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">Sales & Revenue Analytics</h3>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{t('landing.salesRevenueAnalytics', 'Sales & Revenue Analytics')}</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Real-time financial performance metrics: daily/monthly revenue trends, gross sales, net profit margins, top-selling items, and payment method distributions.
+                  {t('landing.featAnalyticsDesc', 'Real-time financial performance metrics: daily/monthly revenue trends, gross sales, net profit margins, top-selling items, and payment method distributions.')}
                 </p>
               </div>
 
@@ -375,9 +378,9 @@ const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Receipt className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">Billing / POS Terminal</h3>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{t('landing.billingPosTerminal', 'Billing / POS Terminal')}</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Ultra-fast counter checkout with instant barcode scanning, automated GST/tax calculation, customizable item discounts, and 80mm thermal receipt printing.
+                  {t('landing.featBillingDesc', 'Ultra-fast counter checkout with instant barcode scanning, automated GST/tax calculation, customizable item discounts, and 80mm thermal receipt printing.')}
                 </p>
               </div>
 
@@ -386,9 +389,9 @@ const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Package className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">Products & Services</h3>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{t('nav.products', 'Products & Services')}</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Comprehensive catalog management with custom SKUs, barcodes, category taxonomies, unit definitions, cost price margins, and active/inactive status toggles.
+                  {t('landing.featProductsDesc', 'Comprehensive catalog management with custom SKUs, barcodes, category taxonomies, unit definitions, cost price margins, and active/inactive status toggles.')}
                 </p>
               </div>
 
@@ -397,9 +400,9 @@ const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <TrendingDown className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">Expense Management</h3>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{t('landing.expenseManagement', 'Expense Management')}</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Log and categorize daily overhead expenses (Rent, Utilities, Wages, Raw Materials) to compute verified gross revenues, operating costs, and true net profit.
+                  {t('landing.featExpensesDesc', 'Log and categorize daily overhead expenses (Rent, Utilities, Wages, Raw Materials) to compute verified gross revenues, operating costs, and true net profit.')}
                 </p>
               </div>
 
@@ -408,9 +411,9 @@ const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Store className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">Inventory Management</h3>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{t('landing.inventoryManagement', 'Inventory Management')}</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Live stock quantity tracking with automated minimum threshold warnings, inward restock logging, and out-of-stock prevention to keep shelves supplied.
+                  {t('landing.featInventoryDesc', 'Live stock quantity tracking with automated minimum threshold warnings, inward restock logging, and out-of-stock prevention to keep shelves supplied.')}
                 </p>
               </div>
 
@@ -419,9 +422,9 @@ const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Receipt className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">Invoice Management</h3>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{t('landing.invoiceManagement', 'Invoice Management')}</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Centralized transaction history, searchable invoices by customer or order ID, payment status tracking (Paid/Pending), and instant receipt reprints.
+                  {t('landing.featInvoicesDesc', 'Centralized transaction history, searchable invoices by customer or order ID, payment status tracking (Paid/Pending), and instant receipt reprints.')}
                 </p>
               </div>
 
@@ -430,9 +433,9 @@ const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-xl bg-yellow-50 border border-yellow-100 text-yellow-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Star className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">Customer Reviews</h3>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{t('landing.customerReviews', 'Customer Reviews')}</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Custom QR code generation for counter standees and thermal receipts that prompts happy customers to leave 5-star Google reviews and boost local store ranking.
+                  {t('landing.featReviewsDesc', 'Custom QR code generation for counter standees and thermal receipts that prompts happy customers to leave 5-star Google reviews and boost local store ranking.')}
                 </p>
               </div>
 
@@ -441,9 +444,9 @@ const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">Business Insights</h3>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{t('landing.businessInsights', 'Business Insights')}</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Detailed summaries of business performance, staff sales tracking, audit logs, and exportable CSV and PDF reports for bookkeeping and tax compliance.
+                  {t('landing.featInsightsDesc', 'Detailed summaries of business performance, staff sales tracking, audit logs, and exportable CSV and PDF reports for bookkeeping and tax compliance.')}
                 </p>
               </div>
 
@@ -452,9 +455,9 @@ const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-xl bg-sky-50 border border-sky-100 text-sky-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Users className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">Multilingual Support</h3>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{t('landing.multilingualSupport', 'Multilingual Support')}</h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Complete 18-language localization (English, Hindi, Marathi, Gujarati, Tamil, Telugu, Spanish, French, etc.) allowing owners and staff to operate comfortably.
+                  {t('landing.featMultilingualDesc', 'Complete 18-language localization (English, Hindi, Marathi, Gujarati, Tamil, Telugu, Spanish, French, etc.) allowing owners and staff to operate comfortably.')}
                 </p>
               </div>
 
@@ -477,15 +480,15 @@ const LandingPage: React.FC = () => {
               <div className="lg:col-span-6 space-y-6 text-left">
                 <span className="text-xs font-bold text-purple-600 tracking-widest uppercase font-mono flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-purple-600" />
-                  AI BUSINESS ASSISTANT
+                  {t('landing.aiBadge', 'AI BUSINESS ASSISTANT')}
                 </span>
 
                 <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight leading-tight">
-                  Understand Your Store Data Through Grounded AI
+                  {t('landing.aiAssistantHeading', 'Understand Your Store Data Through Grounded AI')}
                 </h2>
 
                 <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                  BizFlow AI connects directly to your live sales, inventory, and expense records. Business owners can ask natural language questions and get immediate, grounded answers without digging through spreadsheets.
+                  {t('landing.aiAssistantDesc', 'BizFlow AI connects directly to your live sales, inventory, and expense records. Business owners can ask natural language questions and get immediate, grounded answers without digging through spreadsheets.')}
                 </p>
 
                 <div className="space-y-4 pt-2">
@@ -494,8 +497,8 @@ const LandingPage: React.FC = () => {
                       ✓
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">Enterprise High-Availability</h4>
-                      <p className="text-xs text-slate-600">Powered by the BizFlow AI engine with automated intelligent failover for uninterrupted intelligence.</p>
+                      <h4 className="text-sm font-semibold text-slate-900">{t('landing.enterpriseHa', 'Enterprise High-Availability')}</h4>
+                      <p className="text-xs text-slate-600">{t('landing.enterpriseHaDesc', 'Powered by the BizFlow AI engine with automated intelligent failover for uninterrupted intelligence.')}</p>
                     </div>
                   </div>
 
@@ -504,8 +507,8 @@ const LandingPage: React.FC = () => {
                       ✓
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">Live Inventory & Sales Querying</h4>
-                      <p className="text-xs text-slate-600">Ask about bestselling products, low stock warnings, revenue summaries, or expense anomalies in seconds.</p>
+                      <h4 className="text-sm font-semibold text-slate-900">{t('landing.liveQuerying', 'Live Inventory & Sales Querying')}</h4>
+                      <p className="text-xs text-slate-600">{t('landing.liveQueryingDesc', 'Ask about bestselling products, low stock warnings, revenue summaries, or expense anomalies in seconds.')}</p>
                     </div>
                   </div>
 
@@ -514,8 +517,8 @@ const LandingPage: React.FC = () => {
                       ✓
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">Speaks 18 Native Languages</h4>
-                      <p className="text-xs text-slate-600">Interact naturally in your preferred language including Hindi, Marathi, Gujarati, English, and more.</p>
+                      <h4 className="text-sm font-semibold text-slate-900">{t('landing.nativeLanguages', 'Speaks 18 Native Languages')}</h4>
+                      <p className="text-xs text-slate-600">{t('landing.nativeLanguagesDesc', 'Interact naturally in your preferred language including Hindi, Marathi, Gujarati, English, and more.')}</p>
                     </div>
                   </div>
                 </div>
@@ -525,7 +528,7 @@ const LandingPage: React.FC = () => {
                     to="/signup"
                     className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold text-xs shadow-md shadow-purple-500/20 transition-all hover:shadow-lg"
                   >
-                    <span>Try BizFlow AI Assistant</span>
+                    <span>{t('landing.tryAiAssistant', 'Try BizFlow AI Assistant')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -541,10 +544,10 @@ const LandingPage: React.FC = () => {
                       <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-white">BizFlow AI Assistant</div>
+                      <div className="text-xs font-bold text-white">{t('nav.aiAssistant', 'BizFlow AI Assistant')}</div>
                       <div className="text-[10px] text-emerald-400 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        Grounded on live store data
+                        {t('landing.groundedOnLiveStoreData', 'Grounded on live store data')}
                       </div>
                     </div>
                   </div>
@@ -567,7 +570,7 @@ const LandingPage: React.FC = () => {
                     <div className="bg-slate-900 border border-slate-800 text-slate-200 p-3.5 rounded-2xl rounded-tl-xs max-w-[90%] space-y-2 shadow-sm">
                       <div className="font-semibold text-white flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                        Weekly Store Analysis:
+                        {t('landing.weeklyStoreAnalysis', 'Weekly Store Analysis')}:
                       </div>
                       <p className="text-slate-300">
                         1. <strong className="text-cyan-400">Espresso Roast 1kg</strong> generated highest margin (₹14,200 net profit, 72% margin).
@@ -603,13 +606,13 @@ const LandingPage: React.FC = () => {
             {/* Section Header */}
             <div className="max-w-3xl mx-auto text-center space-y-3">
               <span className="text-xs font-bold text-blue-600 tracking-widest uppercase font-mono">
-                FINANCIAL VISIBILITY
+                {t('landing.financialVisibility', 'FINANCIAL VISIBILITY')}
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
-                Sales, Expense & Net Margin Analytics
+                {t('landing.salesExpenseAnalytics', 'Sales, Expense & Net Margin Analytics')}
               </h2>
               <p className="text-sm sm:text-base text-slate-600">
-                Track exact revenue and overhead in real time so you know your true profitability every single day.
+                {t('landing.financialVisibilityDesc', 'Track exact revenue and overhead in real time so you know your true profitability every single day.')}
               </p>
             </div>
 
@@ -621,7 +624,7 @@ const LandingPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                     <BarChart3 className="w-4 h-4 text-cyan-600" />
-                    Revenue & Profit Calculation
+                    {t('landing.revProfitCalc', 'Revenue & Profit Calculation')}
                   </h3>
                   <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-semibold">
                     Real-time
@@ -632,15 +635,15 @@ const LandingPage: React.FC = () => {
                 </p>
                 <div className="space-y-2 pt-2 text-xs">
                   <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                    <span className="text-slate-600">Gross Sales</span>
+                    <span className="text-slate-600">{t('landing.grossSales', 'Gross Sales')}</span>
                     <span className="font-bold text-slate-900">₹1,84,500</span>
                   </div>
                   <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                    <span className="text-slate-600">Logged Expenses</span>
+                    <span className="text-slate-600">{t('landing.loggedExpenses', 'Logged Expenses')}</span>
                     <span className="font-bold text-rose-600">- ₹38,200</span>
                   </div>
                   <div className="flex justify-between items-center p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
-                    <span className="font-semibold text-emerald-800">True Net Margin</span>
+                    <span className="font-semibold text-emerald-800">{t('landing.trueNetMargin', 'True Net Margin')}</span>
                     <span className="font-bold text-emerald-700">₹1,46,300 (79.3%)</span>
                   </div>
                 </div>
@@ -651,7 +654,7 @@ const LandingPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                     <Receipt className="w-4 h-4 text-blue-600" />
-                    Tender & Payment Channels
+                    {t('landing.tenderPaymentChannels', 'Tender & Payment Channels')}
                   </h3>
                   <span className="text-[10px] text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full font-semibold">
                     Multi-tender
@@ -696,7 +699,7 @@ const LandingPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                     <TrendingDown className="w-4 h-4 text-rose-600" />
-                    Overhead Categorization
+                    {t('landing.overheadCategorization', 'Overhead Categorization')}
                   </h3>
                   <span className="text-[10px] text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full font-semibold">
                     Categorized
@@ -737,15 +740,15 @@ const LandingPage: React.FC = () => {
               <div className="lg:col-span-6 space-y-6 text-left">
                 <span className="text-xs font-bold text-amber-600 tracking-widest uppercase font-mono flex items-center gap-2">
                   <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  CUSTOMER REVIEWS & REPUTATION
+                  {t('landing.reviewBoostBadge', 'CUSTOMER REVIEWS & REPUTATION')}
                 </span>
 
                 <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight leading-tight">
-                  Turn Happy Customers into 5-Star Online Reviews
+                  {t('landing.turnHappyCustomers', 'Turn Happy Customers into 5-Star Online Reviews')}
                 </h2>
 
                 <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                  Reviews give your store a dedicated QR reputation system. Capture customer feedback right at the counter or through thermal receipts, and channel positive ratings directly to your public reputation.
+                  {t('landing.reviewBoostDesc', 'Reviews give your store a dedicated QR reputation system. Capture customer feedback right at the counter or through thermal receipts, and channel positive ratings directly to your public reputation.')}
                 </p>
 
                 {/* 3 Step QR Flow */}
@@ -755,8 +758,8 @@ const LandingPage: React.FC = () => {
                       1
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">Generate QR Standee & Receipt Codes</h4>
-                      <p className="text-xs text-slate-600">BizFlow produces a custom QR code for your store counter standee and automatically prints the review QR on customer receipts.</p>
+                      <h4 className="text-sm font-semibold text-slate-900">{t('landing.reviewsFlow1Title', 'Generate QR Standee & Receipt Codes')}</h4>
+                      <p className="text-xs text-slate-600">{t('landing.reviewsFlow1Desc', 'BizFlow produces a custom QR code for your store counter standee and automatically prints the review QR on customer receipts.')}</p>
                     </div>
                   </div>
 
@@ -765,8 +768,8 @@ const LandingPage: React.FC = () => {
                       2
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">Customer Scans & Rates with Phone</h4>
-                      <p className="text-xs text-slate-600">No app installation needed. Customers quickly tap their star rating and leave remarks directly from their mobile browser.</p>
+                      <h4 className="text-sm font-semibold text-slate-900">{t('landing.reviewsFlow2Title', 'Customer Scans & Rates with Phone')}</h4>
+                      <p className="text-xs text-slate-600">{t('landing.reviewsFlow2Desc', 'No app installation needed. Customers quickly tap their star rating and leave remarks directly from their mobile browser.')}</p>
                     </div>
                   </div>
 
@@ -775,8 +778,8 @@ const LandingPage: React.FC = () => {
                       3
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">Channel 5-Star Reviews to Google</h4>
-                      <p className="text-xs text-slate-600">Delighted customers are directed to post their review on Google, ranking your store higher in local search results.</p>
+                      <h4 className="text-sm font-semibold text-slate-900">{t('landing.reviewsFlow3Title', 'Channel 5-Star Reviews to Google')}</h4>
+                      <p className="text-xs text-slate-600">{t('landing.reviewsFlow3Desc', 'Delighted customers are directed to post their review on Google, ranking your store higher in local search results.')}</p>
                     </div>
                   </div>
                 </div>
@@ -786,7 +789,7 @@ const LandingPage: React.FC = () => {
                     to="/signup"
                     className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-400 text-white font-semibold text-xs shadow-md shadow-amber-500/20 transition-all hover:shadow-lg"
                   >
-                    <span>Get Started with Reviews</span>
+                    <span>{t('landing.getStartedReviews', 'Get Started with Reviews')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -799,7 +802,7 @@ const LandingPage: React.FC = () => {
                   {/* Badge */}
                   <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-100/70 border border-amber-300 text-amber-800 text-xs font-semibold">
                     <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                    <span>Live Customer Feedback</span>
+                    <span>{t('landing.liveCustomerFeedback', 'Live Customer Feedback')}</span>
                   </div>
 
                   {/* QR Graphic Container */}
@@ -808,7 +811,7 @@ const LandingPage: React.FC = () => {
                       <div className="w-10 h-10 rounded-lg bg-slate-950 text-white flex items-center justify-center font-bold text-lg mb-2">
                         B
                       </div>
-                      <div className="text-[10px] font-mono text-slate-700 font-bold">SCAN TO REVIEW</div>
+                      <div className="text-[10px] font-mono text-slate-700 font-bold">{t('landing.scanToReview', 'SCAN TO REVIEW')}</div>
                       <div className="text-[8px] text-slate-500">bizflow.app/review</div>
                     </div>
                   </div>
@@ -825,16 +828,16 @@ const LandingPage: React.FC = () => {
                     <p className="text-xs text-slate-800 font-semibold">
                       "Fast checkout, great coffee, and clean digital receipts!"
                     </p>
-                    <span className="text-[10px] text-slate-500 block">Verified Store Customer</span>
+                    <span className="text-[10px] text-slate-500 block">{t('landing.verifiedCustomer', 'Verified Store Customer')}</span>
                   </div>
 
                   {/* Thermal Receipt Attachment Badge */}
                   <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-[10px] text-slate-600 flex items-center justify-between shadow-xs">
                     <span className="flex items-center gap-1.5 text-slate-800 font-medium">
                       <Receipt className="w-3.5 h-3.5 text-blue-600" />
-                      Auto-prints on 80mm receipts
+                      {t('landing.autoPrintsReceipts', 'Auto-prints on 80mm receipts')}
                     </span>
-                    <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-semibold">Enabled</span>
+                    <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-semibold">{t('common.enabled', 'Enabled')}</span>
                   </div>
 
                 </div>
@@ -867,11 +870,11 @@ const LandingPage: React.FC = () => {
                 </div>
 
                 <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
-                  Start Managing and Growing Your Business
+                  {t('landing.startManagingGrowing', 'Start Managing and Growing Your Business')}
                 </h2>
                 
                 <p className="text-sm sm:text-base text-cyan-50 font-normal leading-relaxed">
-                  Join retailers, service businesses, and modern store owners running rapid POS checkout, tight inventory control, expense tracking, and grounded AI insights with BizFlow.
+                  {t('landing.finalCtaDesc', 'Join retailers, service businesses, and modern store owners running rapid POS checkout, tight inventory control, expense tracking, and grounded AI insights with BizFlow.')}
                 </p>
 
                 <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
@@ -879,13 +882,13 @@ const LandingPage: React.FC = () => {
                     to="/signup"
                     className="px-8 py-3.5 rounded-full bg-white hover:bg-slate-100 text-blue-700 font-bold text-sm shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
                   >
-                    Get Started
+                    {t('landing.getStarted', 'Get Started')}
                   </Link>
                   <Link
                     to="/login"
                     className="px-6 py-3.5 rounded-full bg-blue-900/40 hover:bg-blue-900/60 text-white border border-white/30 font-semibold text-sm transition-colors cursor-pointer"
                   >
-                    Sign In to Store
+                    {t('auth.login', 'Sign In to Store')}
                   </Link>
                 </div>
 

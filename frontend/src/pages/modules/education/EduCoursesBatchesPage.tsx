@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../context/AuthContext';
 import { formatCurrency } from '../../../utils/currency';
 import {
@@ -20,6 +21,7 @@ import {
 import { Link } from 'react-router-dom';
 
 export const EduCoursesBatchesPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const currency = business?.currency || 'INR';
 
@@ -121,7 +123,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
   };
 
   const handleDeleteCourse = async (id: number) => {
-    if (!window.confirm('Delete this course curriculum and its configurations?')) return;
+    if (!window.confirm(t('education.confirmDeleteCourse', 'Delete this course curriculum and its configurations?'))) return;
     try {
       await educationApi.deleteCourse(id);
       fetchAll();
@@ -187,7 +189,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
   };
 
   const handleDeleteBatch = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this batch?')) return;
+    if (!window.confirm(t('education.confirmDeleteBatch', 'Are you sure you want to delete this batch?'))) return;
     try {
       await educationApi.deleteBatch(id);
       fetchAll();
@@ -214,15 +216,15 @@ export const EduCoursesBatchesPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Courses &amp; Batches
+              {t('education.coursesAndBatches', 'Courses & Batches')}
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-800 text-xs font-bold border border-indigo-200 flex items-center gap-1.5">
               <BookOpen size={13} className="text-indigo-600" />
-              <span>Coaching Curriculum</span>
+              <span>{t('education.coachingCurriculum', 'Coaching Curriculum')}</span>
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Create courses, standard tuition fee packages, and schedule student classroom batches.
+            {t('education.coursesSubtitle', 'Create courses, standard tuition fee packages, and schedule student classroom batches.')}
           </p>
         </div>
 
@@ -232,7 +234,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <Plus size={14} />
-            <span>Create Course</span>
+            <span>{t('education.createCourse', 'Create Course')}</span>
           </button>
 
           <button
@@ -240,7 +242,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <Plus size={15} />
-            <span>Schedule New Batch</span>
+            <span>{t('education.scheduleNewBatch', 'Schedule New Batch')}</span>
           </button>
         </div>
       </div>
@@ -256,7 +258,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
                 : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
-            Courses Catalog ({courses.length})
+            {t('education.coursesCatalog', 'Courses Catalog')} ({courses.length})
           </button>
           <button
             onClick={() => setActiveTab('BATCHES')}
@@ -266,7 +268,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
                 : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
-            Batches &amp; Timetable ({batches.length})
+            {t('education.batchesTimetable', 'Batches & Timetable')} ({batches.length})
           </button>
         </div>
 
@@ -274,7 +276,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
           <Search size={14} className="absolute left-3.5 top-3 text-slate-400" />
           <input
             type="text"
-            placeholder={activeTab === 'COURSES' ? 'Search courses...' : 'Search batches...'}
+            placeholder={activeTab === 'COURSES' ? t('education.searchCourses', 'Search courses...') : t('education.searchBatches', 'Search batches...')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
@@ -294,8 +296,8 @@ export const EduCoursesBatchesPage: React.FC = () => {
           ) : filteredCourses.length === 0 ? (
             <div className="clay-card p-12 text-center text-slate-400 space-y-2">
               <BookOpen size={32} className="mx-auto text-slate-300" />
-              <p className="font-bold text-slate-800 text-sm">No courses found</p>
-              <p className="text-xs text-slate-400">Click "Create Course" to add tuition or training course modules.</p>
+              <p className="font-bold text-slate-800 text-sm">{t('education.noCoursesFound', 'No courses found')}</p>
+              <p className="text-xs text-slate-400">{t('education.clickCreateCoursePrompt', 'Click "Create Course" to add tuition or training course modules.')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -317,19 +319,19 @@ export const EduCoursesBatchesPage: React.FC = () => {
                         {c.description ? (
                           <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed mt-1">{c.description}</p>
                         ) : (
-                          <p className="text-xs text-slate-400 italic mt-1">Standard Coaching Program</p>
+                          <p className="text-xs text-slate-400 italic mt-1">{t('education.standardProgram', 'Standard Coaching Program')}</p>
                         )}
                       </div>
 
                       <div className="flex items-center gap-2 pt-1 text-[11px] text-slate-500 font-medium">
                         <Calendar size={12} className="text-slate-400" />
-                        <span>{courseBatches.length} active {courseBatches.length === 1 ? 'batch' : 'batches'}</span>
+                        <span>{courseBatches.length} {t('education.activeBatches', 'active batches')}</span>
                       </div>
                     </div>
 
                     <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                       <div>
-                        <span className="text-[10px] text-slate-400 block uppercase font-bold">Standard Fee</span>
+                        <span className="text-[10px] text-slate-400 block uppercase font-bold">{t('education.standardFee', 'Standard Fee')}</span>
                         <span className="text-lg font-black text-slate-950">
                           {formatCurrency(c.totalFees, currency)}
                         </span>
@@ -339,21 +341,21 @@ export const EduCoursesBatchesPage: React.FC = () => {
                         <button
                           onClick={() => handleOpenBatchModal(undefined, c.id)}
                           className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[10px] font-bold border border-indigo-200 transition-colors"
-                          title="Create Batch for this Course"
+                          title={t('education.createBatchForCourse', 'Create Batch for this Course')}
                         >
-                          + Batch
+                          + {t('education.batch', 'Batch')}
                         </button>
                         <button
                           onClick={() => handleOpenCourseModal(c)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 cursor-pointer"
-                          title="Edit Course"
+                          title={t('education.editCourse', 'Edit Course')}
                         >
                           <Edit2 size={13} />
                         </button>
                         <button
                           onClick={() => handleDeleteCourse(c.id)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer"
-                          title="Delete Course"
+                          title={t('education.deleteCourse', 'Delete Course')}
                         >
                           <Trash2 size={13} />
                         </button>
@@ -379,8 +381,8 @@ export const EduCoursesBatchesPage: React.FC = () => {
           ) : filteredBatches.length === 0 ? (
             <div className="clay-card p-12 text-center text-slate-400 space-y-2">
               <Calendar size={32} className="mx-auto text-slate-300" />
-              <p className="font-bold text-slate-800 text-sm">No batches found</p>
-              <p className="text-xs text-slate-400">Click "Schedule New Batch" to allocate classrooms and student quotas.</p>
+              <p className="font-bold text-slate-800 text-sm">{t('education.noBatchesFound', 'No batches found')}</p>
+              <p className="text-xs text-slate-400">{t('education.clickScheduleBatchPrompt', 'Click "Schedule New Batch" to allocate classrooms and student quotas.')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -394,11 +396,11 @@ export const EduCoursesBatchesPage: React.FC = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                          {b.courseName || 'Course'}
+                          {b.courseName || t('education.course', 'Course')}
                         </span>
                         <span className="text-xs font-mono font-bold text-slate-600 flex items-center gap-1">
                           <Users size={12} className="text-slate-400" />
-                          <span>{enrolled} / {cap} Seats</span>
+                          <span>{enrolled} / {cap} {t('education.seats', 'Seats')}</span>
                         </span>
                       </div>
 
@@ -412,7 +414,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
                       {/* Progress bar */}
                       <div className="space-y-1 pt-1">
                         <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium">
-                          <span>Occupancy</span>
+                          <span>{t('education.occupancy', 'Occupancy')}</span>
                           <span className="font-bold font-mono text-slate-700">{pct}%</span>
                         </div>
                         <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
@@ -432,29 +434,29 @@ export const EduCoursesBatchesPage: React.FC = () => {
 
                     <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                       <div className="text-[10px] text-slate-500 font-mono">
-                        <div>Start: {b.startDate || 'Immediate'}</div>
-                        {b.endDate && <div>End: {b.endDate}</div>}
+                        <div>{t('education.startDate', 'Start')}: {b.startDate || t('education.immediate', 'Immediate')}</div>
+                        {b.endDate && <div>{t('education.endDate', 'End')}: {b.endDate}</div>}
                       </div>
 
                       <div className="flex items-center gap-1">
                         <Link
                           to="/dashboard/education/students"
                           className="px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[10px] font-bold border border-indigo-200 transition-colors"
-                          title="View Students"
+                          title={t('education.viewStudents', 'View Students')}
                         >
-                          Students
+                          {t('education.students', 'Students')}
                         </Link>
                         <button
                           onClick={() => handleOpenBatchModal(b)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 cursor-pointer"
-                          title="Edit Batch"
+                          title={t('education.editBatch', 'Edit Batch')}
                         >
                           <Edit2 size={13} />
                         </button>
                         <button
                           onClick={() => handleDeleteBatch(b.id)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer"
-                          title="Delete Batch"
+                          title={t('education.deleteBatch', 'Delete Batch')}
                         >
                           <Trash2 size={13} />
                         </button>
@@ -474,7 +476,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-sm font-bold text-slate-900">
-                {editingCourse ? 'Edit Course Curriculum' : 'Create Coaching Course'}
+                {editingCourse ? t('education.editCourseCurriculum', 'Edit Course Curriculum') : t('education.createCoachingCourse', 'Create Coaching Course')}
               </h3>
               <button
                 onClick={() => setShowCourseModal(false)}
@@ -486,7 +488,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
 
             <form onSubmit={handleSaveCourse} className="space-y-3.5 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Course Title *</label>
+                <label className="font-semibold text-slate-700">{t('education.courseTitleReq', 'Course Title *')}</label>
                 <input
                   type="text"
                   required
@@ -499,7 +501,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Course Code</label>
+                  <label className="font-semibold text-slate-700">{t('education.courseCode', 'Course Code')}</label>
                   <input
                     type="text"
                     placeholder="e.g. MTH-10"
@@ -509,7 +511,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Duration</label>
+                  <label className="font-semibold text-slate-700">{t('education.duration', 'Duration')}</label>
                   <input
                     type="text"
                     placeholder="e.g. 6 Months, 1 Year"
@@ -521,7 +523,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Total Course Fee ({currency}) *</label>
+                <label className="font-semibold text-slate-700">{t('education.totalCourseFeeReq', 'Total Course Fee')} ({currency}) *</label>
                 <input
                   type="number"
                   step="0.01"
@@ -534,10 +536,10 @@ export const EduCoursesBatchesPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Syllabus &amp; Overview (Optional)</label>
+                <label className="font-semibold text-slate-700">{t('education.syllabusOverviewOpt', 'Syllabus & Overview (Optional)')}</label>
                 <textarea
                   rows={2}
-                  placeholder="Curriculum overview, topics covered..."
+                  placeholder={t('education.syllabusPlaceholder', 'Curriculum overview, topics covered...')}
                   value={courseDesc}
                   onChange={(e) => setCourseDesc(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -550,13 +552,13 @@ export const EduCoursesBatchesPage: React.FC = () => {
                   onClick={() => setShowCourseModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer shadow-xs"
                 >
-                  {editingCourse ? 'Save Changes' : 'Create Course'}
+                  {editingCourse ? t('common.saveChanges', 'Save Changes') : t('education.createCourse', 'Create Course')}
                 </button>
               </div>
             </form>
@@ -570,7 +572,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-sm font-bold text-slate-900">
-                {editingBatch ? 'Edit Batch Timetable' : 'Schedule Batch Cohort'}
+                {editingBatch ? t('education.editBatchTimetable', 'Edit Batch Timetable') : t('education.scheduleBatchCohort', 'Schedule Batch Cohort')}
               </h3>
               <button
                 onClick={() => setShowBatchModal(false)}
@@ -582,14 +584,14 @@ export const EduCoursesBatchesPage: React.FC = () => {
 
             <form onSubmit={handleSaveBatch} className="space-y-3.5 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Select Course *</label>
+                <label className="font-semibold text-slate-700">{t('education.selectCourseReq', 'Select Course *')}</label>
                 <select
                   required
                   value={selectedCourseId}
                   onChange={(e) => setSelectedCourseId(Number(e.target.value))}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold"
                 >
-                  <option value="">-- Choose Course --</option>
+                  <option value="">{t('education.chooseCourse', '-- Choose Course --')}</option>
                   {courses.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name} ({formatCurrency(c.totalFees, currency)})
@@ -599,7 +601,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Batch Name *</label>
+                <label className="font-semibold text-slate-700">{t('education.batchNameReq', 'Batch Name *')}</label>
                 <input
                   type="text"
                   required
@@ -611,7 +613,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Weekly Schedule / Timings</label>
+                <label className="font-semibold text-slate-700">{t('education.weeklySchedule', 'Weekly Schedule / Timings')}</label>
                 <input
                   type="text"
                   placeholder="e.g. Mon, Wed, Fri 04:00 PM - 06:00 PM"
@@ -623,7 +625,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
 
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Start Date</label>
+                  <label className="font-semibold text-slate-700">{t('education.startDate', 'Start Date')}</label>
                   <input
                     type="date"
                     value={startDate}
@@ -632,7 +634,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">End Date</label>
+                  <label className="font-semibold text-slate-700">{t('education.endDate', 'End Date')}</label>
                   <input
                     type="date"
                     value={endDate}
@@ -641,7 +643,7 @@ export const EduCoursesBatchesPage: React.FC = () => {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Capacity</label>
+                  <label className="font-semibold text-slate-700">{t('education.capacity', 'Capacity')}</label>
                   <input
                     type="number"
                     min={1}
@@ -659,13 +661,13 @@ export const EduCoursesBatchesPage: React.FC = () => {
                   onClick={() => setShowBatchModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer shadow-xs"
                 >
-                  {editingBatch ? 'Save Changes' : 'Schedule Batch'}
+                  {editingBatch ? t('common.saveChanges', 'Save Changes') : t('education.scheduleBatch', 'Schedule Batch')}
                 </button>
               </div>
             </form>

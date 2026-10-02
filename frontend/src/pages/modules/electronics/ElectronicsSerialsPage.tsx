@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   electronicsApi,
   DeviceSerialItem,
@@ -15,6 +16,7 @@ import {
 import { Link } from 'react-router-dom';
 
 export const ElectronicsSerialsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [devices, setDevices] = useState<DeviceSerialItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -99,7 +101,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Delete this device serial record?')) return;
+    if (!window.confirm(t('electronics.deleteConfirm', 'Delete this device serial record?'))) return;
     try {
       await electronicsApi.deleteDevice(id);
       fetchDevices();
@@ -137,15 +139,15 @@ export const ElectronicsSerialsPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Serial / IMEI &amp; Warranty Tracking
+              {t('electronics.serialsTitle', 'Serial / IMEI & Warranty Tracking')}
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-cyan-50 text-cyan-800 text-xs font-bold border border-cyan-200 flex items-center gap-1.5">
               <Smartphone size={12} className="text-cyan-600" />
-              <span>Electronics Module</span>
+              <span>{t('electronics.moduleBadge', 'Electronics Module')}</span>
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Track device serial numbers, dual-SIM IMEIs, customer purchase links, and real-time warranty expirations.
+            {t('electronics.serialsSubtitle', 'Track device serial numbers, dual-SIM IMEIs, customer purchase links, and real-time warranty expirations.')}
           </p>
         </div>
 
@@ -155,7 +157,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <ShieldCheck size={14} className="text-emerald-600" />
-            <span>Warranty Lookup</span>
+            <span>{t('electronics.warrantyLookupBtn', 'Warranty Lookup')}</span>
           </Link>
 
           <button
@@ -166,7 +168,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <Plus size={15} />
-            <span>Register Device</span>
+            <span>{t('electronics.registerDeviceBtn', 'Register Device')}</span>
           </button>
         </div>
       </div>
@@ -174,24 +176,24 @@ export const ElectronicsSerialsPage: React.FC = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Registered</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('electronics.totalRegistered', 'Total Registered')}</span>
           <div className="text-2xl font-black text-slate-900">{devices.length}</div>
-          <p className="text-[10px] text-slate-400">Unique serial devices</p>
+          <p className="text-[10px] text-slate-400">{t('electronics.uniqueSerialDevices', 'Unique serial devices')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Active Warranty</span>
+          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">{t('electronics.activeWarranty', 'Active Warranty')}</span>
           <div className="text-2xl font-black text-emerald-600">{activeCount}</div>
-          <p className="text-[10px] text-emerald-700">Covered under warranty</p>
+          <p className="text-[10px] text-emerald-700">{t('electronics.coveredWarranty', 'Covered under warranty')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Expiring in 30d</span>
+          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">{t('electronics.expiring30d', 'Expiring in 30d')}</span>
           <div className="text-2xl font-black text-amber-600">{expiringCount}</div>
-          <p className="text-[10px] text-amber-700">Recommend renewal</p>
+          <p className="text-[10px] text-amber-700">{t('electronics.recommendRenewal', 'Recommend renewal')}</p>
         </div>
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">Expired</span>
+          <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">{t('electronics.expired', 'Expired')}</span>
           <div className="text-2xl font-black text-rose-600">{expiredCount}</div>
-          <p className="text-[10px] text-rose-700">Out of warranty</p>
+          <p className="text-[10px] text-rose-700">{t('electronics.outOfWarranty', 'Out of warranty')}</p>
         </div>
       </div>
 
@@ -200,7 +202,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
         <Search size={14} className="absolute left-3.5 top-3 text-slate-400" />
         <input
           type="text"
-          placeholder="Search by Serial Number, IMEI, Customer, or Model..."
+          placeholder={t('electronics.searchPlaceholderFull', 'Search by Serial Number, IMEI, Customer, or Model...')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs"
@@ -218,21 +220,21 @@ export const ElectronicsSerialsPage: React.FC = () => {
         ) : devices.length === 0 ? (
           <div className="py-12 text-center text-slate-400 space-y-2">
             <Smartphone size={32} className="mx-auto text-slate-300" />
-            <p className="font-bold text-slate-800 text-sm">No electronic devices registered yet</p>
-            <p className="text-xs text-slate-400">Click "Register Device" to log serial numbers, IMEI, and warranty periods.</p>
+            <p className="font-bold text-slate-800 text-sm">{t('electronics.noDevicesYet', 'No electronic devices registered yet')}</p>
+            <p className="text-xs text-slate-400">{t('electronics.noDevicesDesc', 'Click "Register Device" to log serial numbers, IMEI, and warranty periods.')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="text-slate-400 text-[10px] uppercase font-bold tracking-wider border-b border-slate-100">
-                  <th className="pb-3">Product / Device</th>
-                  <th className="pb-3">Serial / IMEI</th>
-                  <th className="pb-3">Customer Link</th>
-                  <th className="pb-3">Purchased</th>
-                  <th className="pb-3">Warranty Expiry</th>
-                  <th className="pb-3 text-center">Status</th>
-                  <th className="pb-3 text-right">Action</th>
+                  <th className="pb-3">{t('electronics.thProductDevice', 'Product / Device')}</th>
+                  <th className="pb-3">{t('electronics.thSerialImei', 'Serial / IMEI')}</th>
+                  <th className="pb-3">{t('electronics.thCustomerLink', 'Customer Link')}</th>
+                  <th className="pb-3">{t('electronics.thPurchased', 'Purchased')}</th>
+                  <th className="pb-3">{t('electronics.thWarrantyExpiry', 'Warranty Expiry')}</th>
+                  <th className="pb-3 text-center">{t('common.status', 'Status')}</th>
+                  <th className="pb-3 text-right">{t('common.actions', 'Action')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -253,9 +255,9 @@ export const ElectronicsSerialsPage: React.FC = () => {
                     </td>
 
                     <td className="py-3 font-mono">
-                      <div className="font-bold text-slate-800 text-[11px]">S/N: {dev.serialNumber}</div>
+                      <div className="font-bold text-slate-800 text-[11px]">{t('electronics.serialNumber', 'S/N')}: {dev.serialNumber}</div>
                       {dev.imeiNumber && (
-                        <div className="text-[10px] text-slate-400">IMEI: {dev.imeiNumber}</div>
+                        <div className="text-[10px] text-slate-400">{t('electronics.imeiNumber', 'IMEI')}: {dev.imeiNumber}</div>
                       )}
                     </td>
 
@@ -266,7 +268,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                           <span className="text-[10px] text-slate-400 font-mono">{dev.customerPhone || '—'}</span>
                         </div>
                       ) : (
-                        <span className="text-slate-400 italic">Unassigned</span>
+                        <span className="text-slate-400 italic">{t('electronics.unassigned', 'Unassigned')}</span>
                       )}
                     </td>
 
@@ -277,7 +279,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                     <td className="py-3 font-mono text-[11px]">
                       <span className="font-bold text-slate-900 block">{dev.warrantyExpiryDate}</span>
                       <span className="text-[10px] text-slate-400">
-                        {dev.daysRemaining > 0 ? `${dev.daysRemaining} days left` : 'Expired'}
+                        {dev.daysRemaining > 0 ? t('electronics.daysLeft', '{{count}} days left', { count: dev.daysRemaining }) : t('electronics.expired', 'Expired')}
                       </span>
                     </td>
 
@@ -299,7 +301,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                       <button
                         onClick={() => handleDelete(dev.id)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer"
-                        title="Delete Record"
+                        title={t('common.delete', 'Delete Record')}
                       >
                         <Trash2 size={14} />
                       </button>
@@ -317,7 +319,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-900">Register Serial / IMEI &amp; Warranty</h3>
+              <h3 className="text-sm font-bold text-slate-900">{t('electronics.registerModalTitle', 'Register Serial / IMEI & Warranty')}</h3>
               <button
                 onClick={() => setShowModal(false)}
                 className="text-slate-400 hover:text-slate-600 cursor-pointer"
@@ -328,7 +330,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
 
             <form onSubmit={handleRegisterDevice} className="space-y-3.5 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Link Catalog Product (Optional)</label>
+                <label className="font-semibold text-slate-700">{t('electronics.linkProductOpt', 'Link Catalog Product (Optional)')}</label>
                 <select
                   value={selectedProductId}
                   onChange={(e) => {
@@ -341,7 +343,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                   }}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
                 >
-                  <option value="">-- Select Catalog Item or type custom --</option>
+                  <option value="">{t('electronics.selectCatalogOpt', '-- Select Catalog Item or type custom --')}</option>
                   {products.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.name}
@@ -351,7 +353,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Product / Item Name *</label>
+                <label className="font-semibold text-slate-700">{t('electronics.productItemName', 'Product / Item Name')} *</label>
                 <input
                   type="text"
                   required
@@ -364,7 +366,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Brand</label>
+                  <label className="font-semibold text-slate-700">{t('electronics.brand', 'Brand')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Apple, Samsung, Dell"
@@ -375,7 +377,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Model Name / Code</label>
+                  <label className="font-semibold text-slate-700">{t('electronics.modelCode', 'Model Name / Code')}</label>
                   <input
                     type="text"
                     placeholder="e.g. A2849 / SM-S918B"
@@ -388,7 +390,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Serial Number (S/N) *</label>
+                  <label className="font-semibold text-slate-700">{t('electronics.serialNumberLabel', 'Serial Number (S/N)')} *</label>
                   <input
                     type="text"
                     required
@@ -400,7 +402,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">IMEI Number (Optional)</label>
+                  <label className="font-semibold text-slate-700">{t('electronics.imeiNumberOpt', 'IMEI Number (Optional)')}</label>
                   <input
                     type="text"
                     placeholder="e.g. 354890123456789"
@@ -413,7 +415,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Purchase Date</label>
+                  <label className="font-semibold text-slate-700">{t('electronics.purchaseDate', 'Purchase Date')}</label>
                   <input
                     type="date"
                     value={purchaseDate}
@@ -423,7 +425,7 @@ export const ElectronicsSerialsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Warranty Coverage (Months)</label>
+                  <label className="font-semibold text-slate-700">{t('electronics.warrantyMonths', 'Warranty Coverage (Months)')}</label>
                   <input
                     type="number"
                     min={1}
@@ -437,20 +439,20 @@ export const ElectronicsSerialsPage: React.FC = () => {
 
               <div className="pt-2 border-t border-slate-100 space-y-2">
                 <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px] block">
-                  Customer Ownership Link (Optional)
+                  {t('electronics.customerOwnershipOpt', 'Customer Ownership Link (Optional)')}
                 </span>
 
                 <div className="grid grid-cols-2 gap-3">
                   <input
                     type="text"
-                    placeholder="Customer Name (Optional)"
+                    placeholder={t('common.name', 'Customer Name (Optional)')}
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
                   />
                   <input
                     type="tel"
-                    placeholder="Customer Phone (Optional)"
+                    placeholder={t('common.phone', 'Customer Phone (Optional)')}
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -460,14 +462,14 @@ export const ElectronicsSerialsPage: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <input
                     type="email"
-                    placeholder="Customer Email (Optional)"
+                    placeholder={t('common.email', 'Customer Email (Optional)')}
                     value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
                   />
                   <input
                     type="text"
-                    placeholder="Customer Address (Optional)"
+                    placeholder={t('common.address', 'Customer Address (Optional)')}
                     value={customerAddress}
                     onChange={(e) => setCustomerAddress(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -477,14 +479,14 @@ export const ElectronicsSerialsPage: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <input
                     type="text"
-                    placeholder="Invoice Number (e.g. INV-0042)"
+                    placeholder={t('orders.invoiceNumber', 'Invoice Number (e.g. INV-0042)')}
                     value={invoiceNumber}
                     onChange={(e) => setInvoiceNumber(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
                   />
                   <input
                     type="text"
-                    placeholder="Warranty Provider (e.g. AppleCare+)"
+                    placeholder={t('electronics.warrantyProvider', 'Warranty Provider (e.g. AppleCare+)')}
                     value={warrantyProvider}
                     onChange={(e) => setWarrantyProvider(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -498,13 +500,13 @@ export const ElectronicsSerialsPage: React.FC = () => {
                   onClick={() => setShowModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold cursor-pointer shadow-xs"
                 >
-                  Save Device Record
+                  {t('electronics.saveDevice', 'Save Device Record')}
                 </button>
               </div>
             </form>

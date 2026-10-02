@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { electronicsApi, WarrantyLookupResult } from '../../../api/modules';
 import {
   ShieldCheck,
@@ -10,6 +11,7 @@ import {
 } from 'lucide-react';
 
 export const WarrantyLookupPage: React.FC = () => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<WarrantyLookupResult | null>(null);
@@ -38,15 +40,15 @@ export const WarrantyLookupPage: React.FC = () => {
       <div>
         <div className="flex items-center gap-2.5">
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-            Live Warranty &amp; Device Lookup
+            {t('electronics.warrantyTitle', 'Live Warranty & Device Lookup')}
           </h1>
           <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 flex items-center gap-1.5">
             <ShieldCheck size={13} className="text-emerald-600" />
-            <span>Serial Verification</span>
+            <span>{t('electronics.serialVerification', 'Serial Verification')}</span>
           </span>
         </div>
         <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-          Verify authentic warranty validity, purchase invoice link, and claim eligibility.
+          {t('electronics.warrantySubtitle', 'Verify authentic warranty validity, purchase invoice link, and claim eligibility.')}
         </p>
       </div>
 
@@ -58,7 +60,7 @@ export const WarrantyLookupPage: React.FC = () => {
             <input
               type="text"
               required
-              placeholder="Enter Serial Number or IMEI..."
+              placeholder={t('electronics.searchPlaceholder', 'Enter Serial Number or IMEI...')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-mono focus:ring-2 focus:ring-emerald-500/20"
@@ -70,7 +72,7 @@ export const WarrantyLookupPage: React.FC = () => {
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             <ShieldCheck size={16} />
-            <span>{loading ? 'Verifying...' : 'Check Warranty'}</span>
+            <span>{loading ? t('common.loading', 'Verifying...') : t('electronics.checkWarranty', 'Check Warranty')}</span>
           </button>
         </form>
       </div>
@@ -82,9 +84,9 @@ export const WarrantyLookupPage: React.FC = () => {
             <div className="clay-card p-10 text-center text-slate-400 space-y-3">
               <ShieldAlert size={36} className="mx-auto text-rose-400" />
               <div>
-                <p className="font-bold text-slate-800 text-sm">{result.message || 'No device found'}</p>
+                <p className="font-bold text-slate-800 text-sm">{result.message || t('electronics.noDeviceFound', 'No device found')}</p>
                 <p className="text-xs text-slate-400 mt-1">
-                  Double check the serial number or IMEI for typos.
+                  {t('electronics.noDeviceDesc', 'Double check the serial number or IMEI for typos.')}
                 </p>
               </div>
             </div>
@@ -116,7 +118,7 @@ export const WarrantyLookupPage: React.FC = () => {
                     <span>{device.warrantyStatus}</span>
                   </span>
                   <p className="text-[11px] text-slate-400 font-mono mt-1">
-                    {device.daysRemaining > 0 ? `${device.daysRemaining} days remaining` : 'Warranty Expired'}
+                    {device.daysRemaining > 0 ? t('electronics.daysRemaining', '{{count}} days remaining', { count: device.daysRemaining }) : t('electronics.warrantyExpired', 'Warranty Expired')}
                   </p>
                 </div>
               </div>
@@ -124,33 +126,33 @@ export const WarrantyLookupPage: React.FC = () => {
               {/* Specs & Hardware Identifiers */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-                  <span className="font-semibold text-slate-400 text-[10px] uppercase block">Serial Number</span>
+                  <span className="font-semibold text-slate-400 text-[10px] uppercase block">{t('electronics.serialNumber', 'Serial Number')}</span>
                   <span className="font-mono font-bold text-slate-900 text-sm">{device.serialNumber}</span>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-                  <span className="font-semibold text-slate-400 text-[10px] uppercase block">IMEI Number</span>
-                  <span className="font-mono font-bold text-slate-900 text-sm">{device.imeiNumber || 'N/A'}</span>
+                  <span className="font-semibold text-slate-400 text-[10px] uppercase block">{t('electronics.imeiNumber', 'IMEI Number')}</span>
+                  <span className="font-mono font-bold text-slate-900 text-sm">{device.imeiNumber || t('common.notAvailable', 'N/A')}</span>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-                  <span className="font-semibold text-slate-400 text-[10px] uppercase block">Warranty Provider</span>
-                  <span className="font-bold text-slate-900 text-sm">{device.warrantyProvider || 'Store Standard'}</span>
+                  <span className="font-semibold text-slate-400 text-[10px] uppercase block">{t('electronics.warrantyProvider', 'Warranty Provider')}</span>
+                  <span className="font-bold text-slate-900 text-sm">{device.warrantyProvider || t('electronics.storeStandard', 'Store Standard')}</span>
                 </div>
               </div>
 
               {/* Timeline Grid */}
               <div className="p-4 rounded-xl bg-emerald-50/40 border border-emerald-100 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div>
-                  <span className="text-slate-500 font-semibold block text-[10px] uppercase">Purchase Date</span>
+                  <span className="text-slate-500 font-semibold block text-[10px] uppercase">{t('electronics.purchaseDate', 'Purchase Date')}</span>
                   <span className="font-mono font-bold text-slate-900">{device.purchaseDate}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 font-semibold block text-[10px] uppercase">Coverage Term</span>
-                  <span className="font-bold text-slate-900">{device.warrantyMonths} Months</span>
+                  <span className="text-slate-500 font-semibold block text-[10px] uppercase">{t('electronics.coverageTerm', 'Coverage Term')}</span>
+                  <span className="font-bold text-slate-900">{t('electronics.monthsCount', '{{count}} Months', { count: device.warrantyMonths })}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 font-semibold block text-[10px] uppercase">Warranty Expiry Date</span>
+                  <span className="text-slate-500 font-semibold block text-[10px] uppercase">{t('electronics.warrantyExpiryDate', 'Warranty Expiry Date')}</span>
                   <span className="font-mono font-bold text-emerald-800">{device.warrantyExpiryDate}</span>
                 </div>
               </div>
@@ -158,10 +160,10 @@ export const WarrantyLookupPage: React.FC = () => {
               {/* Customer Ownership */}
               <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                 <div>
-                  <span className="font-bold text-slate-700 block">Registered Owner:</span>
-                  <span className="text-slate-600">{device.customerName || 'Walk-in Customer'} • {device.customerPhone || 'No phone recorded'}</span>
+                  <span className="font-bold text-slate-700 block">{t('electronics.registeredOwner', 'Registered Owner')}:</span>
+                  <span className="text-slate-600">{device.customerName || t('pos.walkIn', 'Walk-in Customer')} • {device.customerPhone || t('common.none', 'No phone recorded')}</span>
                   {device.invoiceNumber && (
-                    <span className="text-[11px] text-slate-400 block font-mono">Invoice Reference: #{device.invoiceNumber}</span>
+                    <span className="text-[11px] text-slate-400 block font-mono">{t('electronics.invoiceRef', 'Invoice Reference: #{{number}}', { number: device.invoiceNumber })}</span>
                   )}
                 </div>
 
@@ -170,7 +172,7 @@ export const WarrantyLookupPage: React.FC = () => {
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-all cursor-pointer self-start sm:self-auto shadow-xs"
                 >
                   <Printer size={13} />
-                  <span>Print Certificate</span>
+                  <span>{t('electronics.printCertificate', 'Print Certificate')}</span>
                 </button>
               </div>
             </div>

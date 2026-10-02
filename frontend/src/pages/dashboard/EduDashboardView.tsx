@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import {
   educationApi,
@@ -24,6 +25,7 @@ import {
 } from 'lucide-react';
 
 export const EduDashboardView: React.FC = () => {
+  const { t } = useTranslation();
   const { user, business } = useAuth();
   const currency = business?.currency || 'INR';
 
@@ -34,9 +36,9 @@ export const EduDashboardView: React.FC = () => {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    return 'Good Evening';
+    if (hour < 12) return t('dashboard.goodMorning', 'Good Morning');
+    if (hour < 17) return t('dashboard.goodAfternoon', 'Good Afternoon');
+    return t('dashboard.goodEvening', 'Good Evening');
   };
 
   const fetchDashboardData = async () => {
@@ -80,7 +82,7 @@ export const EduDashboardView: React.FC = () => {
             <div className="flex items-center gap-2">
               <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30 flex items-center gap-1.5">
                 <GraduationCap size={13} className="text-emerald-400" />
-                <span>Education &amp; Coaching Dashboard</span>
+                <span>{t('education.dashboardTitle', 'Education & Coaching Dashboard')}</span>
               </span>
               <span className="text-xs text-slate-400 font-medium hidden sm:inline">
                 {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
@@ -88,10 +90,10 @@ export const EduDashboardView: React.FC = () => {
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              {getGreeting()}, {user?.fullName || 'Educator'}!
+              {getGreeting()}, {user?.fullName || t('education.educator', 'Educator')}!
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
-              Manage student admissions, batch schedules, tuition fee installments, and coaching business insights with ease.
+              {t('education.dashboardSubtitle', 'Manage student admissions, batch schedules, tuition fee installments, and coaching business insights with ease.')}
             </p>
           </div>
 
@@ -102,7 +104,7 @@ export const EduDashboardView: React.FC = () => {
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all cursor-pointer"
             >
               <Plus size={15} />
-              <span>Admit Student</span>
+              <span>{t('education.admitStudent', 'Admit Student')}</span>
             </Link>
 
             <Link
@@ -110,7 +112,7 @@ export const EduDashboardView: React.FC = () => {
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/30 transition-all cursor-pointer"
             >
               <CircleDollarSign size={15} />
-              <span>Collect Fee</span>
+              <span>{t('education.collectFee', 'Collect Fee')}</span>
             </Link>
 
             <Link
@@ -118,16 +120,16 @@ export const EduDashboardView: React.FC = () => {
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-all cursor-pointer"
             >
               <BookOpen size={14} />
-              <span>Courses &amp; Batches</span>
+              <span>{t('education.coursesAndBatches', 'Courses & Batches')}</span>
             </Link>
 
             <Link
               to="/dashboard/reports"
               className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-all cursor-pointer"
-              title="Institute Reports"
+              title={t('education.instituteReports', 'Institute Reports')}
             >
               <FileText size={14} />
-              <span>Reports</span>
+              <span>{t('nav.reports', 'Reports')}</span>
             </Link>
           </div>
         </div>
@@ -142,7 +144,7 @@ export const EduDashboardView: React.FC = () => {
         {/* Total Students */}
         <div className="clay-card p-5 space-y-3 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Students</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('education.totalStudents', 'Total Students')}</span>
             <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
               <GraduationCap size={18} />
             </div>
@@ -151,10 +153,10 @@ export const EduDashboardView: React.FC = () => {
             <div className="text-3xl font-black text-slate-900">{loading ? '...' : totalStudents}</div>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
-                {activeStudents} Active
+                {activeStudents} {t('common.active', 'Active')}
               </span>
               <span className="text-[11px] text-slate-400">
-                {totalStudents - activeStudents} inactive/completed
+                {totalStudents - activeStudents} {t('education.inactiveCompleted', 'inactive/completed')}
               </span>
             </div>
           </div>
@@ -162,7 +164,7 @@ export const EduDashboardView: React.FC = () => {
             to="/dashboard/education/students"
             className="text-[11px] font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 pt-2 border-t border-slate-100"
           >
-            <span>View Student Directory</span>
+            <span>{t('education.viewStudentDirectory', 'View Student Directory')}</span>
             <ArrowRight size={12} />
           </Link>
         </div>
@@ -170,7 +172,7 @@ export const EduDashboardView: React.FC = () => {
         {/* Active Batches */}
         <div className="clay-card p-5 space-y-3 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Batches &amp; Classes</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('education.batchesAndClasses', 'Batches & Classes')}</span>
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <BookOpen size={18} />
             </div>
@@ -179,7 +181,7 @@ export const EduDashboardView: React.FC = () => {
             <div className="text-3xl font-black text-slate-900">{loading ? '...' : totalBatches}</div>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
-                {courses.length} Courses Offered
+                {courses.length} {t('education.coursesOffered', 'Courses Offered')}
               </span>
             </div>
           </div>
@@ -187,7 +189,7 @@ export const EduDashboardView: React.FC = () => {
             to="/dashboard/education/courses"
             className="text-[11px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 pt-2 border-t border-slate-100"
           >
-            <span>Manage Timetables &amp; Quotas</span>
+            <span>{t('education.manageTimetables', 'Manage Timetables & Quotas')}</span>
             <ArrowRight size={12} />
           </Link>
         </div>
@@ -195,7 +197,7 @@ export const EduDashboardView: React.FC = () => {
         {/* Total Collected Fees */}
         <div className="clay-card p-5 space-y-3 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Fees Collected</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('education.feesCollected', 'Fees Collected')}</span>
             <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <CircleDollarSign size={18} />
             </div>
@@ -206,7 +208,7 @@ export const EduDashboardView: React.FC = () => {
             </div>
             <div className="flex items-center gap-1 mt-1">
               <span className="text-[11px] text-emerald-700 font-semibold">
-                Total tuition receipts recorded
+                {t('education.totalTuitionRecorded', 'Total tuition receipts recorded')}
               </span>
             </div>
           </div>
@@ -214,7 +216,7 @@ export const EduDashboardView: React.FC = () => {
             to="/dashboard/education/fees"
             className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 pt-2 border-t border-slate-100"
           >
-            <span>View Payment History</span>
+            <span>{t('education.viewPaymentHistory', 'View Payment History')}</span>
             <ArrowRight size={12} />
           </Link>
         </div>
@@ -222,7 +224,7 @@ export const EduDashboardView: React.FC = () => {
         {/* Pending Fees Dues */}
         <div className="clay-card p-5 space-y-3 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pending Dues</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('education.pendingDues', 'Pending Dues')}</span>
             <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
               <Receipt size={18} />
             </div>
@@ -234,10 +236,10 @@ export const EduDashboardView: React.FC = () => {
             <div className="flex items-center gap-2 mt-1">
               {overdueCount > 0 ? (
                 <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 border border-rose-200">
-                  {overdueCount} Overdue
+                  {overdueCount} {t('education.overdue', 'Overdue')}
                 </span>
               ) : (
-                <span className="text-[11px] text-slate-400">All current accounts</span>
+                <span className="text-[11px] text-slate-400">{t('education.allCurrentAccounts', 'All current accounts')}</span>
               )}
             </div>
           </div>
@@ -245,7 +247,7 @@ export const EduDashboardView: React.FC = () => {
             to="/dashboard/education/fees"
             className="text-[11px] font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 pt-2 border-t border-slate-100"
           >
-            <span>Collect Pending Installments</span>
+            <span>{t('education.collectPendingInstallments', 'Collect Pending Installments')}</span>
             <ArrowRight size={12} />
           </Link>
         </div>
@@ -262,13 +264,13 @@ export const EduDashboardView: React.FC = () => {
                 <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
                   <Users size={15} />
                 </div>
-                <h3 className="text-sm font-bold text-slate-900">Recent Student Admissions</h3>
+                <h3 className="text-sm font-bold text-slate-900">{t('education.recentAdmissions', 'Recent Student Admissions')}</h3>
               </div>
               <Link
                 to="/dashboard/education/students"
                 className="text-xs font-bold text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
               >
-                <span>View All</span>
+                <span>{t('common.all', 'View All')}</span>
                 <ArrowRight size={12} />
               </Link>
             </div>
@@ -282,12 +284,12 @@ export const EduDashboardView: React.FC = () => {
             ) : recentAdmissions.length === 0 ? (
               <div className="py-8 text-center text-slate-400 space-y-2">
                 <GraduationCap size={28} className="mx-auto text-slate-300" />
-                <p className="text-xs font-semibold text-slate-700">No students enrolled yet</p>
+                <p className="text-xs font-semibold text-slate-700">{t('education.noStudentsEnrolled', 'No students enrolled yet')}</p>
                 <Link
                   to="/dashboard/education/students"
                   className="text-xs font-bold text-indigo-600 hover:underline"
                 >
-                  + Admit your first student
+                  + {t('education.admitFirstStudent', 'Admit your first student')}
                 </Link>
               </div>
             ) : (
@@ -312,7 +314,7 @@ export const EduDashboardView: React.FC = () => {
                           {stu.currentBatchName}
                         </span>
                       ) : (
-                        <span className="text-[10px] text-slate-400 italic">Unassigned</span>
+                        <span className="text-[10px] text-slate-400 italic">{t('education.unassigned', 'Unassigned')}</span>
                       )}
                       <p className="text-[9px] text-slate-400 font-mono mt-0.5">{stu.admissionDate}</p>
                     </div>
@@ -329,13 +331,13 @@ export const EduDashboardView: React.FC = () => {
                 <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
                   <Clock size={15} />
                 </div>
-                <h3 className="text-sm font-bold text-slate-900">Active Batches &amp; Timetables</h3>
+                <h3 className="text-sm font-bold text-slate-900">{t('education.activeBatchesTimetables', 'Active Batches & Timetables')}</h3>
               </div>
               <Link
                 to="/dashboard/education/courses"
                 className="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
               >
-                <span>Manage Batches</span>
+                <span>{t('education.manageBatches', 'Manage Batches')}</span>
                 <ArrowRight size={12} />
               </Link>
             </div>
@@ -349,12 +351,12 @@ export const EduDashboardView: React.FC = () => {
             ) : batches.length === 0 ? (
               <div className="py-8 text-center text-slate-400 space-y-2">
                 <Calendar size={28} className="mx-auto text-slate-300" />
-                <p className="text-xs font-semibold text-slate-700">No batches created yet</p>
+                <p className="text-xs font-semibold text-slate-700">{t('education.noBatchesCreated', 'No batches created yet')}</p>
                 <Link
                   to="/dashboard/education/courses"
                   className="text-xs font-bold text-blue-600 hover:underline"
                 >
-                  + Create your first batch
+                  + {t('education.createFirstBatch', 'Create your first batch')}
                 </Link>
               </div>
             ) : (
@@ -375,7 +377,7 @@ export const EduDashboardView: React.FC = () => {
                           <span className="text-[10px] text-slate-500">{b.courseName || 'Coaching Course'}</span>
                         </div>
                         <span className="text-[10px] font-mono font-bold text-slate-600">
-                          {enrolled} / {cap} Seats ({pct}%)
+                          {enrolled} / {cap} {t('education.seats', 'Seats')} ({pct}%)
                         </span>
                       </div>
 
@@ -398,7 +400,7 @@ export const EduDashboardView: React.FC = () => {
                           <Clock size={11} className="text-slate-400" />
                           <span>{b.schedule}</span>
                         </span>
-                        <span className="font-mono">Starts: {b.startDate || 'Ongoing'}</span>
+                        <span className="font-mono">{t('education.starts', 'Starts')}: {b.startDate || t('education.ongoing', 'Ongoing')}</span>
                       </div>
                     </div>
                   );
@@ -417,13 +419,13 @@ export const EduDashboardView: React.FC = () => {
                 <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
                   <AlertCircle size={15} />
                 </div>
-                <h3 className="text-sm font-bold text-slate-900">Pending Fee Dues &amp; Installments</h3>
+                <h3 className="text-sm font-bold text-slate-900">{t('education.pendingDuesInstallments', 'Pending Fee Dues & Installments')}</h3>
               </div>
               <Link
                 to="/dashboard/education/fees"
                 className="text-xs font-bold text-rose-600 hover:text-rose-700 inline-flex items-center gap-1"
               >
-                <span>View All Dues</span>
+                <span>{t('education.viewAllDues', 'View All Dues')}</span>
                 <ArrowRight size={12} />
               </Link>
             </div>
@@ -437,8 +439,8 @@ export const EduDashboardView: React.FC = () => {
             ) : pendingDues.length === 0 ? (
               <div className="py-8 text-center text-slate-400 space-y-2">
                 <CheckCircle2 size={28} className="mx-auto text-emerald-500" />
-                <p className="text-xs font-bold text-slate-800">All fees are cleared!</p>
-                <p className="text-[11px] text-slate-400">No pending student installments.</p>
+                <p className="text-xs font-bold text-slate-800">{t('education.allFeesCleared', 'All fees are cleared!')}</p>
+                <p className="text-[11px] text-slate-400">{t('education.noPendingInstallments', 'No pending student installments.')}</p>
               </div>
             ) : (
               <div className="divide-y divide-slate-100">
@@ -460,8 +462,8 @@ export const EduDashboardView: React.FC = () => {
                             isOverdue ? 'text-rose-600 font-bold' : 'text-slate-400'
                           }`}
                         >
-                          Due: {enr.nextDueDate || 'Immediate'}{' '}
-                          {isOverdue && '(OVERDUE)'}
+                          {t('education.due', 'Due')}: {enr.nextDueDate || t('education.immediate', 'Immediate')}{' '}
+                          {isOverdue && `(${t('education.overdueCaps', 'OVERDUE')})`}
                         </span>
                       </div>
 
@@ -470,14 +472,14 @@ export const EduDashboardView: React.FC = () => {
                           <span className="text-xs font-black text-rose-600 block">
                             {formatCurrency(enr.pendingAmount, currency)}
                           </span>
-                          <span className="text-[9px] text-slate-400">pending</span>
+                          <span className="text-[9px] text-slate-400">{t('education.pending', 'pending')}</span>
                         </div>
 
                         <Link
                           to="/dashboard/education/fees"
                           className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] shadow-2xs transition-all"
                         >
-                          Collect
+                          {t('education.collect', 'Collect')}
                         </Link>
                       </div>
                     </div>
@@ -494,13 +496,13 @@ export const EduDashboardView: React.FC = () => {
                 <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
                   <Receipt size={15} />
                 </div>
-                <h3 className="text-sm font-bold text-slate-900">Recent Fee Receipts Issued</h3>
+                <h3 className="text-sm font-bold text-slate-900">{t('education.recentFeeReceipts', 'Recent Fee Receipts Issued')}</h3>
               </div>
               <Link
                 to="/dashboard/education/fees"
                 className="text-xs font-bold text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
               >
-                <span>View Receipts</span>
+                <span>{t('education.viewReceipts', 'View Receipts')}</span>
                 <ArrowRight size={12} />
               </Link>
             </div>
@@ -514,8 +516,8 @@ export const EduDashboardView: React.FC = () => {
             ) : recentPayments.length === 0 ? (
               <div className="py-8 text-center text-slate-400 space-y-2">
                 <Receipt size={28} className="mx-auto text-slate-300" />
-                <p className="text-xs font-semibold text-slate-700">No payment receipts yet</p>
-                <p className="text-[11px] text-slate-400">Fee installments will show here once recorded.</p>
+                <p className="text-xs font-semibold text-slate-700">{t('education.noReceiptsYet', 'No payment receipts yet')}</p>
+                <p className="text-[11px] text-slate-400">{t('education.installmentsShowPrompt', 'Fee installments will show here once recorded.')}</p>
               </div>
             ) : (
               <div className="divide-y divide-slate-100">
@@ -551,7 +553,7 @@ export const EduDashboardView: React.FC = () => {
             <GraduationCap size={16} />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-indigo-950">Simple Coaching Management Workflow</h4>
+            <h4 className="text-xs font-bold text-indigo-950">{t('education.coachingWorkflow', 'Simple Coaching Management Workflow')}</h4>
             <p className="text-[11px] text-indigo-800">
               Students &rarr; Courses &amp; Batches &rarr; Fee Management &rarr; Business Analytics &amp; Reports
             </p>
@@ -563,13 +565,13 @@ export const EduDashboardView: React.FC = () => {
             to="/dashboard/reports"
             className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-indigo-700 text-xs font-bold border border-indigo-200 transition-all cursor-pointer shadow-2xs"
           >
-            Education Reports
+            {t('education.instituteReports', 'Education Reports')}
           </Link>
           <Link
             to="/dashboard/analytics"
             className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all cursor-pointer shadow-2xs"
           >
-            View Analytics
+            {t('nav.analytics', 'View Analytics')}
           </Link>
         </div>
       </div>

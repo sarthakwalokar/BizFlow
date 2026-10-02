@@ -171,16 +171,16 @@ export const AppLayout: React.FC = () => {
 
     if (bType === 'RESTAURANT' || bType === 'CAFE') {
       return {
-        groupTitle: 'Dining & Tables',
+        groupTitle: t('nav.diningTables', 'Dining & Tables'),
         items: [
           {
-            label: 'Tables & Orders',
+            label: t('nav.tablesOrders', 'Tables & Orders'),
             path: '/dashboard/restaurant/tables',
             icon: UtensilsCrossed,
             roles: ['OWNER', 'STAFF'],
           },
           {
-            label: 'Kitchen KOT',
+            label: t('nav.kitchenKot', 'Kitchen KOT'),
             path: '/dashboard/restaurant/kot',
             icon: ChefHat,
             roles: ['OWNER', 'STAFF'],
@@ -191,16 +191,16 @@ export const AppLayout: React.FC = () => {
 
     if (bType === 'SALON' || bType === 'BEAUTY_PARLOUR') {
       return {
-        groupTitle: 'Salon Management',
+        groupTitle: t('nav.salonManagement', 'Salon Management'),
         items: [
           {
-            label: 'Appointments',
+            label: t('nav.appointments', 'Appointments'),
             path: '/dashboard/salon/appointments',
             icon: CalendarCheck,
             roles: ['OWNER', 'STAFF'],
           },
           {
-            label: 'Service Catalog',
+            label: t('nav.serviceCatalog', 'Service Catalog'),
             path: '/dashboard/salon/services',
             icon: Scissors,
             roles: ['OWNER', 'STAFF'],
@@ -211,16 +211,16 @@ export const AppLayout: React.FC = () => {
 
     if (bType === 'ELECTRONICS' || bType === 'MOBILE_STORE') {
       return {
-        groupTitle: 'Electronics & Warranty',
+        groupTitle: t('nav.electronicsWarranty', 'Electronics & Warranty'),
         items: [
           {
-            label: 'Serial & IMEI Tracker',
+            label: t('nav.serialImeiTracker', 'Serial & IMEI Tracker'),
             path: '/dashboard/electronics/serials',
             icon: Smartphone,
             roles: ['OWNER', 'STAFF'],
           },
           {
-            label: 'Warranty Lookup',
+            label: t('nav.warrantyLookup', 'Warranty Lookup'),
             path: '/dashboard/electronics/warranty-lookup',
             icon: ShieldCheck,
             roles: ['OWNER', 'STAFF'],
@@ -231,16 +231,16 @@ export const AppLayout: React.FC = () => {
 
     if (bType === 'REPAIR' || bType === 'SERVICE') {
       return {
-        groupTitle: 'Repairs & Service',
+        groupTitle: t('nav.repairsService', 'Repairs & Service'),
         items: [
           {
-            label: 'Job Cards',
+            label: t('nav.jobCards', 'Job Cards'),
             path: '/dashboard/repairs/job-cards',
             icon: Wrench,
             roles: ['OWNER', 'STAFF'],
           },
           {
-            label: 'Repair Tracking',
+            label: t('nav.repairTracking', 'Repair Tracking'),
             path: '/dashboard/repairs/tracking',
             icon: Activity,
             roles: ['OWNER', 'STAFF'],
@@ -272,16 +272,16 @@ export const AppLayout: React.FC = () => {
       ],
     },
     {
-      groupTitle: 'STUDENTS',
+      groupTitle: t('nav.studentsGroup', 'Students'),
       items: [
         {
-          label: 'Students',
+          label: t('nav.students', 'Students'),
           path: '/dashboard/education/students',
           icon: GraduationCap,
           roles: ['OWNER', 'STAFF'],
         },
         {
-          label: 'Courses & Batches',
+          label: t('nav.coursesBatches', 'Courses & Batches'),
           path: '/dashboard/education/courses',
           icon: BookOpen,
           roles: ['OWNER', 'STAFF'],
@@ -289,10 +289,10 @@ export const AppLayout: React.FC = () => {
       ],
     },
     {
-      groupTitle: 'FEES',
+      groupTitle: t('nav.feesGroup', 'Fees'),
       items: [
         {
-          label: 'Fee Management',
+          label: t('nav.feeManagement', 'Fee Management'),
           path: '/dashboard/education/fees',
           icon: CircleDollarSign,
           roles: ['OWNER', 'STAFF'],
@@ -300,7 +300,7 @@ export const AppLayout: React.FC = () => {
       ],
     },
     {
-      groupTitle: 'INSIGHTS',
+      groupTitle: t('nav.insights', 'Insights'),
       items: [
         {
           label: t('nav.analytics', 'Analytics'),
@@ -607,7 +607,7 @@ export const AppLayout: React.FC = () => {
                 >
                   <div className="flex items-center space-x-2.5">
                     <Users size={16} className={location.pathname.startsWith('/dashboard/staff') ? 'text-white' : 'text-slate-400'} />
-                    <span>{isEducation ? 'Staff Management' : t('nav.staff', 'Staff Team')}</span>
+                    <span>{isEducation ? t('nav.staffManagement', 'Staff Management') : t('nav.staff', 'Staff Team')}</span>
                   </div>
                 </Link>
 
@@ -622,7 +622,7 @@ export const AppLayout: React.FC = () => {
                 >
                   <div className="flex items-center space-x-2.5">
                     <Settings size={16} className={location.pathname.startsWith('/dashboard/settings') ? 'text-white' : 'text-slate-400'} />
-                    <span>{isEducation ? 'Institute Settings' : t('nav.settings', 'Business Settings')}</span>
+                    <span>{isEducation ? t('nav.instituteSettings', 'Institute Settings') : t('nav.settings', 'Business Settings')}</span>
                   </div>
                 </Link>
               </div>
@@ -654,18 +654,18 @@ export const AppLayout: React.FC = () => {
                     <Sparkles size={14} />
                   </div>
                   <div>
-                    <h5 className="text-xs font-bold text-white leading-tight">Grow Your Business</h5>
+                    <h5 className="text-xs font-bold text-white leading-tight">{t('nav.growBusiness', 'Grow Your Business')}</h5>
                     <span className="text-[10px] text-cyan-400 font-medium">BizFlow AI</span>
                   </div>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-snug">
-                  Smart recommendations grounded in your store data.
+                  {t('nav.smartRecommendations', 'Smart recommendations grounded in your store data.')}
                 </p>
                 <Link
                   to="/dashboard/ai-assistant"
                   className="w-full py-1.5 px-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 text-[11px] font-bold border border-cyan-500/30 transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
                 >
-                  <span>Ask AI</span>
+                  <span>{t('nav.askAi', 'Ask AI')}</span>
                   <ChevronRight size={12} />
                 </Link>
               </div>
@@ -767,16 +767,16 @@ export const AppLayout: React.FC = () => {
                 <div className="absolute right-0 mt-3 w-80 sm:w-96 clay-card p-4 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                     <div className="flex items-center space-x-2">
-                      <h4 className="text-sm font-bold text-slate-900">Notifications</h4>
+                      <h4 className="text-sm font-bold text-slate-900">{t('nav.notifications', 'Notifications')}</h4>
                       {alerts.length > 0 && (
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-700">
-                          {alerts.length} {alerts.length === 1 ? 'alert' : 'alerts'}
+                          {alerts.length} {alerts.length === 1 ? t('nav.alert', 'alert') : t('nav.alerts', 'alerts')}
                         </span>
                       )}
                     </div>
                     <button
                       onClick={fetchInventoryAlerts}
-                      title="Refresh alerts"
+                      title={t('common.refresh', 'Refresh')}
                       disabled={loadingAlerts}
                       className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
                     >
@@ -791,9 +791,9 @@ export const AppLayout: React.FC = () => {
                         <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-xs border border-emerald-100">
                           <CheckCircle2 size={20} />
                         </div>
-                        <p className="text-xs font-bold text-slate-800">You're all caught up</p>
+                        <p className="text-xs font-bold text-slate-800">{t('nav.allCaughtUp', "You're all caught up")}</p>
                         <p className="text-[11px] text-slate-500 font-medium">
-                          No inventory alerts right now.
+                          {t('nav.noAlerts', 'No inventory alerts right now.')}
                         </p>
                       </div>
                     ) : (
@@ -868,7 +868,7 @@ export const AppLayout: React.FC = () => {
                         onClick={() => setNotificationsOpen(false)}
                         className="text-xs font-bold text-brand-600 hover:text-brand-700 hover:underline inline-flex items-center gap-1"
                       >
-                        <span>Manage Inventory</span>
+                        <span>{t('inventory.manageInventory', 'Manage Inventory')}</span>
                         <ChevronRight size={13} />
                       </Link>
                     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { businessApi } from '../../api/business';
 import { productsApi, ProductRequest } from '../../api/products';
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react';
 
 export const OnboardingPage: React.FC = () => {
+  const { t } = useTranslation();
   const { user, business, updateBusinessState } = useAuth();
   const navigate = useNavigate();
 
@@ -107,9 +109,9 @@ export const OnboardingPage: React.FC = () => {
       setProfileDone(true);
       saveProgress({ profileDone: true });
       setActiveModal(null);
-      setFeedbackMessage({ type: 'success', text: 'Business profile updated successfully!' });
+      setFeedbackMessage({ type: 'success', text: t('onboarding.profileSuccess', 'Business profile updated successfully!') });
     } catch (err: any) {
-      setFeedbackMessage({ type: 'error', text: err.response?.data?.message || 'Failed to update business profile' });
+      setFeedbackMessage({ type: 'error', text: err.response?.data?.message || t('onboarding.profileError', 'Failed to update business profile') });
     } finally {
       setActionLoading(false);
     }
@@ -134,9 +136,9 @@ export const OnboardingPage: React.FC = () => {
       setProductDone(true);
       saveProgress({ productDone: true });
       setActiveModal(null);
-      setFeedbackMessage({ type: 'success', text: `Product "${prodName}" added to catalogue!` });
+      setFeedbackMessage({ type: 'success', text: t('onboarding.productAddedMsg', 'Product "{{name}}" added to catalogue!', { name: prodName }) });
     } catch (err: any) {
-      setFeedbackMessage({ type: 'error', text: err.response?.data?.message || 'Failed to create product' });
+      setFeedbackMessage({ type: 'error', text: err.response?.data?.message || t('onboarding.productError', 'Failed to create product') });
     } finally {
       setActionLoading(false);
     }
@@ -148,9 +150,9 @@ export const OnboardingPage: React.FC = () => {
     setFeedbackMessage(null);
     try {
       const samples: ProductRequest[] = [
-        { name: 'Standard Item / Starter Pack', price: 299, costPrice: 180, stockQuantity: 50, trackStock: true, productType: 'PHYSICAL', active: true },
-        { name: 'Premium Service / Consultation', price: 999, costPrice: 400, stockQuantity: 100, trackStock: false, productType: 'SERVICE', active: true },
-        { name: 'Quick Essentials / Add-on', price: 99, costPrice: 50, stockQuantity: 80, trackStock: true, productType: 'PHYSICAL', active: true },
+        { name: t('onboarding.sampleItem1', 'Standard Item / Starter Pack'), price: 299, costPrice: 180, stockQuantity: 50, trackStock: true, productType: 'PHYSICAL', active: true },
+        { name: t('onboarding.sampleItem2', 'Premium Service / Consultation'), price: 999, costPrice: 400, stockQuantity: 100, trackStock: false, productType: 'SERVICE', active: true },
+        { name: t('onboarding.sampleItem3', 'Quick Essentials / Add-on'), price: 99, costPrice: 50, stockQuantity: 80, trackStock: true, productType: 'PHYSICAL', active: true },
       ];
 
       for (const item of samples) {
@@ -160,9 +162,9 @@ export const OnboardingPage: React.FC = () => {
       setProductDone(true);
       saveProgress({ productDone: true });
       setActiveModal(null);
-      setFeedbackMessage({ type: 'success', text: 'Starter catalogue added with 3 ready-to-sell items!' });
+      setFeedbackMessage({ type: 'success', text: t('onboarding.starterCatalogSuccess', 'Starter catalogue added with 3 ready-to-sell items!') });
     } catch (err: any) {
-      setFeedbackMessage({ type: 'error', text: err.response?.data?.message || 'Failed to generate starter products' });
+      setFeedbackMessage({ type: 'error', text: err.response?.data?.message || t('onboarding.starterCatalogError', 'Failed to generate starter products') });
     } finally {
       setActionLoading(false);
     }
@@ -182,9 +184,9 @@ export const OnboardingPage: React.FC = () => {
       setReviewDone(true);
       saveProgress({ reviewDone: true });
       setActiveModal(null);
-      setFeedbackMessage({ type: 'success', text: 'Review Boost configured! Customer QR is ready.' });
+      setFeedbackMessage({ type: 'success', text: t('onboarding.reviewConfigSuccess', 'Review Boost configured! Customer QR is ready.') });
     } catch (err: any) {
-      setFeedbackMessage({ type: 'error', text: err.response?.data?.message || 'Failed to save review settings' });
+      setFeedbackMessage({ type: 'error', text: err.response?.data?.message || t('onboarding.reviewConfigError', 'Failed to save review settings') });
     } finally {
       setActionLoading(false);
     }
@@ -209,7 +211,7 @@ export const OnboardingPage: React.FC = () => {
               />
             </Link>
             <span className="hidden sm:inline-block text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200/80">
-              Workspace Setup
+              {t('onboarding.workspaceSetup', 'Workspace Setup')}
             </span>
           </div>
 
@@ -219,7 +221,7 @@ export const OnboardingPage: React.FC = () => {
               onClick={handleFinishOnboarding}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-white hover:bg-slate-100 border border-slate-200 shadow-2xs transition-colors cursor-pointer"
             >
-              <span>Skip to Dashboard</span>
+              <span>{t('onboarding.skipToDashboard', 'Skip to Dashboard')}</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -235,23 +237,23 @@ export const OnboardingPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2">
               <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-cyan-200">
                 <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
-                <span>Account Created Successfully</span>
+                <span>{t('onboarding.accountCreated', 'Account Created Successfully')}</span>
               </div>
             </div>
 
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Welcome to BizFlow, {user?.fullName || 'Business Owner'}!
+                {t('onboarding.welcomeTitle', 'Welcome to BizFlow, {{name}}!', { name: user?.fullName || t('common.name', 'Business Owner') })}
               </h1>
               <p className="text-xs sm:text-sm text-blue-100 max-w-2xl leading-relaxed">
-                Your business workspace for <span className="font-bold text-white underline decoration-cyan-400 decoration-2">{business?.name || 'Your Business'}</span> is ready. Complete these 4 quick setup steps to begin billing and operations.
+                {t('onboarding.welcomeSubtitle', 'Your business workspace for {{businessName}} is ready. Complete these 4 quick setup steps to begin billing and operations.', { businessName: business?.name || t('common.name', 'Your Business') })}
               </p>
             </div>
 
             {/* Live Progress Bar */}
             <div className="pt-2 space-y-2 max-w-lg">
               <div className="flex items-center justify-between text-xs font-semibold text-blue-100">
-                <span>Onboarding Progress ({completedCount} of 4 completed)</span>
+                <span>{t('onboarding.progress', 'Onboarding Progress ({{completed}} of 4 completed)', { completed: completedCount })}</span>
                 <span className="font-bold text-cyan-300">{progressPercent}%</span>
               </div>
               <div className="w-full h-2.5 bg-white/20 rounded-full overflow-hidden backdrop-blur-xs">
@@ -283,7 +285,7 @@ export const OnboardingPage: React.FC = () => {
             </div>
             <button
               onClick={() => setFeedbackMessage(null)}
-              className="text-slate-400 hover:text-slate-600 p-1"
+              className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -308,15 +310,17 @@ export const OnboardingPage: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900">1. Business Profile & Tax</h3>
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900">
+                      {t('onboarding.profileCardTitle', '1. Business Profile & Tax')}
+                    </h3>
                     {profileDone && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                        <Check className="w-3 h-3" /> Done
+                        <Check className="w-3 h-3" /> {t('onboarding.done', 'Done')}
                       </span>
                     )}
                   </div>
                   <p className="text-xs text-slate-500 leading-relaxed">
-                    Verify address, GSTIN / Tax number, contact numbers, and currency format for invoice printing.
+                    {t('onboarding.profileCardDesc', 'Verify address, GSTIN / Tax number, contact numbers, and currency format for invoice printing.')}
                   </p>
                 </div>
               </div>
@@ -324,7 +328,7 @@ export const OnboardingPage: React.FC = () => {
 
             <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
               <span className="text-[11px] text-slate-400">
-                {profileDone ? 'Profile configured' : 'Pending verification'}
+                {profileDone ? t('onboarding.profileConfigured', 'Profile configured') : t('onboarding.pendingVerification', 'Pending verification')}
               </span>
               <button
                 type="button"
@@ -335,7 +339,7 @@ export const OnboardingPage: React.FC = () => {
                     : 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-xs hover:from-blue-700 hover:to-cyan-600'
                 }`}
               >
-                {profileDone ? 'Review / Edit Profile' : 'Configure Profile →'}
+                {profileDone ? t('onboarding.reviewEditProfile', 'Review / Edit Profile') : t('onboarding.configureProfile', 'Configure Profile →')}
               </button>
             </div>
           </div>
@@ -355,15 +359,17 @@ export const OnboardingPage: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900">2. Add First Product / Service</h3>
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900">
+                      {t('onboarding.productCardTitle', '2. Add First Product / Service')}
+                    </h3>
                     {productDone && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                        <Check className="w-3 h-3" /> Done
+                        <Check className="w-3 h-3" /> {t('onboarding.done', 'Done')}
                       </span>
                     )}
                   </div>
                   <p className="text-xs text-slate-500 leading-relaxed">
-                    Create your catalogue items with price, cost, barcode SKU, and stock quantities for fast POS lookup.
+                    {t('onboarding.productCardDesc', 'Create your catalogue items with price, cost, barcode SKU, and stock quantities for fast POS lookup.')}
                   </p>
                 </div>
               </div>
@@ -376,7 +382,7 @@ export const OnboardingPage: React.FC = () => {
                 disabled={actionLoading}
                 className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
               >
-                ⚡ Add 3 Sample Items
+                {t('onboarding.addSampleItems', '⚡ Add 3 Sample Items')}
               </button>
               <button
                 type="button"
@@ -387,7 +393,7 @@ export const OnboardingPage: React.FC = () => {
                     : 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-xs hover:from-blue-700 hover:to-cyan-600'
                 }`}
               >
-                {productDone ? '+ Add Another Item' : '+ Add First Item →'}
+                {productDone ? t('onboarding.addAnotherItem', '+ Add Another Item') : t('onboarding.addFirstItem', '+ Add First Item →')}
               </button>
             </div>
           </div>
@@ -407,15 +413,17 @@ export const OnboardingPage: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900">3. Create Your First POS Bill</h3>
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900">
+                      {t('onboarding.billCardTitle', '3. Create Your First POS Bill')}
+                    </h3>
                     {billDone && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                        <Check className="w-3 h-3" /> Done
+                        <Check className="w-3 h-3" /> {t('onboarding.done', 'Done')}
                       </span>
                     )}
                   </div>
                   <p className="text-xs text-slate-500 leading-relaxed">
-                    Test the high-speed POS terminal with keyboard shortcuts, split payments (Cash / UPI / Card), and thermal receipt prints.
+                    {t('onboarding.billCardDesc', 'Test the high-speed POS terminal with keyboard shortcuts, split payments (Cash / UPI / Card), and thermal receipt prints.')}
                   </p>
                 </div>
               </div>
@@ -430,7 +438,7 @@ export const OnboardingPage: React.FC = () => {
                 }}
                 className="text-[11px] text-slate-400 hover:text-slate-600 cursor-pointer"
               >
-                {billDone ? 'Marked as completed' : 'Mark as ready'}
+                {billDone ? t('onboarding.markedAsCompleted', 'Marked as completed') : t('onboarding.markAsReady', 'Mark as ready')}
               </button>
               <Link
                 to="/dashboard/pos"
@@ -440,7 +448,7 @@ export const OnboardingPage: React.FC = () => {
                 }}
                 className="px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-xs hover:from-blue-700 hover:to-cyan-600 transition-all inline-flex items-center gap-1.5 cursor-pointer"
               >
-                <span>Launch POS Terminal</span>
+                <span>{t('onboarding.launchPos', 'Launch POS Terminal')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -461,15 +469,17 @@ export const OnboardingPage: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900">4. Enable Review Boost & QR</h3>
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900">
+                      {t('onboarding.reviewCardTitle', '4. Enable Review Boost & QR')}
+                    </h3>
                     {reviewDone && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                        <Check className="w-3 h-3" /> Done
+                        <Check className="w-3 h-3" /> {t('onboarding.done', 'Done')}
                       </span>
                     )}
                   </div>
                   <p className="text-xs text-slate-500 leading-relaxed">
-                    Set up your Google Business Review link and generate high-resolution QR counter standees to collect 5-star customer reviews.
+                    {t('onboarding.reviewCardDesc', 'Set up your Google Business Review link and generate high-resolution QR counter standees to collect 5-star customer reviews.')}
                   </p>
                 </div>
               </div>
@@ -477,7 +487,7 @@ export const OnboardingPage: React.FC = () => {
 
             <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
               <span className="text-[11px] text-slate-400">
-                {reviewDone ? 'Review QR Active' : 'Boost customer trust'}
+                {reviewDone ? t('onboarding.reviewActive', 'Review QR Active') : t('onboarding.boostTrust', 'Boost customer trust')}
               </span>
               <button
                 type="button"
@@ -488,7 +498,7 @@ export const OnboardingPage: React.FC = () => {
                     : 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-xs hover:from-blue-700 hover:to-cyan-600'
                 }`}
               >
-                {reviewDone ? 'View QR / Settings' : 'Configure Review Boost →'}
+                {reviewDone ? t('onboarding.viewQrSettings', 'View QR / Settings') : t('onboarding.configureReview', 'Configure Review Boost →')}
               </button>
             </div>
           </div>
@@ -498,9 +508,11 @@ export const OnboardingPage: React.FC = () => {
         {/* Bottom Finish Action */}
         <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-card flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h4 className="text-sm font-bold text-slate-900">Ready to start managing your daily operations?</h4>
+            <h4 className="text-sm font-bold text-slate-900">
+              {t('onboarding.readyToStart', 'Ready to start managing your daily operations?')}
+            </h4>
             <p className="text-xs text-slate-500 mt-0.5">
-              You can explore analytics, expense tracking, and AI assistant anytime from your owner dashboard.
+              {t('onboarding.readyToStartDesc', 'You can explore analytics, expense tracking, and AI assistant anytime from your owner dashboard.')}
             </p>
           </div>
 
@@ -509,7 +521,7 @@ export const OnboardingPage: React.FC = () => {
             onClick={handleFinishOnboarding}
             className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-bold text-sm shadow-md shadow-blue-500/20 hover:shadow-cyan-500/25 transition-all cursor-pointer"
           >
-            <span>Proceed to Main Dashboard</span>
+            <span>{t('onboarding.proceedToDashboard', 'Proceed to Main Dashboard')}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -526,11 +538,13 @@ export const OnboardingPage: React.FC = () => {
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
               <div className="flex items-center space-x-2.5">
                 <Building className="w-5 h-5 text-blue-600" />
-                <h3 className="text-sm font-bold text-slate-900">Complete Business Profile</h3>
+                <h3 className="text-sm font-bold text-slate-900">
+                  {t('onboarding.completeProfileModalTitle', 'Complete Business Profile')}
+                </h3>
               </div>
               <button
                 onClick={() => setActiveModal(null)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -539,7 +553,7 @@ export const OnboardingPage: React.FC = () => {
             <form onSubmit={handleSaveProfile} className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  GSTIN / Tax Registration Number
+                  {t('onboarding.gstinTax', 'GSTIN / Tax Registration Number')}
                 </label>
                 <input
                   type="text"
@@ -548,12 +562,12 @@ export const OnboardingPage: React.FC = () => {
                   placeholder="e.g. 27AAAAA0000A1Z5"
                   className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm uppercase"
                 />
-                <p className="text-[10px] text-slate-400 mt-1">Printed on formal GST invoices</p>
+                <p className="text-[10px] text-slate-400 mt-1">{t('onboarding.gstinHelp', 'Printed on formal GST invoices')}</p>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Full Operating Address
+                  {t('onboarding.fullAddress', 'Full Operating Address')}
                 </label>
                 <textarea
                   rows={2}
@@ -567,7 +581,7 @@ export const OnboardingPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Store Phone
+                    {t('onboarding.storePhone', 'Store Phone')}
                   </label>
                   <input
                     type="tel"
@@ -579,7 +593,7 @@ export const OnboardingPage: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Store Email
+                    {t('onboarding.storeEmail', 'Store Email')}
                   </label>
                   <input
                     type="email"
@@ -595,16 +609,16 @@ export const OnboardingPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setActiveModal(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-xs disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-xs disabled:opacity-50 cursor-pointer"
                 >
-                  {actionLoading ? 'Saving...' : 'Save Profile'}
+                  {actionLoading ? t('common.saving', 'Saving...') : t('onboarding.saveProfileBtn', 'Save Profile')}
                 </button>
               </div>
             </form>
@@ -619,11 +633,13 @@ export const OnboardingPage: React.FC = () => {
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
               <div className="flex items-center space-x-2.5">
                 <Package className="w-5 h-5 text-purple-600" />
-                <h3 className="text-sm font-bold text-slate-900">Add First Product / Service</h3>
+                <h3 className="text-sm font-bold text-slate-900">
+                  {t('onboarding.addProductModalTitle', 'Add First Product / Service')}
+                </h3>
               </div>
               <button
                 onClick={() => setActiveModal(null)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -632,7 +648,7 @@ export const OnboardingPage: React.FC = () => {
             <form onSubmit={handleCreateProduct} className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Product / Service Name <span className="text-rose-500">*</span>
+                  {t('onboarding.prodNameLabel', 'Product / Service Name')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -647,7 +663,7 @@ export const OnboardingPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Selling Price (₹) <span className="text-rose-500">*</span>
+                    {t('onboarding.sellingPriceLabel', 'Selling Price')} <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -662,7 +678,7 @@ export const OnboardingPage: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Cost Price (₹)
+                    {t('onboarding.costPriceLabel', 'Cost Price')}
                   </label>
                   <input
                     type="number"
@@ -678,7 +694,7 @@ export const OnboardingPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Initial Stock Quantity
+                    {t('onboarding.initialStockLabel', 'Initial Stock Quantity')}
                   </label>
                   <input
                     type="number"
@@ -691,15 +707,15 @@ export const OnboardingPage: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Item Type
+                    {t('onboarding.itemTypeLabel', 'Item Type')}
                   </label>
                   <select
                     value={prodType}
                     onChange={(e) => setProdType(e.target.value as 'PHYSICAL' | 'SERVICE')}
                     className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm"
                   >
-                    <option value="PHYSICAL">Physical Product (Stock Tracked)</option>
-                    <option value="SERVICE">Service Item</option>
+                    <option value="PHYSICAL">{t('onboarding.physicalProduct', 'Physical Product (Stock Tracked)')}</option>
+                    <option value="SERVICE">{t('onboarding.serviceItem', 'Service Item')}</option>
                   </select>
                 </div>
               </div>
@@ -708,16 +724,16 @@ export const OnboardingPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setActiveModal(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-xs disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-xs disabled:opacity-50 cursor-pointer"
                 >
-                  {actionLoading ? 'Creating...' : 'Add to Catalogue'}
+                  {actionLoading ? t('common.loading', 'Creating...') : t('onboarding.addToCatalogue', 'Add to Catalogue')}
                 </button>
               </div>
             </form>
@@ -732,11 +748,13 @@ export const OnboardingPage: React.FC = () => {
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
               <div className="flex items-center space-x-2.5">
                 <Star className="w-5 h-5 text-amber-500" />
-                <h3 className="text-sm font-bold text-slate-900">Review Boost & QR Counter Standee</h3>
+                <h3 className="text-sm font-bold text-slate-900">
+                  {t('onboarding.reviewModalTitle', 'Review Boost & QR Counter Standee')}
+                </h3>
               </div>
               <button
                 onClick={() => setActiveModal(null)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -745,7 +763,7 @@ export const OnboardingPage: React.FC = () => {
             <form onSubmit={handleSaveReviews} className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Google Business Review URL
+                  {t('onboarding.googleUrlLabel', 'Google Business Review URL')}
                 </label>
                 <input
                   type="url"
@@ -755,13 +773,13 @@ export const OnboardingPage: React.FC = () => {
                   className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm"
                 />
                 <p className="text-[10px] text-slate-400 mt-1">
-                  5-star ratings will automatically redirect customers to this Google link.
+                  {t('onboarding.googleUrlHelp', '5-star ratings will automatically redirect customers to this Google link.')}
                 </p>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Customer Prompt Message
+                  {t('onboarding.customerPromptLabel', 'Customer Prompt Message')}
                 </label>
                 <input
                   type="text"
@@ -775,7 +793,7 @@ export const OnboardingPage: React.FC = () => {
               <div className="p-3 bg-blue-50/70 border border-blue-100 rounded-xl text-xs text-blue-900 flex items-start gap-2">
                 <QrCode className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                 <span>
-                  Your direct customer review link: <strong className="break-all">{window.location.origin}/review/{business?.reviewSlug || business?.id || 'store'}</strong>
+                  {t('onboarding.directReviewLink', 'Your direct customer review link:')} <strong className="break-all">{window.location.origin}/review/{business?.reviewSlug || business?.id || 'store'}</strong>
                 </span>
               </div>
 
@@ -783,16 +801,16 @@ export const OnboardingPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setActiveModal(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-xs disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-xs disabled:opacity-50 cursor-pointer"
                 >
-                  {actionLoading ? 'Saving...' : 'Activate Review Booster'}
+                  {actionLoading ? t('common.saving', 'Saving...') : t('onboarding.activateReview', 'Activate Review Booster')}
                 </button>
               </div>
             </form>

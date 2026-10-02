@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../context/AuthContext';
 import { formatCurrency } from '../../../utils/currency';
 import {
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export const EduFeeManagementPage: React.FC = () => {
+  const { t } = useTranslation();
   const { business } = useAuth();
   const currency = business?.currency || 'INR';
 
@@ -182,15 +184,15 @@ export const EduFeeManagementPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Fee Management
+              {t('education.feeManagementTitle', 'Fee Management')}
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 flex items-center gap-1.5">
               <DollarSign size={13} className="text-emerald-600" />
-              <span>Tuition Fees</span>
+              <span>{t('education.tuitionFees', 'Tuition Fees')}</span>
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Track student fee packages, paid installments, pending balances, due dates, and generate fee receipts.
+            {t('education.feeManagementSubtitle', 'Track student fee packages, paid installments, pending balances, due dates, and generate fee receipts.')}
           </p>
         </div>
       </div>
@@ -198,27 +200,27 @@ export const EduFeeManagementPage: React.FC = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Total Collected</span>
+          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">{t('education.totalCollected', 'Total Collected')}</span>
           <div className="text-2xl font-black text-emerald-600">{formatCurrency(totalCollected, currency)}</div>
-          <p className="text-[10px] text-emerald-700">{payments.length} fee receipts recorded</p>
+          <p className="text-[10px] text-emerald-700">{t('education.receiptsRecorded', '{{count}} fee receipts recorded', { count: payments.length })}</p>
         </div>
 
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">Pending Dues</span>
+          <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">{t('education.pendingDues', 'Pending Dues')}</span>
           <div className="text-2xl font-black text-rose-600">{formatCurrency(totalPendingDues, currency)}</div>
-          <p className="text-[10px] text-rose-700">Outstanding student balances</p>
+          <p className="text-[10px] text-rose-700">{t('education.outstandingBalances', 'Outstanding student balances')}</p>
         </div>
 
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Overdue Accounts</span>
+          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">{t('education.overdueAccounts', 'Overdue Accounts')}</span>
           <div className="text-2xl font-black text-amber-600">{overdueCount}</div>
-          <p className="text-[10px] text-amber-700">Passed payment due date</p>
+          <p className="text-[10px] text-amber-700">{t('education.passedDueDate', 'Passed payment due date')}</p>
         </div>
 
         <div className="clay-card p-4 space-y-1">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Enrolled</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('education.totalEnrolled', 'Total Enrolled')}</span>
           <div className="text-2xl font-black text-slate-900">{enrollments.length}</div>
-          <p className="text-[10px] text-slate-400">Tuition accounts</p>
+          <p className="text-[10px] text-slate-400">{t('education.tuitionAccounts', 'Tuition accounts')}</p>
         </div>
       </div>
 
@@ -233,7 +235,7 @@ export const EduFeeManagementPage: React.FC = () => {
                 : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
-            Student Fee Dues ({enrollments.length})
+            {t('education.studentFeeDues', 'Student Fee Dues')} ({enrollments.length})
           </button>
           <button
             onClick={() => setActiveTab('HISTORY')}
@@ -243,7 +245,7 @@ export const EduFeeManagementPage: React.FC = () => {
                 : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
-            Payment Receipts History ({payments.length})
+            {t('education.receiptsHistory', 'Payment Receipts History')} ({payments.length})
           </button>
         </div>
 
@@ -260,7 +262,7 @@ export const EduFeeManagementPage: React.FC = () => {
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
-                  {st}
+                  {st === 'ALL' ? t('common.all', 'ALL') : st}
                 </button>
               ))}
             </div>
@@ -270,7 +272,7 @@ export const EduFeeManagementPage: React.FC = () => {
             <Search size={14} className="absolute left-3.5 top-3 text-slate-400" />
             <input
               type="text"
-              placeholder={activeTab === 'DUES' ? 'Search students or courses...' : 'Search receipts...'}
+              placeholder={activeTab === 'DUES' ? t('education.searchDuesPlaceholder', 'Search students or courses...') : t('education.searchReceiptsPlaceholder', 'Search receipts...')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
@@ -291,22 +293,22 @@ export const EduFeeManagementPage: React.FC = () => {
           ) : filteredEnrollments.length === 0 ? (
             <div className="py-12 text-center text-slate-400 space-y-2">
               <Receipt size={32} className="mx-auto text-slate-300" />
-              <p className="font-bold text-slate-800 text-sm">No student fee records found</p>
-              <p className="text-xs text-slate-400">Admit students into courses to track fee dues and payments.</p>
+              <p className="font-bold text-slate-800 text-sm">{t('education.noFeeRecords', 'No student fee records found')}</p>
+              <p className="text-xs text-slate-400">{t('education.admitToTrackFees', 'Admit students into courses to track fee dues and payments.')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="text-slate-400 text-[10px] uppercase font-bold tracking-wider border-b border-slate-100">
-                    <th className="pb-3">Student Name</th>
-                    <th className="pb-3">Course &amp; Batch</th>
-                    <th className="pb-3 text-right">Total Course Fee</th>
-                    <th className="pb-3 text-right">Paid Amount</th>
-                    <th className="pb-3 text-right">Pending Balance</th>
-                    <th className="pb-3">Next Due Date</th>
-                    <th className="pb-3 text-center">Status</th>
-                    <th className="pb-3 text-right">Action</th>
+                    <th className="pb-3">{t('education.studentName', 'Student Name')}</th>
+                    <th className="pb-3">{t('education.courseAndBatch', 'Course & Batch')}</th>
+                    <th className="pb-3 text-right">{t('education.totalCourseFee', 'Total Course Fee')}</th>
+                    <th className="pb-3 text-right">{t('education.paidAmount', 'Paid Amount')}</th>
+                    <th className="pb-3 text-right">{t('education.pendingBalance', 'Pending Balance')}</th>
+                    <th className="pb-3">{t('education.nextDueDate', 'Next Due Date')}</th>
+                    <th className="pb-3 text-center">{t('common.status', 'Status')}</th>
+                    <th className="pb-3 text-right">{t('common.actions', 'Action')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -320,7 +322,7 @@ export const EduFeeManagementPage: React.FC = () => {
                         <td className="py-3 font-bold text-slate-900">
                           <div>{enr.studentName}</div>
                           <span className="text-[10px] text-slate-400 font-mono font-normal">
-                            {enr.studentPhone || 'No phone'}
+                            {enr.studentPhone || t('education.noPhone', 'No phone')}
                           </span>
                         </td>
 
@@ -352,7 +354,7 @@ export const EduFeeManagementPage: React.FC = () => {
                           </span>
                           {isOverdue && (
                             <span className="block text-[9px] text-rose-600 uppercase font-black">
-                              OVERDUE
+                              {t('education.overdueBadge', 'OVERDUE')}
                             </span>
                           )}
                         </td>
@@ -379,12 +381,12 @@ export const EduFeeManagementPage: React.FC = () => {
                               onClick={() => handleOpenPayModal(enr)}
                               className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-2xs transition-all cursor-pointer"
                             >
-                              Collect Fee
+                              {t('education.collectFee', 'Collect Fee')}
                             </button>
                           ) : (
                             <span className="text-[11px] text-emerald-600 font-bold inline-flex items-center gap-1">
                               <CheckCircle2 size={13} />
-                              <span>Cleared</span>
+                              <span>{t('education.cleared', 'Cleared')}</span>
                             </span>
                           )}
                         </td>
@@ -410,21 +412,21 @@ export const EduFeeManagementPage: React.FC = () => {
           ) : filteredPayments.length === 0 ? (
             <div className="py-12 text-center text-slate-400 space-y-2">
               <Receipt size={32} className="mx-auto text-slate-300" />
-              <p className="font-bold text-slate-800 text-sm">No payment receipts found</p>
-              <p className="text-xs text-slate-400">Fee installments will appear here once recorded.</p>
+              <p className="font-bold text-slate-800 text-sm">{t('education.noReceiptsFound', 'No payment receipts found')}</p>
+              <p className="text-xs text-slate-400">{t('education.installmentsAppearHere', 'Fee installments will appear here once recorded.')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="text-slate-400 text-[10px] uppercase font-bold tracking-wider border-b border-slate-100">
-                    <th className="pb-3">Receipt #</th>
-                    <th className="pb-3">Student Name</th>
-                    <th className="pb-3">Payment Date</th>
-                    <th className="pb-3">Payment Mode</th>
-                    <th className="pb-3">Notes</th>
-                    <th className="pb-3 text-right">Amount Paid</th>
-                    <th className="pb-3 text-right">Receipt</th>
+                    <th className="pb-3">{t('education.receiptNo', 'Receipt #')}</th>
+                    <th className="pb-3">{t('education.studentName', 'Student Name')}</th>
+                    <th className="pb-3">{t('education.paymentDate', 'Payment Date')}</th>
+                    <th className="pb-3">{t('education.paymentMode', 'Payment Mode')}</th>
+                    <th className="pb-3">{t('education.notes', 'Notes')}</th>
+                    <th className="pb-3 text-right">{t('education.amountPaid', 'Amount Paid')}</th>
+                    <th className="pb-3 text-right">{t('education.receipt', 'Receipt')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -462,7 +464,7 @@ export const EduFeeManagementPage: React.FC = () => {
                           className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[10px] font-bold border border-indigo-200 transition-colors inline-flex items-center gap-1 cursor-pointer"
                         >
                           <Printer size={12} />
-                          <span>View Receipt</span>
+                          <span>{t('education.viewReceipt', 'View Receipt')}</span>
                         </button>
                       </td>
                     </tr>
@@ -480,7 +482,7 @@ export const EduFeeManagementPage: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Record Fee Installment</h3>
+                <h3 className="text-sm font-bold text-slate-900">{t('education.recordFeeInstallment', 'Record Fee Installment')}</h3>
                 <p className="text-[11px] text-slate-400">
                   {selectedEnrollment.studentName} • {selectedEnrollment.courseName} ({selectedEnrollment.batchName})
                 </p>
@@ -497,19 +499,19 @@ export const EduFeeManagementPage: React.FC = () => {
               {/* Balances summary box */}
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 grid grid-cols-3 gap-2 text-center">
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">Course Fee</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('education.courseFee', 'Course Fee')}</span>
                   <span className="text-xs font-bold text-slate-900">
                     {formatCurrency(selectedEnrollment.totalFees, currency)}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">Already Paid</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('education.alreadyPaid', 'Already Paid')}</span>
                   <span className="text-xs font-bold text-emerald-700">
                     {formatCurrency(selectedEnrollment.paidAmount, currency)}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">Pending Due</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('education.pendingDue', 'Pending Due')}</span>
                   <span className="text-xs font-black text-rose-600">
                     {formatCurrency(selectedEnrollment.pendingAmount, currency)}
                   </span>
@@ -517,7 +519,7 @@ export const EduFeeManagementPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Amount to Collect ({currency}) *</label>
+                <label className="font-semibold text-slate-700">{t('education.amountToCollectReq', 'Amount to Collect')} ({currency}) *</label>
                 <input
                   type="number"
                   step="0.01"
@@ -533,22 +535,22 @@ export const EduFeeManagementPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Payment Mode</label>
+                  <label className="font-semibold text-slate-700">{t('education.paymentMode', 'Payment Mode')}</label>
                   <select
                     value={payMethod}
                     onChange={(e) => setPayMethod(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold"
                   >
-                    <option value="CASH">Cash</option>
+                    <option value="CASH">{t('education.cash', 'Cash')}</option>
                     <option value="UPI">UPI / GPay / PhonePe</option>
-                    <option value="BANK_TRANSFER">Bank Transfer / NEFT</option>
-                    <option value="CHEQUE">Cheque</option>
-                    <option value="CARD">Debit / Credit Card</option>
+                    <option value="BANK_TRANSFER">{t('education.bankTransfer', 'Bank Transfer / NEFT')}</option>
+                    <option value="CHEQUE">{t('education.cheque', 'Cheque')}</option>
+                    <option value="CARD">{t('education.card', 'Debit / Credit Card')}</option>
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Payment Date</label>
+                  <label className="font-semibold text-slate-700">{t('education.paymentDate', 'Payment Date')}</label>
                   <input
                     type="date"
                     required
@@ -560,7 +562,7 @@ export const EduFeeManagementPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Next Due Date (If remaining balance exists)</label>
+                <label className="font-semibold text-slate-700">{t('education.nextDueDateRemaining', 'Next Due Date (If remaining balance exists)')}</label>
                 <input
                   type="date"
                   value={nextDueDate}
@@ -570,7 +572,7 @@ export const EduFeeManagementPage: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Receipt Notes / Remarks (Optional)</label>
+                <label className="font-semibold text-slate-700">{t('education.receiptNotesOpt', 'Receipt Notes / Remarks (Optional)')}</label>
                 <input
                   type="text"
                   placeholder="e.g. Installment 1 of 3, Cheque #12345"
@@ -586,14 +588,14 @@ export const EduFeeManagementPage: React.FC = () => {
                   onClick={() => setShowPayModal(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer shadow-xs disabled:opacity-50"
                 >
-                  {isSubmitting ? 'Recording...' : 'Collect & Issue Receipt'}
+                  {isSubmitting ? t('common.loading', 'Recording...') : t('education.collectAndIssue', 'Collect & Issue Receipt')}
                 </button>
               </div>
             </form>
@@ -609,7 +611,7 @@ export const EduFeeManagementPage: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 print:hidden">
               <div className="flex items-center gap-2">
                 <CheckCircle2 size={18} className="text-emerald-600" />
-                <h3 className="text-sm font-bold text-slate-900">Fee Receipt Generated</h3>
+                <h3 className="text-sm font-bold text-slate-900">{t('education.receiptGenerated', 'Fee Receipt Generated')}</h3>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -617,7 +619,7 @@ export const EduFeeManagementPage: React.FC = () => {
                   className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Printer size={13} />
-                  <span>Print Receipt</span>
+                  <span>{t('education.printReceipt', 'Print Receipt')}</span>
                 </button>
                 <button
                   onClick={() => setReceiptModalOpen(false)}
@@ -634,25 +636,25 @@ export const EduFeeManagementPage: React.FC = () => {
               <div className="flex items-start justify-between border-b border-slate-200 pb-4">
                 <div>
                   <h2 className="text-base font-black text-slate-950 uppercase tracking-tight">
-                    {business?.name || 'Coaching & Training Institute'}
+                    {business?.name || t('education.defaultInstitute', 'Coaching & Training Institute')}
                   </h2>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    {business?.address || 'Official Coaching Center'}
+                    {business?.address || t('education.defaultAddress', 'Official Coaching Center')}
                   </p>
                   {business?.phone && (
-                    <p className="text-[10px] text-slate-500 font-mono">Phone: {business.phone}</p>
+                    <p className="text-[10px] text-slate-500 font-mono">{t('common.phone', 'Phone')}: {business.phone}</p>
                   )}
                 </div>
 
                 <div className="text-right">
                   <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-extrabold text-[10px] border border-indigo-200 inline-block uppercase">
-                    Fee Receipt
+                    {t('education.feeReceipt', 'Fee Receipt')}
                   </span>
                   <p className="text-[11px] font-mono font-bold text-slate-900 mt-1">
                     {currentReceiptData.receiptNumber}
                   </p>
                   <p className="text-[10px] text-slate-400 font-mono">
-                    Date: {currentReceiptData.paymentDate}
+                    {t('education.dateLabel', 'Date')}: {currentReceiptData.paymentDate}
                   </p>
                 </div>
               </div>
@@ -660,24 +662,24 @@ export const EduFeeManagementPage: React.FC = () => {
               {/* Student Details Card */}
               <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-white border border-slate-100">
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">Student Name</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('education.studentName', 'Student Name')}</span>
                   <span className="font-bold text-slate-900 text-sm block">
                     {currentReceiptData.studentName}
                   </span>
                   {currentReceiptData.studentPhone && (
                     <span className="text-[10px] text-slate-500 font-mono">
-                      Phone: {currentReceiptData.studentPhone}
+                      {t('common.phone', 'Phone')}: {currentReceiptData.studentPhone}
                     </span>
                   )}
                 </div>
 
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">Course &amp; Batch</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('education.courseAndBatch', 'Course & Batch')}</span>
                   <span className="font-bold text-slate-900 block">
-                    {currentReceiptData.courseName || 'Coaching Course'}
+                    {currentReceiptData.courseName || t('education.coachingCourse', 'Coaching Course')}
                   </span>
                   <span className="text-[10px] text-indigo-600 font-bold block">
-                    {currentReceiptData.batchName || 'Regular Batch'}
+                    {currentReceiptData.batchName || t('education.regularBatch', 'Regular Batch')}
                   </span>
                 </div>
               </div>
@@ -685,7 +687,7 @@ export const EduFeeManagementPage: React.FC = () => {
               {/* Payment Summary Table */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-600">Payment Mode:</span>
+                  <span className="text-slate-600">{t('education.paymentMode', 'Payment Mode')}:</span>
                   <span className="font-bold text-slate-900 px-2 py-0.5 rounded bg-slate-100 text-[10px]">
                     {currentReceiptData.paymentMethod}
                   </span>
@@ -693,7 +695,7 @@ export const EduFeeManagementPage: React.FC = () => {
 
                 {currentReceiptData.totalFees !== undefined && (
                   <div className="flex items-center justify-between py-1 text-slate-600">
-                    <span>Total Course Fee:</span>
+                    <span>{t('education.totalCourseFee', 'Total Course Fee')}:</span>
                     <span className="font-semibold text-slate-800">
                       {formatCurrency(currentReceiptData.totalFees, currency)}
                     </span>
@@ -701,7 +703,7 @@ export const EduFeeManagementPage: React.FC = () => {
                 )}
 
                 <div className="flex items-center justify-between py-2 bg-emerald-50 px-3 rounded-xl border border-emerald-100 text-emerald-950">
-                  <span className="font-bold text-xs">Amount Received:</span>
+                  <span className="font-bold text-xs">{t('education.amountReceived', 'Amount Received')}:</span>
                   <span className="font-black text-base text-emerald-700">
                     {formatCurrency(currentReceiptData.amount, currency)}
                   </span>
@@ -709,7 +711,7 @@ export const EduFeeManagementPage: React.FC = () => {
 
                 {currentReceiptData.pendingAmount !== undefined && (
                   <div className="flex items-center justify-between py-1 text-slate-600">
-                    <span>Remaining Balance:</span>
+                    <span>{t('education.remainingBalance', 'Remaining Balance')}:</span>
                     <span className="font-black text-rose-600">
                       {formatCurrency(currentReceiptData.pendingAmount, currency)}
                     </span>
@@ -718,14 +720,14 @@ export const EduFeeManagementPage: React.FC = () => {
 
                 {currentReceiptData.nextDueDate && (
                   <div className="flex items-center justify-between py-1 text-slate-500 text-[10px] font-mono">
-                    <span>Next Due Date:</span>
+                    <span>{t('education.nextDueDate', 'Next Due Date')}:</span>
                     <span>{currentReceiptData.nextDueDate}</span>
                   </div>
                 )}
 
                 {currentReceiptData.notes && (
                   <div className="pt-2 text-[11px] text-slate-500 italic">
-                    Note: "{currentReceiptData.notes}"
+                    {t('education.note', 'Note')}: "{currentReceiptData.notes}"
                   </div>
                 )}
               </div>
@@ -733,14 +735,14 @@ export const EduFeeManagementPage: React.FC = () => {
               {/* Signatures & Footer */}
               <div className="pt-6 border-t border-slate-200 flex items-end justify-between">
                 <div className="text-[10px] text-slate-400">
-                  <p>This is a computer-generated fee receipt.</p>
-                  <p>Thank you for learning with us!</p>
+                  <p>{t('education.computerGeneratedReceipt', 'This is a computer-generated fee receipt.')}</p>
+                  <p>{t('education.thankYouLearning', 'Thank you for learning with us!')}</p>
                 </div>
 
                 <div className="text-center">
                   <div className="h-10 border-b border-slate-300 w-32 mb-1" />
                   <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider block">
-                    Authorized Signatory
+                    {t('education.authorizedSignatory', 'Authorized Signatory')}
                   </span>
                 </div>
               </div>
@@ -753,7 +755,7 @@ export const EduFeeManagementPage: React.FC = () => {
                 onClick={() => setReceiptModalOpen(false)}
                 className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
               >
-                Close
+                {t('common.close', 'Close')}
               </button>
               <button
                 type="button"
@@ -761,7 +763,7 @@ export const EduFeeManagementPage: React.FC = () => {
                 className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer shadow-xs inline-flex items-center gap-1.5"
               >
                 <Printer size={13} />
-                <span>Print Fee Receipt</span>
+                <span>{t('education.printReceipt', 'Print Fee Receipt')}</span>
               </button>
             </div>
           </div>

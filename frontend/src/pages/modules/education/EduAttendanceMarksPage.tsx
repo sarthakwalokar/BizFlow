@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   educationApi,
   EduBatch,
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export const EduAttendanceMarksPage: React.FC = () => {
+  const { t } = useTranslation();
   const [batches, setBatches] = useState<EduBatch[]>([]);
   const [students, setStudents] = useState<EduStudent[]>([]);
   const [selectedBatchId, setSelectedBatchId] = useState<number | ''>('');
@@ -207,13 +209,13 @@ export const EduAttendanceMarksPage: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                Attendance & Performance
+                {t('education.attendanceAndMarksTitle', 'Attendance & Performance')}
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
-                  Education Module
+                  {t('education.moduleTag', 'Education Module')}
                 </span>
               </h1>
               <p className="text-sm text-slate-400">
-                Daily roll call, attendance tracking, test marks, and student progress.
+                {t('education.attendanceSubtitle', 'Daily roll call, attendance tracking, test marks, and student progress.')}
               </p>
             </div>
           </div>
@@ -230,7 +232,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
             }`}
           >
             <CalendarCheck className="w-4 h-4" />
-            Daily Attendance
+            {t('education.dailyAttendance', 'Daily Attendance')}
           </button>
           <button
             onClick={() => setActiveTab('EXAMS')}
@@ -241,7 +243,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
             }`}
           >
             <Award className="w-4 h-4" />
-            Exams & Marks
+            {t('education.examsAndMarks', 'Exams & Marks')}
           </button>
         </div>
       </div>
@@ -251,18 +253,18 @@ export const EduAttendanceMarksPage: React.FC = () => {
         <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
           {/* Batch Selector */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Select Batch:</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{t('education.selectBatch', 'Select Batch')}:</span>
             <select
               value={selectedBatchId}
               onChange={(e) => setSelectedBatchId(Number(e.target.value))}
               className="bg-slate-950/80 border border-slate-700/80 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500"
             >
               {batches.length === 0 ? (
-                <option value="">No batches created</option>
+                <option value="">{t('education.noBatchesCreated', 'No batches created')}</option>
               ) : (
                 batches.map((b) => (
                   <option key={b.id} value={b.id}>
-                    {b.batchName} ({b.courseName || 'Course'})
+                    {b.batchName} ({b.courseName || t('education.course', 'Course')})
                   </option>
                 ))
               )}
@@ -272,7 +274,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
           {/* Date Picker (only for attendance) */}
           {activeTab === 'ATTENDANCE' && (
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Date:</span>
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{t('education.dateLabel', 'Date')}:</span>
               <input
                 type="date"
                 value={attendanceDate}
@@ -290,13 +292,13 @@ export const EduAttendanceMarksPage: React.FC = () => {
               onClick={() => setAllStatus('PRESENT')}
               className="px-3 py-1.5 text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/20 transition-all"
             >
-              Mark All Present
+              {t('education.markAllPresent', 'Mark All Present')}
             </button>
             <button
               onClick={() => setAllStatus('ABSENT')}
               className="px-3 py-1.5 text-xs font-medium text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg hover:bg-rose-500/20 transition-all"
             >
-              Mark All Absent
+              {t('education.markAllAbsent', 'Mark All Absent')}
             </button>
             <button
               onClick={handleSaveAttendance}
@@ -304,7 +306,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
               className="flex items-center gap-1.5 px-4 py-2 bg-emerald-500 text-slate-950 font-semibold rounded-xl hover:bg-emerald-400 transition-all disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
-              {isSavingAttendance ? 'Saving...' : 'Save Attendance'}
+              {isSavingAttendance ? t('common.saving', 'Saving...') : t('education.saveAttendance', 'Save Attendance')}
             </button>
           </div>
         ) : (
@@ -315,7 +317,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
               className="flex items-center gap-1.5 px-4 py-2 bg-indigo-500 text-white font-semibold rounded-xl hover:bg-indigo-400 transition-all disabled:opacity-50"
             >
               <Plus className="w-4 h-4" />
-              Record Test Score
+              {t('education.recordTestScore', 'Record Test Score')}
             </button>
           </div>
         )}
@@ -324,7 +326,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
       {attendanceSavedSuccess && (
         <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-sm flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4" />
-          Attendance for {attendanceDate} saved successfully!
+          {t('education.attendanceSavedSuccess', 'Attendance for {{date}} saved successfully!', { date: attendanceDate })}
         </div>
       )}
 
@@ -334,19 +336,19 @@ export const EduAttendanceMarksPage: React.FC = () => {
           {/* Stats Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="p-4 bg-slate-900/60 border border-slate-800 rounded-2xl">
-              <p className="text-xs text-slate-400 font-medium">Batch Students</p>
+              <p className="text-xs text-slate-400 font-medium">{t('education.batchStudents', 'Batch Students')}</p>
               <p className="text-2xl font-bold text-white mt-1">{totalInBatch}</p>
             </div>
             <div className="p-4 bg-slate-900/60 border border-slate-800 rounded-2xl">
-              <p className="text-xs text-emerald-400 font-medium">Present Today</p>
+              <p className="text-xs text-emerald-400 font-medium">{t('education.presentToday', 'Present Today')}</p>
               <p className="text-2xl font-bold text-emerald-400 mt-1">{presentCount}</p>
             </div>
             <div className="p-4 bg-slate-900/60 border border-slate-800 rounded-2xl">
-              <p className="text-xs text-rose-400 font-medium">Absent</p>
+              <p className="text-xs text-rose-400 font-medium">{t('education.absent', 'Absent')}</p>
               <p className="text-2xl font-bold text-rose-400 mt-1">{absentCount}</p>
             </div>
             <div className="p-4 bg-slate-900/60 border border-slate-800 rounded-2xl">
-              <p className="text-xs text-indigo-400 font-medium">Attendance Rate</p>
+              <p className="text-xs text-indigo-400 font-medium">{t('education.attendanceRate', 'Attendance Rate')}</p>
               <p className="text-2xl font-bold text-indigo-400 mt-1">{attendanceRate}%</p>
             </div>
           </div>
@@ -356,9 +358,9 @@ export const EduAttendanceMarksPage: React.FC = () => {
             {batchStudents.length === 0 ? (
               <div className="text-center py-16 px-4">
                 <Users className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                <h3 className="text-base font-semibold text-white">No students enrolled in this batch</h3>
+                <h3 className="text-base font-semibold text-white">{t('education.noStudentsInBatch', 'No students enrolled in this batch')}</h3>
                 <p className="text-sm text-slate-400 mt-1">
-                  Assign students to this batch in the Courses & Batches or Students section to mark attendance.
+                  {t('education.assignStudentsPrompt', 'Assign students to this batch in the Courses & Batches or Students section to mark attendance.')}
                 </p>
               </div>
             ) : (
@@ -366,11 +368,11 @@ export const EduAttendanceMarksPage: React.FC = () => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-800 bg-slate-950/40 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                      <th className="py-3 px-4">Roll / ID</th>
-                      <th className="py-3 px-4">Student Name</th>
-                      <th className="py-3 px-4">Contact</th>
-                      <th className="py-3 px-4 text-center">Status</th>
-                      <th className="py-3 px-4">Remarks / Note</th>
+                      <th className="py-3 px-4">{t('education.rollId', 'Roll / ID')}</th>
+                      <th className="py-3 px-4">{t('education.studentName', 'Student Name')}</th>
+                      <th className="py-3 px-4">{t('education.contact', 'Contact')}</th>
+                      <th className="py-3 px-4 text-center">{t('common.status', 'Status')}</th>
+                      <th className="py-3 px-4">{t('education.remarksNote', 'Remarks / Note')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60 text-sm">
@@ -413,7 +415,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
                                     }
                                     className={`px-2.5 py-1 text-xs rounded-lg border transition-all ${colorClass}`}
                                   >
-                                    {statusVal.charAt(0) + statusVal.slice(1).toLowerCase()}
+                                    {statusVal === 'PRESENT' ? t('education.present', 'Present') : statusVal === 'ABSENT' ? t('education.absent', 'Absent') : statusVal === 'LATE' ? t('education.late', 'Late') : t('education.excused', 'Excused')}
                                   </button>
                                 );
                               })}
@@ -422,7 +424,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
                           <td className="py-3.5 px-4">
                             <input
                               type="text"
-                              placeholder="Optional remark..."
+                              placeholder={t('education.optionalRemark', 'Optional remark...')}
                               value={currentRemarks}
                               onChange={(e) =>
                                 setAttendanceMap({
@@ -450,9 +452,9 @@ export const EduAttendanceMarksPage: React.FC = () => {
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl overflow-hidden">
             <div className="p-4 border-b border-slate-800 flex items-center justify-between">
               <div>
-                <h2 className="text-base font-semibold text-white">Exam & Test Results</h2>
+                <h2 className="text-base font-semibold text-white">{t('education.examResultsTitle', 'Exam & Test Results')}</h2>
                 <p className="text-xs text-slate-400">
-                  Scores recorded for {currentBatch?.batchName || 'this batch'}
+                  {t('education.scoresRecordedForBatch', 'Scores recorded for {{name}}', { name: currentBatch?.batchName || t('education.thisBatch', 'this batch') })}
                 </p>
               </div>
             </div>
@@ -460,9 +462,9 @@ export const EduAttendanceMarksPage: React.FC = () => {
             {examResults.length === 0 ? (
               <div className="text-center py-16 px-4">
                 <Award className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                <h3 className="text-base font-semibold text-white">No test scores recorded yet</h3>
+                <h3 className="text-base font-semibold text-white">{t('education.noScoresRecorded', 'No test scores recorded yet')}</h3>
                 <p className="text-sm text-slate-400 mt-1">
-                  Click "Record Test Score" above to add exam marks, grades, and feedback.
+                  {t('education.recordScorePrompt', 'Click "Record Test Score" above to add exam marks, grades, and feedback.')}
                 </p>
               </div>
             ) : (
@@ -470,14 +472,14 @@ export const EduAttendanceMarksPage: React.FC = () => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-800 bg-slate-950/40 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                      <th className="py-3 px-4">Date</th>
-                      <th className="py-3 px-4">Exam / Test</th>
-                      <th className="py-3 px-4">Subject</th>
-                      <th className="py-3 px-4">Student</th>
-                      <th className="py-3 px-4">Score</th>
-                      <th className="py-3 px-4">Percentage</th>
-                      <th className="py-3 px-4">Grade</th>
-                      <th className="py-3 px-4">Remarks</th>
+                      <th className="py-3 px-4">{t('education.dateLabel', 'Date')}</th>
+                      <th className="py-3 px-4">{t('education.examTest', 'Exam / Test')}</th>
+                      <th className="py-3 px-4">{t('education.subject', 'Subject')}</th>
+                      <th className="py-3 px-4">{t('education.student', 'Student')}</th>
+                      <th className="py-3 px-4">{t('education.score', 'Score')}</th>
+                      <th className="py-3 px-4">{t('education.percentage', 'Percentage')}</th>
+                      <th className="py-3 px-4">{t('education.grade', 'Grade')}</th>
+                      <th className="py-3 px-4">{t('education.remarks', 'Remarks')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60 text-sm">
@@ -538,22 +540,22 @@ export const EduAttendanceMarksPage: React.FC = () => {
           <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl relative">
             <h2 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
               <Award className="w-5 h-5 text-indigo-400" />
-              Record Exam / Test Score
+              {t('education.recordExamScoreTitle', 'Record Exam / Test Score')}
             </h2>
             <p className="text-xs text-slate-400 mb-5">
-              Enter student performance marks for batch: {currentBatch?.batchName}
+              {t('education.enterStudentScoreForBatch', 'Enter student performance marks for batch: {{name}}', { name: currentBatch?.batchName })}
             </p>
 
             <form onSubmit={handleSaveExamResult} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Student *</label>
+                <label className="block text-xs font-medium text-slate-300 mb-1">{t('education.studentReq', 'Student *')}</label>
                 <select
                   required
                   value={examForm.studentId}
                   onChange={(e) => setExamForm({ ...examForm, studentId: e.target.value })}
                   className="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
                 >
-                  <option value="">Select student</option>
+                  <option value="">{t('education.selectStudent', 'Select student')}</option>
                   {batchStudents.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.fullName} ({s.studentIdNumber || s.phone})
@@ -564,7 +566,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Exam / Test Name *</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">{t('education.examNameReq', 'Exam / Test Name *')}</label>
                   <input
                     type="text"
                     required
@@ -575,7 +577,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Subject *</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">{t('education.subjectReq', 'Subject *')}</label>
                   <input
                     type="text"
                     required
@@ -589,7 +591,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Max Marks *</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">{t('education.maxMarksReq', 'Max Marks *')}</label>
                   <input
                     type="number"
                     required
@@ -600,7 +602,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Marks Obtained *</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">{t('education.marksObtainedReq', 'Marks Obtained *')}</label>
                   <input
                     type="number"
                     required
@@ -612,7 +614,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Date *</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">{t('education.dateReq', 'Date *')}</label>
                   <input
                     type="date"
                     required
@@ -624,7 +626,7 @@ export const EduAttendanceMarksPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Remarks / Feedback</label>
+                <label className="block text-xs font-medium text-slate-300 mb-1">{t('education.remarksFeedback', 'Remarks / Feedback')}</label>
                 <input
                   type="text"
                   placeholder="e.g. Excellent conceptual grasp in calculus"
@@ -640,13 +642,13 @@ export const EduAttendanceMarksPage: React.FC = () => {
                   onClick={() => setShowAddExamModal(false)}
                   className="px-4 py-2 text-sm text-slate-300 hover:text-white rounded-xl hover:bg-slate-800 transition-all"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-400 rounded-xl transition-all"
                 >
-                  Save Result
+                  {t('education.saveResult', 'Save Result')}
                 </button>
               </div>
             </form>

@@ -345,12 +345,12 @@ input[type="search"] {
 }
 
 /* ==========================================================================
-   Print Optimization for Thermal Receipts & A4 Invoices (All Business Types)
+   Print Optimization for Thermal Receipts, A4 Invoices, Reports & Documents
    ========================================================================== */
 @media print {
   @page {
     size: auto;
-    margin: 0mm;
+    margin: 5mm;
   }
 
   html,
@@ -374,20 +374,27 @@ input[type="search"] {
     display: none !important;
   }
 
-  /* Print Isolation: Hide background UI when any receipt modal or printable card is open */
+  /* 1. Modal Print Isolation: Hide everything except the active printable modal container */
   body.receipt-modal-open *,
-  body:has(.receipt-modal-backdrop) * {
+  body.print-modal-open *,
+  body:has(.receipt-modal-backdrop) *,
+  body:has(.print-modal-backdrop) * {
     visibility: hidden;
   }
 
   body.receipt-modal-open .receipt-modal-container,
   body.receipt-modal-open .receipt-modal-container *,
+  body.print-modal-open .print-modal-container,
+  body.print-modal-open .print-modal-container *,
   body:has(.receipt-modal-backdrop) .receipt-modal-container,
-  body:has(.receipt-modal-backdrop) .receipt-modal-container * {
+  body:has(.receipt-modal-backdrop) .receipt-modal-container *,
+  body:has(.print-modal-backdrop) .print-modal-container,
+  body:has(.print-modal-backdrop) .print-modal-container * {
     visibility: visible;
   }
 
-  .receipt-modal-backdrop {
+  .receipt-modal-backdrop,
+  .print-modal-backdrop {
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
@@ -402,7 +409,8 @@ input[type="search"] {
     overflow: visible !important;
   }
 
-  .receipt-modal-container {
+  .receipt-modal-container,
+  .print-modal-container {
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
@@ -422,7 +430,8 @@ input[type="search"] {
     break-after: avoid !important;
   }
 
-  .receipt-printable-content {
+  .receipt-printable-content,
+  .print-printable-content {
     padding: 0 !important;
     margin: 0 !important;
     overflow: visible !important;
@@ -432,7 +441,32 @@ input[type="search"] {
     background: #FFFFFF !important;
   }
 
-  /* Format: Thermal Receipt (80mm / 3 inch) */
+  /* 2. Direct Report View Isolation (when printing reports on full page) */
+  body.print-report-open *,
+  body:has(.printable-report-wrapper) * {
+    visibility: hidden;
+  }
+
+  body.print-report-open .printable-report-wrapper,
+  body.print-report-open .printable-report-wrapper *,
+  body:has(.printable-report-wrapper) .printable-report-wrapper,
+  body:has(.printable-report-wrapper) .printable-report-wrapper * {
+    visibility: visible;
+  }
+
+  .printable-report-wrapper {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #FFFFFF !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Format: Thermal Receipt / POS Ticket (80mm / 3 inch) */
   .receipt-format-thermal,
   #printable-receipt-content.receipt-format-thermal {
     width: 80mm !important;
@@ -448,13 +482,13 @@ input[type="search"] {
     break-after: avoid !important;
   }
 
-  /* Format: Standard A4 Tax Invoice */
+  /* Format: Standard A4 Tax Invoice & Document */
   .receipt-format-a4,
   #printable-receipt-content.receipt-format-a4 {
     width: 100% !important;
     max-width: 190mm !important;
     margin: 0 auto !important;
-    padding: 8mm 10mm !important;
+    padding: 6mm 8mm !important;
     font-size: 12px !important;
     line-height: 1.4 !important;
     box-sizing: border-box !important;
@@ -469,8 +503,19 @@ input[type="search"] {
   td,
   th,
   .receipt-section,
-  .invoice-section {
+  .invoice-section,
+  .avoid-page-break {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
+  }
+
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  th,
+  td {
+    color: #0f172a !important;
   }
 }

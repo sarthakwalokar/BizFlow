@@ -161,10 +161,22 @@ export const EduReportsView: React.FC = () => {
     link.click();
   };
 
+  const handlePrint = () => {
+    document.body.classList.add('print-report-open');
+    const cleanup = () => {
+      document.body.classList.remove('print-report-open');
+      window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+    setTimeout(() => {
+      window.print();
+    }, 50);
+  };
+
   return (
     <div className="space-y-6">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Top Header (Hidden during print) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
@@ -182,7 +194,8 @@ export const EduReportsView: React.FC = () => {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => window.print()}
+            type="button"
+            onClick={handlePrint}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <Printer size={14} />
@@ -199,8 +212,8 @@ export const EduReportsView: React.FC = () => {
         </div>
       </div>
 
-      {/* Report Categories Selector */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {/* Report Categories Selector (Hidden during print) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 print:hidden">
         <button
           onClick={() => {
             setActiveReport('STUDENTS');
@@ -288,8 +301,8 @@ export const EduReportsView: React.FC = () => {
         </button>
       </div>
 
-      {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Filter Bar (Hidden during print) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 print:hidden">
         <div className="relative max-w-md w-full">
           <Search size={14} className="absolute left-3.5 top-3 text-slate-400" />
           <input
@@ -334,19 +347,32 @@ export const EduReportsView: React.FC = () => {
       </div>
 
       {/* Main Report Table Preview Card */}
-      <div className="clay-card p-5 space-y-4 print:p-0 print:border-none print:shadow-none">
+      <div className="clay-card p-5 space-y-4 printable-report-wrapper print:p-4 print:border-none print:shadow-none">
         {/* Printable Report Header */}
-        <div className="hidden print:block pb-4 border-b border-slate-300">
-          <h2 className="text-lg font-black text-slate-950 uppercase">{business?.name || 'BizFlow Coaching'}</h2>
-          <p className="text-xs text-slate-600">
-            {activeReport === 'STUDENTS' && t('education.reports.studentTitle', 'Student Directory & Admissions Report')}
-            {activeReport === 'FEE_COLLECTION' && t('education.reports.feeTitle', 'Fee Collection & Receipt Log Report')}
-            {activeReport === 'PENDING_DUES' && t('education.reports.duesTitle', 'Outstanding Pending Fee Dues Report')}
-            {activeReport === 'BATCH_SUMMARY' && t('education.reports.batchTitle', 'Course & Classroom Batch Summary Report')}
-          </p>
-          <p className="text-[10px] text-slate-400 font-mono mt-1">
-            {t('education.reports.generatedOn', 'Generated on')}: {new Date().toLocaleString()}
-          </p>
+        <div className="hidden print:block pb-4 border-b-2 border-slate-900">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-xl font-black text-slate-950 uppercase tracking-tight">{business?.name || 'BizFlow Education'}</h2>
+              {business?.address && <p className="text-xs text-slate-600">{business.address}</p>}
+              {business?.phone && <p className="text-xs text-slate-500">Ph: {business.phone}</p>}
+            </div>
+            <div className="text-right">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 bg-slate-100 rounded text-slate-900">
+                OFFICIAL REPORT
+              </span>
+              <p className="text-[10px] text-slate-500 font-mono mt-1">
+                Generated: {new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+              </p>
+            </div>
+          </div>
+          <div className="mt-3 pt-2 border-t border-slate-200">
+            <h3 className="text-sm font-black text-slate-900 uppercase">
+              {activeReport === 'STUDENTS' && t('education.reports.studentTitle', 'Student Directory & Admissions Report')}
+              {activeReport === 'FEE_COLLECTION' && t('education.reports.feeTitle', 'Fee Collection & Receipt Log Report')}
+              {activeReport === 'PENDING_DUES' && t('education.reports.duesTitle', 'Outstanding Pending Fee Dues Report')}
+              {activeReport === 'BATCH_SUMMARY' && t('education.reports.batchTitle', 'Course & Classroom Batch Summary Report')}
+            </h3>
+          </div>
         </div>
 
         {loading ? (

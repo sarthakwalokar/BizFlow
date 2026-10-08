@@ -50,6 +50,14 @@ public class AuthService {
         }
 
         // 1. Create and persist Business entity
+        String rawSlug = slugify(request.getBusinessName());
+        String initialSlug = rawSlug.isEmpty() ? "biz-" + System.currentTimeMillis() : rawSlug;
+        String finalSlug = initialSlug;
+        int counter = 1;
+        while (businessRepository.existsByReviewSlug(finalSlug)) {
+            finalSlug = initialSlug + "-" + counter++;
+        }
+
         Business.BusinessBuilder businessBuilder = Business.builder()
                 .name(request.getBusinessName().trim())
                 .businessType(request.getBusinessType())
@@ -58,6 +66,8 @@ public class AuthService {
                 .email(request.getBusinessEmail() != null ? request.getBusinessEmail() : cleanEmail)
                 .currency("INR")
                 .timezone("Asia/Kolkata")
+                .reviewSlug(finalSlug)
+                .reviewEnabled(true)
                 .active(true);
 
         if (request.getBusinessSize() != null) {
@@ -180,5 +190,14 @@ public class AuthService {
                 .user(UserResponse.fromEntity(user))
                 .business(BusinessResponse.fromEntity(business))
                 .build();
+    }
+
+    private String slugify(String input) {
+        if (input == null) return "";
+        return input.toLowerCase()
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .replaceAll("\\s+", "-")
+                .replaceAll("-+", "-")
+                .replaceAll("^-|-$", "");
     }
 }

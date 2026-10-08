@@ -14,6 +14,7 @@ import {
   Printer,
   X,
   Search,
+  FileText,
 } from 'lucide-react';
 
 export const EduFeeManagementPage: React.FC = () => {
@@ -40,6 +41,7 @@ export const EduFeeManagementPage: React.FC = () => {
 
   // Receipt Modal State
   const [receiptModalOpen, setReceiptModalOpen] = useState(false);
+  const [feeReceiptFormat, setFeeReceiptFormat] = useState<'A4' | 'RECEIPT'>('A4');
   const [currentReceiptData, setCurrentReceiptData] = useState<{
     receiptNumber: string;
     studentName: string;
@@ -55,6 +57,17 @@ export const EduFeeManagementPage: React.FC = () => {
     pendingAmount?: number;
     nextDueDate?: string;
   } | null>(null);
+
+  useEffect(() => {
+    if (receiptModalOpen) {
+      document.body.classList.add('receipt-modal-open');
+    } else {
+      document.body.classList.remove('receipt-modal-open');
+    }
+    return () => {
+      document.body.classList.remove('receipt-modal-open');
+    };
+  }, [receiptModalOpen]);
 
   const fetchDuesAndPayments = async () => {
     try {
@@ -605,166 +618,271 @@ export const EduFeeManagementPage: React.FC = () => {
 
       {/* PRINTABLE FEE RECEIPT MODAL */}
       {receiptModalOpen && currentReceiptData && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 receipt-modal-backdrop">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-5 max-h-[95vh] overflow-y-auto print:p-0 print:border-none print:shadow-none receipt-modal-container">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto receipt-modal-backdrop">
+          <div
+            className={`bg-white rounded-2xl border border-slate-200 shadow-2xl w-full space-y-4 my-auto overflow-hidden flex flex-col max-h-[95vh] receipt-modal-container transition-all ${
+              feeReceiptFormat === 'A4' ? 'max-w-2xl' : 'max-w-md'
+            }`}
+          >
             {/* Header (Hidden in Print for clean layout) */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 print:hidden">
+            <div className="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between gap-3 shrink-0 print:hidden">
               <div className="flex items-center gap-2">
-                <CheckCircle2 size={18} className="text-emerald-600" />
-                <h3 className="text-sm font-bold text-slate-900">{t('education.receiptGenerated', 'Fee Receipt Generated')}</h3>
+                <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shrink-0">
+                  <Receipt size={16} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white">{t('education.receiptGenerated', 'Fee Receipt')}</h3>
+                  <p className="text-[11px] text-slate-400 font-mono">#{currentReceiptData.receiptNumber}</p>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
+
+              {/* Format Switcher */}
+              <div className="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs shrink-0">
                 <button
-                  onClick={() => window.print()}
-                  className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  type="button"
+                  onClick={() => setFeeReceiptFormat('A4')}
+                  className={`px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    feeReceiptFormat === 'A4'
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
                 >
-                  <Printer size={13} />
-                  <span>{t('education.printReceipt', 'Print Receipt')}</span>
+                  <FileText size={13} />
+                  <span>A4 Sheet</span>
                 </button>
                 <button
-                  onClick={() => setReceiptModalOpen(false)}
-                  className="text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                  type="button"
+                  onClick={() => setFeeReceiptFormat('RECEIPT')}
+                  className={`px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    feeReceiptFormat === 'RECEIPT'
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
                 >
-                  <X size={18} />
+                  <Receipt size={13} />
+                  <span>80mm Slip</span>
                 </button>
               </div>
-            </div>
 
-            {/* Printable Receipt Paper Container */}
-            <div className="border border-slate-200 rounded-2xl p-6 bg-slate-50/50 space-y-4 text-xs font-sans print:border-none print:bg-white print:p-0">
-              {/* Institute Branding Header */}
-              <div className="flex items-start justify-between border-b border-slate-200 pb-4">
-                <div>
-                  <h2 className="text-base font-black text-slate-950 uppercase tracking-tight">
-                    {business?.name || t('education.defaultInstitute', 'Coaching & Training Institute')}
-                  </h2>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    {business?.address || t('education.defaultAddress', 'Official Coaching Center')}
-                  </p>
-                  {business?.phone && (
-                    <p className="text-[10px] text-slate-500 font-mono">{t('common.phone', 'Phone')}: {business.phone}</p>
-                  )}
-                </div>
-
-                <div className="text-right">
-                  <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-extrabold text-[10px] border border-indigo-200 inline-block uppercase">
-                    {t('education.feeReceipt', 'Fee Receipt')}
-                  </span>
-                  <p className="text-[11px] font-mono font-bold text-slate-900 mt-1">
-                    {currentReceiptData.receiptNumber}
-                  </p>
-                  <p className="text-[10px] text-slate-400 font-mono">
-                    {t('education.dateLabel', 'Date')}: {currentReceiptData.paymentDate}
-                  </p>
-                </div>
-              </div>
-
-              {/* Student Details Card */}
-              <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-white border border-slate-100">
-                <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('education.studentName', 'Student Name')}</span>
-                  <span className="font-bold text-slate-900 text-sm block">
-                    {currentReceiptData.studentName}
-                  </span>
-                  {currentReceiptData.studentPhone && (
-                    <span className="text-[10px] text-slate-500 font-mono">
-                      {t('common.phone', 'Phone')}: {currentReceiptData.studentPhone}
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('education.courseAndBatch', 'Course & Batch')}</span>
-                  <span className="font-bold text-slate-900 block">
-                    {currentReceiptData.courseName || t('education.coachingCourse', 'Coaching Course')}
-                  </span>
-                  <span className="text-[10px] text-indigo-600 font-bold block">
-                    {currentReceiptData.batchName || t('education.regularBatch', 'Regular Batch')}
-                  </span>
-                </div>
-              </div>
-
-              {/* Payment Summary Table */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-600">{t('education.paymentMode', 'Payment Mode')}:</span>
-                  <span className="font-bold text-slate-900 px-2 py-0.5 rounded bg-slate-100 text-[10px]">
-                    {currentReceiptData.paymentMethod}
-                  </span>
-                </div>
-
-                {currentReceiptData.totalFees !== undefined && (
-                  <div className="flex items-center justify-between py-1 text-slate-600">
-                    <span>{t('education.totalCourseFee', 'Total Course Fee')}:</span>
-                    <span className="font-semibold text-slate-800">
-                      {formatCurrency(currentReceiptData.totalFees, currency)}
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between py-2 bg-emerald-50 px-3 rounded-xl border border-emerald-100 text-emerald-950">
-                  <span className="font-bold text-xs">{t('education.amountReceived', 'Amount Received')}:</span>
-                  <span className="font-black text-base text-emerald-700">
-                    {formatCurrency(currentReceiptData.amount, currency)}
-                  </span>
-                </div>
-
-                {currentReceiptData.pendingAmount !== undefined && (
-                  <div className="flex items-center justify-between py-1 text-slate-600">
-                    <span>{t('education.remainingBalance', 'Remaining Balance')}:</span>
-                    <span className="font-black text-rose-600">
-                      {formatCurrency(currentReceiptData.pendingAmount, currency)}
-                    </span>
-                  </div>
-                )}
-
-                {currentReceiptData.nextDueDate && (
-                  <div className="flex items-center justify-between py-1 text-slate-500 text-[10px] font-mono">
-                    <span>{t('education.nextDueDate', 'Next Due Date')}:</span>
-                    <span>{currentReceiptData.nextDueDate}</span>
-                  </div>
-                )}
-
-                {currentReceiptData.notes && (
-                  <div className="pt-2 text-[11px] text-slate-500 italic">
-                    {t('education.note', 'Note')}: "{currentReceiptData.notes}"
-                  </div>
-                )}
-              </div>
-
-              {/* Signatures & Footer */}
-              <div className="pt-6 border-t border-slate-200 flex items-end justify-between">
-                <div className="text-[10px] text-slate-400">
-                  <p>{t('education.computerGeneratedReceipt', 'This is a computer-generated fee receipt.')}</p>
-                  <p>{t('education.thankYouLearning', 'Thank you for learning with us!')}</p>
-                </div>
-
-                <div className="text-center">
-                  <div className="h-10 border-b border-slate-300 w-32 mb-1" />
-                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider block">
-                    {t('education.authorizedSignatory', 'Authorized Signatory')}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Bottom Actions */}
-            <div className="flex items-center justify-end gap-2 pt-2 print:hidden">
               <button
                 type="button"
                 onClick={() => setReceiptModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
               >
-                {t('common.close', 'Close')}
+                <X size={18} />
               </button>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer shadow-xs inline-flex items-center gap-1.5"
-              >
-                <Printer size={13} />
-                <span>{t('education.printReceipt', 'Print Fee Receipt')}</span>
-              </button>
+            </div>
+
+            {/* Printable Paper Area */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100 flex justify-center items-center receipt-printable-content">
+              {feeReceiptFormat === 'A4' ? (
+                /* A4 Standard Receipt */
+                <div
+                  id="printable-receipt-content"
+                  className="w-full max-w-[620px] bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-5 text-xs shadow-xl print:border-none print:shadow-none print:p-4 print:w-full print:max-w-[190mm]"
+                >
+                  {/* Institute Branding Header */}
+                  <div className="flex items-start justify-between border-b-2 border-slate-900 pb-4">
+                    <div>
+                      {business?.logo && (
+                        <img
+                          src={business.logo}
+                          alt={business?.name || 'Institute'}
+                          className="max-h-12 max-w-[140px] object-contain mb-1"
+                          onError={(e) => ((e.target as HTMLElement).style.display = 'none')}
+                        />
+                      )}
+                      <h2 className="text-base font-black text-slate-950 uppercase tracking-tight">
+                        {business?.name || t('education.defaultInstitute', 'Coaching & Training Institute')}
+                      </h2>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        {business?.address || t('education.defaultAddress', 'Official Coaching Center')}
+                      </p>
+                      {business?.phone && (
+                        <p className="text-[10px] text-slate-500 font-mono">{t('common.phone', 'Phone')}: {business.phone}</p>
+                      )}
+                    </div>
+
+                    <div className="text-right">
+                      <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-extrabold text-[10px] border border-indigo-200 inline-block uppercase">
+                        {t('education.feeReceipt', 'Fee Receipt')}
+                      </span>
+                      <p className="text-xs font-mono font-black text-slate-900 mt-1">
+                        #{currentReceiptData.receiptNumber}
+                      </p>
+                      <p className="text-[10px] text-slate-400 font-mono">
+                        {t('education.dateLabel', 'Date')}: {currentReceiptData.paymentDate}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Student Details Card */}
+                  <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <div>
+                      <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('education.studentName', 'Student Name')}</span>
+                      <span className="font-bold text-slate-900 text-sm block">
+                        {currentReceiptData.studentName}
+                      </span>
+                      {currentReceiptData.studentPhone && (
+                        <span className="text-[10px] text-slate-500 font-mono">
+                          {t('common.phone', 'Phone')}: {currentReceiptData.studentPhone}
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('education.courseAndBatch', 'Course & Batch')}</span>
+                      <span className="font-bold text-slate-900 block">
+                        {currentReceiptData.courseName || t('education.coachingCourse', 'Coaching Course')}
+                      </span>
+                      <span className="text-[10px] text-indigo-600 font-bold block">
+                        {currentReceiptData.batchName || t('education.regularBatch', 'Regular Batch')}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Payment Summary Table */}
+                  <div className="space-y-2 border border-slate-200 rounded-xl p-4 bg-white">
+                    <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
+                      <span className="text-slate-600">{t('education.paymentMode', 'Payment Mode')}:</span>
+                      <span className="font-bold text-slate-900 px-2 py-0.5 rounded bg-slate-100 text-[10px]">
+                        {currentReceiptData.paymentMethod}
+                      </span>
+                    </div>
+
+                    {currentReceiptData.totalFees !== undefined && (
+                      <div className="flex items-center justify-between py-1 text-slate-600">
+                        <span>{t('education.totalCourseFee', 'Total Course Fee')}:</span>
+                        <span className="font-semibold text-slate-800">
+                          {formatCurrency(currentReceiptData.totalFees, currency)}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between py-2 bg-emerald-50 px-3 rounded-xl border border-emerald-100 text-emerald-950">
+                      <span className="font-bold text-xs">{t('education.amountReceived', 'Amount Received')}:</span>
+                      <span className="font-black text-base text-emerald-700 font-mono">
+                        {formatCurrency(currentReceiptData.amount, currency)}
+                      </span>
+                    </div>
+
+                    {currentReceiptData.pendingAmount !== undefined && (
+                      <div className="flex items-center justify-between py-1 text-slate-600">
+                        <span>{t('education.remainingBalance', 'Remaining Balance')}:</span>
+                        <span className="font-black text-rose-600 font-mono">
+                          {formatCurrency(currentReceiptData.pendingAmount, currency)}
+                        </span>
+                      </div>
+                    )}
+
+                    {currentReceiptData.nextDueDate && (
+                      <div className="flex items-center justify-between py-1 text-slate-500 text-[10px] font-mono">
+                        <span>{t('education.nextDueDate', 'Next Due Date')}:</span>
+                        <span>{currentReceiptData.nextDueDate}</span>
+                      </div>
+                    )}
+
+                    {currentReceiptData.notes && (
+                      <div className="pt-2 text-[11px] text-slate-500 italic">
+                        {t('education.note', 'Note')}: "{currentReceiptData.notes}"
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Signatures & Footer */}
+                  <div className="pt-6 border-t border-slate-200 flex items-end justify-between">
+                    <div className="text-[10px] text-slate-400">
+                      <p>{t('education.computerGeneratedReceipt', 'This is a computer-generated fee receipt.')}</p>
+                      <p>{t('education.thankYouLearning', 'Thank you for learning with us!')}</p>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="h-10 border-b border-slate-300 w-36 mb-1" />
+                      <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider block">
+                        {t('education.authorizedSignatory', 'Authorized Signatory')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Thermal 80mm Receipt */
+                <div
+                  id="printable-receipt-content"
+                  className="w-full max-w-[340px] bg-white border border-slate-200 rounded-xl p-5 space-y-3 font-mono text-xs shadow-xl text-slate-900 receipt-format-thermal print:border-none print:shadow-none"
+                >
+                  <div className="text-center space-y-0.5 border-b border-dashed border-slate-300 pb-2">
+                    <h2 className="font-black text-sm uppercase">{business?.name || 'ACADEMY'}</h2>
+                    <p className="text-[10px] text-slate-500">FEE RECEIPT</p>
+                    <p className="text-[10px] text-slate-500 font-bold">#{currentReceiptData.receiptNumber}</p>
+                    <p className="text-[10px] text-slate-400">{currentReceiptData.paymentDate}</p>
+                  </div>
+
+                  <div className="text-[11px] space-y-0.5 border-b border-dashed border-slate-300 pb-2">
+                    <div className="flex justify-between">
+                      <span>Student:</span>
+                      <span className="font-bold">{currentReceiptData.studentName}</span>
+                    </div>
+                    {currentReceiptData.courseName && (
+                      <div className="flex justify-between text-slate-600 text-[10px]">
+                        <span>Course:</span>
+                        <span>{currentReceiptData.courseName}</span>
+                      </div>
+                    )}
+                    {currentReceiptData.batchName && (
+                      <div className="flex justify-between text-slate-600 text-[10px]">
+                        <span>Batch:</span>
+                        <span>{currentReceiptData.batchName}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-1 text-xs pt-1 border-b border-dashed border-slate-300 pb-2">
+                    <div className="flex justify-between font-black text-sm">
+                      <span>PAID:</span>
+                      <span>{formatCurrency(currentReceiptData.amount, currency)}</span>
+                    </div>
+                    <div className="flex justify-between text-[10px] text-slate-500">
+                      <span>Mode:</span>
+                      <span>{currentReceiptData.paymentMethod}</span>
+                    </div>
+                    {currentReceiptData.pendingAmount !== undefined && currentReceiptData.pendingAmount > 0 && (
+                      <div className="flex justify-between text-[10px] text-rose-600 font-bold">
+                        <span>Balance Due:</span>
+                        <span>{formatCurrency(currentReceiptData.pendingAmount, currency)}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="text-center text-[9px] text-slate-400 pt-1">
+                    Thank you! Keep this slip for your records.
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Bottom Actions */}
+            <div className="p-4 bg-white border-t border-slate-200 flex items-center justify-between gap-2 shrink-0 print:hidden">
+              <span className="text-xs text-slate-500">
+                {feeReceiptFormat === 'A4' ? 'A4 Invoice Receipt' : '80mm Thermal Receipt'}
+              </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setReceiptModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
+                >
+                  {t('common.close', 'Close')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer shadow-xs inline-flex items-center gap-1.5"
+                >
+                  <Printer size={14} />
+                  <span>{t('education.printReceipt', 'Print Fee Receipt')}</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

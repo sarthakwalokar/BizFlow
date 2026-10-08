@@ -49,12 +49,23 @@ public class ReviewService {
     @Value("${app.frontend.url:https://bizflow-frontend-spa8.onrender.com}")
     private String frontendBaseUrl;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PublicBusinessReviewInfo getPublicBusinessReviewInfo(String slugOrId) {
         Business business = resolveBusinessBySlugOrId(slugOrId);
 
-        if (!business.isActive() || !business.isReviewEnabled()) {
-            throw new ResourceNotFoundException("Review page is currently disabled or unavailable for this business.");
+        if (!business.isActive()) {
+            throw new ResourceNotFoundException("This business account is currently inactive.");
+        }
+
+        if (!business.isReviewEnabled()) {
+            throw new BadRequestException("Review submissions are currently paused for this business.");
+        }
+
+        String slug = business.getReviewSlug();
+        if (slug == null || slug.trim().isEmpty()) {
+            slug = generateInitialSlug(business.getName(), business.getId());
+            business.setReviewSlug(slug);
+            business = businessRepository.save(business);
         }
 
         return PublicBusinessReviewInfo.builder()
@@ -62,7 +73,7 @@ public class ReviewService {
                 .name(business.getName())
                 .businessType(business.getBusinessType())
                 .logo(business.getLogo())
-                .reviewSlug(business.getReviewSlug() != null ? business.getReviewSlug() : String.valueOf(business.getId()))
+                .reviewSlug(slug)
                 .reviewPromptMessage(business.getReviewPromptMessage() != null ? business.getReviewPromptMessage() : "Thank you for choosing us! How was your experience today?")
                 .publicReviewUrl(business.getPublicReviewUrl())
                 .reviewEnabled(business.isReviewEnabled())
@@ -326,29 +337,44 @@ public class ReviewService {
 
         String input = slugOrId.trim();
 
-        // 1. Try finding by reviewSlug
+        // 1. Try finding by exact reviewSlug
         Optional<Business> bySlug = businessRepository.findByReviewSlug(input);
         if (bySlug.isPresent()) {
             return bySlug.get();
         }
 
-        // 2. Try parsing as numeric ID
+        // 2. Try finding by case-insensitive reviewSlug
+        Optional<Business> bySlugIgnoreCase = businessRepository.findByReviewSlugIgnoreCase(input);
+        if (bySlugIgnoreCase.isPresent()) {
+            return bySlugIgnoreCase.get();
+        }
+
+        // 3. Try parsing as numeric ID
         try {
             Long id = Long.parseLong(input);
-            return businessRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Business", "id", id));
-        } catch (NumberFormatException e) {
-            throw new ResourceNotFoundException("Business with review slug '" + input + "' not found.");
+            Optional<Business> byId = businessRepository.findById(id);
+            if (byId.isPresent()) {
+                return byId.get();
+            }
+        } catch (NumberFormatException ignored) {
         }
+
+        // 4. Fallback: try slugifying input and search again
+        String slugified = slugify(input);
+        if (!slugified.isEmpty() && !slugified.equalsIgnoreCase(input)) {
+            Optional<Business> bySlugified = businessRepository.findByReviewSlugIgnoreCase(slugified);
+            if (bySlugified.isPresent()) {
+                return bySlugified.get();
+            }
+        }
+
+        throw new ResourceNotFoundException("Business with review slug '" + input + "' not found.");
     }
 
     private String buildDirectReviewUrl(String slug) {
         String base = (frontendBaseUrl != null && !frontendBaseUrl.trim().isEmpty())
                 ? frontendBaseUrl.trim()
                 : "https://bizflow-frontend-spa8.onrender.com";
-        if (base.contains("localhost") || base.contains("127.0.0.1") || base.contains("0.0.0.0")) {
-            base = "https://bizflow-frontend-spa8.onrender.com";
-        }
         base = base.replaceAll("/+$", "");
         return base + "/review/" + slug;
     }

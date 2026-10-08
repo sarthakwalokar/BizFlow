@@ -6,6 +6,7 @@ import {
   repairApi,
   RepairJobCard,
 } from '../../../api/modules';
+import { RepairJobCardPrintModal } from './RepairJobCardPrintModal';
 import {
   Wrench,
   Plus,
@@ -25,6 +26,7 @@ export const RepairJobCardsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [selectedJobForSlip, setSelectedJobForSlip] = useState<RepairJobCard | null>(null);
 
   // Create Modal State
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -347,7 +349,8 @@ export const RepairJobCardsPage: React.FC = () => {
                           {t('repair.updateStatus', 'Update Status')}
                         </button>
                         <button
-                          onClick={() => window.print()}
+                          type="button"
+                          onClick={() => setSelectedJobForSlip(job)}
                           className="p-1 rounded-lg text-slate-400 hover:text-slate-600 cursor-pointer"
                           title={t('repair.printSlip', 'Print Handover Slip')}
                         >
@@ -665,6 +668,14 @@ export const RepairJobCardsPage: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* PRINTABLE REPAIR JOB CARD HANDOVER SLIP MODAL */}
+      {selectedJobForSlip && (
+        <RepairJobCardPrintModal
+          jobCard={selectedJobForSlip}
+          onClose={() => setSelectedJobForSlip(null)}
+        />
       )}
     </div>
   );

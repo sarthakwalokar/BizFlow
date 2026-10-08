@@ -9,6 +9,7 @@ import {
   QrCodeResponse,
 } from '../../api/reviews';
 import { ButtonSpinner, SkeletonBlock } from '../../components/common/LoadingStates';
+import { ReviewQrStandPrintModal } from './ReviewQrStandPrintModal';
 import {
   Star,
   QrCode,
@@ -39,6 +40,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
   // Filters State
   const [selectedRatingFilter, setSelectedRatingFilter] = useState<string>('ALL');
   const [positiveOnlyFilter, setPositiveOnlyFilter] = useState<string>('ALL');
+  const [showPrintModal, setShowPrintModal] = useState<boolean>(false);
 
   // Modals
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -151,6 +153,14 @@ export const ReviewBoostDashboardPage: React.FC = () => {
     return 0;
   };
 
+  const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+  const effectiveReviewSlug = settingsForm.reviewSlug || qrCodeData?.reviewSlug || business?.reviewSlug || (business?.id ? String(business.id) : '');
+  const displayReviewUrl = qrCodeData?.reviewUrl
+    ? (qrCodeData.reviewUrl.startsWith('http') && !qrCodeData.reviewUrl.includes('localhost') && currentOrigin.includes('localhost')
+        ? `${currentOrigin}/review/${effectiveReviewSlug}`
+        : qrCodeData.reviewUrl)
+    : `${currentOrigin}/review/${effectiveReviewSlug}`;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -235,9 +245,9 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                   <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider">
                     {t('reviews.shareLink')}
                   </span>
-                  {qrCodeData?.reviewUrl && (
+                  {displayReviewUrl && (
                     <a
-                      href={qrCodeData.reviewUrl}
+                      href={displayReviewUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-brand-600 hover:text-brand-700 text-xs font-semibold flex items-center gap-0.5"
@@ -251,13 +261,13 @@ export const ReviewBoostDashboardPage: React.FC = () => {
                   <input
                     type="text"
                     readOnly
-                    value={qrCodeData?.reviewUrl || ''}
+                    value={displayReviewUrl}
                     className="w-full text-[11px] font-mono bg-white px-2.5 py-1.5 rounded-lg border border-zinc-200 text-zinc-700 truncate"
                   />
                   <button
                     onClick={() => {
-                      if (qrCodeData?.reviewUrl) {
-                        navigator.clipboard.writeText(qrCodeData.reviewUrl);
+                      if (displayReviewUrl) {
+                        navigator.clipboard.writeText(displayReviewUrl);
                         setCopiedLink(true);
                         setTimeout(() => setCopiedLink(false), 2000);
                       }
@@ -374,7 +384,7 @@ export const ReviewBoostDashboardPage: React.FC = () => {
             )}
 
             <button
-              onClick={() => window.print()}
+              onClick={() => setShowPrintModal(true)}
               className="py-2 px-3 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             >
               <Printer size={14} />
@@ -681,6 +691,15 @@ export const ReviewBoostDashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* PRINTABLE REVIEW QR STAND & POSTER MODAL */}
+      {showPrintModal && (
+        <ReviewQrStandPrintModal
+          qrCodeDataUrl={qrCodeData?.qrCodeDataUrl}
+          reviewUrl={displayReviewUrl}
+          onClose={() => setShowPrintModal(false)}
+        />
       )}
     </div>
   );

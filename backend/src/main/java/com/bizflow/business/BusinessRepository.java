@@ -18,6 +18,10 @@ public interface BusinessRepository extends JpaRepository<Business, Long>, JpaSp
 
     Optional<Business> findByReviewSlug(String reviewSlug);
 
+    Optional<Business> findByReviewSlugIgnoreCase(String reviewSlug);
+
+    boolean existsByReviewSlug(String reviewSlug);
+
     boolean existsByReviewSlugAndIdNot(String reviewSlug, Long id);
 
     List<Business> findByBusinessType(BusinessType businessType);

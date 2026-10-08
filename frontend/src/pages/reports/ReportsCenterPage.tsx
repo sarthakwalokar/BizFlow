@@ -24,6 +24,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  Printer,
 } from 'lucide-react';
 
 export const ReportsCenterPage: React.FC = () => {
@@ -132,6 +133,18 @@ export const ReportsCenterPage: React.FC = () => {
     }
   };
 
+  const handlePrintReport = () => {
+    document.body.classList.add('print-report-open');
+    const cleanup = () => {
+      document.body.classList.remove('print-report-open');
+      window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+    setTimeout(() => {
+      window.print();
+    }, 50);
+  };
+
   // Date Presets
   const applyDatePreset = (days: number) => {
     const end = new Date().toISOString().split('T')[0];
@@ -151,12 +164,11 @@ export const ReportsCenterPage: React.FC = () => {
   // Paginated Rows Slice
   const allRows = reportData?.rows || [];
   const totalPages = Math.ceil(allRows.length / pageSize) || 1;
-  const paginatedRows = allRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <div className="space-y-6 max-w-7xl">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header (Hidden during print) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{t('reports.title')}</h1>
@@ -169,8 +181,18 @@ export const ReportsCenterPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Global Export Actions */}
+        {/* Global Export & Print Actions */}
         <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={handlePrintReport}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+          >
+            <Printer size={14} className="text-zinc-600" />
+            <span>{t('common.print', 'Print Report')}</span>
+          </button>
+
           <button
             onClick={handleExportPdf}
             disabled={exportingPdf || loading}
@@ -210,8 +232,8 @@ export const ReportsCenterPage: React.FC = () => {
         </div>
       )}
 
-      {/* Report Type Selector Tabs */}
-      <div className="bg-white rounded-xl border border-zinc-200 p-1.5 shadow-xs flex flex-wrap gap-1">
+      {/* Report Type Selector Tabs (Hidden during print) */}
+      <div className="bg-white rounded-xl border border-zinc-200 p-1.5 shadow-xs flex flex-wrap gap-1 print:hidden">
         {reportTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeReport === tab.type;
@@ -232,8 +254,8 @@ export const ReportsCenterPage: React.FC = () => {
         })}
       </div>
 
-      {/* Filter Toolbar Card */}
-      <div className="bg-white rounded-xl border border-zinc-200 p-4 shadow-xs space-y-3">
+      {/* Filter Toolbar Card (Hidden during print) */}
+      <div className="bg-white rounded-xl border border-zinc-200 p-4 shadow-xs space-y-3 print:hidden">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Date range controls */}
           <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -327,149 +349,204 @@ export const ReportsCenterPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Summary KPI Cards Row */}
-      {loading ? (
-        <MetricCardsSkeleton count={4} />
-      ) : reportData?.summaryCards && reportData.summaryCards.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-          {reportData.summaryCards.map((card, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-xl border border-zinc-200 p-4 shadow-xs"
-            >
-              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider block">
-                {card.title}
-              </span>
-              <div className="text-lg font-bold text-zinc-900 mt-1">{card.value}</div>
-              {card.subtitle && (
-                <div className="text-xs text-brand-600 font-medium mt-0.5">{card.subtitle}</div>
+      {/* Printable Report Wrapper Container */}
+      <div className="printable-report-wrapper space-y-5 print:p-4 print:border-none print:shadow-none">
+        {/* Printable Formal Document Header */}
+        <div className="hidden print:block pb-4 border-b-2 border-slate-900">
+          <div className="flex items-start justify-between">
+            <div>
+              {business?.logo && (
+                <img
+                  src={business.logo}
+                  alt={business?.name || 'BizFlow'}
+                  className="max-h-12 max-w-[140px] object-contain mb-1"
+                  onError={(e) => ((e.target as HTMLElement).style.display = 'none')}
+                />
               )}
+              <h1 className="text-xl font-black uppercase text-slate-950">{business?.name || 'BIZFLOW ENTERPRISE'}</h1>
+              {business?.address && <p className="text-xs text-slate-600">{business.address}</p>}
+              <div className="flex gap-4 text-[11px] text-slate-500 font-mono mt-0.5">
+                {business?.phone && <span>Ph: {business.phone}</span>}
+                {business?.taxNumber && <span>GSTIN: {business.taxNumber}</span>}
+              </div>
             </div>
-          ))}
-        </div>
-      ) : null}
 
-      {/* Tabular Preview Table */}
-      <div className="bg-white rounded-xl border border-zinc-200 shadow-xs overflow-hidden">
-        <div className="px-4 py-3 border-b border-zinc-100 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Table size={15} className="text-zinc-500" />
-            <h3 className="font-semibold text-zinc-900 text-xs">{reportData?.title || t('reports.reportPreview')}</h3>
-          </div>
-          <span className="text-xs text-zinc-400">
-            {t('reports.totalRecords', { count: allRows.length })}
-          </span>
-        </div>
-
-        {loading ? (
-          <div className="p-4">
-            <TableSkeleton rows={7} cols={reportData?.columns.length || 6} />
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-medium uppercase tracking-wider text-[10px]">
-                  {reportData?.columns.map((col) => (
-                    <th
-                      key={col.key}
-                      className={`px-4 py-3 ${
-                        col.align === 'RIGHT'
-                          ? 'text-right'
-                          : col.align === 'CENTER'
-                          ? 'text-center'
-                          : 'text-left'
-                      }`}
-                    >
-                      {col.label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100">
-                {paginatedRows.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={reportData?.columns.length || 7}
-                      className="px-4 py-12 text-center text-zinc-400 space-y-1"
-                    >
-                      <FileText size={28} className="mx-auto text-zinc-300 mb-2" />
-                      <p className="font-medium text-zinc-700">{t('common.noDataFound')}</p>
-                    </td>
-                  </tr>
-                ) : (
-                  paginatedRows.map((row, rIdx) => (
-                    <tr key={rIdx} className="hover:bg-zinc-50/70 transition-colors">
-                      {reportData?.columns.map((col) => {
-                        const val = row[col.key];
-                        const isBadge = col.type === 'BADGE';
-                        const isCurrency = col.type === 'CURRENCY';
-
-                        return (
-                          <td
-                            key={col.key}
-                            className={`px-4 py-3 ${
-                              col.align === 'RIGHT'
-                                ? 'text-right'
-                                : col.align === 'CENTER'
-                                ? 'text-center'
-                                : 'text-left'
-                            }`}
-                          >
-                            {isBadge ? (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 text-zinc-700 border border-zinc-200">
-                                {val != null ? String(val) : '-'}
-                              </span>
-                            ) : isCurrency ? (
-                              <span className="font-semibold text-zinc-900 font-mono">
-                                {formatCurrency(Number(val) || 0, currency)}
-                              </span>
-                            ) : (
-                              <span className="text-zinc-700">
-                                {val != null ? String(val) : '-'}
-                              </span>
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Pagination Bar */}
-        {!loading && allRows.length > pageSize && (
-          <div className="px-4 py-3 border-t border-zinc-100 flex items-center justify-between text-xs">
-            <span className="text-zinc-500">
-              {t('common.showingOf', { from: (currentPage - 1) * pageSize + 1, to: Math.min(currentPage * pageSize, allRows.length), total: allRows.length })}
-            </span>
-
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                disabled={currentPage === 1}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 text-zinc-600 text-xs font-medium hover:bg-zinc-50 disabled:opacity-40 cursor-pointer"
-              >
-                <ChevronLeft size={13} />
-                <span>{t('common.previous')}</span>
-              </button>
-              <span className="px-2 py-1 text-xs font-medium text-zinc-600">
-                {currentPage} / {totalPages}
+            <div className="text-right">
+              <span className="text-xs font-black uppercase tracking-wider px-2.5 py-1 bg-slate-900 text-white rounded">
+                OFFICIAL REPORT
               </span>
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 text-zinc-600 text-xs font-medium hover:bg-zinc-50 disabled:opacity-40 cursor-pointer"
-              >
-                <span>{t('common.next')}</span>
-                <ChevronRight size={13} />
-              </button>
+              <p className="text-xs font-mono font-bold text-slate-900 mt-2">
+                Period: {startDate} to {endDate}
+              </p>
+              <p className="text-[10px] text-slate-500 font-mono">
+                Generated: {new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+              </p>
             </div>
           </div>
-        )}
+
+          <div className="mt-3 pt-2 border-t border-slate-200">
+            <h2 className="text-sm font-black text-slate-900 uppercase">
+              {reportData?.title || `${activeReport} REPORT`}
+            </h2>
+            {selectedLocationId !== 'ALL' && (
+              <p className="text-[11px] text-slate-600">Location: {locations.find(l => String(l.id) === selectedLocationId)?.name || selectedLocationId}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Summary KPI Cards Row */}
+        {loading ? (
+          <MetricCardsSkeleton count={4} />
+        ) : reportData?.summaryCards && reportData.summaryCards.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 print:grid-cols-4">
+            {reportData.summaryCards.map((card, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl border border-zinc-200 p-4 shadow-xs print:border-slate-300 print:shadow-none print:p-3"
+              >
+                <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider block">
+                  {card.title}
+                </span>
+                <div className="text-lg font-bold text-zinc-900 mt-1">{card.value}</div>
+                {card.subtitle && (
+                  <div className="text-xs text-brand-600 font-medium mt-0.5 print:text-slate-600">{card.subtitle}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        {/* Tabular Preview Table */}
+        <div className="bg-white rounded-xl border border-zinc-200 shadow-xs overflow-hidden print:border-slate-300 print:shadow-none">
+          <div className="px-4 py-3 border-b border-zinc-100 flex items-center justify-between print:hidden">
+            <div className="flex items-center gap-2">
+              <Table size={15} className="text-zinc-500" />
+              <h3 className="font-semibold text-zinc-900 text-xs">{reportData?.title || t('reports.reportPreview')}</h3>
+            </div>
+            <span className="text-xs text-zinc-400">
+              {t('reports.totalRecords', { count: allRows.length })}
+            </span>
+          </div>
+
+          {loading ? (
+            <div className="p-4">
+              <TableSkeleton rows={7} cols={reportData?.columns.length || 6} />
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-medium uppercase tracking-wider text-[10px] print:bg-slate-100 print:text-slate-900 print:border-slate-400">
+                    {reportData?.columns.map((col) => (
+                      <th
+                        key={col.key}
+                        className={`px-4 py-3 print:py-2 print:px-2.5 ${
+                          col.align === 'RIGHT'
+                            ? 'text-right'
+                            : col.align === 'CENTER'
+                            ? 'text-center'
+                            : 'text-left'
+                        }`}
+                      >
+                        {col.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 print:divide-slate-200">
+                  {allRows.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={reportData?.columns.length || 7}
+                        className="px-4 py-12 text-center text-zinc-400 space-y-1"
+                      >
+                        <FileText size={28} className="mx-auto text-zinc-300 mb-2" />
+                        <p className="font-medium text-zinc-700">{t('common.noDataFound')}</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    allRows.map((row, rIdx) => {
+                      // If on screen and paginated, hide rows outside current page on screen (using print:table-row)
+                      const isVisibleOnScreen = rIdx >= (currentPage - 1) * pageSize && rIdx < currentPage * pageSize;
+                      return (
+                        <tr
+                          key={rIdx}
+                          className={`hover:bg-zinc-50/70 transition-colors print:table-row ${
+                            isVisibleOnScreen ? 'table-row' : 'hidden print:table-row'
+                          }`}
+                        >
+                          {reportData?.columns.map((col) => {
+                            const val = row[col.key];
+                            const isBadge = col.type === 'BADGE';
+                            const isCurrency = col.type === 'CURRENCY';
+
+                            return (
+                              <td
+                                key={col.key}
+                                className={`px-4 py-3 print:py-2 print:px-2.5 ${
+                                  col.align === 'RIGHT'
+                                    ? 'text-right'
+                                    : col.align === 'CENTER'
+                                    ? 'text-center'
+                                    : 'text-left'
+                                }`}
+                              >
+                                {isBadge ? (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 text-zinc-700 border border-zinc-200 print:border-none print:bg-transparent print:p-0">
+                                    {val != null ? String(val) : '-'}
+                                  </span>
+                                ) : isCurrency ? (
+                                  <span className="font-semibold text-zinc-900 font-mono">
+                                    {formatCurrency(Number(val) || 0, currency)}
+                                  </span>
+                                ) : (
+                                  <span className="text-zinc-700">
+                                    {val != null ? String(val) : '-'}
+                                  </span>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Pagination Bar (Hidden during print) */}
+          {!loading && allRows.length > pageSize && (
+            <div className="px-4 py-3 border-t border-zinc-100 flex items-center justify-between text-xs print:hidden">
+              <span className="text-zinc-500">
+                {t('common.showingOf', { from: (currentPage - 1) * pageSize + 1, to: Math.min(currentPage * pageSize, allRows.length), total: allRows.length })}
+              </span>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 text-zinc-600 text-xs font-medium hover:bg-zinc-50 disabled:opacity-40 cursor-pointer"
+                >
+                  <ChevronLeft size={13} />
+                  <span>{t('common.previous')}</span>
+                </button>
+                <span className="px-2 py-1 text-xs font-medium text-zinc-600">
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-zinc-200 text-zinc-600 text-xs font-medium hover:bg-zinc-50 disabled:opacity-40 cursor-pointer"
+                >
+                  <span>{t('common.next')}</span>
+                  <ChevronRight size={13} />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

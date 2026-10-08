@@ -28,7 +28,7 @@ const DEFAULT_CHIPS_BY_RATING: Record<number, string[]> = {
 export const PublicReviewPage: React.FC = () => {
   const { t } = useTranslation();
   const { slug, slugOrId } = useParams<{ slug?: string; slugOrId?: string }>();
-  const activeSlug = (slug || slugOrId || '').trim();
+  const activeSlug = decodeURIComponent(slug || slugOrId || '').trim();
 
   const [businessInfo, setBusinessInfo] = useState<PublicBusinessReviewInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -83,9 +83,11 @@ export const PublicReviewPage: React.FC = () => {
       setBusinessInfo(data);
     } catch (err: any) {
       console.error('Failed to load public review info:', err);
-      const msg =
-        err.response?.data?.error?.message ||
+      const serverMsg =
         err.response?.data?.message ||
+        err.response?.data?.error?.message;
+      const msg =
+        serverMsg ||
         t('publicReview.loadFailed', 'Unable to load review form for this business.');
       setErrorMessage(msg);
     } finally {
@@ -262,7 +264,7 @@ export const PublicReviewPage: React.FC = () => {
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
         <div className="max-w-sm w-full bg-white rounded-xl border border-zinc-200 p-6 text-center space-y-4 shadow-xs">
           <AlertCircle size={40} className="mx-auto text-amber-500" />
-          <h2 className="text-base font-bold text-zinc-900">{t('publicReview.loadFailed', 'Review Portal Unavailable')}</h2>
+          <h2 className="text-base font-bold text-zinc-900">{t('publicReview.portalUnavailableTitle', 'Review Portal Unavailable')}</h2>
           <p className="text-xs text-zinc-500 leading-relaxed">
             {errorMessage}
           </p>

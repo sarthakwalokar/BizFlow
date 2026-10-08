@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { restaurantApi, RestaurantKotTicket } from '../../../api/modules';
+import { RestaurantKotPrintModal } from './RestaurantKotPrintModal';
 import {
   ChefHat,
   CheckCircle2,
@@ -19,6 +20,7 @@ export const RestaurantKotPage: React.FC = () => {
   const [kots, setKots] = useState<RestaurantKotTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
+  const [selectedKotForPrint, setSelectedKotForPrint] = useState<RestaurantKotTicket | null>(null);
 
   // Async Button Loading States
   const [updatingKotId, setUpdatingKotId] = useState<number | null>(null);
@@ -367,7 +369,7 @@ export const RestaurantKotPage: React.FC = () => {
 
                   <button
                     type="button"
-                    onClick={() => window.print()}
+                    onClick={() => setSelectedKotForPrint(kot)}
                     className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 cursor-pointer"
                     title={t('restaurant.printKot', 'Print KOT Ticket')}
                   >
@@ -419,6 +421,14 @@ export const RestaurantKotPage: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* PRINTABLE KITCHEN ORDER TICKET (KOT) MODAL */}
+      {selectedKotForPrint && (
+        <RestaurantKotPrintModal
+          kot={selectedKotForPrint}
+          onClose={() => setSelectedKotForPrint(null)}
+        />
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { electronicsApi, WarrantyLookupResult } from '../../../api/modules';
+import { WarrantyCertificatePrintModal } from './WarrantyCertificatePrintModal';
 import {
   ShieldCheck,
   ShieldAlert,
@@ -15,6 +16,7 @@ export const WarrantyLookupPage: React.FC = () => {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<WarrantyLookupResult | null>(null);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
 
   const handleLookup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -168,7 +170,8 @@ export const WarrantyLookupPage: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={() => window.print()}
+                  type="button"
+                  onClick={() => setShowCertificateModal(true)}
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-all cursor-pointer self-start sm:self-auto shadow-xs"
                 >
                   <Printer size={13} />
@@ -178,6 +181,14 @@ export const WarrantyLookupPage: React.FC = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* PRINTABLE WARRANTY CERTIFICATE MODAL */}
+      {showCertificateModal && device && (
+        <WarrantyCertificatePrintModal
+          device={device}
+          onClose={() => setShowCertificateModal(false)}
+        />
       )}
     </div>
   );

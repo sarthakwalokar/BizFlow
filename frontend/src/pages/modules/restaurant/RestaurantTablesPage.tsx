@@ -166,16 +166,24 @@ export const RestaurantTablesPage: React.FC = () => {
   useEffect(() => {
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
-      document.body.classList.add('receipt-modal-open');
     } else {
       document.body.style.overflow = '';
-      document.body.classList.remove('receipt-modal-open');
     }
     return () => {
       document.body.style.overflow = '';
-      document.body.classList.remove('receipt-modal-open');
     };
   }, [isAnyModalOpen]);
+
+  useEffect(() => {
+    if (showReceiptModal) {
+      document.body.classList.add('receipt-modal-open');
+    } else {
+      document.body.classList.remove('receipt-modal-open');
+    }
+    return () => {
+      document.body.classList.remove('receipt-modal-open');
+    };
+  }, [showReceiptModal]);
 
   const fetchTables = async () => {
     try {

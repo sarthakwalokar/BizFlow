@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { BusinessType } from '../api/auth';
 import { LanguageSelector } from '../components/common/LanguageSelector';
 import { LegalModal } from '../components/common/LegalModal';
+import { INDIAN_STATES, INDIAN_UNION_TERRITORIES, getCitiesForState } from '../data/indianLocations';
 import {
   User as UserIcon,
   Mail,
@@ -149,7 +150,6 @@ export const SignupPage: React.FC = () => {
   };
 
   const strength = calculatePasswordStrength();
-  const isPasswordValid = hasMinLength && hasUppercase && hasNumber;
 
   // Validate Step 1
   const validateStep1 = (): boolean => {
@@ -168,7 +168,7 @@ export const SignupPage: React.FC = () => {
     if (!businessPhone.trim()) {
       errors.businessPhone = 'Primary business contact number is required';
     } else if (businessPhone.trim().replace(/[\s\-\+\(\)]/g, '').length < 7) {
-      errors.businessPhone = 'Please enter a valid phone number';
+      errors.businessPhone = 'Please enter a valid phone number (minimum 7 digits)';
     }
 
     if (businessEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(businessEmail.trim())) {
@@ -202,6 +202,10 @@ export const SignupPage: React.FC = () => {
       errors.fullName = 'Please enter your complete name';
     }
 
+    if (ownerPhone.trim() && ownerPhone.trim().replace(/[\s\-\+\(\)]/g, '').length < 7) {
+      errors.ownerPhone = 'Please enter a valid phone number (minimum 7 digits)';
+    }
+
     if (!email.trim()) {
       errors.email = 'Login email address is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
@@ -209,9 +213,15 @@ export const SignupPage: React.FC = () => {
     }
 
     if (!password) {
-      errors.password = 'Password is required';
-    } else if (!isPasswordValid) {
-      errors.password = 'Password must meet all security requirements';
+      errors.password = 'Password is required (min 8 characters)';
+    } else if (!hasMinLength) {
+      errors.password = 'Password must be at least 8 characters long';
+    } else if (!hasUppercase) {
+      errors.password = 'Password must include at least one uppercase letter (A-Z)';
+    } else if (!hasNumber) {
+      errors.password = 'Password must include at least one number (0-9)';
+    } else if (!hasSpecialOrLower) {
+      errors.password = 'Password must include a lowercase letter or special symbol';
     }
 
     if (!agreeTerms) {
@@ -313,7 +323,7 @@ export const SignupPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Subtle 2-Step Progress Indicator */}
+        {/* 2-Step Progress Indicator */}
         <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200/90 shadow-card">
           <div className="grid grid-cols-2 gap-3 sm:gap-6 relative">
             
@@ -321,7 +331,10 @@ export const SignupPage: React.FC = () => {
             <button
               type="button"
               onClick={() => {
-                if (currentStep === 2) setCurrentStep(1);
+                if (currentStep === 2) {
+                  setCurrentStep(1);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
               }}
               className={`flex items-center space-x-3 p-2.5 sm:p-3 rounded-xl transition-all text-left cursor-pointer ${
                 currentStep === 1
@@ -344,7 +357,7 @@ export const SignupPage: React.FC = () => {
                     Business Details
                   </span>
                   {currentStep === 2 && (
-                    <span className="hidden sm:inline-block text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded">
+                    <span className="hidden sm:inline-block text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
                       Completed
                     </span>
                   )}
@@ -356,11 +369,18 @@ export const SignupPage: React.FC = () => {
             </button>
 
             {/* Step 2 Pill */}
-            <div
+            <button
+              type="button"
+              onClick={() => {
+                if (currentStep === 1 && validateStep1()) {
+                  setCurrentStep(2);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
               className={`flex items-center space-x-3 p-2.5 sm:p-3 rounded-xl transition-all text-left ${
                 currentStep === 2
-                  ? 'bg-gradient-to-r from-blue-50 to-cyan-50/70 border border-blue-200/80 shadow-2xs'
-                  : 'bg-slate-50/60 border border-slate-200/50 opacity-85'
+                  ? 'bg-gradient-to-r from-blue-50 to-cyan-50/70 border border-blue-200/80 shadow-2xs cursor-default'
+                  : 'bg-slate-50/60 border border-slate-200/50 hover:bg-slate-100/60 cursor-pointer'
               }`}
             >
               <div
@@ -378,7 +398,7 @@ export const SignupPage: React.FC = () => {
                     Owner Account
                   </span>
                   {currentStep === 2 && (
-                    <span className="hidden sm:inline-block text-[10px] font-semibold text-blue-700 bg-blue-100 px-1.5 py-0.2 rounded">
+                    <span className="hidden sm:inline-block text-[10px] font-semibold text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded">
                       Active
                     </span>
                   )}
@@ -387,7 +407,7 @@ export const SignupPage: React.FC = () => {
                   Admin Credentials & Language
                 </p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
 
@@ -634,34 +654,61 @@ export const SignupPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* City & State (2-column responsive) */}
+                {/* State & City (2-column responsive) */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-biz-state">
+                      {t('auth.stateProvinceLabel', 'State / Union Territory')}
+                    </label>
+                    <select
+                      id="reg-biz-state"
+                      value={stateName}
+                      onChange={(e) => {
+                        setStateName(e.target.value);
+                        setCity('');
+                      }}
+                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer font-medium"
+                    >
+                      <option value="">{t('auth.selectState', 'Select State / Union Territory')}</option>
+                      <optgroup label="── States ──" className="font-semibold text-slate-700">
+                        {INDIAN_STATES.map((state) => (
+                          <option key={state} value={state} className="font-normal text-slate-900 py-1">
+                            {state}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="── Union Territories ──" className="font-semibold text-slate-700">
+                        {INDIAN_UNION_TERRITORIES.map((ut) => (
+                          <option key={ut} value={ut} className="font-normal text-slate-900 py-1">
+                            {ut}
+                          </option>
+                        ))}
+                      </optgroup>
+                    </select>
+                  </div>
+
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-biz-city">
                       {t('auth.cityTownLabel', 'City / Town')}
                     </label>
-                    <input
+                    <select
                       id="reg-biz-city"
-                      type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      placeholder={t('auth.cityPlaceholder', 'e.g. Mumbai, Bengaluru, Delhi')}
-                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-biz-state">
-                      {t('auth.stateProvinceLabel', 'State / Province')}
-                    </label>
-                    <input
-                      id="reg-biz-state"
-                      type="text"
-                      value={stateName}
-                      onChange={(e) => setStateName(e.target.value)}
-                      placeholder={t('auth.statePlaceholder', 'e.g. Maharashtra, Karnataka')}
-                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
-                    />
+                      disabled={!stateName}
+                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer font-medium disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+                    >
+                      <option value="">
+                        {stateName
+                          ? t('auth.selectCity', 'Select City / Town')
+                          : t('auth.selectStateFirst', 'Select State first')}
+                      </option>
+                      {getCitiesForState(stateName).map((cityName) => (
+                        <option key={cityName} value={cityName} className="font-normal text-slate-900 py-1">
+                          {cityName}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
@@ -881,12 +928,25 @@ export const SignupPage: React.FC = () => {
                         id="reg-owner-phone"
                         type="tel"
                         value={ownerPhone}
-                        onChange={(e) => setOwnerPhone(e.target.value)}
+                        onChange={(e) => {
+                          setOwnerPhone(e.target.value);
+                          if (step2Errors.ownerPhone) {
+                            setStep2Errors((prev) => ({ ...prev, ownerPhone: '' }));
+                          }
+                        }}
                         placeholder="+91 98765 43210"
-                        className="w-full pl-10 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
+                        className={`w-full pl-10 pr-3.5 py-2.5 bg-white border rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${
+                          step2Errors.ownerPhone
+                            ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-200'
+                            : 'border-slate-200 focus:border-blue-600 focus:ring-blue-500/20'
+                        }`}
                       />
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1">{t('auth.ownerMobileNotice', 'Used for owner security alerts and account recovery')}</p>
+                    {step2Errors.ownerPhone ? (
+                      <p className="text-[11px] text-rose-600 mt-1 font-medium">{step2Errors.ownerPhone}</p>
+                    ) : (
+                      <p className="text-[11px] text-slate-400 mt-1">{t('auth.ownerMobileNotice', 'Used for owner security alerts and account recovery')}</p>
+                    )}
                   </div>
                 </div>
 
@@ -1111,7 +1171,7 @@ export const SignupPage: React.FC = () => {
 
                 <button
                   type="submit"
-                  disabled={loading || !agreeTerms || !isPasswordValid}
+                  disabled={loading}
                   id="signup-submit-btn"
                   className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 active:scale-[0.99] text-white font-bold text-sm shadow-md shadow-blue-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none cursor-pointer"
                 >
